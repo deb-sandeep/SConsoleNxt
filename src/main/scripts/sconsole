@@ -4,6 +4,8 @@ cd `dirname $0`
 SCRIPTDIR=`pwd`
 cd -
 
+export DISPLAY=:0
+
 CP="$SCRIPTDIR/config:$SCRIPTDIR/lib/*"
 
 java -Djava.awt.headless=false \
@@ -13,5 +15,6 @@ java -Djava.awt.headless=false \
      -Dcom.sun.management.jmxremote.authenticate=false \
      -Dcom.sun.management.jmxremote.ssl=false \
      -Djava.rmi.server.hostname=192.168.0.161 \
+     -Dlogback.configurationFile=/home/sandeep/projects/bin/sconsole/config/logback.xml \
      -classpath $CP com.sandy.sconsole.SConsole
 
