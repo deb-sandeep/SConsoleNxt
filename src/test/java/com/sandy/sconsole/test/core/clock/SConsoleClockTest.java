@@ -30,7 +30,8 @@ public class SConsoleClockTest {
         assertNull( clock.getToday() ) ;
     }
 
-    @Test void initializedClock() {
+    @Test
+    public void initializedClock() {
         clock.initialize() ;
         Day today = new Day( new Date() ) ;
         assertEquals( today, clock.getToday() ) ;
@@ -38,7 +39,8 @@ public class SConsoleClockTest {
         assertEquals( today.getLastMillisecond(), clock.getTodayLastMillis() ) ;
     }
 
-    @Test void secondTick() throws Exception {
+    @Test
+    public void secondTick() throws Exception {
 
         MockClockTickListener l = new MockClockTickListener() ;
         clock.addTickListener( l, TimeUnit.SECONDS ) ;
@@ -54,7 +56,8 @@ public class SConsoleClockTest {
         assertEquals( 2, l.getNumTicksRecd() ) ;
     }
 
-    @Test void dayTick() throws Exception {
+    @Test
+    public void dayTick() throws Exception {
 
         MockClockTickListener l = new MockClockTickListener() ;
         clock.addTickListener( l, TimeUnit.DAYS ) ;
