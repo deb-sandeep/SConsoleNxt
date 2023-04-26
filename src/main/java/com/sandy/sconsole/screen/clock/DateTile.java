@@ -21,7 +21,7 @@ public class DateTile extends Tile {
 
     private void setUpUI( UITheme theme ) {
         dateTile = super.getTemplateLabel() ;
-        dateTile.setFont( theme.getLabelFont( 40 ) ) ;
+        dateTile.setFont( theme.getLabelFont( 70 ) ) ;
         super.add( dateTile, BorderLayout.CENTER ) ;
     }
 
