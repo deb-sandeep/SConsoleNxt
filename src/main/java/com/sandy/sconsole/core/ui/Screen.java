@@ -1,5 +1,8 @@
 package com.sandy.sconsole.core.ui;
 
+import com.sandy.sconsole.core.remote.KeyProcessor;
+import com.sandy.sconsole.core.remote.KeySet;
+import com.sandy.sconsole.core.remote.RemoteKeyEvent;
 import com.sandy.sconsole.core.ui.uiutil.DebugTile;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
 import info.clearthought.layout.TableLayout;
@@ -10,15 +13,16 @@ import javax.swing.*;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class Screen extends JPanel {
+public abstract class Screen extends JPanel implements KeyProcessor {
 
     public static final int NUM_ROWS = 16 ;
     public static final int NUM_COLS = 16 ;
 
     @Getter @Setter private String name ;
-    @Getter @Setter private Screen parentScreen ;
+    @Getter private Screen parentScreen ;
     @Getter @Setter private String icon ;
     @Getter @Setter private boolean showOnStartup ;
+    @Getter private final KeySet keySet = new KeySet( false ) ;
 
     private final Map<String, Screen> children = new HashMap<>() ;
 
@@ -56,6 +60,13 @@ public abstract class Screen extends JPanel {
         setLayout( layout ) ;
     }
 
+    public void setParentScreen( Screen screen ) {
+        this.parentScreen = screen ;
+        if( this.parentScreen != null ) {
+            this.parentScreen.registerChildScreen( this ) ;
+        }
+    }
+
     public void fillGrid( UITheme theme ) {
         for( int i=0; i<Screen.NUM_ROWS; i++ ) {
             for( int j=0; j<Screen.NUM_COLS; j++ ) {
@@ -86,4 +97,6 @@ public abstract class Screen extends JPanel {
     public String toString() {
         return this.name ;
     }
+
+    public void handleRemoteKeyEvent( RemoteKeyEvent event ) {}
 }

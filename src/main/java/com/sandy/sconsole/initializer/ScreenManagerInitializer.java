@@ -17,16 +17,14 @@ public class ScreenManagerInitializer {
     private UITheme theme = null ;
     private ScreenManager screenManager = null ;
 
-    public ScreenManager initialize( UITheme theme ) throws Exception {
+    public void initialize( UITheme theme, ScreenManager screenManager ) throws Exception {
 
         this.theme = theme ;
-        this.screenManager = new ScreenManager() ;
+        this.screenManager = screenManager ;
 
         screenManager.registerScreen( buildDockScreen() ) ;
         screenManager.registerScreen( buildClockScreen() ) ;
         screenManager.registerScreen( buildQOTDScreen() ) ;
-
-        return screenManager ;
     }
 
     private Screen buildDockScreen() throws Exception {
@@ -47,7 +45,7 @@ public class ScreenManagerInitializer {
 
     private Screen buildQOTDScreen() throws Exception {
         return ScreenBuilder.instance( theme )
-                .withName( CLOCK_SCR_NAME )
+                .withName( QOTD_SCR_NAME )
                 .withScreenClass( QOTDScreen.class )
                 .withShowOnStartup()
                 .withParentScreen( screenManager.getScreen( DOCK_SCR_NAME ) )
