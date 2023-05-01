@@ -2,7 +2,7 @@ package com.sandy.sconsole.test.core.clock;
 
 import com.sandy.sconsole.core.clock.SConsoleClock;
 import com.sandy.sconsole.test.core.clock.mock.MockClockTickListener;
-import com.sandy.sconsole.test.core.clock.mock.MockCurrentTimeProvider;
+import com.sandy.sconsole.test.core.clock.mock.MockRolloverTimeProvider;
 import org.jfree.data.time.Day;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -61,7 +61,19 @@ public class SConsoleClockTest {
 
         MockClockTickListener l = new MockClockTickListener() ;
         clock.addTickListener( l, TimeUnit.DAYS ) ;
-        clock.setCurrentTimeProvider( new MockCurrentTimeProvider() ) ;
+        clock.setCurrentTimeProvider( new MockRolloverTimeProvider( TimeUnit.DAYS ) ) ;
+        clock.initialize() ;
+
+        Thread.sleep( 2000 ) ;
+        assertEquals( 1, l.getNumTicksRecd() ) ;
+    }
+
+    @Test
+    public void hourTick() throws Exception {
+
+        MockClockTickListener l = new MockClockTickListener() ;
+        clock.addTickListener( l, TimeUnit.HOURS ) ;
+        clock.setCurrentTimeProvider( new MockRolloverTimeProvider( TimeUnit.HOURS ) ) ;
         clock.initialize() ;
 
         Thread.sleep( 2000 ) ;

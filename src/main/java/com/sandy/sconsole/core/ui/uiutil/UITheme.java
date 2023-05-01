@@ -28,5 +28,4 @@ public class UITheme {
     public Font getLabelFont( int size ) {
         return getLabelBaseFont().deriveFont( Font.PLAIN, size ) ;
     }
-
 }

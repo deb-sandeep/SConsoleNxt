@@ -3,6 +3,8 @@ package com.sandy.sconsole.screen.clock;
 import com.sandy.sconsole.core.clock.ClockTickListener;
 import com.sandy.sconsole.core.ui.Screen;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
+import com.sandy.sconsole.screen.clock.tile.DateTile;
+import com.sandy.sconsole.screen.clock.tile.TimeTile;
 
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
@@ -21,8 +23,8 @@ public class ClockScreen extends Screen implements ClockTickListener {
     }
 
     private void setUpUI( UITheme theme ) {
-        timeTile = new TimeTile( this, theme ) ;
-        dateTile = new DateTile( this, theme ) ;
+        timeTile = new TimeTile( this, theme, 150 ) ;
+        dateTile = new DateTile( this, theme, 70 ) ;
         super.addTile( timeTile, 2, 5, 13, 8 ) ;
         super.addTile( dateTile, 2, 9, 13, 10 ) ;
     }
