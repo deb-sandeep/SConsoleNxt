@@ -1,6 +1,7 @@
 package com.sandy.sconsole.core.ui;
 
 import com.sandy.sconsole.core.SConsoleConfig;
+import com.sandy.sconsole.core.remote.RemoteKeyEvent;
 import com.sandy.sconsole.core.ui.uiutil.SwingUtils;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
 import com.sandy.sconsole.screen.clock.ClockScreen;
@@ -72,5 +73,11 @@ public class SConsoleFrame extends JFrame {
         contentPane.add( currentScreen, BorderLayout.CENTER ) ;
         contentPane.revalidate() ;
         contentPane.repaint() ;
+    }
+
+    public void handleRemoteKeyEvent( RemoteKeyEvent event ) {
+        if( this.currentScreen != null ) {
+            this.currentScreen.handleRemoteKeyEvent( event ) ;
+        }
     }
 }

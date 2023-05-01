@@ -56,7 +56,6 @@ public class QOTDScreen extends Screen implements ClockTickListener {
         quoteAuthorTile.setLabelForeground( Color.YELLOW.darker() ) ;
         quoteAuthorTile.setBorder( new EmptyBorder( 0, 0, 0, 50 ) ) ;
 
-
         super.addTile( dateTile,         0,  0, 5,  1 ) ;
         super.addTile( timeTile,         6,  0, 9,  1 ) ;
         super.addTile( quoteSectionTile, 10, 0, 15, 1 ) ;
@@ -107,7 +106,7 @@ public class QOTDScreen extends Screen implements ClockTickListener {
             quoteTextTile.setLabelHTMLText( currentQuote.getQuote() ) ;
             quoteAuthorTile.setLabelText( "- " + currentQuote.getSpeaker() ) ;
 
-            quoteTextTile.setLabelForeground( SwingUtils.getRandomColor() ) ;
+            quoteTextTile.setLabelForeground( SwingUtils.getRandomColor().darker() ) ;
         } ) ;
     }
 }
