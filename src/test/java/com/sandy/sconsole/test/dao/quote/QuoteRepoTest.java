@@ -1,6 +1,6 @@
 package com.sandy.sconsole.test.dao.quote;
 
-import com.sandy.sconsole.dao.quote.repo.QuoteRepo;
+import com.sandy.sconsole.dao.quote.QuoteRepo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;

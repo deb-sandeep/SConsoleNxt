@@ -35,7 +35,7 @@ export JAVA_HOME=/usr/lib/jvm/java-1.17.0-openjdk-arm64
 
 export DB_PASSWORD=<password>
 ```
-* Source /etc/profile
+* Source /etc/profile.d/environment.sh
 
 ## 3. Home folder structure
 <!-- ------------------ -->
