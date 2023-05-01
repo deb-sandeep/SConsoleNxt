@@ -1,6 +1,5 @@
-package com.sandy.sconsole.dao.quote.repo;
+package com.sandy.sconsole.dao.quote;
 
-import com.sandy.sconsole.dao.quote.Quote;
 import org.springframework.data.repository.CrudRepository;
 
 public interface QuoteRepo extends CrudRepository<Quote, Integer> {
