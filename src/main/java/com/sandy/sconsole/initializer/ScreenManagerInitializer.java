@@ -6,11 +6,13 @@ import com.sandy.sconsole.core.ui.ScreenManager;
 import com.sandy.sconsole.core.ui.screen.dock.DockScreen;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
 import com.sandy.sconsole.screen.clock.ClockScreen;
+import com.sandy.sconsole.screen.qotd.QOTDScreen;
 
 public class ScreenManagerInitializer {
 
     public static final String DOCK_SCR_NAME  = "Dock" ;
     public static final String CLOCK_SCR_NAME = "Clock" ;
+    public static final String QOTD_SCR_NAME  = "QOTD" ;
 
     private UITheme theme = null ;
     private ScreenManager screenManager = null ;
@@ -22,6 +24,7 @@ public class ScreenManagerInitializer {
 
         screenManager.registerScreen( buildDockScreen() ) ;
         screenManager.registerScreen( buildClockScreen() ) ;
+        screenManager.registerScreen( buildQOTDScreen() ) ;
 
         return screenManager ;
     }
@@ -37,6 +40,15 @@ public class ScreenManagerInitializer {
         return ScreenBuilder.instance( theme )
                 .withName( CLOCK_SCR_NAME )
                 .withScreenClass( ClockScreen.class )
+                //.withShowOnStartup()
+                .withParentScreen( screenManager.getScreen( DOCK_SCR_NAME ) )
+                .build() ;
+    }
+
+    private Screen buildQOTDScreen() throws Exception {
+        return ScreenBuilder.instance( theme )
+                .withName( CLOCK_SCR_NAME )
+                .withScreenClass( QOTDScreen.class )
                 .withShowOnStartup()
                 .withParentScreen( screenManager.getScreen( DOCK_SCR_NAME ) )
                 .build() ;

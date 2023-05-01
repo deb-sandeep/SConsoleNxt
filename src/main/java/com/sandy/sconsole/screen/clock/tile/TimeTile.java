@@ -1,4 +1,4 @@
-package com.sandy.sconsole.screen.clock;
+package com.sandy.sconsole.screen.clock.tile;
 
 import com.sandy.sconsole.core.ui.Screen;
 import com.sandy.sconsole.core.ui.Tile;
@@ -14,14 +14,14 @@ public class TimeTile extends Tile {
     private static final SimpleDateFormat SDF = new SimpleDateFormat( "HH:mm:ss" ) ;
     private JLabel timeLabel ;
 
-    public TimeTile( Screen parent, UITheme theme ) {
+    public TimeTile( Screen parent, UITheme theme, int fontSize ) {
         super( parent, theme, false ) ;
-        setUpUI( theme ) ;
+        setUpUI( theme, fontSize ) ;
     }
 
-    private void setUpUI( UITheme theme ) {
+    private void setUpUI( UITheme theme, int fontSize ) {
         timeLabel = super.getTemplateLabel() ;
-        timeLabel.setFont( theme.getLabelFont( 150 ) ) ;
+        timeLabel.setFont( theme.getLabelFont( fontSize ) ) ;
         super.add( timeLabel, BorderLayout.CENTER ) ;
     }
 

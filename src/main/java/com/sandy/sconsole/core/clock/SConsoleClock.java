@@ -48,6 +48,11 @@ public class SConsoleClock {
 
                     notifyTickListeners( TimeUnit.SECONDS, now ) ;
                     if( lastDate != null ) {
+                        // A new hour has begum
+                        if( now.get(Calendar.HOUR_OF_DAY) !=
+                                lastDate.get(Calendar.HOUR_OF_DAY)) {
+                            notifyTickListeners( TimeUnit.HOURS, now ) ;
+                        }
                         // A new day has begum
                         if( now.get(Calendar.DAY_OF_YEAR) !=
                                 lastDate.get(Calendar.DAY_OF_YEAR)) {
@@ -68,9 +73,9 @@ public class SConsoleClock {
 
     public void addTickListener( ClockTickListener l, TimeUnit unit ) {
 
-        if( !( unit == TimeUnit.SECONDS || unit == TimeUnit.DAYS ) ) {
+        if( !( unit == TimeUnit.SECONDS || unit == TimeUnit.DAYS || unit == TimeUnit.HOURS ) ) {
             throw new IllegalArgumentException( "Currently clock only " +
-                    "supports tick listeners for SECONDS and DAYS." ) ;
+                    "supports tick listeners for SECONDS, HOURS and DAYS." ) ;
         }
 
         synchronized( lock ) {
