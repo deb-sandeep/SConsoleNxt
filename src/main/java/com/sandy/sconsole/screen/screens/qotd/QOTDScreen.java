@@ -1,13 +1,13 @@
-package com.sandy.sconsole.screen.qotd;
+package com.sandy.sconsole.screen.screens.qotd;
 
 import com.sandy.sconsole.core.clock.ClockTickListener;
-import com.sandy.sconsole.core.ui.Screen;
-import com.sandy.sconsole.core.ui.uiutil.StringTile;
+import com.sandy.sconsole.core.ui.screen.Screen;
+import com.sandy.sconsole.core.ui.screen.util.StringTile;
 import com.sandy.sconsole.core.ui.uiutil.SwingUtils;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
 import com.sandy.sconsole.dao.quote.Quote;
-import com.sandy.sconsole.screen.clock.tile.DateTile;
-import com.sandy.sconsole.screen.clock.tile.TimeTile;
+import com.sandy.sconsole.screen.screens.clock.tile.DateTile;
+import com.sandy.sconsole.screen.screens.clock.tile.TimeTile;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -21,7 +21,7 @@ import static com.sandy.sconsole.SConsole.getAppCtx;
 
 public class QOTDScreen extends Screen implements ClockTickListener {
 
-    public static final int DEF_QUOTE_REFRESH_TIME_SEC = 600 ;
+    public static final int DEF_QUOTE_REFRESH_TIME_SEC = 30*60 ;
 
     private TimeTile timeTile ;
     private DateTile dateTile ;
@@ -49,7 +49,7 @@ public class QOTDScreen extends Screen implements ClockTickListener {
         quoteSectionTile.setLabelForeground( Color.CYAN.darker() ) ;
 
         quoteTextTile    = new StringTile( this, theme, 80, JLabel.CENTER ) ;
-        quoteTextTile.setLabelFont( new Font( "Ariel", Font.PLAIN, 70 ) );
+        quoteTextTile.setLabelFont( new Font( "Roboto", Font.PLAIN, 70 ) );
         quoteTextTile.setBorder( new EmptyBorder( 0, 50, 0, 50 ) ) ;
 
         quoteAuthorTile  = new StringTile( this, theme, 60, JLabel.RIGHT ) ;

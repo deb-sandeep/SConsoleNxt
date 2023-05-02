@@ -4,7 +4,7 @@ import com.sandy.sconsole.core.SConsoleConfig;
 import com.sandy.sconsole.core.bus.EventBus;
 import com.sandy.sconsole.core.clock.SConsoleClock;
 import com.sandy.sconsole.core.ui.SConsoleFrame;
-import com.sandy.sconsole.core.ui.ScreenManager;
+import com.sandy.sconsole.core.ui.screen.ScreenManager;
 import com.sandy.sconsole.core.ui.uiutil.DefaultUITheme;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
 import com.sandy.sconsole.initializer.ScreenManagerInitializer;
@@ -82,6 +82,8 @@ public class SConsole
     public SConsoleFrame getFrame() { return this.frame; }
 
     public SConsoleClock getClock() { return this.clock; }
+
+    public ApplicationContext getCtx() { return SConsole.APP_CTX ; } ;
 
     public SConsoleConfig getConfig() {
         if( cfg == null ) {

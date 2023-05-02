@@ -2,9 +2,12 @@ package com.sandy.sconsole.core.ui;
 
 import com.sandy.sconsole.core.SConsoleConfig;
 import com.sandy.sconsole.core.remote.RemoteKeyEvent;
+import com.sandy.sconsole.core.ui.screen.Screen;
+import com.sandy.sconsole.core.ui.screen.ScreenManager;
 import com.sandy.sconsole.core.ui.uiutil.SwingUtils;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
-import com.sandy.sconsole.screen.clock.ClockScreen;
+import com.sandy.sconsole.screen.screens.clock.ClockScreen;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
@@ -16,16 +19,18 @@ import static com.sandy.sconsole.core.ui.uiutil.SwingUtils.hideCursor;
 public class SConsoleFrame extends JFrame {
     
     private final Container contentPane ;
+    private final ScreenManager screenManager ;
 
-    private Screen currentScreen = null ;
+    @Getter private Screen currentScreen = null ;
 
     public SConsoleFrame( UITheme theme, SConsoleConfig config, ScreenManager screenManager ) {
         super() ;
 
         this.contentPane = super.getContentPane() ;
+        this.screenManager = screenManager ;
 
         setUpUI( theme ) ;
-        setCenterPanel( screenManager.getDefaultScreen() ) ;
+        setScreen( screenManager.getDefaultScreen() ) ;
         
         if( config.isShowSwingApp() ) {
             setVisible( true ) ;
@@ -57,7 +62,7 @@ public class SConsoleFrame extends JFrame {
         }
     }
     
-    void setCenterPanel( Screen screen ) {
+    void setScreen( Screen screen ) {
 
         log.debug( "Setting screen {}.", screen  ) ;
         if( screen == null ) return ;
@@ -77,7 +82,21 @@ public class SConsoleFrame extends JFrame {
 
     public void handleRemoteKeyEvent( RemoteKeyEvent event ) {
         if( this.currentScreen != null ) {
-            this.currentScreen.handleRemoteKeyEvent( event ) ;
+            if( this.currentScreen.getKeySet().isKeyEnabled( event.getKey() ) ) {
+                this.currentScreen.processKeyEvent( event ) ;
+            }
+        }
+    }
+
+    public void changeScreen( String nextScreenName ) {
+
+        log.debug( "Changing screen to {}.", nextScreenName ) ;
+        Screen nextScreen = this.screenManager.getScreen( nextScreenName ) ;
+        if( nextScreen != null ) {
+            setScreen( nextScreen ) ;
+        }
+        else {
+            log.info( "Screen {} not registered.", nextScreenName ) ;
         }
     }
 }

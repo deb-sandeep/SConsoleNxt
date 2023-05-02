@@ -1,7 +1,8 @@
-package com.sandy.sconsole.core.ui.uiutil;
+package com.sandy.sconsole.core.ui.screen.util;
 
-import com.sandy.sconsole.core.ui.Screen;
-import com.sandy.sconsole.core.ui.Tile;
+import com.sandy.sconsole.core.ui.screen.Screen;
+import com.sandy.sconsole.core.ui.screen.Tile;
+import com.sandy.sconsole.core.ui.uiutil.DefaultUITheme;
 
 import java.awt.*;
 

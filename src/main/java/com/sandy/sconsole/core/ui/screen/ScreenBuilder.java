@@ -1,4 +1,4 @@
-package com.sandy.sconsole.core.ui;
+package com.sandy.sconsole.core.ui.screen;
 
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
 import lombok.extern.slf4j.Slf4j;

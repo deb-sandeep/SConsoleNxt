@@ -48,15 +48,21 @@ public class SConsoleClock {
 
                     notifyTickListeners( TimeUnit.SECONDS, now ) ;
                     if( lastDate != null ) {
+                        // A new minute has begum
+                        if( now.get(Calendar.MINUTE) !=
+                                lastDate.get(Calendar.MINUTE)) {
+                            notifyTickListeners( TimeUnit.MINUTES, now ) ;
+                        }
+
                         // A new hour has begum
                         if( now.get(Calendar.HOUR_OF_DAY) !=
                                 lastDate.get(Calendar.HOUR_OF_DAY)) {
                             notifyTickListeners( TimeUnit.HOURS, now ) ;
                         }
+
                         // A new day has begum
                         if( now.get(Calendar.DAY_OF_YEAR) !=
                                 lastDate.get(Calendar.DAY_OF_YEAR)) {
-
                             computeTodayTimeMarkers() ;
                             notifyTickListeners( TimeUnit.DAYS, now ) ;
                         }
@@ -73,9 +79,12 @@ public class SConsoleClock {
 
     public void addTickListener( ClockTickListener l, TimeUnit unit ) {
 
-        if( !( unit == TimeUnit.SECONDS || unit == TimeUnit.DAYS || unit == TimeUnit.HOURS ) ) {
+        if( !( unit == TimeUnit.SECONDS ||
+                unit == TimeUnit.MINUTES ||
+                unit == TimeUnit.DAYS ||
+                unit == TimeUnit.HOURS ) ) {
             throw new IllegalArgumentException( "Currently clock only " +
-                    "supports tick listeners for SECONDS, HOURS and DAYS." ) ;
+                    "supports tick listeners for SECONDS, MINUTES, HOURS and DAYS." ) ;
         }
 
         synchronized( lock ) {
@@ -106,9 +115,11 @@ public class SConsoleClock {
     private void notifyTickListeners( TimeUnit timeUnit, Calendar now ) {
 
         List<ClockTickListener> listeners = tickListeners.get( timeUnit ) ;
-
         if( listeners != null ) {
-            listeners.forEach( l -> {
+            // Do not replace with enhanced for loop or iterator. The
+            // listener list can be modified during the notification cycle.
+            for( int i=0; i<listeners.size(); i++ ) {
+                ClockTickListener l = listeners.get( i ) ;
                 try {
                     if( l.isAsync() ) {
                         new Thread( () -> {
@@ -127,7 +138,7 @@ public class SConsoleClock {
                 catch( Exception e ) {
                     log.error( "Exception in processing clock tick.", e ) ;
                 }
-            } ) ;
+            }
         }
     }
 

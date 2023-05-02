@@ -1,12 +1,12 @@
 package com.sandy.sconsole.initializer;
 
-import com.sandy.sconsole.core.ui.Screen;
-import com.sandy.sconsole.core.ui.ScreenBuilder;
-import com.sandy.sconsole.core.ui.ScreenManager;
-import com.sandy.sconsole.core.ui.screen.dock.DockScreen;
+import com.sandy.sconsole.core.ui.screen.Screen;
+import com.sandy.sconsole.core.ui.screen.ScreenBuilder;
+import com.sandy.sconsole.core.ui.screen.ScreenManager;
+import com.sandy.sconsole.core.ui.screen.screens.dock.DockScreen;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
-import com.sandy.sconsole.screen.clock.ClockScreen;
-import com.sandy.sconsole.screen.qotd.QOTDScreen;
+import com.sandy.sconsole.screen.screens.clock.ClockScreen;
+import com.sandy.sconsole.screen.screens.qotd.QOTDScreen;
 
 public class ScreenManagerInitializer {
 
