@@ -1,6 +1,6 @@
 package com.sandy.sconsole.test.core.ui;
 
-import com.sandy.sconsole.core.ui.ScreenManager;
+import com.sandy.sconsole.core.ui.screen.ScreenManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

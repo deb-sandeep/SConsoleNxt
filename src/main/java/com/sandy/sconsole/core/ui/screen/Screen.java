@@ -1,9 +1,9 @@
-package com.sandy.sconsole.core.ui;
+package com.sandy.sconsole.core.ui.screen;
 
 import com.sandy.sconsole.core.remote.KeyProcessor;
 import com.sandy.sconsole.core.remote.KeySet;
 import com.sandy.sconsole.core.remote.RemoteKeyEvent;
-import com.sandy.sconsole.core.ui.uiutil.DebugTile;
+import com.sandy.sconsole.core.ui.screen.util.DebugTile;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
 import info.clearthought.layout.TableLayout;
 import lombok.Getter;
@@ -98,5 +98,13 @@ public abstract class Screen extends JPanel implements KeyProcessor {
         return this.name ;
     }
 
-    public void handleRemoteKeyEvent( RemoteKeyEvent event ) {}
+    @Override
+    public KeySet getConsumableKeySet() {
+        return KeySet.DISABLED_KEY_SET ;
+    }
+
+    @Override
+    public void processKeyEvent( RemoteKeyEvent keyEvent ) {}
+
+    public boolean isReplaceableByAutoScreenTransitionDaemon() { return true ; }
 }

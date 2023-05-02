@@ -1,4 +1,4 @@
-package com.sandy.sconsole.screen.qotd;
+package com.sandy.sconsole.screen.screens.qotd;
 
 import com.sandy.sconsole.dao.quote.Quote;
 import com.sandy.sconsole.dao.quote.QuoteRepo;

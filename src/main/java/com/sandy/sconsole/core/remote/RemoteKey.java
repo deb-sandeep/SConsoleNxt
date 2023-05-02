@@ -24,6 +24,7 @@ public enum RemoteKey {
     CT_OK     ( KeyType.CONTROL, "Ok" ),
     CT_CANCEL ( KeyType.CONTROL, "Cancel" ),
     CT_PAUSE  ( KeyType.CONTROL, "Pause" ),
+    CT_HOME   ( KeyType.CONTROL, "Home" ),
 
     MV_UP     ( KeyType.MOVEMENT, "Up" ),
     MV_DOWN   ( KeyType.MOVEMENT, "Down" ),

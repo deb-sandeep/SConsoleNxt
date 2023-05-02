@@ -18,6 +18,8 @@ public class KeySet {
         }
     }
 
+    public static final KeySet DISABLED_KEY_SET = new KeySet( false ) ;
+
     private Map<RemoteKey, KeyInfo> keySet = new HashMap<>() ;
 
     public KeySet() {

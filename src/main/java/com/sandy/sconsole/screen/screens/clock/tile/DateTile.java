@@ -1,7 +1,7 @@
-package com.sandy.sconsole.screen.clock.tile;
+package com.sandy.sconsole.screen.screens.clock.tile;
 
-import com.sandy.sconsole.core.ui.Screen;
-import com.sandy.sconsole.core.ui.uiutil.StringTile;
+import com.sandy.sconsole.core.ui.screen.Screen;
+import com.sandy.sconsole.core.ui.screen.util.StringTile;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
 
 import java.text.SimpleDateFormat;
