@@ -5,6 +5,7 @@ import com.sandy.sconsole.core.clock.ClockTickListener;
 import com.sandy.sconsole.core.ui.screen.Screen;
 import com.sandy.sconsole.core.ui.screen.ScreenManager;
 import com.sandy.sconsole.screen.autotransition.strategy.EODScreenTransitionStrategy;
+import com.sandy.sconsole.screen.autotransition.strategy.SODScreenTransitionStrategy;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +42,7 @@ public class AutoScreenTransitionDaemon implements ClockTickListener {
     public void initialize() {
         app.getClock().addTickListener( this, TimeUnit.MINUTES ) ;
         strategies.add( app.getCtx().getBean( EODScreenTransitionStrategy.class ) ) ;
+        strategies.add( app.getCtx().getBean( SODScreenTransitionStrategy.class ) ) ;
     }
 
     @PreDestroy

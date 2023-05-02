@@ -7,7 +7,7 @@ import com.sandy.sconsole.core.ui.SConsoleFrame;
 import com.sandy.sconsole.core.ui.screen.ScreenManager;
 import com.sandy.sconsole.core.ui.uiutil.DefaultUITheme;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
-import com.sandy.sconsole.initializer.ScreenManagerInitializer;
+import com.sandy.sconsole.screen.screens.ScreenManagerInitializer;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeansException;

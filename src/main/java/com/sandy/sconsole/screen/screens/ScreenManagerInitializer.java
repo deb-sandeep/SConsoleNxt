@@ -1,4 +1,4 @@
-package com.sandy.sconsole.initializer;
+package com.sandy.sconsole.screen.screens;
 
 import com.sandy.sconsole.core.ui.screen.Screen;
 import com.sandy.sconsole.core.ui.screen.ScreenBuilder;
