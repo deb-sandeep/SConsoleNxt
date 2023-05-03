@@ -1,5 +1,6 @@
 package com.sandy.sconsole.core.clock;
 
+import it.sauronsoftware.cron4j.Scheduler;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +32,7 @@ public class SConsoleClock {
 
     private final Map<TimeUnit, List<ClockTickListener>> tickListeners = new HashMap<>() ;
     private final Set<ClockTickListener> registeredListeners = new HashSet<>() ;
+    private final Scheduler scheduler = new Scheduler() ;
 
     public void initialize() {
 
@@ -43,7 +45,6 @@ public class SConsoleClock {
             public void run() {
 
                 Calendar now = currentTimeProvider.getCurrentTime() ;
-
                 synchronized ( lock ) {
 
                     notifyTickListeners( TimeUnit.SECONDS, now ) ;
@@ -110,6 +111,29 @@ public class SConsoleClock {
                 } ) ;
             }
         }
+    }
+
+    /**
+     * Schedules a task as per the scheduling expression.
+     *
+     * @param scheduleExpr A cron expression. For details see
+     *     <a href="https://www.sauronsoftware.it/projects/cron4j/manual.php#p02">Patterns</a>
+     * @return An unique identifier which can be used to deschedule or reschedule
+     *      the task.
+     *
+     * @throws Exception In case of error in the scheduling expression.
+     */
+    public String scheduleTask( String scheduleExpr, Runnable task )
+            throws Exception {
+        return this.scheduler.schedule( scheduleExpr, task ) ;
+    }
+
+    public void descheduleTask( String id ) {
+        this.scheduler.deschedule( id ) ;
+    }
+
+    public void rescheduleTask( String id, String scheduleExpr ) {
+        this.scheduler.reschedule( id, scheduleExpr ) ;
     }
 
     private void notifyTickListeners( TimeUnit timeUnit, Calendar now ) {
