@@ -67,17 +67,19 @@ public class SConsoleFrame extends JFrame {
         log.debug( "Setting screen {}.", screen  ) ;
         if( screen == null ) return ;
 
-        if( currentScreen != null ) {
-            currentScreen.beforeDeactivation() ;
-            contentPane.remove( currentScreen ) ;
-        }
+        SwingUtilities.invokeLater( ()->{
+            if( currentScreen != null ) {
+                currentScreen.beforeDeactivation() ;
+                contentPane.remove( currentScreen ) ;
+            }
 
-        currentScreen = screen ;
-        currentScreen.beforeActivation() ;
+            currentScreen = screen ;
+            currentScreen.beforeActivation() ;
 
-        contentPane.add( currentScreen, BorderLayout.CENTER ) ;
-        contentPane.revalidate() ;
-        contentPane.repaint() ;
+            contentPane.add( currentScreen, BorderLayout.CENTER ) ;
+            contentPane.revalidate() ;
+            contentPane.repaint() ;
+        } ) ;
     }
 
     public void handleRemoteKeyEvent( RemoteKeyEvent event ) {
@@ -91,12 +93,18 @@ public class SConsoleFrame extends JFrame {
     public void changeScreen( String nextScreenName ) {
 
         log.debug( "Changing screen to {}.", nextScreenName ) ;
+        if( this.currentScreen != null &&
+                this.currentScreen.getName().equals( nextScreenName ) ) {
+            log.debug( "Requested screen is currently active." ) ;
+            return ;
+        }
+
         Screen nextScreen = this.screenManager.getScreen( nextScreenName ) ;
-        if( nextScreen != null ) {
-            setScreen( nextScreen ) ;
+        if( nextScreen == null ) {
+            log.info( "Screen {} not registered.", nextScreenName ) ;
         }
         else {
-            log.info( "Screen {} not registered.", nextScreenName ) ;
+            setScreen( nextScreen ) ;
         }
     }
 }

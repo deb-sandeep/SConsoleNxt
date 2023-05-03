@@ -21,4 +21,9 @@ public class QuoteRepoTest {
     @Test void injectQuoteRepoNotNull() {
         assertThat( quoteRepo, notNullValue() ) ;
     }
+
+    @Test void testFindBySpeaker() {
+        assertThat( quoteRepo.findBySpeaker( "A.P.J. Abdul Kalam" ).size(),
+                    is( not( 0 ) ) ) ;
+    }
 }

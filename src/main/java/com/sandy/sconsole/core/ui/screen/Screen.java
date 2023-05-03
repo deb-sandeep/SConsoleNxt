@@ -105,6 +105,4 @@ public abstract class Screen extends JPanel implements KeyProcessor {
 
     @Override
     public void processKeyEvent( RemoteKeyEvent keyEvent ) {}
-
-    public boolean isReplaceableByAutoScreenTransitionDaemon() { return true ; }
 }
