@@ -67,19 +67,17 @@ public class SConsoleFrame extends JFrame {
         log.debug( "Setting screen {}.", screen  ) ;
         if( screen == null ) return ;
 
-        SwingUtilities.invokeLater( ()->{
-            if( currentScreen != null ) {
-                currentScreen.beforeDeactivation() ;
-                contentPane.remove( currentScreen ) ;
-            }
+        if( currentScreen != null ) {
+            currentScreen.beforeDeactivation() ;
+            contentPane.remove( currentScreen ) ;
+        }
 
-            currentScreen = screen ;
-            currentScreen.beforeActivation() ;
+        currentScreen = screen ;
+        currentScreen.beforeActivation() ;
 
-            contentPane.add( currentScreen, BorderLayout.CENTER ) ;
-            contentPane.revalidate() ;
-            contentPane.repaint() ;
-        } ) ;
+        contentPane.add( currentScreen, BorderLayout.CENTER ) ;
+        contentPane.revalidate() ;
+        contentPane.repaint() ;
     }
 
     public void handleRemoteKeyEvent( RemoteKeyEvent event ) {
@@ -104,7 +102,7 @@ public class SConsoleFrame extends JFrame {
             log.info( "Screen {} not registered.", nextScreenName ) ;
         }
         else {
-            setScreen( nextScreen ) ;
+            SwingUtilities.invokeLater( ()->setScreen( nextScreen ) ) ;
         }
     }
 }

@@ -1,13 +1,13 @@
 package com.sandy.sconsole;
 
 import com.sandy.sconsole.core.SConsoleConfig;
+import com.sandy.sconsole.core.behavior.SystemInitializer;
 import com.sandy.sconsole.core.bus.EventBus;
 import com.sandy.sconsole.core.clock.SConsoleClock;
 import com.sandy.sconsole.core.ui.SConsoleFrame;
 import com.sandy.sconsole.core.ui.screen.ScreenManager;
 import com.sandy.sconsole.core.ui.uiutil.DefaultUITheme;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
-import com.sandy.sconsole.screen.screens.ScreenManagerInitializer;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeansException;
@@ -16,6 +16,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import javax.swing.*;
+import java.util.Map;
 
 @Slf4j
 @SpringBootApplication
@@ -67,12 +70,14 @@ public class SConsole
         log.debug( "  Initializing Theme" ) ;
         this.uiTheme = new DefaultUITheme() ;
 
-        log.debug( "  Initializing ScreenManager" ) ;
-        ScreenManager screenManager = APP_CTX.getBean( ScreenManager.class ) ;
-        new ScreenManagerInitializer().initialize( this.uiTheme, screenManager ) ;
+        log.debug( "  Calling discovered initializers." ) ;
+        discoverAndInvokeInitializers() ;
 
         log.debug( "  Initializing SConsoleFrame" ) ;
-        this.frame = new SConsoleFrame( uiTheme, getConfig(), screenManager ) ;
+        SwingUtilities.invokeLater( ()->{
+            this.frame = new SConsoleFrame( uiTheme, getConfig(),
+                    getAppCtx().getBean( ScreenManager.class ) ) ;
+        } ) ;
 
         log.debug( "SConsole initialization complete" ) ;
     }
@@ -95,6 +100,19 @@ public class SConsole
             }
         }
         return cfg ;
+    }
+
+    private void discoverAndInvokeInitializers() throws Exception {
+        final Map<String, SystemInitializer> beans = APP_CTX.getBeansOfType( SystemInitializer.class ) ;
+        for( SystemInitializer si : beans.values() ) {
+            log.debug( "Found system initializer {}", si.getClass().getName() ) ;
+            if( si.isInvocable() ) {
+                si.initialize( this );
+            }
+            else {
+                log.debug( "SI is not invocable." );
+            }
+        }
     }
 
     // --------------------- Main method ---------------------------------------

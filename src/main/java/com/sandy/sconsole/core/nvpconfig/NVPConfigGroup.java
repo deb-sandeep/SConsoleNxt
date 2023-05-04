@@ -125,4 +125,14 @@ public class NVPConfigGroup {
         cfg.setValue( values ) ;
         cfg.save() ;
     }
+
+    public void setValue( String cfgKey, String cfgVal ) {
+        if( cfgVal == null ) {
+            throw new IllegalArgumentException( "Cfg value is null. " +
+                                                "Key = " + cfgKey ) ;
+        }
+        NVPConfig cfg = getNVPConfig( cfgKey, cfgVal ) ;
+        cfg.setValue( cfgVal ) ;
+        cfg.save() ;
+    }
 }
