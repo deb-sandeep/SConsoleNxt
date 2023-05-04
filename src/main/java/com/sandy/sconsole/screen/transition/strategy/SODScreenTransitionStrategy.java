@@ -1,6 +1,6 @@
 package com.sandy.sconsole.screen.transition.strategy;
 
-import com.sandy.sconsole.screen.screens.ScreenManagerInitializer;
+import com.sandy.sconsole.initializers.ScreenManagerInitializer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 

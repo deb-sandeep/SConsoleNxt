@@ -76,7 +76,11 @@ public class NVPConfigDAO {
     public void setValue( String[] values ) {
         this.value = String.join( ",", values ) ;
     }
-    
+
+    public void setValue( String value ) {
+        this.value = value ;
+    }
+
     @JsonIgnore
     public String[] getArrayValue() {
         

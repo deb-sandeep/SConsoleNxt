@@ -3,13 +3,15 @@ package com.sandy.sconsole.core.nvpconfig;
 import com.sandy.sconsole.SConsole;
 import com.sandy.sconsole.dao.nvp.NVPConfigDAO;
 import com.sandy.sconsole.dao.nvp.NVPConfigDAORepo;
-import jakarta.persistence.PostPersist;
 import jakarta.persistence.PostUpdate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 @Slf4j
 @Component
@@ -17,7 +19,6 @@ public class NVPManager {
     
     public static class NVPPersistCallback {
 
-        @PostPersist
         @PostUpdate
         public void postNVPSave( NVPConfigDAO nvpConfigDAO ) {
             SConsole.getAppCtx()
@@ -67,10 +68,9 @@ public class NVPManager {
             }
         }
         else {
-            nvpRepo.findByGroupName( groupName )
-                    .forEach( nvpDAO -> addListener( groupName,
-                                                     nvpDAO.getConfigName(),
-                                                     listener ) );
+            // If config keys are not provided, it implies that the listener
+            // is interested in any config change at the group level.
+            addListener( groupName, "*", listener ) ;
         }
     }
     
@@ -94,31 +94,55 @@ public class NVPManager {
                 )
         ) ;
     }
+
+    public  void removeAllConfigChangeListeners() {
+        listeners.clear() ;
+    }
     
     private void notifyConfigChangeListeners( NVPConfigDAO nvpConfigDAO ) {
         
         Set<NVPConfigChangeListener> listeners = getListeners( nvpConfigDAO ) ;
-        if( listeners != null ) {
-            NVPConfig cfg = new NVPConfig( nvpConfigDAO, nvpRepo ) ;
-            listeners.forEach( listener -> {
-                try {
-                    listener.propertyChanged( cfg ) ;
-                }
-                catch( Exception e ) {
-                    log.error( "Config change listener error", e ) ;
-                }
-            } ) ;
-        }
+        NVPConfig cfg = new NVPConfig( nvpConfigDAO, nvpRepo );
+        listeners.forEach( listener -> {
+            try {
+                listener.propertyChanged( cfg ) ;
+            }
+            catch( Exception e ) {
+                log.error( "Config change listener error", e ) ;
+            }
+        } ) ;
     }
-    
+
+    /**
+     * Returns a set of all listeners who are interested in changes to this
+     * configuration.
+     *
+     * @param nvpConfigDAO The config who change listeners we are interested in.
+     *
+     * @return A set of listeners. The set includes the union of listeners who
+     *      are explicitly registered for listening to this config, and any
+     *      listeners who are registered at group level. Guaranteed to be not null.
+     */
     private Set<NVPConfigChangeListener> getListeners( NVPConfigDAO nvpConfigDAO ) {
         
         Map<String, Set<NVPConfigChangeListener>> keyListenerMap ;
-        Set<NVPConfigChangeListener> listenerSet = null ;
+        Set<NVPConfigChangeListener> listenerSet = new HashSet<>() ;
+        Set<NVPConfigChangeListener> groupListeners = null ;
+        Set<NVPConfigChangeListener> configListeners = null ;
 
         keyListenerMap = listeners.get( nvpConfigDAO.getGroupName() ) ;
         if( keyListenerMap != null ) {
-            listenerSet = keyListenerMap.get( nvpConfigDAO.getConfigName() ) ;
+
+            configListeners = keyListenerMap.get( nvpConfigDAO.getConfigName() ) ;
+            groupListeners = keyListenerMap.get( "*" ) ;
+
+            if( groupListeners != null ) {
+                listenerSet.addAll( groupListeners ) ;
+            }
+
+            if( configListeners != null ) {
+                listenerSet.addAll( configListeners ) ;
+            }
         }
         return listenerSet ;
     }

@@ -37,6 +37,7 @@ public class SConsoleClock {
     public void initialize() {
 
         computeTodayTimeMarkers() ;
+        this.scheduler.start() ;
 
         SEC_TIMER.scheduleAtFixedRate( new TimerTask() {
 
@@ -76,6 +77,7 @@ public class SConsoleClock {
 
     public void stopClock() {
         SEC_TIMER.cancel() ;
+        scheduler.stop() ;
     }
 
     public void addTickListener( ClockTickListener l, TimeUnit unit ) {

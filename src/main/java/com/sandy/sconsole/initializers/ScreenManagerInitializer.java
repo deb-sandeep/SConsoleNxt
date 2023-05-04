@@ -1,5 +1,7 @@
-package com.sandy.sconsole.screen.screens;
+package com.sandy.sconsole.initializers;
 
+import com.sandy.sconsole.SConsole;
+import com.sandy.sconsole.core.behavior.SystemInitializer;
 import com.sandy.sconsole.core.ui.screen.Screen;
 import com.sandy.sconsole.core.ui.screen.ScreenBuilder;
 import com.sandy.sconsole.core.ui.screen.ScreenManager;
@@ -7,8 +9,10 @@ import com.sandy.sconsole.core.ui.screen.screens.dock.DockScreen;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
 import com.sandy.sconsole.screen.screens.clock.ClockScreen;
 import com.sandy.sconsole.screen.screens.qotd.QOTDScreen;
+import org.springframework.stereotype.Component;
 
-public class ScreenManagerInitializer {
+@Component
+public class ScreenManagerInitializer implements SystemInitializer {
 
     public static final String DOCK_SCR_NAME  = "Dock" ;
     public static final String CLOCK_SCR_NAME = "Clock" ;
@@ -17,10 +21,10 @@ public class ScreenManagerInitializer {
     private UITheme theme = null ;
     private ScreenManager screenManager = null ;
 
-    public void initialize( UITheme theme, ScreenManager screenManager ) throws Exception {
+    public void initialize( SConsole app ) throws Exception {
 
-        this.theme = theme ;
-        this.screenManager = screenManager ;
+        this.theme = app.getTheme() ;
+        this.screenManager = app.getCtx().getBean( ScreenManager.class ) ;
 
         screenManager.registerScreen( buildDockScreen() ) ;
         screenManager.registerScreen( buildClockScreen() ) ;
@@ -38,7 +42,7 @@ public class ScreenManagerInitializer {
         return ScreenBuilder.instance( theme )
                 .withName( CLOCK_SCR_NAME )
                 .withScreenClass( ClockScreen.class )
-                //.withShowOnStartup()
+                .withShowOnStartup()
                 .withParentScreen( screenManager.getScreen( DOCK_SCR_NAME ) )
                 .build() ;
     }
@@ -47,7 +51,7 @@ public class ScreenManagerInitializer {
         return ScreenBuilder.instance( theme )
                 .withName( QOTD_SCR_NAME )
                 .withScreenClass( QOTDScreen.class )
-                .withShowOnStartup()
+                //.withShowOnStartup()
                 .withParentScreen( screenManager.getScreen( DOCK_SCR_NAME ) )
                 .build() ;
     }

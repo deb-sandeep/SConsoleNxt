@@ -77,6 +77,11 @@ public class NVPConfig {
         save() ;
     }
     
+    public void setValue( String value ) {
+        nvpDAO.setValue( value ) ;
+        save() ;
+    }
+
     void save() {
         this.nvpRepo.save( nvpDAO ) ;
     }
