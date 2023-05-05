@@ -36,13 +36,18 @@ public class NVPConfigAnnotationProcessor {
     }
 
     private boolean isNVPConfigConsumer( Object bean, String[] basePackages ) {
-        Class<?> beanCls = bean.getClass() ;
 
+        Class<?> beanCls = bean.getClass() ;
         if( basePackages != null ) {
+            boolean inScope = false ;
             for( String basePackage : basePackages ) {
                 if( beanCls.getName().startsWith( basePackage ) ) {
-                    return true ;
+                    inScope = true ;
+                    break ;
                 }
+            }
+            if( !inScope ) {
+                return false ;
             }
         }
 
@@ -82,7 +87,12 @@ public class NVPConfigAnnotationProcessor {
         NVPManager nvpManager = appCtx.getBean( NVPManager.class ) ;
         clusters.values().forEach( c -> {
             log.debug( "Initializing NVP target cluster {}", c.getFQN() );
-            c.initialize( nvpManager ) ;
+            try {
+                c.initialize( nvpManager ) ;
+            }
+            catch( Exception e ) {
+                throw new RuntimeException( e );
+            }
         } ) ;
     }
 
@@ -106,6 +116,9 @@ public class NVPConfigAnnotationProcessor {
         if( cls.isAnnotationPresent( NVPConfigGroup.class ) ) {
             retVal = cls.getAnnotation( NVPConfigGroup.class )
                         .groupName() ;
+            if( retVal.equals( "" ) ) {
+                retVal = cls.getSimpleName() ;
+            }
         }
         return retVal ;
     }

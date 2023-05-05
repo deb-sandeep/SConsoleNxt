@@ -1,6 +1,7 @@
 package com.sandy.sconsole.core.nvpconfig.annotation.internal;
 
 import com.sandy.sconsole.core.nvpconfig.annotation.NVPConfig;
+import com.sandy.sconsole.dao.nvp.NVPConfigDAO;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -62,12 +63,16 @@ public class NVPConfigTarget {
 
         log.debug( "Updating NVP target {} with value {}", this, cfg.getValue() );
 
-        Object convertedVal = getConvertedValue( fieldClass, cfg ) ;
+        Object convertedVal = convertCfgValToFieldType( fieldClass, cfg ) ;
         FieldUtils.writeField( this.field, this.bean, convertedVal, true ) ;
     }
 
-    private Object getConvertedValue( Class<?> targetValue,
-                                      com.sandy.sconsole.core.nvpconfig.NVPConfig cfg ) {
+    public String getFieldValue() throws IllegalAccessException {
+        return convertFieldValToString() ;
+    }
+
+    private Object convertCfgValToFieldType( Class<?> targetValue,
+                                             com.sandy.sconsole.core.nvpconfig.NVPConfig cfg ) {
 
         Object convertedVal = cfg.getValue() ;
         if( fieldClass.equals( Integer.class ) ||
@@ -90,6 +95,26 @@ public class NVPConfigTarget {
         }
         else if( fieldClass.equals( List.class ) ) {
             convertedVal = cfg.getListValue() ;
+        }
+        return convertedVal ;
+    }
+
+    private String convertFieldValToString() throws IllegalAccessException {
+
+        Object fieldVal = FieldUtils.readField( this.field, this.bean, true ) ;
+        String convertedVal = null ;
+
+        if( fieldVal != null ) {
+            convertedVal = fieldVal.toString() ;
+            if( fieldClass.equals( Date.class ) ) {
+                convertedVal = NVPConfigDAO.SDF.format( (Date)fieldVal ) ;
+            }
+            else if( fieldClass.equals( String[].class ) ) {
+                convertedVal = String.join( ",", (String[])fieldVal ) ;
+            }
+            else if( fieldClass.equals( List.class ) ) {
+                convertedVal = String.join(",", (List<String>)fieldVal ) ;
+            }
         }
         return convertedVal ;
     }
