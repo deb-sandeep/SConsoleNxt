@@ -105,7 +105,7 @@ public class NVPManager {
         NVPConfig cfg = new NVPConfig( nvpConfigDAO, nvpRepo );
         listeners.forEach( listener -> {
             try {
-                listener.propertyChanged( cfg ) ;
+                listener.nvpConfigChanged( cfg ) ;
             }
             catch( Exception e ) {
                 log.error( "Config change listener error", e ) ;
