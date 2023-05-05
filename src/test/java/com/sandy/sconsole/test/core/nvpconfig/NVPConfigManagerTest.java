@@ -24,7 +24,7 @@ import static org.hamcrest.Matchers.*;
 @ExtendWith(SpringExtension.class)
 @AutoConfigureTestDatabase( replace = AutoConfigureTestDatabase.Replace.NONE )
 @SpringBootTest
-public class NVPConfigTest {
+public class NVPConfigManagerTest {
 
     private static final String GRP  = "testGroup" ;
     private static final String KEY1 = "testConfig1" ;

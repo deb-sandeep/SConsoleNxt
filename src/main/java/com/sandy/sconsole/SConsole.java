@@ -1,7 +1,8 @@
 package com.sandy.sconsole;
 
 import com.sandy.sconsole.core.SConsoleConfig;
-import com.sandy.sconsole.core.behavior.SystemInitializer;
+import com.sandy.sconsole.core.behavior.ComponentFinalizer;
+import com.sandy.sconsole.core.behavior.ComponentInitializer;
 import com.sandy.sconsole.core.bus.EventBus;
 import com.sandy.sconsole.core.clock.SConsoleClock;
 import com.sandy.sconsole.core.nvpconfig.annotation.NVPConfigAnnotationProcessor;
@@ -17,9 +18,13 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.swing.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -111,14 +116,47 @@ public class SConsole
     }
 
     private void discoverAndInvokeInitializers() throws Exception {
-        final Map<String, SystemInitializer> beans = APP_CTX.getBeansOfType( SystemInitializer.class ) ;
-        for( SystemInitializer si : beans.values() ) {
-            log.debug( "Found system initializer {}", si.getClass().getName() ) ;
+
+        final List<ComponentInitializer> initializers = new ArrayList<>(
+                APP_CTX.getBeansOfType( ComponentInitializer.class )
+                        .values()
+        ) ;
+
+        initializers.sort( (i1, i2) -> i1.getInitializationSequencePreference() -
+                                       i2.getInitializationSequencePreference() );
+
+        for( ComponentInitializer si : initializers ) {
+            log.debug( "Found system initializer {}. Precedence {}",
+                    si.getClass().getName(), si.getInitializationSequencePreference() ) ;
+
             if( si.isInvocable() ) {
                 si.initialize( this );
             }
             else {
-                log.debug( "SI is not invocable." );
+                log.debug( "System initializer is not invocable." );
+            }
+        }
+    }
+
+    private void discoverAndInvokeFinalizers() {
+
+        log.debug( "Gracefully shutting down SConsole." ) ;
+
+        final Map<String, ComponentFinalizer> beans =
+                APP_CTX.getBeansOfType( ComponentFinalizer.class ) ;
+
+        for( ComponentFinalizer si : beans.values() ) {
+            log.debug( "Found system finalzier {}", si.getClass().getName() ) ;
+            if( si.isInvocable() ) {
+                try {
+                    si.destroy( this );
+                }
+                catch( Exception e ) {
+                    log.error( "Error while invoking finalizer.", e );
+                }
+            }
+            else {
+                log.debug( "System finalizer is not invocable." );
             }
         }
     }
@@ -130,7 +168,13 @@ public class SConsole
         log.debug( "Starting Spring Booot..." ) ;
 
         System.setProperty( "java.awt.headless", "false" ) ;
-        SpringApplication.run( SConsole.class, args ) ;
+        SpringApplication.run( SConsole.class, args )
+                         .addApplicationListener(
+                                 new ApplicationListener<ContextClosedEvent>() {
+            public void onApplicationEvent( @NotNull ContextClosedEvent event ) {
+                getApp().discoverAndInvokeFinalizers() ;
+            }
+        } ) ;
 
         log.debug( "Starting SConsole.." ) ;
         SConsole app = SConsole.getAppCtx().getBean( SConsole.class ) ;

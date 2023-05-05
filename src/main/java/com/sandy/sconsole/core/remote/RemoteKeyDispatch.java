@@ -1,8 +1,8 @@
 package com.sandy.sconsole.core.remote;
 
 import com.sandy.sconsole.SConsole;
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.PreDestroy;
+import com.sandy.sconsole.core.behavior.ComponentFinalizer;
+import com.sandy.sconsole.core.behavior.ComponentInitializer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -11,7 +11,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 @Slf4j
 @Component
-public class RemoteKeyDispatch implements Runnable {
+public class RemoteKeyDispatch
+        implements Runnable, ComponentInitializer, ComponentFinalizer {
 
     private final LinkedBlockingQueue<RemoteKeyEvent> keyEvents = new LinkedBlockingQueue<>() ;
 
@@ -20,17 +21,20 @@ public class RemoteKeyDispatch implements Runnable {
 
     @Autowired private SConsole sconsole ;
 
-    @PostConstruct
-    public void initialize() throws Exception {
+    @Override
+    public boolean isInvocable() { return true ; }
+
+    public void initialize( SConsole app ) throws Exception {
         log.debug( "Initializing RemoteKey Dispatch" ) ;
         eventDispatchThread = new Thread( this ) ;
     }
 
-    @PreDestroy
-    public void shutdown() {
-        log.debug( "Shutting down RemoteKey Dispatch" ) ;
-        this.keepRunning = false ;
-        this.eventDispatchThread.interrupt() ;
+    public void destroy( SConsole app ) throws Exception {
+        log.debug( "Finalizing RemoteKey Dispatch." ) ;
+        if( eventDispatchThread != null ) {
+            this.keepRunning = false ;
+            eventDispatchThread.interrupt() ;
+        }
     }
 
     public void addKeyEvent( RemoteKeyEvent keyEvent ) {

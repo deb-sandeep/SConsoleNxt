@@ -17,5 +17,9 @@
  * so that each NVPConfig need not specifiy the config group name. However,
  * if an NVPConfig specifies a config group name, it will take precedence
  * even if a class level config group name exists.
+ * <p/>
+ * Please note that any changes made to the configuration variables
+ * are not detected by the application. Any config changes need to be
+ * done through the NVPManager.
  */
 package com.sandy.sconsole.core.nvpconfig.annotation;

@@ -1,5 +1,6 @@
 package com.sandy.sconsole.core.nvpconfig.annotation;
 
+import com.sandy.sconsole.core.nvpconfig.NVPManager;
 import com.sandy.sconsole.core.nvpconfig.annotation.internal.NVPConfigTarget;
 import com.sandy.sconsole.core.nvpconfig.annotation.internal.NVPConfigTargetCluster;
 import lombok.extern.slf4j.Slf4j;
@@ -16,21 +17,35 @@ import java.util.Map;
 @Component
 public class NVPConfigAnnotationProcessor {
 
-    public void processNVPConfigAnnotations( ApplicationContext appCtx ) {
+    private ApplicationContext appCtx ;
+
+    public void processNVPConfigAnnotations( ApplicationContext appCtx,
+                                             String... basePackages ) {
+
+        this.appCtx = appCtx ;
 
         log.debug( "Processing NVPConfig annotations." ) ;
         String[] beanNames = appCtx.getBeanDefinitionNames() ;
         for( String beanName : beanNames ) {
             Object bean = appCtx.getBean( beanName ) ;
-            if( isNVPConfigConsumer( bean ) ) {
+            if( isNVPConfigConsumer( bean, basePackages ) ) {
                 log.debug( "  Bean - {}", bean.getClass().getName() ) ;
                 processNVPConfigConsumer( bean ) ;
             }
         }
     }
 
-    private boolean isNVPConfigConsumer( Object bean ) {
+    private boolean isNVPConfigConsumer( Object bean, String[] basePackages ) {
         Class<?> beanCls = bean.getClass() ;
+
+        if( basePackages != null ) {
+            for( String basePackage : basePackages ) {
+                if( beanCls.getName().startsWith( basePackage ) ) {
+                    return true ;
+                }
+            }
+        }
+
         if( beanCls.isAnnotationPresent( NVPConfigGroup.class ) ) {
             return true ;
         }
@@ -53,10 +68,22 @@ public class NVPConfigAnnotationProcessor {
         Map<String, NVPConfigTargetCluster> clusters = new HashMap<>() ;
         List<NVPConfigTarget> targets = extractNVPConfigTargets( bean ) ;
 
-        for( NVPConfigTarget target : targets ) {
-            log.debug( "  Initializing NVPConfigConsumer {}", target ) ;
-            target.initialize() ;
-        }
+        targets.forEach( t -> {
+            NVPConfigTargetCluster tgtCluster ;
+            String cfgFQN = t.getFQN() ;
+
+            tgtCluster = clusters.computeIfAbsent( cfgFQN, k ->
+                    new NVPConfigTargetCluster( t.getConfigGroupName(),
+                                                t.getConfigName() )
+            ) ;
+            tgtCluster.add( t ) ;
+        } ) ;
+
+        NVPManager nvpManager = appCtx.getBean( NVPManager.class ) ;
+        clusters.values().forEach( c -> {
+            log.debug( "Initializing NVP target cluster {}", c.getFQN() );
+            c.initialize( nvpManager ) ;
+        } ) ;
     }
 
     private List<NVPConfigTarget> extractNVPConfigTargets( Object bean ) {
