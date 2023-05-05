@@ -13,7 +13,6 @@ import com.sandy.sconsole.core.ui.uiutil.UITheme;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
@@ -57,9 +56,6 @@ public class SConsole
     private SConsoleFrame frame = null ;
     private SConsoleConfig cfg = null ;
 
-    @Autowired
-    private NVPConfigAnnotationProcessor nvpConfigAnnotationProcessor ;
-
     public SConsole() {
         APP = this;
     }
@@ -81,7 +77,9 @@ public class SConsole
         this.uiTheme = new DefaultUITheme() ;
 
         log.debug( "  Initializing NVPConfig injector." ) ;
-        nvpConfigAnnotationProcessor.processNVPConfigAnnotations( APP_CTX ) ;
+        NVPConfigAnnotationProcessor nvpConfigAnnotationProcessor =
+                                  new NVPConfigAnnotationProcessor( getCtx() ) ;
+        nvpConfigAnnotationProcessor.processNVPConfigAnnotations() ;
 
         log.debug( "  Calling discovered initializers." ) ;
         discoverAndInvokeInitializers() ;

@@ -2,6 +2,7 @@ package com.sandy.sconsole.core.nvpconfig.annotation.internal;
 
 import com.sandy.sconsole.core.nvpconfig.annotation.NVPConfig;
 import com.sandy.sconsole.dao.nvp.NVPConfigDAO;
+import com.sandy.sconsole.dao.nvp.NVPConfigDAORepo;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -16,6 +17,7 @@ public class NVPConfigTarget {
     private final Field field ;
     private final Object bean ;
     private final Class<?> fieldClass ;
+    private final NVPConfigDAORepo configRepo ;
 
     @Getter
     private String configGroupName ;
@@ -25,10 +27,12 @@ public class NVPConfigTarget {
 
     private boolean updateOnChange ;
 
-    public NVPConfigTarget( String defaultCfgGroup, Field field, Object bean ) {
+    public NVPConfigTarget( String defaultCfgGroup, Field field,
+                            Object bean, NVPConfigDAORepo configRepo ) {
         this.field = field ;
         this.bean = bean ;
         this.fieldClass = field.getType() ;
+        this.configRepo = configRepo ;
 
         this.field.setAccessible( true ) ;
 
@@ -65,6 +69,20 @@ public class NVPConfigTarget {
 
         Object convertedVal = convertCfgValToFieldType( fieldClass, cfg ) ;
         FieldUtils.writeField( this.field, this.bean, convertedVal, true ) ;
+    }
+
+    public void persistState() throws IllegalAccessException {
+
+        String fieldVal = getFieldValue() ;
+        NVPConfigDAO dao = configRepo.findByGroupNameAndConfigName( configGroupName, configName ) ;
+        if( dao == null ) {
+            dao = new NVPConfigDAO( configName, fieldVal ) ;
+            dao.setGroupName( configGroupName ) ;
+        }
+        else {
+            dao.setValue( fieldVal ) ;
+        }
+        configRepo.save( dao ) ;
     }
 
     public String getFieldValue() throws IllegalAccessException {
