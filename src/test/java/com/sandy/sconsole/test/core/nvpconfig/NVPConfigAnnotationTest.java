@@ -6,6 +6,7 @@ import com.sandy.sconsole.core.nvpconfig.NVPManager;
 import com.sandy.sconsole.core.nvpconfig.annotation.NVPConfigAnnotationProcessor;
 import com.sandy.sconsole.dao.nvp.NVPConfigDAO;
 import com.sandy.sconsole.dao.nvp.NVPConfigDAORepo;
+import com.sandy.sconsole.test.core.nvpconfig.helper.ObserverComponent;
 import com.sandy.sconsole.test.core.nvpconfig.helper.TestComponent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,7 +33,10 @@ public class NVPConfigAnnotationTest {
     @Autowired
     private TestComponent testComponent ;
 
-    private NVPConfigAnnotationProcessor processor = new NVPConfigAnnotationProcessor() ;
+    @Autowired
+    private ObserverComponent observerComponent ;
+
+    private NVPConfigAnnotationProcessor processor = null ;
 
     @BeforeEach
     void beforeEach() {
@@ -42,6 +46,8 @@ public class NVPConfigAnnotationTest {
 
         daos = nvpRepo.findByGroupName( "TestCfgGroup" ) ;
         nvpRepo.deleteAll( daos ) ;
+
+        processor = new NVPConfigAnnotationProcessor( SConsole.getAppCtx() ) ;
     }
 
     /**
@@ -50,8 +56,7 @@ public class NVPConfigAnnotationTest {
      */
     @Test void testFreshSingleConfig() {
 
-        processor.processNVPConfigAnnotations( SConsole.getAppCtx(),
-                                               TestComponent.class.getPackageName() ) ;
+        processor.processNVPConfigAnnotations( TestComponent.class.getPackageName() ) ;
 
         NVPConfig cfg = nvpManager.getConfig( "TestComponent", "configKeyA" ) ;
         assertThat( cfg, is( notNullValue() ) ) ;
@@ -63,12 +68,31 @@ public class NVPConfigAnnotationTest {
      */
     @Test void testConfigUpdate() {
 
-        processor.processNVPConfigAnnotations( SConsole.getAppCtx(),
-                                               TestComponent.class.getPackageName() ) ;
+        NVPConfig cfg ;
 
-        NVPConfig cfg = nvpManager.getConfig( "TestComponent", "configKeyA" ) ;
+        processor.processNVPConfigAnnotations( TestComponent.class.getPackageName() ) ;
+
+        cfg = nvpManager.getConfig( "TestComponent", "configKeyA" ) ;
         cfg.setValue( "changed_value" ) ;
-
         assertThat( testComponent.getConfigKeyA(), is( equalTo( "changed_value" ) ) ) ;
+
+        cfg = nvpManager.getConfig( "TestComponent", "booleanFlag" ) ;
+        cfg.setValue( true ) ;
+        assertThat( cfg.getBooleanValue(), is( true ) ) ;
+    }
+
+    /**
+     * NVPManager can persist changes to fields and notify any wired components
+     */
+    @Test void persistState() throws IllegalAccessException {
+
+        processor.processNVPConfigAnnotations( TestComponent.class.getPackageName() ) ;
+
+        // Update the NVPConfig field of an object programmatically
+        testComponent.setConfigKeyA( "some_changed_value" ) ;
+        nvpManager.persistNVPConfigState( testComponent ) ;
+
+        assertThat( observerComponent.getObservedConfig(),
+                    is( equalTo( "some_changed_value" ) ) ) ;
     }
 }

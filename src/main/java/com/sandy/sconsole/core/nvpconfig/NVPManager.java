@@ -1,6 +1,7 @@
 package com.sandy.sconsole.core.nvpconfig;
 
 import com.sandy.sconsole.SConsole;
+import com.sandy.sconsole.core.nvpconfig.annotation.NVPConfigAnnotationProcessor;
 import com.sandy.sconsole.dao.nvp.NVPConfigDAO;
 import com.sandy.sconsole.dao.nvp.NVPConfigDAORepo;
 import jakarta.persistence.PostUpdate;
@@ -65,6 +66,22 @@ public class NVPManager {
             nvpDAO = nvpRepo.save( nvpDAO ) ;
         }
         return new NVPConfig( nvpDAO, nvpRepo ) ;
+    }
+
+    /**
+     * Persists the states of any NVPConfig annotated fields within the object
+     * and if any components which are wired to these configs, auto update them.
+     * <p/>
+     * This convenience method can be used for reverse updates of configuration
+     * by setting the attribute values and calling on the NVP manager to
+     * persist the changes. Note that just setting the attribute values
+     * does not trigger persistence.
+     */
+    public void persistNVPConfigState( Object obj ) throws IllegalAccessException {
+
+        NVPConfigAnnotationProcessor annotationProcessor =
+                     new NVPConfigAnnotationProcessor( SConsole.getAppCtx() ) ;
+        annotationProcessor.persistNVPConfigState( obj ) ;
     }
     
     public void addConfigChangeListener( NVPConfigChangeListener listener,
@@ -136,8 +153,8 @@ public class NVPManager {
         
         Map<String, Set<NVPConfigChangeListener>> keyListenerMap ;
         Set<NVPConfigChangeListener> listenerSet = new HashSet<>() ;
-        Set<NVPConfigChangeListener> groupListeners = null ;
-        Set<NVPConfigChangeListener> configListeners = null ;
+        Set<NVPConfigChangeListener> groupListeners ;
+        Set<NVPConfigChangeListener> configListeners ;
 
         keyListenerMap = listeners.get( nvpConfigDAO.getGroupName() ) ;
         if( keyListenerMap != null ) {

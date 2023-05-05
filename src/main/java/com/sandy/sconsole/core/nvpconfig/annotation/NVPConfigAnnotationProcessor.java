@@ -3,6 +3,7 @@ package com.sandy.sconsole.core.nvpconfig.annotation;
 import com.sandy.sconsole.core.nvpconfig.NVPManager;
 import com.sandy.sconsole.core.nvpconfig.annotation.internal.NVPConfigTarget;
 import com.sandy.sconsole.core.nvpconfig.annotation.internal.NVPConfigTargetCluster;
+import com.sandy.sconsole.dao.nvp.NVPConfigDAORepo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
@@ -17,12 +18,13 @@ import java.util.Map;
 @Component
 public class NVPConfigAnnotationProcessor {
 
-    private ApplicationContext appCtx ;
+    private final ApplicationContext appCtx ;
 
-    public void processNVPConfigAnnotations( ApplicationContext appCtx,
-                                             String... basePackages ) {
-
+    public NVPConfigAnnotationProcessor( ApplicationContext appCtx ) {
         this.appCtx = appCtx ;
+    }
+
+    public void processNVPConfigAnnotations( String... basePackages ) {
 
         log.debug( "Processing NVPConfig annotations." ) ;
         String[] beanNames = appCtx.getBeanDefinitionNames() ;
@@ -32,6 +34,13 @@ public class NVPConfigAnnotationProcessor {
                 log.debug( "  Bean - {}", bean.getClass().getName() ) ;
                 processNVPConfigConsumer( bean ) ;
             }
+        }
+    }
+
+    public void persistNVPConfigState( Object obj ) throws IllegalAccessException {
+        List<NVPConfigTarget> nvpConfigTargets = extractNVPConfigTargets( obj ) ;
+        for( NVPConfigTarget target : nvpConfigTargets ) {
+            target.persistState() ;
         }
     }
 
@@ -98,6 +107,7 @@ public class NVPConfigAnnotationProcessor {
 
     private List<NVPConfigTarget> extractNVPConfigTargets( Object bean ) {
 
+        NVPConfigDAORepo nvpRepo = appCtx.getBean( NVPConfigDAORepo.class ) ;
         List<NVPConfigTarget> targets = new ArrayList<>() ;
         String defaultGroup = getDefaultConfigGroupName( bean.getClass() ) ;
         Field[] fields = bean.getClass().getDeclaredFields() ;
@@ -105,7 +115,7 @@ public class NVPConfigAnnotationProcessor {
         for( Field field : fields ) {
             if( field.isAnnotationPresent( NVPConfig.class ) ) {
                 log.debug( "   Field {}", field.getName() ) ;
-                targets.add( new NVPConfigTarget( defaultGroup, field, bean ) ) ;
+                targets.add( new NVPConfigTarget( defaultGroup, field, bean, nvpRepo ) ) ;
             }
         }
         return targets ;
