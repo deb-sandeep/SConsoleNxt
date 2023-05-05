@@ -1,7 +1,7 @@
 package com.sandy.sconsole.initializers;
 
 import com.sandy.sconsole.SConsole;
-import com.sandy.sconsole.core.behavior.SystemInitializer;
+import com.sandy.sconsole.core.behavior.ComponentInitializer;
 import com.sandy.sconsole.core.ui.screen.Screen;
 import com.sandy.sconsole.core.ui.screen.ScreenBuilder;
 import com.sandy.sconsole.core.ui.screen.ScreenManager;
@@ -12,7 +12,7 @@ import com.sandy.sconsole.screen.screens.qotd.QOTDScreen;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ScreenManagerInitializer implements SystemInitializer {
+public class ScreenManagerInitializer implements ComponentInitializer {
 
     public static final String DOCK_SCR_NAME  = "Dock" ;
     public static final String CLOCK_SCR_NAME = "Clock" ;
@@ -21,6 +21,14 @@ public class ScreenManagerInitializer implements SystemInitializer {
     private UITheme theme = null ;
     private ScreenManager screenManager = null ;
 
+    @Override
+    public int getInitializationSequencePreference() {
+        // We want the Screen Manager to initialize later in the cycle,
+        // especially after some screens have initialized themselves.
+        return 100 ;
+    }
+
+    @Override
     public void initialize( SConsole app ) throws Exception {
 
         this.theme = app.getTheme() ;

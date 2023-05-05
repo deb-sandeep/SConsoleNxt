@@ -44,6 +44,15 @@ public class NVPManager {
                 .forEach( nvp -> group.addNVPConfig( new NVPConfig( nvp, nvpRepo ) ) ) ;
         return group ;
     }
+
+    public NVPConfig getConfig( String groupName, String keyName ) {
+
+        NVPConfigDAO nvpDAO = nvpRepo.findByGroupNameAndConfigName( groupName, keyName ) ;
+        if( nvpDAO != null ) {
+            return new NVPConfig( nvpDAO, nvpRepo ) ;
+        }
+        return null ;
+    }
     
     public NVPConfig getConfig( String groupName, String keyName,
                                 String defaultValue ) {
