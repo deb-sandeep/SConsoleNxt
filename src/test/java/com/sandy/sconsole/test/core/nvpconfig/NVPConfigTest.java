@@ -80,7 +80,7 @@ public class NVPConfigTest {
         final List<String> changedValues = new ArrayList<>() ;
         NVPConfigChangeListener listener = new NVPConfigChangeListener() {
             @Override
-            public void propertyChanged( NVPConfig nvp ) {
+            public void nvpConfigChanged( NVPConfig nvp ) {
                 changedValues.add( nvp.getValue() ) ;
             }
         } ;
