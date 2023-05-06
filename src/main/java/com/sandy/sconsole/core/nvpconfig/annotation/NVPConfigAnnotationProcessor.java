@@ -9,6 +9,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,7 +48,7 @@ public class NVPConfigAnnotationProcessor {
     private boolean isNVPConfigConsumer( Object bean, String[] basePackages ) {
 
         Class<?> beanCls = bean.getClass() ;
-        if( basePackages != null ) {
+        if( basePackages != null && basePackages.length > 0 ) {
             boolean inScope = false ;
             for( String basePackage : basePackages ) {
                 if( beanCls.getName().startsWith( basePackage ) ) {
@@ -111,14 +112,26 @@ public class NVPConfigAnnotationProcessor {
         List<NVPConfigTarget> targets = new ArrayList<>() ;
         String defaultGroup = getDefaultConfigGroupName( bean.getClass() ) ;
         Field[] fields = bean.getClass().getDeclaredFields() ;
+        Method updateMethod = getUpdateMethodIfAny( bean.getClass() ) ;
 
         for( Field field : fields ) {
             if( field.isAnnotationPresent( NVPConfig.class ) ) {
                 log.debug( "   Field {}", field.getName() ) ;
-                targets.add( new NVPConfigTarget( defaultGroup, field, bean, nvpRepo ) ) ;
+                targets.add( new NVPConfigTarget( defaultGroup, field,
+                                                  updateMethod, bean, nvpRepo ) ) ;
             }
         }
         return targets ;
+    }
+
+    private Method getUpdateMethodIfAny( Class<?> aClass ) {
+
+        for( Method method : aClass.getDeclaredMethods() ) {
+            if( method.isAnnotationPresent( NVPConfigChangeListener.class ) ) {
+                return method ;
+            }
+        }
+        return null ;
     }
 
     private String getDefaultConfigGroupName( Class<?> cls ) {

@@ -48,6 +48,7 @@ public class NVPConfigAnnotationTest {
         nvpRepo.deleteAll( daos ) ;
 
         processor = new NVPConfigAnnotationProcessor( SConsole.getAppCtx() ) ;
+        testComponent.setNumConfigUpdatesCalled( 0 ) ;
     }
 
     /**
@@ -79,6 +80,22 @@ public class NVPConfigAnnotationTest {
         cfg = nvpManager.getConfig( "TestComponent", "booleanFlag" ) ;
         cfg.setValue( true ) ;
         assertThat( cfg.getBooleanValue(), is( true ) ) ;
+    }
+
+    /**
+     * At the system bootstrap, NVPConfigChangeListener notifications are
+     * disabled.
+     */
+    @Test void testConfigChangeNotificationOnBootstrap() {
+
+        NVPConfig cfg ;
+
+        processor.processNVPConfigAnnotations( TestComponent.class.getPackageName() ) ;
+        assertThat( testComponent.getNumConfigUpdatesCalled(), is( 0 ) ) ;
+
+        cfg = nvpManager.getConfig( "TestComponent", "configKeyA" ) ;
+        cfg.setValue( "changed_value" ) ;
+        assertThat( testComponent.getNumConfigUpdatesCalled(), is( 1 ) ) ;
     }
 
     /**
