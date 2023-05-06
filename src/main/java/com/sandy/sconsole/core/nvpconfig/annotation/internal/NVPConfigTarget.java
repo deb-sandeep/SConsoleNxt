@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.reflect.FieldUtils;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.List;
 
@@ -15,6 +17,7 @@ import java.util.List;
 public class NVPConfigTarget {
 
     private final Field field ;
+    private final Method notifyMethod ;
     private final Object bean ;
     private final Class<?> fieldClass ;
     private final NVPConfigDAORepo configRepo ;
@@ -27,14 +30,19 @@ public class NVPConfigTarget {
 
     private boolean updateOnChange ;
 
-    public NVPConfigTarget( String defaultCfgGroup, Field field,
+    public NVPConfigTarget( String defaultCfgGroup,
+                            Field field, Method notifyMethod,
                             Object bean, NVPConfigDAORepo configRepo ) {
         this.field = field ;
+        this.notifyMethod = notifyMethod ;
         this.bean = bean ;
         this.fieldClass = field.getType() ;
         this.configRepo = configRepo ;
 
         this.field.setAccessible( true ) ;
+        if( this.notifyMethod != null ) {
+            this.notifyMethod.setAccessible( true ) ;
+        }
 
         extractConfigName( defaultCfgGroup ) ;
         log.debug( "    configGroupName - {}", configGroupName ) ;
@@ -62,13 +70,22 @@ public class NVPConfigTarget {
                 bean.getClass().getName() + "::" + field.getName() ;
     }
 
-    public void updateTarget( com.sandy.sconsole.core.nvpconfig.NVPConfig cfg )
-            throws IllegalAccessException {
+    public void updateTarget( com.sandy.sconsole.core.nvpconfig.NVPConfig cfg,
+                              boolean notify )
+            throws IllegalAccessException, InvocationTargetException {
 
         log.debug( "Updating NVP target {} with value {}", this, cfg.getValue() );
 
-        Object convertedVal = convertCfgValToFieldType( fieldClass, cfg ) ;
+        Object convertedVal = convertCfgValToFieldType( cfg ) ;
         FieldUtils.writeField( this.field, this.bean, convertedVal, true ) ;
+        if( notify && this.notifyMethod != null ) {
+            if( this.notifyMethod.getParameters().length > 0 ) {
+                this.notifyMethod.invoke( this.bean, cfg ) ;
+            }
+            else {
+                this.notifyMethod.invoke( this.bean ) ;
+            }
+        }
     }
 
     public void persistState() throws IllegalAccessException {
@@ -89,8 +106,7 @@ public class NVPConfigTarget {
         return convertFieldValToString() ;
     }
 
-    private Object convertCfgValToFieldType( Class<?> targetValue,
-                                             com.sandy.sconsole.core.nvpconfig.NVPConfig cfg ) {
+    private Object convertCfgValToFieldType( com.sandy.sconsole.core.nvpconfig.NVPConfig cfg ) {
 
         Object convertedVal = cfg.getValue() ;
         if( fieldClass.equals( Integer.class ) ||

@@ -5,6 +5,7 @@ import com.sandy.sconsole.core.nvpconfig.NVPConfigChangeListener;
 import com.sandy.sconsole.core.nvpconfig.NVPManager;
 import lombok.Getter;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,9 +52,9 @@ public class NVPConfigTargetCluster implements NVPConfigChangeListener {
         final NVPConfig finalNvpCfg = nvpCfg ;
         targets.forEach( t -> {
             try {
-                t.updateTarget( finalNvpCfg );
+                t.updateTarget( finalNvpCfg, false );
             }
-            catch( IllegalAccessException e ) {
+            catch( IllegalAccessException | InvocationTargetException e ) {
                 throw new RuntimeException( e ) ;
             }
         } ) ;
@@ -67,9 +68,9 @@ public class NVPConfigTargetCluster implements NVPConfigChangeListener {
     public void nvpConfigChanged( NVPConfig nvpCfg ) {
         targets.forEach( t -> {
             try {
-                t.updateTarget( nvpCfg );
+                t.updateTarget( nvpCfg, true );
             }
-            catch( IllegalAccessException e ) {
+            catch( IllegalAccessException | InvocationTargetException e ) {
                 throw new RuntimeException( e );
             }
         } ) ;

@@ -50,7 +50,7 @@ public class ScreenManagerInitializer implements ComponentInitializer {
         return ScreenBuilder.instance( theme )
                 .withName( CLOCK_SCR_NAME )
                 .withScreenClass( ClockScreen.class )
-                .withShowOnStartup()
+                //.withShowOnStartup()
                 .withParentScreen( screenManager.getScreen( DOCK_SCR_NAME ) )
                 .build() ;
     }
@@ -59,7 +59,7 @@ public class ScreenManagerInitializer implements ComponentInitializer {
         return ScreenBuilder.instance( theme )
                 .withName( QOTD_SCR_NAME )
                 .withScreenClass( QOTDScreen.class )
-                //.withShowOnStartup()
+                .withShowOnStartup()
                 .withParentScreen( screenManager.getScreen( DOCK_SCR_NAME ) )
                 .build() ;
     }
