@@ -17,9 +17,9 @@ public class GoodnightScreenStrategy implements ComponentInitializer {
 
     @NVPConfig private boolean enableStrategy = true ;
     @NVPConfig private String eodCronExpression = "* 23 * * *" ;
-    @NVPConfig private String sodCronExpression = "0 8 * * *" ;
+    @NVPConfig private String sodCronExpression = "0 9 * * *" ;
     @NVPConfig private String eodScreenName = ScreenManagerInitializer.CLOCK_SCR_NAME ;
-    @NVPConfig private String sodScreenName = ScreenManagerInitializer.QOTD_SCR_NAME ;
+    @NVPConfig private String sodScreenName = ScreenManagerInitializer.REFRESHER_SCR_NAME;
 
     private String eodCallbackTaskId = null ;
     private String sodCallbackTaskId = null ;

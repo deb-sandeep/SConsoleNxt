@@ -13,7 +13,7 @@ public class SODScreenTransitionStrategy {
     public String computeTransition( Calendar calendar ) {
         int hourOfDay = calendar.get( Calendar.HOUR_OF_DAY ) ;
         if( hourOfDay == 10 ) {
-            return ScreenManagerInitializer.QOTD_SCR_NAME ;
+            return ScreenManagerInitializer.REFRESHER_SCR_NAME;
         }
         return null ;
     }

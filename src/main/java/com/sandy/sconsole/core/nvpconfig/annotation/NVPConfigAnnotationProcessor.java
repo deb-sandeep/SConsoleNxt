@@ -78,8 +78,13 @@ public class NVPConfigAnnotationProcessor {
     /**
      * The object passed has fields which are marked with @NVPConfig annotations
      * or the class is marked with @NVPConfigGroup annotation.
+     *
+     * Note that non component instances can be registered with the annotation
+     * processor directly using this method. However, this method should be
+     * used with care since it can cause memory leaks since the object will be
+     * stored and there is no way to remove this object simply.
      */
-    private void processNVPConfigConsumer( Object bean ) {
+    public void processNVPConfigConsumer( Object bean ) {
 
         Map<String, NVPConfigTargetCluster> clusters = new HashMap<>() ;
         List<NVPConfigTarget> targets = extractNVPConfigTargets( bean ) ;

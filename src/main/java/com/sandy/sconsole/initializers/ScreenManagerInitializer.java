@@ -8,7 +8,7 @@ import com.sandy.sconsole.core.ui.screen.ScreenManager;
 import com.sandy.sconsole.core.ui.screen.screens.dock.DockScreen;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
 import com.sandy.sconsole.screen.screens.clock.ClockScreen;
-import com.sandy.sconsole.screen.screens.qotd.QOTDScreen;
+import com.sandy.sconsole.screen.screens.refresher.RefresherScreen;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -16,7 +16,7 @@ public class ScreenManagerInitializer implements ComponentInitializer {
 
     public static final String DOCK_SCR_NAME  = "Dock" ;
     public static final String CLOCK_SCR_NAME = "Clock" ;
-    public static final String QOTD_SCR_NAME  = "QOTD" ;
+    public static final String REFRESHER_SCR_NAME = "Refresher" ;
 
     private UITheme theme = null ;
     private ScreenManager screenManager = null ;
@@ -36,7 +36,7 @@ public class ScreenManagerInitializer implements ComponentInitializer {
 
         screenManager.registerScreen( buildDockScreen() ) ;
         screenManager.registerScreen( buildClockScreen() ) ;
-        screenManager.registerScreen( buildQOTDScreen() ) ;
+        screenManager.registerScreen( buildRefresherScreen() ) ;
     }
 
     private Screen buildDockScreen() throws Exception {
@@ -55,10 +55,10 @@ public class ScreenManagerInitializer implements ComponentInitializer {
                 .build() ;
     }
 
-    private Screen buildQOTDScreen() throws Exception {
+    private Screen buildRefresherScreen() throws Exception {
         return ScreenBuilder.instance( theme )
-                .withName( QOTD_SCR_NAME )
-                .withScreenClass( QOTDScreen.class )
+                .withName( REFRESHER_SCR_NAME )
+                .withScreenClass( RefresherScreen.class )
                 .withShowOnStartup()
                 .withParentScreen( screenManager.getScreen( DOCK_SCR_NAME ) )
                 .build() ;
