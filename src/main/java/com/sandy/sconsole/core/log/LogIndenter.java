@@ -1,0 +1,146 @@
+package com.sandy.sconsole.core.log;
+
+import ch.qos.logback.classic.pattern.MessageConverter;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.MDC;
+
+public abstract class LogIndenter extends MessageConverter {
+
+    private static final String INDENT = "  " ;
+
+    private static final String SM_ADD_INDENT      = "> " ;
+    private static final String SM_REMOVE_INDENT   = "< " ;
+    private static final String SM_USE_INDENT      = "- " ;
+    private static final String SM_USE_INDENT2     = "-> " ;
+    private static final String SM_USE_INDENT3     = "->> " ;
+    private static final String SM_RESET_INDENT    = "<< " ;
+
+    private static final String EM_ADD_INDENT      = " >" ;
+    private static final String EM_REMOVE_INDENT   = " <" ;
+    
+    private static final String[] SM_MARKERS = {
+            SM_ADD_INDENT,
+            SM_REMOVE_INDENT,
+            SM_USE_INDENT,
+            SM_USE_INDENT2,
+            SM_USE_INDENT3,
+            SM_RESET_INDENT
+    } ;
+    
+    private static final String[] EM_MARKERS = {
+            EM_ADD_INDENT,
+            EM_REMOVE_INDENT
+    } ;
+
+    private final String indentKey;
+
+    protected LogIndenter( String key ) {
+        this.indentKey = key ;
+    }
+
+    public String convert( ILoggingEvent event) {
+
+        String formattedMsg = super.convert( event ) ;
+        String[] strippedMsg = stripMessage( formattedMsg ) ;
+        String msgPrefix = processStartMarker( strippedMsg[0] ) ;
+        processEndMarker( strippedMsg[1] ) ;
+        
+        return msgPrefix + strippedMsg[2] ;
+    }
+
+    private String[] stripMessage( String formattedMsg ) {
+        String startMarker = getStartMarker( formattedMsg ) ;
+        String endMarker = getEndMarker( formattedMsg ) ;
+        String strippedMsg = formattedMsg ;
+        
+        if( startMarker != null ) {
+            strippedMsg = strippedMsg.substring( startMarker.length() ) ;
+        }
+        
+        if( endMarker != null ) {
+            strippedMsg = strippedMsg.substring( 0, strippedMsg.length()-endMarker.length() ) ;
+        }
+        return new String[]{ startMarker, endMarker, strippedMsg } ;
+    }
+    
+    private String getStartMarker( String formattedMsg ) {
+        for( String marker : SM_MARKERS ) {
+            if( formattedMsg.startsWith( marker ) ) {
+                return marker ;
+            }
+        }
+        return null ;
+    }
+
+    private String getEndMarker( String formattedMsg ) {
+        formattedMsg = StringUtils.stripEnd( formattedMsg, " " ) ;
+        for( String marker : EM_MARKERS ) {
+            if( formattedMsg.endsWith( marker ) ) {
+                return marker ;
+            }
+        }
+        return null ;
+    }
+
+    private String processStartMarker( String marker ) {
+        String prefix = "" ;
+        if( marker != null ) {
+            switch( marker ) {
+                case SM_ADD_INDENT    -> prefix = addIndent();
+                case SM_REMOVE_INDENT -> prefix = deIndent();
+                case SM_USE_INDENT    -> prefix = getCurrentIndent();
+                case SM_USE_INDENT2   -> prefix = getCurrentIndent() + INDENT;
+                case SM_USE_INDENT3   -> prefix = getCurrentIndent() + INDENT + INDENT;
+                case SM_RESET_INDENT  -> prefix = resetIndent();
+            }
+        }
+        return prefix ;
+    }
+
+    private void processEndMarker( String marker ) {
+        if( marker != null ) {
+            switch( marker ) {
+                case EM_ADD_INDENT    -> addIndent();
+                case EM_REMOVE_INDENT -> deIndent();
+            }
+        }
+    }
+
+    private String addIndent() {
+        String curIndent = MDC.get( this.indentKey ) ;
+        if( curIndent == null ) {
+            curIndent = INDENT ;
+        }
+        else {
+            curIndent += INDENT ;
+        }
+        MDC.put( this.indentKey, curIndent ) ;
+        return curIndent ;
+    }
+
+    private String deIndent() {
+        String curIndent = MDC.get( this.indentKey ) ;
+        if( curIndent == null || curIndent.length() < INDENT.length() ) {
+            curIndent = "" ;
+        }
+        else {
+            curIndent = curIndent.substring( 0, curIndent.length()-INDENT.length() ) ;
+        }
+        MDC.put( this.indentKey, curIndent ) ;
+        return curIndent ;
+    }
+
+    private String getCurrentIndent() {
+        String curIndent = MDC.get( this.indentKey ) ;
+        if( curIndent == null ) {
+            curIndent = "" ;
+        }
+        return curIndent ;
+    }
+
+    private String resetIndent() {
+        MDC.remove( this.indentKey ) ;
+        return "" ;
+    }
+}

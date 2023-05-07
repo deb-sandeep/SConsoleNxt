@@ -27,15 +27,16 @@ public class NVPConfigAnnotationProcessor {
 
     public void processNVPConfigAnnotations( String... basePackages ) {
 
-        log.debug( "Processing NVPConfig annotations." ) ;
+        log.debug( "> Processing NVPConfig annotations." ) ;
         String[] beanNames = appCtx.getBeanDefinitionNames() ;
         for( String beanName : beanNames ) {
             Object bean = appCtx.getBean( beanName ) ;
             if( isNVPConfigConsumer( bean, basePackages ) ) {
-                log.debug( "  Bean - {}", bean.getClass().getName() ) ;
+                log.debug( "-> NVPConsumer {} found.", bean.getClass().getSimpleName() ) ;
                 processNVPConfigConsumer( bean ) ;
             }
         }
+        log.debug( "< NVPConfig annotations processed." ) ;
     }
 
     public void persistNVPConfigState( Object obj ) throws IllegalAccessException {
@@ -96,7 +97,7 @@ public class NVPConfigAnnotationProcessor {
 
         NVPManager nvpManager = appCtx.getBean( NVPManager.class ) ;
         clusters.values().forEach( c -> {
-            log.debug( "Initializing NVP target cluster {}", c.getFQN() );
+            log.debug( "-> Loading {}", c.getFQN() );
             try {
                 c.initialize( nvpManager ) ;
             }
@@ -115,10 +116,14 @@ public class NVPConfigAnnotationProcessor {
         Method updateMethod = getUpdateMethodIfAny( bean.getClass() ) ;
 
         for( Field field : fields ) {
+            NVPConfigTarget target = null ;
             if( field.isAnnotationPresent( NVPConfig.class ) ) {
-                log.debug( "   Field {}", field.getName() ) ;
-                targets.add( new NVPConfigTarget( defaultGroup, field,
-                                                  updateMethod, bean, nvpRepo ) ) ;
+                target = new NVPConfigTarget( defaultGroup, field,
+                                              updateMethod, bean, nvpRepo ) ;
+                log.debug( "->> Field - {} -> {}.{}", field.getName(),
+                                                    target.getConfigGroupName(),
+                                                    target.getConfigName() ) ;
+                targets.add( target ) ;
             }
         }
         return targets ;

@@ -25,7 +25,6 @@ public class RemoteKeyDispatch
     public boolean isInvocable() { return true ; }
 
     public void initialize( SConsole app ) throws Exception {
-        log.debug( "Initializing RemoteKey Dispatch" ) ;
         eventDispatchThread = new Thread( this ) ;
     }
 
