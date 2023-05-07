@@ -24,7 +24,7 @@
         </rollingPolicy>
         <encoder>
             <pattern>
-                %d{dd-MM-yyyy HH:mm:ss.SSS} %magenta([%thread]) %highlight(%-5level) %logger{15}.%M - %fileMsg%n
+                %highlight(%-5level) %-3.3L %-30.30logger{0} - %consoleMsg%n
             </pattern>
         </encoder>
     </appender>
