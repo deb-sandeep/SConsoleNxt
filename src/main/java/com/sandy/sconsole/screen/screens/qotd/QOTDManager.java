@@ -25,7 +25,6 @@ public class QOTDManager implements ComponentInitializer {
     @Override
     public void initialize( SConsole app ) {
 
-        log.debug( "Initializing QOTDManager." ) ;
         for( Quote quote : quoteRepo.findAll() ) {
             if( quote.getQuote().length() <= MAX_QUOTE_LEN ) {
                 allQuotes.add( quote ) ;
@@ -33,7 +32,6 @@ public class QOTDManager implements ComponentInitializer {
                 quotesBySection.computeIfAbsent( quote.getSection(), s -> new ArrayList<>() ).add( quote ) ;
             }
         }
-        log.debug( "  {} quotes loaded.", allQuotes.size() ) ;
     }
 
     public Quote getNextRandomQuote() {

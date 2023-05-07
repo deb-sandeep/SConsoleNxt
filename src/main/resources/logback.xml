@@ -3,11 +3,14 @@
 
     <property name="WKSP_DIR" value="/home/sandeep/projects/workspace/sconsole/"/>
 
+    <conversionRule conversionWord="consoleMsg" converterClass="com.sandy.sconsole.core.log.ConsoleLogIndenter" />
+    <conversionRule conversionWord="fileMsg"    converterClass="com.sandy.sconsole.core.log.FileLogIndenter" />
+
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>
                 <!--%d{dd-MM-yyyy HH:mm:ss.SSS} %magenta([%thread]) %highlight(%-5level) %logger{15}.%M - %msg%n-->
-                %msg%n
+                %highlight(%-5level) %-3.3L %-30.30logger{0} - %consoleMsg%n
             </pattern>
         </encoder>
     </appender>
@@ -21,7 +24,7 @@
         </rollingPolicy>
         <encoder>
             <pattern>
-                %d{dd-MM-yyyy HH:mm:ss.SSS} %magenta([%thread]) %highlight(%-5level) %logger{15}.%M - %msg%n
+                %d{dd-MM-yyyy HH:mm:ss.SSS} %magenta([%thread]) %highlight(%-5level) %logger{15}.%M - %fileMsg%n
             </pattern>
         </encoder>
     </appender>

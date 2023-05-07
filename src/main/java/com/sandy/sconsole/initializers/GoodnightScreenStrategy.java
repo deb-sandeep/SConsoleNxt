@@ -26,7 +26,6 @@ public class GoodnightScreenStrategy implements ComponentInitializer {
 
     @Override
     public void initialize( SConsole app ) throws Exception {
-        log.debug( "Initializing GoodnightScreenStrategy." ) ;
         deregisterScheduledCallbacks( app.getClock() ) ;
         if( !enableStrategy ) {
             log.info( "GoodnightScreenStrategy is disabled." ) ;
@@ -42,13 +41,17 @@ public class GoodnightScreenStrategy implements ComponentInitializer {
 
     private String registerEODCallback( SConsole app ) throws Exception {
         return app.getClock().scheduleTask( eodCronExpression, ()->{
-            app.getFrame().changeScreen( eodScreenName ) ;
+            if( app.getFrame() != null ) {
+                app.getFrame().changeScreen( eodScreenName ) ;
+            }
         } ) ;
     }
 
     private String registerSODCallback( SConsole app ) throws Exception {
         return app.getClock().scheduleTask( sodCronExpression, ()->{
-            app.getFrame().changeScreen( sodScreenName ) ;
+            if( app.getFrame() != null ) {
+                app.getFrame().changeScreen( sodScreenName );
+            }
         } ) ;
     }
 

@@ -37,8 +37,11 @@ public class SConsoleClock {
     public void initialize() {
 
         computeTodayTimeMarkers() ;
+
+        log.debug( "-> Starting the Scheduler." );
         this.scheduler.start() ;
 
+        log.debug( "-> Starting the per second timer." );
         SEC_TIMER.scheduleAtFixedRate( new TimerTask() {
 
             Calendar lastDate = null;

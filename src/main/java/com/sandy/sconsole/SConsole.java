@@ -68,29 +68,29 @@ public class SConsole
 
     public void initialize() throws Exception {
 
-        log.debug( "Initializing SConsole app." ) ;
+        log.debug( "## Initializing SConsole app. >" ) ;
 
-        log.debug( "  Initializing Clock" ) ;
+        log.debug( "- Initializing Clock" ) ;
         this.clock.initialize() ;
 
-        log.debug( "  Initializing Theme" ) ;
+        log.debug( "- Initializing Theme" ) ;
         this.uiTheme = new DefaultUITheme() ;
 
-        log.debug( "  Initializing NVPConfig injector." ) ;
+        log.debug( "- Initializing NVPConfig injector." ) ;
         NVPConfigAnnotationProcessor nvpConfigAnnotationProcessor =
                                   new NVPConfigAnnotationProcessor( getCtx() ) ;
         nvpConfigAnnotationProcessor.processNVPConfigAnnotations() ;
 
-        log.debug( "  Calling discovered initializers." ) ;
+        log.debug( "- Invoking system initializers." ) ;
         discoverAndInvokeInitializers() ;
 
-        log.debug( "  Initializing SConsoleFrame" ) ;
+        log.debug( "- Initializing SConsoleFrame" ) ;
         SwingUtilities.invokeLater( ()->{
             this.frame = new SConsoleFrame( uiTheme, getConfig(),
                     getAppCtx().getBean( ScreenManager.class ) ) ;
         } ) ;
 
-        log.debug( "SConsole initialization complete" ) ;
+        log.debug( "<< ## SConsole initialization complete" ) ;
     }
 
     public UITheme getTheme() { return this.uiTheme ; }
@@ -124,9 +124,9 @@ public class SConsole
                                        i2.getInitializationSequencePreference() );
 
         for( ComponentInitializer si : initializers ) {
-            log.debug( "Found system initializer {}. Precedence {}",
-                    si.getClass().getName(), si.getInitializationSequencePreference() ) ;
-
+            log.debug( "-> Initializing {} [{}]",
+                                    si.getClass().getSimpleName(),
+                                    si.getInitializationSequencePreference() ) ;
             if( si.isInvocable() ) {
                 si.initialize( this );
             }

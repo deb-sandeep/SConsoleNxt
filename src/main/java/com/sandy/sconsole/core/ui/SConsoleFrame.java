@@ -64,7 +64,6 @@ public class SConsoleFrame extends JFrame {
     
     void setScreen( Screen screen ) {
 
-        log.debug( "Setting screen {}.", screen  ) ;
         if( screen == null ) return ;
 
         if( currentScreen != null ) {
@@ -90,16 +89,16 @@ public class SConsoleFrame extends JFrame {
 
     public void changeScreen( String nextScreenName ) {
 
-        log.debug( "Changing screen to {}.", nextScreenName ) ;
+        log.debug( "Changing screen to '{}'", nextScreenName ) ;
         if( this.currentScreen != null &&
                 this.currentScreen.getName().equals( nextScreenName ) ) {
-            log.debug( "Requested screen is currently active." ) ;
+            log.debug( "  Requested screen {} is already active.", nextScreenName ) ;
             return ;
         }
 
         Screen nextScreen = this.screenManager.getScreen( nextScreenName ) ;
         if( nextScreen == null ) {
-            log.info( "Screen {} not registered.", nextScreenName ) ;
+            log.info( "  Screen '{}' not registered.", nextScreenName ) ;
         }
         else {
             SwingUtilities.invokeLater( ()->setScreen( nextScreen ) ) ;

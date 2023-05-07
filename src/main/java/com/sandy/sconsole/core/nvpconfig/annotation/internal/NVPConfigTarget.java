@@ -43,11 +43,7 @@ public class NVPConfigTarget {
         if( this.notifyMethod != null ) {
             this.notifyMethod.setAccessible( true ) ;
         }
-
         extractConfigName( defaultCfgGroup ) ;
-        log.debug( "    configGroupName - {}", configGroupName ) ;
-        log.debug( "    configName      - {}", configName ) ;
-        log.debug( "    updateOnChange  - {}", updateOnChange ) ;
     }
 
     private void extractConfigName( String defaultCfgGroup ) {
@@ -73,8 +69,6 @@ public class NVPConfigTarget {
     public void updateTarget( com.sandy.sconsole.core.nvpconfig.NVPConfig cfg,
                               boolean notify )
             throws IllegalAccessException, InvocationTargetException {
-
-        log.debug( "Updating NVP target {} with value {}", this, cfg.getValue() );
 
         Object convertedVal = convertCfgValToFieldType( cfg ) ;
         FieldUtils.writeField( this.field, this.bean, convertedVal, true ) ;
