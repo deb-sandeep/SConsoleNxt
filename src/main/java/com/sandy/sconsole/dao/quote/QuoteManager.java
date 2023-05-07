@@ -1,9 +1,7 @@
-package com.sandy.sconsole.screen.screens.qotd;
+package com.sandy.sconsole.dao.quote;
 
 import com.sandy.sconsole.SConsole;
 import com.sandy.sconsole.core.behavior.ComponentInitializer;
-import com.sandy.sconsole.dao.quote.Quote;
-import com.sandy.sconsole.dao.quote.QuoteRepo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -12,7 +10,7 @@ import java.util.*;
 
 @Slf4j
 @Component
-public class QOTDManager implements ComponentInitializer {
+public class QuoteManager implements ComponentInitializer {
 
     private static final int MAX_QUOTE_LEN = 100 ;
 

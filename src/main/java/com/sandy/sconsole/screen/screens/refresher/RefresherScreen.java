@@ -1,10 +1,11 @@
-package com.sandy.sconsole.screen.screens.qotd;
+package com.sandy.sconsole.screen.screens.refresher;
 
 import com.sandy.sconsole.core.clock.ClockTickListener;
 import com.sandy.sconsole.core.ui.screen.Screen;
 import com.sandy.sconsole.core.ui.screen.util.StringTile;
 import com.sandy.sconsole.core.ui.uiutil.SwingUtils;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
+import com.sandy.sconsole.dao.quote.QuoteManager;
 import com.sandy.sconsole.dao.quote.Quote;
 import com.sandy.sconsole.screen.screens.clock.tile.DateTile;
 import com.sandy.sconsole.screen.screens.clock.tile.TimeTile;
@@ -19,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 import static com.sandy.sconsole.SConsole.getApp;
 import static com.sandy.sconsole.SConsole.getAppCtx;
 
-public class QOTDScreen extends Screen implements ClockTickListener {
+public class RefresherScreen extends Screen implements ClockTickListener {
 
     public static final int DEF_QUOTE_REFRESH_TIME_SEC = 30*60 ;
 
@@ -92,7 +93,7 @@ public class QOTDScreen extends Screen implements ClockTickListener {
 
     private void loadNextQuote() {
 
-        QOTDManager qotdManager = getAppCtx().getBean( QOTDManager.class ) ;
+        QuoteManager qotdManager = getAppCtx().getBean( QuoteManager.class ) ;
         Quote nextQuote = qotdManager.getNextRandomQuote() ;
         while( nextQuote == this.currentQuote ) {
             nextQuote = qotdManager.getNextRandomQuote() ;
