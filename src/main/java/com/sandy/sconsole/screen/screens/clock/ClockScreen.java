@@ -5,12 +5,14 @@ import com.sandy.sconsole.core.ui.screen.Screen;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
 import com.sandy.sconsole.screen.screens.clock.tile.DateTile;
 import com.sandy.sconsole.screen.screens.clock.tile.TimeTile;
+import org.springframework.stereotype.Component;
 
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
 import static com.sandy.sconsole.SConsole.getApp;
 
+@Component
 public class ClockScreen extends Screen implements ClockTickListener {
 
     private TimeTile timeTile ;

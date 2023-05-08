@@ -9,6 +9,7 @@ import com.sandy.sconsole.dao.quote.QuoteManager;
 import com.sandy.sconsole.dao.quote.Quote;
 import com.sandy.sconsole.screen.screens.clock.tile.DateTile;
 import com.sandy.sconsole.screen.screens.clock.tile.TimeTile;
+import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -20,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 import static com.sandy.sconsole.SConsole.getApp;
 import static com.sandy.sconsole.SConsole.getAppCtx;
 
+@Component
 public class RefresherScreen extends Screen implements ClockTickListener {
 
     public static final int DEF_QUOTE_REFRESH_TIME_SEC = 30*60 ;
@@ -57,9 +59,13 @@ public class RefresherScreen extends Screen implements ClockTickListener {
         quoteAuthorTile.setLabelForeground( Color.YELLOW.darker() ) ;
         quoteAuthorTile.setBorder( new EmptyBorder( 0, 0, 0, 50 ) ) ;
 
+        // Top two rrows are reserved for common display elements such as
+        // Date, Time and Star rating of the currently displayed refresher.
         super.addTile( dateTile,         0,  0, 5,  1 ) ;
         super.addTile( timeTile,         6,  0, 9,  1 ) ;
         super.addTile( quoteSectionTile, 10, 0, 15, 1 ) ;
+
+
         super.addTile( quoteTextTile,    0,  2, 15, 13 ) ;
         super.addTile( quoteAuthorTile,  0,  14,15, 15 ) ;
     }

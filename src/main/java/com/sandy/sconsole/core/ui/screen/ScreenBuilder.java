@@ -1,11 +1,13 @@
 package com.sandy.sconsole.core.ui.screen;
 
+import com.sandy.sconsole.SConsole;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class ScreenBuilder  {
 
+    private final SConsole app ;
     private final UITheme theme ;
 
     private Class<? extends Screen> screenCls ;
@@ -14,12 +16,13 @@ public class ScreenBuilder  {
     private String icon ;
     private boolean showOnStartup = false ;
 
-    private ScreenBuilder( UITheme theme ) {
-        this.theme = theme ;
+    private ScreenBuilder( SConsole app ) {
+        this.app = app ;
+        this.theme = app.getTheme() ;
     }
 
-    public static ScreenBuilder instance( UITheme theme ) {
-        return new ScreenBuilder( theme ) ;
+    public static ScreenBuilder instance( SConsole app ) {
+        return new ScreenBuilder( app ) ;
     }
 
     public ScreenBuilder withName( String name ) {
@@ -47,8 +50,9 @@ public class ScreenBuilder  {
         return this ;
     }
 
-    public Screen build() throws Exception {
-        Screen screen = screenCls.getConstructor().newInstance();
+    public Screen build() {
+
+        Screen screen = app.getCtx().getBean( this.screenCls ) ;
 
         screen.setName( name ) ;
         screen.setParentScreen( parentScreen ) ;
