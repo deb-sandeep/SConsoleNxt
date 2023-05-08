@@ -18,7 +18,6 @@ public class ScreenManagerInitializer implements ComponentInitializer {
     public static final String CLOCK_SCR_NAME = "Clock" ;
     public static final String REFRESHER_SCR_NAME = "Refresher" ;
 
-    private UITheme theme = null ;
     private ScreenManager screenManager = null ;
 
     @Override
@@ -31,23 +30,22 @@ public class ScreenManagerInitializer implements ComponentInitializer {
     @Override
     public void initialize( SConsole app ) throws Exception {
 
-        this.theme = app.getTheme() ;
         this.screenManager = app.getCtx().getBean( ScreenManager.class ) ;
 
-        screenManager.registerScreen( buildDockScreen() ) ;
-        screenManager.registerScreen( buildClockScreen() ) ;
-        screenManager.registerScreen( buildRefresherScreen() ) ;
+        screenManager.registerScreen( buildDockScreen( app ) ) ;
+        screenManager.registerScreen( buildClockScreen( app ) ) ;
+        screenManager.registerScreen( buildRefresherScreen( app ) ) ;
     }
 
-    private Screen buildDockScreen() throws Exception {
-        return ScreenBuilder.instance( theme )
+    private Screen buildDockScreen( SConsole app ) throws Exception {
+        return ScreenBuilder.instance( app )
                 .withName( DOCK_SCR_NAME )
                 .withScreenClass( DockScreen.class )
                 .build() ;
     }
 
-    private Screen buildClockScreen() throws Exception {
-        return ScreenBuilder.instance( theme )
+    private Screen buildClockScreen( SConsole app ) throws Exception {
+        return ScreenBuilder.instance( app )
                 .withName( CLOCK_SCR_NAME )
                 .withScreenClass( ClockScreen.class )
                 //.withShowOnStartup()
@@ -55,8 +53,8 @@ public class ScreenManagerInitializer implements ComponentInitializer {
                 .build() ;
     }
 
-    private Screen buildRefresherScreen() throws Exception {
-        return ScreenBuilder.instance( theme )
+    private Screen buildRefresherScreen( SConsole app ) throws Exception {
+        return ScreenBuilder.instance( app )
                 .withName( REFRESHER_SCR_NAME )
                 .withScreenClass( RefresherScreen.class )
                 .withShowOnStartup()
