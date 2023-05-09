@@ -25,8 +25,8 @@ public class ClockScreen extends Screen implements ClockTickListener {
     }
 
     private void setUpUI( UITheme theme ) {
-        timeTile = new TimeTile( this, theme, 150 ) ;
-        dateTile = new DateTile( this, theme, 70 ) ;
+        timeTile = new TimeTile( theme, 150 ) ;
+        dateTile = new DateTile( theme, 70 ) ;
         super.addTile( timeTile, 2, 5, 13, 8 ) ;
         super.addTile( dateTile, 2, 9, 13, 10 ) ;
     }

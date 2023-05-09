@@ -3,20 +3,15 @@ package com.sandy.sconsole.core.ui.screen;
 import com.sandy.sconsole.core.remote.KeyProcessor;
 import com.sandy.sconsole.core.remote.KeySet;
 import com.sandy.sconsole.core.remote.RemoteKeyEvent;
-import com.sandy.sconsole.core.ui.screen.util.DebugTile;
+import com.sandy.sconsole.core.ui.screen.util.AbstractScreenPanel;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
-import info.clearthought.layout.TableLayout;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.swing.*;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class Screen extends JPanel implements KeyProcessor {
-
-    public static final int NUM_ROWS = 16 ;
-    public static final int NUM_COLS = 16 ;
+public abstract class Screen extends AbstractScreenPanel implements KeyProcessor {
 
     @Getter @Setter private String name ;
     @Getter private Screen parentScreen ;
@@ -41,23 +36,7 @@ public abstract class Screen extends JPanel implements KeyProcessor {
 
     protected void setUpBaseUI( UITheme theme ) {
         super.setBackground( theme.getBackgroundColor() ) ;
-        setLayout() ;
-    }
-
-    private void setLayout() {
-
-        float rowHeightPct = 1.0F/NUM_ROWS ;
-        float colHeightPct = 1.0F/NUM_COLS ;
-
-        TableLayout layout = new TableLayout() ;
-
-        for( int i=0; i<NUM_ROWS; i++ ) {
-            layout.insertRow( i, rowHeightPct ) ;
-        }
-        for( int i=0; i<NUM_COLS; i++ ) {
-            layout.insertColumn( i, colHeightPct ) ;
-        }
-        setLayout( layout ) ;
+        super.setDefaultTableLayout() ;
     }
 
     public void setParentScreen( Screen screen ) {
@@ -65,19 +44,6 @@ public abstract class Screen extends JPanel implements KeyProcessor {
         if( this.parentScreen != null ) {
             this.parentScreen.registerChildScreen( this ) ;
         }
-    }
-
-    public void fillGrid( UITheme theme ) {
-        for( int i=0; i<Screen.NUM_ROWS; i++ ) {
-            for( int j=0; j<Screen.NUM_COLS; j++ ) {
-                Tile tile = new DebugTile( this, theme.getBackgroundColor() ) ;
-                addTile( tile, i, j, i, j );
-            }
-        }
-    }
-
-    protected void addTile( Tile tile, int ltX, int ltY, int rbX, int rbY ) {
-        super.add( tile, String.format( "%d,%d,%d,%d", ltX, ltY, rbX, rbY ) ) ;
     }
 
     public void registerChildScreen( Screen screen ) {

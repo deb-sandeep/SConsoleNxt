@@ -89,6 +89,11 @@ public class NVPConfigAnnotationProcessor {
         Map<String, NVPConfigTargetCluster> clusters = new HashMap<>() ;
         List<NVPConfigTarget> targets = extractNVPConfigTargets( bean ) ;
 
+        if( targets.isEmpty() ) {
+            log.debug( "- Bean does not have any NVPConfig targets." ) ;
+            return ;
+        }
+
         targets.forEach( t -> {
             NVPConfigTargetCluster tgtCluster ;
             String cfgFQN = t.getFQN() ;
