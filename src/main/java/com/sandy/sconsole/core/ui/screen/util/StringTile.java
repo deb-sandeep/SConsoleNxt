@@ -39,19 +39,23 @@ public class StringTile extends Tile {
         super.add( textLabel, BorderLayout.CENTER ) ;
     }
 
+    // Assumed that this method is invoked in Swing event thread.
     public void setLabelText( String text ) {
-        SwingUtilities.invokeLater( () -> this.textLabel.setText( text ) ) ;
+        this.textLabel.setText( text ) ;
     }
 
+    // Assumed that this method is invoked in Swing event thread.
     public void setLabelFont( Font font ) {
-        SwingUtilities.invokeLater( () -> this.textLabel.setFont( font ) ) ;
+        this.textLabel.setFont( font ) ;
     }
 
+    // Assumed that this method is invoked in Swing event thread.
     public void setLabelForeground( Color color ) {
-        SwingUtilities.invokeLater( () -> this.textLabel.setForeground( color ) ) ;
+        this.textLabel.setForeground( color ) ;
     }
 
+    // Assumed that this method is invoked in Swing event thread.
     public void setLabelHTMLText( String text ) {
-        SwingUtilities.invokeLater( () -> this.textLabel.setText( "<html>" + text + "</html>" ) ) ;
+        this.textLabel.setText( "<html>" + text + "</html>" ) ;
     }
 }

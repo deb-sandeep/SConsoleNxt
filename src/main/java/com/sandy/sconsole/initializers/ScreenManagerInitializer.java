@@ -6,9 +6,8 @@ import com.sandy.sconsole.core.ui.screen.Screen;
 import com.sandy.sconsole.core.ui.screen.ScreenBuilder;
 import com.sandy.sconsole.core.ui.screen.ScreenManager;
 import com.sandy.sconsole.core.ui.screen.screens.dock.DockScreen;
-import com.sandy.sconsole.core.ui.uiutil.UITheme;
-import com.sandy.sconsole.screen.screens.clock.ClockScreen;
-import com.sandy.sconsole.screen.screens.refresher.RefresherScreen;
+import com.sandy.sconsole.screen.clock.ClockScreen;
+import com.sandy.sconsole.screen.refresher.RefresherScreen;
 import org.springframework.stereotype.Component;
 
 @Component

@@ -1,13 +1,13 @@
-package com.sandy.sconsole.screen.screens.refresher;
+package com.sandy.sconsole.screen.refresher;
 
 import com.sandy.sconsole.core.clock.ClockTickListener;
 import com.sandy.sconsole.core.nvpconfig.annotation.NVPConfigAnnotationProcessor;
 import com.sandy.sconsole.core.ui.screen.Screen;
 import com.sandy.sconsole.core.ui.screen.util.StarTile;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
-import com.sandy.sconsole.screen.screens.clock.tile.DateTile;
-import com.sandy.sconsole.screen.screens.clock.tile.TimeTile;
-import com.sandy.sconsole.screen.screens.refresher.quote.QuoteRefresherPanel;
+import com.sandy.sconsole.screen.clock.tile.DateTile;
+import com.sandy.sconsole.screen.clock.tile.TimeTile;
+import com.sandy.sconsole.screen.refresher.quote.QuoteRefresherPanel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
@@ -28,17 +28,20 @@ public class RefresherScreen extends Screen implements ClockTickListener {
     private DateTile dateTile ;
     private StarTile starTile ;
 
-    private final List<RefresherPanel> refresherPanelList = new ArrayList<>() ;
-    private RefresherPanel currentRefresherPanel = null ;
+    private final List<AbstractRefresherPanel> refresherPanelList = new ArrayList<>() ;
+
+    private AbstractRefresherPanel currentRefresherPanel = null ;
+    private int currentRefresherPanelIndex = -1 ;
+    private long currentPanelDisplayStartTime = -1 ;
 
     @Override
     public void initialize( UITheme theme ) {
         super.setUpBaseUI( theme ) ;
-        loadRefresherPanel( new QuoteRefresherPanel( this, theme ) ) ;
+        initializeRefresherPanel( new QuoteRefresherPanel( theme ) ) ;
         setUpUI( theme ) ;
     }
 
-    private void loadRefresherPanel( RefresherPanel panel ) {
+    private void initializeRefresherPanel( AbstractRefresherPanel panel ) {
 
         appCtx.getBean( NVPConfigAnnotationProcessor.class )
               .processNVPConfigConsumer( panel ) ;
@@ -58,15 +61,21 @@ public class RefresherScreen extends Screen implements ClockTickListener {
         super.addTile( timeTile, 6,  0, 9,  1 ) ;
         super.addTile( starTile, 10, 0, 15, 1 ) ;
 
-        attachRefresherPanel( refresherPanelList.get( 0 ) ) ;
+        setRefresherPanel( 0 ) ;
     }
 
-    private void attachRefresherPanel( RefresherPanel panel ) {
-        if( currentRefresherPanel != null ) {
-            super.remove( currentRefresherPanel ) ;
+    private void setRefresherPanel( int panelIndex ) {
+        if( panelIndex != currentRefresherPanelIndex ) {
+            AbstractRefresherPanel panel = refresherPanelList.get( panelIndex ) ;
+            if( currentRefresherPanel != null ) {
+                super.remove( currentRefresherPanel ) ;
+            }
+            currentRefresherPanel = panel ;
+            currentRefresherPanelIndex = panelIndex ;
         }
-        currentRefresherPanel = panel ;
+        currentRefresherPanel.refresh() ;
         super.addTile( currentRefresherPanel, 0,2,15,15 ) ;
+        currentPanelDisplayStartTime = System.currentTimeMillis() ;
     }
 
     @Override
@@ -83,5 +92,15 @@ public class RefresherScreen extends Screen implements ClockTickListener {
     public void clockTick( Calendar calendar ) {
         timeTile.updateDisplay( calendar ) ;
         dateTile.updateDisplay( calendar ) ;
+
+        long currentTimeMillis = calendar.getTimeInMillis() ;
+        long displayDuration = (currentTimeMillis - currentPanelDisplayStartTime) / 1000 ;
+        if( displayDuration >= currentRefresherPanel.getDisplayDuration() ) {
+            int nextPanelIndex = currentRefresherPanelIndex++ ;
+            if( nextPanelIndex >= refresherPanelList.size() ) {
+                nextPanelIndex = 0 ;
+            }
+            setRefresherPanel( nextPanelIndex ) ;
+        }
     }
 }

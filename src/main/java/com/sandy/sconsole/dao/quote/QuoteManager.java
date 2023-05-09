@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.sql.Timestamp;
 import java.util.*;
 
 @Slf4j
@@ -30,9 +31,42 @@ public class QuoteManager implements ComponentInitializer {
                 quotesBySection.computeIfAbsent( quote.getSection(), s -> new ArrayList<>() ).add( quote ) ;
             }
         }
+        sortAllQuotes() ;
+    }
+
+    private void refreshQuote( Quote quote ) {
+        replaceOrAdd( quote, allQuotes ) ;
+        replaceOrAdd( quote, quotesBySpeaker.computeIfAbsent(
+                                                    quote.getSpeaker(),
+                                                    s -> new ArrayList<>() ) ) ;
+        replaceOrAdd( quote, quotesBySection.computeIfAbsent(
+                                                    quote.getSection(),
+                                                    s -> new ArrayList<>() ) ) ;
+        sortAllQuotes() ;
+    }
+
+    private void sortAllQuotes() {
+        allQuotes.sort( (q1, q2 ) -> q1.getNumShows() - q2.getNumShows() ) ;
+    }
+
+    private void replaceOrAdd( Quote quote, List<Quote> quotes ) {
+        for( int i=0; i<quotes.size(); i++ ) {
+            if( Objects.equals( quotes.get( i ).getId(), quote.getId() ) ) {
+                quotes.remove( i ) ;
+                break ;
+            }
+        }
+        quotes.add( quote ) ;
     }
 
     public Quote getNextRandomQuote() {
-        return allQuotes.get( new Random().nextInt( allQuotes.size() ) ) ;
+        return allQuotes.get( new Random().nextInt( 50 ) ) ;
+    }
+
+    public void incrementViewCount( Quote quote ) {
+        quote.setNumShows( quote.getNumShows()+1 ) ;
+        quote.setLastDisplayTime( new Timestamp( System.currentTimeMillis() ) ) ;
+        quote = quoteRepo.save( quote ) ;
+        refreshQuote( quote ) ;
     }
 }
