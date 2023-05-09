@@ -10,18 +10,24 @@ public abstract class LogIndenter extends MessageConverter {
     private static final String INDENT = "  " ;
 
     private static final String SM_ADD_INDENT      = "> " ;
+    private static final String SM_ADD_DBLINDENT   = ">> " ;
     private static final String SM_REMOVE_INDENT   = "< " ;
+    private static final String SM_REMOVE_DBLINDENT= "<< " ;
     private static final String SM_USE_INDENT      = "- " ;
     private static final String SM_USE_INDENT2     = "-> " ;
     private static final String SM_USE_INDENT3     = "->> " ;
-    private static final String SM_RESET_INDENT    = "<< " ;
+    private static final String SM_RESET_INDENT    = "<<< " ;
 
     private static final String EM_ADD_INDENT      = " >" ;
+    private static final String EM_ADD_DBLINDENT   = " >>" ;
     private static final String EM_REMOVE_INDENT   = " <" ;
-    
+    private static final String EM_REMOVE_DBLINDENT= " <<" ;
+
     private static final String[] SM_MARKERS = {
             SM_ADD_INDENT,
+            SM_ADD_DBLINDENT,
             SM_REMOVE_INDENT,
+            SM_REMOVE_DBLINDENT,
             SM_USE_INDENT,
             SM_USE_INDENT2,
             SM_USE_INDENT3,
@@ -30,7 +36,9 @@ public abstract class LogIndenter extends MessageConverter {
     
     private static final String[] EM_MARKERS = {
             EM_ADD_INDENT,
-            EM_REMOVE_INDENT
+            EM_ADD_DBLINDENT,
+            EM_REMOVE_INDENT,
+            EM_REMOVE_DBLINDENT
     } ;
 
     private final String indentKey;
@@ -87,12 +95,14 @@ public abstract class LogIndenter extends MessageConverter {
         String prefix = "" ;
         if( marker != null ) {
             switch( marker ) {
-                case SM_ADD_INDENT    -> prefix = addIndent();
-                case SM_REMOVE_INDENT -> prefix = deIndent();
-                case SM_USE_INDENT    -> prefix = getCurrentIndent();
-                case SM_USE_INDENT2   -> prefix = getCurrentIndent() + INDENT;
-                case SM_USE_INDENT3   -> prefix = getCurrentIndent() + INDENT + INDENT;
-                case SM_RESET_INDENT  -> prefix = resetIndent();
+                case SM_ADD_INDENT       -> prefix = addIndent( 1 ) ;
+                case SM_ADD_DBLINDENT    -> prefix = addIndent( 2 ) ;
+                case SM_REMOVE_INDENT    -> prefix = deIndent( 1 ) ;
+                case SM_REMOVE_DBLINDENT -> prefix = deIndent( 2 ) ;
+                case SM_USE_INDENT       -> prefix = getCurrentIndent();
+                case SM_USE_INDENT2      -> prefix = getCurrentIndent() + INDENT;
+                case SM_USE_INDENT3      -> prefix = getCurrentIndent() + INDENT + INDENT;
+                case SM_RESET_INDENT     -> prefix = resetIndent();
             }
         }
         return prefix ;
@@ -101,31 +111,29 @@ public abstract class LogIndenter extends MessageConverter {
     private void processEndMarker( String marker ) {
         if( marker != null ) {
             switch( marker ) {
-                case EM_ADD_INDENT    -> addIndent();
-                case EM_REMOVE_INDENT -> deIndent();
+                case EM_ADD_INDENT       -> addIndent( 1 );
+                case EM_ADD_DBLINDENT    -> addIndent( 2 );
+                case EM_REMOVE_INDENT    -> deIndent( 1 );
+                case EM_REMOVE_DBLINDENT -> deIndent( 2 );
             }
         }
     }
 
-    private String addIndent() {
-        String curIndent = MDC.get( this.indentKey ) ;
-        if( curIndent == null ) {
-            curIndent = INDENT ;
-        }
-        else {
-            curIndent += INDENT ;
-        }
+    private String addIndent( int numIndent ) {
+        String curIndent = getCurrentIndent() ;
+        curIndent += StringUtils.repeat( INDENT, numIndent ) ;
         MDC.put( this.indentKey, curIndent ) ;
         return curIndent ;
     }
 
-    private String deIndent() {
-        String curIndent = MDC.get( this.indentKey ) ;
-        if( curIndent == null || curIndent.length() < INDENT.length() ) {
+    private String deIndent( int numIndent ) {
+        String reqIndent = StringUtils.repeat( INDENT, numIndent ) ;
+        String curIndent = getCurrentIndent() ;
+        if( curIndent.length() < reqIndent.length() ) {
             curIndent = "" ;
         }
         else {
-            curIndent = curIndent.substring( 0, curIndent.length()-INDENT.length() ) ;
+            curIndent = curIndent.substring( 0, curIndent.length()-reqIndent.length() ) ;
         }
         MDC.put( this.indentKey, curIndent ) ;
         return curIndent ;

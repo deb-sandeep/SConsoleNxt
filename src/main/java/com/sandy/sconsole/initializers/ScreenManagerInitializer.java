@@ -8,8 +8,10 @@ import com.sandy.sconsole.core.ui.screen.ScreenManager;
 import com.sandy.sconsole.core.ui.screen.screens.dock.DockScreen;
 import com.sandy.sconsole.screen.clock.ClockScreen;
 import com.sandy.sconsole.screen.refresher.RefresherScreen;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 public class ScreenManagerInitializer implements ComponentInitializer {
 
@@ -31,12 +33,15 @@ public class ScreenManagerInitializer implements ComponentInitializer {
 
         this.screenManager = app.getCtx().getBean( ScreenManager.class ) ;
 
+        log.debug( ">> Building screens." );
         screenManager.registerScreen( buildDockScreen( app ) ) ;
         screenManager.registerScreen( buildClockScreen( app ) ) ;
         screenManager.registerScreen( buildRefresherScreen( app ) ) ;
+        log.debug( "- Building screens completed. <<" ) ;
     }
 
     private Screen buildDockScreen( SConsole app ) throws Exception {
+        log.debug( "-> Building Dock screen." ) ;
         return ScreenBuilder.instance( app )
                 .withName( DOCK_SCR_NAME )
                 .withScreenClass( DockScreen.class )
@@ -44,6 +49,7 @@ public class ScreenManagerInitializer implements ComponentInitializer {
     }
 
     private Screen buildClockScreen( SConsole app ) throws Exception {
+        log.debug( "-> Building Clock screen." ) ;
         return ScreenBuilder.instance( app )
                 .withName( CLOCK_SCR_NAME )
                 .withScreenClass( ClockScreen.class )
@@ -53,6 +59,7 @@ public class ScreenManagerInitializer implements ComponentInitializer {
     }
 
     private Screen buildRefresherScreen( SConsole app ) throws Exception {
+        log.debug( "-> Building Refresher screen." ) ;
         return ScreenBuilder.instance( app )
                 .withName( REFRESHER_SCR_NAME )
                 .withScreenClass( RefresherScreen.class )

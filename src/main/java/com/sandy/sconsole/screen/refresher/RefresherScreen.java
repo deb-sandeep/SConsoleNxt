@@ -8,6 +8,8 @@ import com.sandy.sconsole.core.ui.uiutil.UITheme;
 import com.sandy.sconsole.screen.clock.tile.DateTile;
 import com.sandy.sconsole.screen.clock.tile.TimeTile;
 import com.sandy.sconsole.screen.refresher.quote.QuoteRefresherPanel;
+import com.sandy.sconsole.screen.refresher.vocab.VocabRefresherPanel;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
@@ -19,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 
 import static com.sandy.sconsole.SConsole.getApp;
 
+@Slf4j
 @Component
 public class RefresherScreen extends Screen implements ClockTickListener {
 
@@ -38,6 +41,7 @@ public class RefresherScreen extends Screen implements ClockTickListener {
     public void initialize( UITheme theme ) {
         super.setUpBaseUI( theme ) ;
         initializeRefresherPanel( new QuoteRefresherPanel( theme ) ) ;
+        initializeRefresherPanel( new VocabRefresherPanel( theme ) ) ;
         setUpUI( theme ) ;
     }
 
@@ -73,8 +77,11 @@ public class RefresherScreen extends Screen implements ClockTickListener {
             currentRefresherPanel = panel ;
             currentRefresherPanelIndex = panelIndex ;
         }
+
         currentRefresherPanel.refresh() ;
         super.addTile( currentRefresherPanel, 0,2,15,15 ) ;
+        super.revalidate() ;
+
         currentPanelDisplayStartTime = System.currentTimeMillis() ;
     }
 
@@ -96,7 +103,7 @@ public class RefresherScreen extends Screen implements ClockTickListener {
         long currentTimeMillis = calendar.getTimeInMillis() ;
         long displayDuration = (currentTimeMillis - currentPanelDisplayStartTime) / 1000 ;
         if( displayDuration >= currentRefresherPanel.getDisplayDuration() ) {
-            int nextPanelIndex = currentRefresherPanelIndex++ ;
+            int nextPanelIndex = ++currentRefresherPanelIndex ;
             if( nextPanelIndex >= refresherPanelList.size() ) {
                 nextPanelIndex = 0 ;
             }
