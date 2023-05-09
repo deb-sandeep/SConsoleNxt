@@ -2,7 +2,11 @@ package com.sandy.sconsole.dao.word;
 
 import org.springframework.data.repository.CrudRepository;
 
+import java.util.List;
+
 public interface WordRepo extends CrudRepository<Word, Integer> {
 
-    public Word findByWord( String word ) ;
+    Word findByWord( String word ) ;
+
+    List<Word> findTop100ByOrderByFrequencyDescNumShowsAsc() ;
 }

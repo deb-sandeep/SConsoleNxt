@@ -34,7 +34,7 @@ public class NVPConfigAnnotationProcessor {
                 processNVPConfigConsumer( bean ) ;
             }
         }
-        log.debug( "< NVPConfig annotations processed." ) ;
+        log.debug( "- NVPConfig annotations processed. <" ) ;
     }
 
     public void persistNVPConfigState( Object obj ) throws IllegalAccessException {
@@ -105,7 +105,6 @@ public class NVPConfigAnnotationProcessor {
 
         NVPManager nvpManager = appCtx.getBean( NVPManager.class ) ;
         clusters.values().forEach( c -> {
-            log.debug( "-> Loading {}", c.getFQN() );
             try {
                 c.initialize( nvpManager ) ;
             }
@@ -128,7 +127,7 @@ public class NVPConfigAnnotationProcessor {
             if( field.isAnnotationPresent( NVPConfig.class ) ) {
                 target = new NVPConfigTarget( defaultGroup, field,
                                               updateMethod, bean, nvpRepo ) ;
-                log.debug( "->> Field - {} -> {}.{}", field.getName(),
+                log.debug( "->> NVP Field - {} -> {}.{}", field.getName(),
                                                     target.getConfigGroupName(),
                                                     target.getConfigName() ) ;
                 targets.add( target ) ;

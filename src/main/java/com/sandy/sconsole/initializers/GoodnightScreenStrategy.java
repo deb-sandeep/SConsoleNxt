@@ -28,7 +28,7 @@ public class GoodnightScreenStrategy implements ComponentInitializer {
     public void initialize( SConsole app ) throws Exception {
         deregisterScheduledCallbacks( app.getClock() ) ;
         if( !enableStrategy ) {
-            log.info( "GoodnightScreenStrategy is disabled." ) ;
+            log.info( "->> GoodnightScreenStrategy is disabled." ) ;
         }
         else {
             SchedulingPattern.validate( eodCronExpression ) ;

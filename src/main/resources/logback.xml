@@ -24,7 +24,7 @@
         </rollingPolicy>
         <encoder>
             <pattern>
-                %highlight(%-5level) %-3.3L %-30.30logger{0} - %consoleMsg%n
+                %highlight(%-5level) %-3.3L %-30.30logger{0} - %fileMsg%n
             </pattern>
         </encoder>
     </appender>

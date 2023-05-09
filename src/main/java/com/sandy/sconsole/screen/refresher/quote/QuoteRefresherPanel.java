@@ -6,6 +6,7 @@ import com.sandy.sconsole.core.ui.uiutil.UITheme;
 import com.sandy.sconsole.dao.quote.Quote;
 import com.sandy.sconsole.dao.quote.QuoteManager;
 import com.sandy.sconsole.screen.refresher.AbstractRefresherPanel;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -13,6 +14,7 @@ import java.awt.*;
 
 import static com.sandy.sconsole.SConsole.getAppCtx;
 
+@Slf4j
 public class QuoteRefresherPanel extends AbstractRefresherPanel {
 
     private StringTile quoteSectionTile ;
