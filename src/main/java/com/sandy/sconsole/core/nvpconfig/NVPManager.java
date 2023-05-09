@@ -19,7 +19,6 @@ import java.util.Set;
 public class NVPManager {
     
     public static class NVPPersistCallback {
-
         @PostUpdate
         public void postNVPSave( NVPConfigDAO nvpConfigDAO ) {
             SConsole.getAppCtx()
@@ -59,7 +58,6 @@ public class NVPManager {
                                 String defaultValue ) {
 
         NVPConfigDAO nvpDAO = nvpRepo.findByGroupNameAndConfigName( groupName, keyName ) ;
-        
         if( nvpDAO == null ) {
             nvpDAO = new NVPConfigDAO( keyName, defaultValue ) ;
             nvpDAO.setGroupName( groupName ) ;

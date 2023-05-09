@@ -1,73 +1,72 @@
 package com.sandy.sconsole.screen.screens.refresher;
 
 import com.sandy.sconsole.core.clock.ClockTickListener;
+import com.sandy.sconsole.core.nvpconfig.annotation.NVPConfigAnnotationProcessor;
 import com.sandy.sconsole.core.ui.screen.Screen;
-import com.sandy.sconsole.core.ui.screen.util.StringTile;
-import com.sandy.sconsole.core.ui.uiutil.SwingUtils;
+import com.sandy.sconsole.core.ui.screen.util.StarTile;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
-import com.sandy.sconsole.dao.quote.QuoteManager;
-import com.sandy.sconsole.dao.quote.Quote;
 import com.sandy.sconsole.screen.screens.clock.tile.DateTile;
 import com.sandy.sconsole.screen.screens.clock.tile.TimeTile;
+import com.sandy.sconsole.screen.screens.refresher.quote.QuoteRefresherPanel;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
+import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static com.sandy.sconsole.SConsole.getApp;
-import static com.sandy.sconsole.SConsole.getAppCtx;
 
 @Component
 public class RefresherScreen extends Screen implements ClockTickListener {
 
-    public static final int DEF_QUOTE_REFRESH_TIME_SEC = 30*60 ;
+    @Autowired private ApplicationContext appCtx ;
 
     private TimeTile timeTile ;
     private DateTile dateTile ;
-    private StringTile quoteSectionTile ;
-    private StringTile quoteTextTile ;
-    private StringTile quoteAuthorTile ;
+    private StarTile starTile ;
 
-    private Quote currentQuote ;
-    private Date lastLoadTime ;
-    private int quoteRefreshTime = DEF_QUOTE_REFRESH_TIME_SEC;
+    private final List<RefresherPanel> refresherPanelList = new ArrayList<>() ;
+    private RefresherPanel currentRefresherPanel = null ;
 
     @Override
     public void initialize( UITheme theme ) {
         super.setUpBaseUI( theme ) ;
+        loadRefresherPanel( new QuoteRefresherPanel( this, theme ) ) ;
         setUpUI( theme ) ;
-        loadNextQuote() ;
+    }
+
+    private void loadRefresherPanel( RefresherPanel panel ) {
+
+        appCtx.getBean( NVPConfigAnnotationProcessor.class )
+              .processNVPConfigConsumer( panel ) ;
+        panel.initialize() ;
+        refresherPanelList.add( panel ) ;
     }
 
     private void setUpUI( UITheme theme ) {
 
-        timeTile = new TimeTile( this, theme, 70 ) ;
-        dateTile = new DateTile( this, theme, 50 ) ;
+        dateTile = new DateTile( theme, 50 ) ;
+        timeTile = new TimeTile( theme, 70 ) ;
+        starTile = new StarTile( theme ) ;
 
-        quoteSectionTile = new StringTile( this, theme, 50 ) ;
-        quoteSectionTile.setLabelForeground( Color.CYAN.darker() ) ;
-
-        quoteTextTile    = new StringTile( this, theme, 80, JLabel.CENTER ) ;
-        quoteTextTile.setLabelFont( new Font( "Roboto", Font.PLAIN, 70 ) );
-        quoteTextTile.setBorder( new EmptyBorder( 0, 50, 0, 50 ) ) ;
-
-        quoteAuthorTile  = new StringTile( this, theme, 60, JLabel.RIGHT ) ;
-        quoteAuthorTile.setLabelForeground( Color.YELLOW.darker() ) ;
-        quoteAuthorTile.setBorder( new EmptyBorder( 0, 0, 0, 50 ) ) ;
-
-        // Top two rrows are reserved for common display elements such as
+        // Top two rows are reserved for common display elements such as
         // Date, Time and Star rating of the currently displayed refresher.
-        super.addTile( dateTile,         0,  0, 5,  1 ) ;
-        super.addTile( timeTile,         6,  0, 9,  1 ) ;
-        super.addTile( quoteSectionTile, 10, 0, 15, 1 ) ;
+        super.addTile( dateTile, 0,  0, 5,  1 ) ;
+        super.addTile( timeTile, 6,  0, 9,  1 ) ;
+        super.addTile( starTile, 10, 0, 15, 1 ) ;
 
+        attachRefresherPanel( refresherPanelList.get( 0 ) ) ;
+    }
 
-        super.addTile( quoteTextTile,    0,  2, 15, 13 ) ;
-        super.addTile( quoteAuthorTile,  0,  14,15, 15 ) ;
+    private void attachRefresherPanel( RefresherPanel panel ) {
+        if( currentRefresherPanel != null ) {
+            super.remove( currentRefresherPanel ) ;
+        }
+        currentRefresherPanel = panel ;
+        super.addTile( currentRefresherPanel, 0,2,15,15 ) ;
     }
 
     @Override
@@ -84,36 +83,5 @@ public class RefresherScreen extends Screen implements ClockTickListener {
     public void clockTick( Calendar calendar ) {
         timeTile.updateDisplay( calendar ) ;
         dateTile.updateDisplay( calendar ) ;
-
-        if( lastLoadTime != null ) {
-            long elapsedMillis = calendar.getTime().getTime() - lastLoadTime.getTime() ;
-            if( elapsedMillis > quoteRefreshTime* 1000L ) {
-                loadNextQuote() ;
-            }
-        }
-    }
-
-    public void setQuoteRefreshTime( int sec ) {
-        this.quoteRefreshTime = sec ;
-    }
-
-    private void loadNextQuote() {
-
-        QuoteManager qotdManager = getAppCtx().getBean( QuoteManager.class ) ;
-        Quote nextQuote = qotdManager.getNextRandomQuote() ;
-        while( nextQuote == this.currentQuote ) {
-            nextQuote = qotdManager.getNextRandomQuote() ;
-        }
-
-        this.currentQuote = nextQuote ;
-        this.lastLoadTime = new Date() ;
-
-        SwingUtilities.invokeLater( () ->{
-            quoteSectionTile.setLabelText( currentQuote.getSection() ) ;
-            quoteTextTile.setLabelHTMLText( currentQuote.getQuote() ) ;
-            quoteAuthorTile.setLabelText( "- " + currentQuote.getSpeaker() ) ;
-
-            quoteTextTile.setLabelForeground( SwingUtils.getRandomColor().darker() ) ;
-        } ) ;
     }
 }

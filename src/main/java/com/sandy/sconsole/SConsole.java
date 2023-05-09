@@ -18,6 +18,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -33,7 +34,7 @@ public class SConsole
 
     private static final EventBus GLOBAL_EVENT_BUS = new EventBus() ;
 
-    private static ApplicationContext APP_CTX = null ;
+    private static ConfigurableApplicationContext APP_CTX = null ;
     private static SConsole APP = null;
 
     public static SConsole getApp() {
@@ -63,7 +64,7 @@ public class SConsole
     @Override
     public void setApplicationContext( @NotNull ApplicationContext applicationContext )
             throws BeansException {
-        APP_CTX = applicationContext;
+        APP_CTX = ( ConfigurableApplicationContext )applicationContext;
     }
 
     public void initialize() throws Exception {
