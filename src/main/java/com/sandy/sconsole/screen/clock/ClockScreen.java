@@ -1,10 +1,10 @@
-package com.sandy.sconsole.screen.screens.clock;
+package com.sandy.sconsole.screen.clock;
 
 import com.sandy.sconsole.core.clock.ClockTickListener;
 import com.sandy.sconsole.core.ui.screen.Screen;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
-import com.sandy.sconsole.screen.screens.clock.tile.DateTile;
-import com.sandy.sconsole.screen.screens.clock.tile.TimeTile;
+import com.sandy.sconsole.screen.clock.tile.DateTile;
+import com.sandy.sconsole.screen.clock.tile.TimeTile;
 import org.springframework.stereotype.Component;
 
 import java.util.Calendar;

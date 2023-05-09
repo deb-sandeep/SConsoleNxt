@@ -3,6 +3,7 @@ package com.sandy.sconsole.core.nvpconfig.annotation;
 import com.sandy.sconsole.core.nvpconfig.NVPManager;
 import com.sandy.sconsole.core.nvpconfig.annotation.internal.NVPConfigTarget;
 import com.sandy.sconsole.core.nvpconfig.annotation.internal.NVPConfigTargetCluster;
+import com.sandy.sconsole.core.util.StringUtil;
 import com.sandy.sconsole.dao.nvp.NVPConfigDAORepo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
@@ -10,10 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Component
@@ -78,8 +76,8 @@ public class NVPConfigAnnotationProcessor {
     /**
      * The object passed has fields which are marked with @NVPConfig annotations
      * or the class is marked with @NVPConfigGroup annotation.
-     *
-     * Note that non component instances can be registered with the annotation
+     * <p/>
+     * Note that non-component instances can be registered with the annotation
      * processor directly using this method. However, this method should be
      * used with care since it can cause memory leaks since the object will be
      * stored and there is no way to remove this object simply.
@@ -122,11 +120,11 @@ public class NVPConfigAnnotationProcessor {
         NVPConfigDAORepo nvpRepo = appCtx.getBean( NVPConfigDAORepo.class ) ;
         List<NVPConfigTarget> targets = new ArrayList<>() ;
         String defaultGroup = getDefaultConfigGroupName( bean.getClass() ) ;
-        Field[] fields = bean.getClass().getDeclaredFields() ;
+        List<Field> fields = getAllFields( bean.getClass() ) ;
         Method updateMethod = getUpdateMethodIfAny( bean.getClass() ) ;
 
         for( Field field : fields ) {
-            NVPConfigTarget target = null ;
+            NVPConfigTarget target ;
             if( field.isAnnotationPresent( NVPConfig.class ) ) {
                 target = new NVPConfigTarget( defaultGroup, field,
                                               updateMethod, bean, nvpRepo ) ;
@@ -137,6 +135,14 @@ public class NVPConfigAnnotationProcessor {
             }
         }
         return targets ;
+    }
+
+    private List<Field> getAllFields( Class<?> type ) {
+        List<Field> fields = new ArrayList<>() ;
+        for (Class<?> c = type; c != null; c = c.getSuperclass()) {
+            fields.addAll( Arrays.asList(c.getDeclaredFields())) ;
+        }
+        return fields;
     }
 
     private Method getUpdateMethodIfAny( Class<?> aClass ) {
@@ -154,9 +160,9 @@ public class NVPConfigAnnotationProcessor {
         if( cls.isAnnotationPresent( NVPConfigGroup.class ) ) {
             retVal = cls.getAnnotation( NVPConfigGroup.class )
                         .groupName() ;
-            if( retVal.equals( "" ) ) {
-                retVal = cls.getSimpleName() ;
-            }
+        }
+        if( StringUtil.isEmptyOrNull( retVal ) ) {
+            retVal = cls.getSimpleName() ;
         }
         return retVal ;
     }
