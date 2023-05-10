@@ -6,13 +6,13 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WordMeaning {
+public class WordnikWord {
 
     @Getter private final String word ;
-    @Getter private List<String> meanings = new ArrayList<>() ;
-    @Getter private List<String> examples = new ArrayList<>() ;
+    @Getter private final List<String> meanings = new ArrayList<>() ;
+    @Getter private final List<String> examples = new ArrayList<>() ;
 
-    WordMeaning( String word ) {
+    WordnikWord( String word ) {
         this.word = StringUtils.capitalize( word ) ;
     }
 }

@@ -5,6 +5,7 @@
 2. Setting up variables at a global level (DB_HOST,...)
 3. Home folder structure
 4. Installing sconsole as a systemd service
+5. Listing all serivices
 
 ## 1. Setting up JAVA_HOME
 <!-- ----------------- -->
@@ -58,8 +59,13 @@ projects
 
 * sudo vi /lib/systemd/system/sconsole.service
 * Copy the contents of local file doc/sysops/sconsole.service to vi
-* Change the DB_PASSWORD value in the service. Save
+* Change the value of Environment variables value in the service. Save
 * Test if the service works `sudo systemctl start sconsole.service`
 * Stop the service `sudo systemctl stop sconsole.service`
 * Enable the service `sudo systemctl enable sconsole.service`
 * Reboot the system and see if sconsole comes up at boot
+
+## 5. Listing all services
+<!-- ------------------------------------- -->
+
+systemctl list-units
