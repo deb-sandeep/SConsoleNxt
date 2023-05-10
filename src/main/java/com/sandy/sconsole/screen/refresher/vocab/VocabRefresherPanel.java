@@ -4,6 +4,8 @@ import com.sandy.sconsole.core.ui.screen.util.StringTile;
 import com.sandy.sconsole.core.ui.uiutil.SwingUtils;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
 import com.sandy.sconsole.dao.word.Word;
+import com.sandy.sconsole.dao.word.WordExample;
+import com.sandy.sconsole.dao.word.WordMeaning;
 import com.sandy.sconsole.dao.word.WordRepo;
 import com.sandy.sconsole.screen.refresher.AbstractRefresherPanel;
 import lombok.extern.slf4j.Slf4j;
@@ -66,26 +68,42 @@ public class VocabRefresherPanel extends AbstractRefresherPanel {
 
         final Word finalWord = currentWord ;
         SwingUtilities.invokeLater( () ->{
+
             wordTile.setLabelText( StringUtils.capitalize( finalWord.getWord() ) ) ;
             wordTile.setLabelForeground( SwingUtils.getRandomColor() ) ;
 
-            meaningTile.setLabelHTMLText( StringUtils.capitalize( finalWord.getMeaning() ) ) ;
-
-            String example = finalWord.getExample() ;
-            example = example == null ? "" : example ;
-            example = StringUtils.capitalize( example ) ;
-            exampleTile.setLabelHTMLText( example ) ;
+            meaningTile.setLabelHTMLText( getRandomMeaning( finalWord ) ) ;
+            exampleTile.setLabelHTMLText( getRandomExample( finalWord ) ) ;
         } ) ;
+    }
+
+    private String getRandomMeaning( Word word ) {
+
+        List<WordMeaning> meanings = word.getMeanings() ;
+        int randomIndex = new Random().nextInt( meanings.size() ) ;
+        return StringUtils.capitalize( meanings.get( randomIndex )
+                                               .getMeaning() ) ;
+    }
+
+    private String getRandomExample( Word word ) {
+
+        List<WordExample> examples = word.getExamples() ;
+        if( !examples.isEmpty() ) {
+            int randomIndex = new Random().nextInt( examples.size() ) ;
+            String example = examples.get( randomIndex ).getExample() ;
+            return StringUtils.capitalize( example ) ;
+        }
+        return "" ;
     }
 
     private Word getNextWord() {
 
         WordRepo wordRepo = getAppCtx().getBean( WordRepo.class ) ;
-        List<Word> words = wordRepo.findTop100ByExampleIsNotNullOrderByFrequencyDesc() ;
+        List<Word> words = wordRepo.findTop10ByWordnikEnrichedIsTrueOrderByNumShowsAscFrequencyDesc() ;
         Word word = words.get( new Random().nextInt( words.size() )  ) ;
 
         if( currentWord != null ) {
-        while( word.getId().equals( currentWord.getId() ) ) {
+            while( word.getId().equals( currentWord.getId() ) ) {
                 word = words.get( new Random().nextInt( words.size() )  ) ;
             }
         }

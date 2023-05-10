@@ -22,6 +22,7 @@ public abstract class LogIndenter extends MessageConverter {
     private static final String EM_ADD_DBLINDENT   = " >>" ;
     private static final String EM_REMOVE_INDENT   = " <" ;
     private static final String EM_REMOVE_DBLINDENT= " <<" ;
+    private static final String EM_RESET_INDENT    = " <<<" ;
 
     private static final String[] SM_MARKERS = {
             SM_ADD_INDENT,
@@ -38,7 +39,8 @@ public abstract class LogIndenter extends MessageConverter {
             EM_ADD_INDENT,
             EM_ADD_DBLINDENT,
             EM_REMOVE_INDENT,
-            EM_REMOVE_DBLINDENT
+            EM_REMOVE_DBLINDENT,
+            EM_RESET_INDENT
     } ;
 
     private final String indentKey;
@@ -115,6 +117,7 @@ public abstract class LogIndenter extends MessageConverter {
                 case EM_ADD_DBLINDENT    -> addIndent( 2 );
                 case EM_REMOVE_INDENT    -> deIndent( 1 );
                 case EM_REMOVE_DBLINDENT -> deIndent( 2 );
+                case EM_RESET_INDENT     -> resetIndent();
             }
         }
     }

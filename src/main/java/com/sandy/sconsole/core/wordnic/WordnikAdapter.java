@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-public class WordnicAdapter {
+public class WordnikAdapter {
 
     private static final String DEFINITION_URL =
             "https://api.wordnik.com/v4/word.json/${word}/definitions?" +
@@ -29,30 +29,30 @@ public class WordnicAdapter {
             "limit=50&" +
             "api_key=${api_key}" ;
 
-    public static WordMeaning getWordMeaning( String word )
+    public static WordnikWord getWordMeaning( String word )
         throws Exception {
         log.debug( "- Getting word meaning for '{}' from Wordnik. >", word ) ;
-        return new WordnicAdapter( word ).fetchWordMeaning() ;
+        return new WordnikAdapter( word ).fetchWordMeaning() ;
     }
 
     private final String word ;
     private final HTTPResourceDownloader http ;
     private final Map<String, String> headers = new HashMap<>() ;
 
-    private WordnicAdapter( String word ) {
+    private WordnikAdapter( String word ) {
         this.word = word ;
         this.http = HTTPResourceDownloader.instance() ;
         headers.put( "Accept", "application/json" ) ;
     }
 
-    private WordMeaning fetchWordMeaning() throws Exception {
-        WordMeaning wordMeaning = new WordMeaning( word ) ;
-        getMeanings( word, wordMeaning.getMeanings() ) ;
-        getExamples( word, wordMeaning.getExamples() ) ;
+    private WordnikWord fetchWordMeaning() throws Exception {
+        WordnikWord wordMeaning = new WordnikWord( word ) ;
+        getMeanings( wordMeaning.getMeanings() ) ;
+        getExamples( wordMeaning.getExamples() ) ;
         return wordMeaning ;
     }
 
-    private void getMeanings( String word, List<String> meanings )
+    private void getMeanings( List<String> meanings )
         throws Exception {
 
         log.debug( "- Getting meanings." ) ;
@@ -67,6 +67,7 @@ public class WordnicAdapter {
                     String meaning = child.get( "text" ).asText().trim() ;
 
                     if( StringUtil.isNotEmptyOrNull( meaning ) &&
+                        meaning.length() < 150 &&
                         !meanings.contains( meaning ) ) {
 
                         meanings.add( meaning.trim() ) ;
@@ -77,7 +78,7 @@ public class WordnicAdapter {
         log.debug( "-> Got {} meanings.", meanings.size() ) ;
     }
 
-    private void getExamples( String word, List<String> examples )
+    private void getExamples( List<String> examples )
         throws Exception {
 
         log.debug( "- Getting examples." ) ;
@@ -93,7 +94,7 @@ public class WordnicAdapter {
                     String example = child.get( "text" ).asText() ;
 
                     if( StringUtil.isNotEmptyOrNull( example ) &&
-                        example.length() < 80 &&
+                        example.length() < 120 &&
                         !examples.contains( example ) ) {
 
                         examples.add( example.trim() ) ;
