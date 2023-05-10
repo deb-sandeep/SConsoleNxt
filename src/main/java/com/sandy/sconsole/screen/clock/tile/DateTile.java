@@ -8,13 +8,18 @@ import java.util.Calendar;
 
 public class DateTile extends StringTile {
 
-    private static final SimpleDateFormat SDF = new SimpleDateFormat( "dd MMMM, EEEE" ) ;
+    private final SimpleDateFormat dateFormat ;
 
     public DateTile( UITheme theme, int fontSize ) {
+        this( "dd MMM, EEEE", theme, fontSize ) ;
+    }
+
+    public DateTile( String dateFormat, UITheme theme, int fontSize ) {
         super( theme, fontSize ) ;
+        this.dateFormat = new SimpleDateFormat( dateFormat ) ;
     }
 
     public void updateDisplay( Calendar calendar ) {
-        setLabelText( SDF.format( calendar.getTime() ) ) ;
+        setLabelText( dateFormat.format( calendar.getTime() ) ) ;
     }
 }

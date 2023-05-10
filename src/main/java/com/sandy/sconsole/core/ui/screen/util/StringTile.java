@@ -41,7 +41,11 @@ public class StringTile extends Tile {
 
     // Assumed that this method is invoked in Swing event thread.
     public void setLabelText( String text ) {
-        this.textLabel.setText( text ) ;
+        this.textLabel.setText( text == null ? "" : text ) ;
+    }
+
+    public void setHorizontalAlignment( int hAlign ) {
+        this.textLabel.setHorizontalAlignment( hAlign ) ;
     }
 
     // Assumed that this method is invoked in Swing event thread.

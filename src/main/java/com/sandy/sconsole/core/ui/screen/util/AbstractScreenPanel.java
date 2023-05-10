@@ -6,6 +6,10 @@ import com.sandy.sconsole.core.ui.uiutil.UITheme;
 import info.clearthought.layout.TableLayout;
 
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.LineBorder;
+import java.awt.*;
 
 public class AbstractScreenPanel extends JPanel {
 
@@ -39,5 +43,18 @@ public class AbstractScreenPanel extends JPanel {
 
     protected void addTile( Tile tile, int ltX, int ltY, int rbX, int rbY ) {
         super.add( tile, String.format( "%d,%d,%d,%d", ltX, ltY, rbX, rbY ) ) ;
+    }
+
+    public void setDebugBorder() {
+        Border existingBorder = getBorder() ;
+        Border debugBorder = null ;
+
+        if( existingBorder == null ) {
+            debugBorder = new LineBorder( Color.GRAY ) ;
+        }
+        else {
+            debugBorder = new CompoundBorder( new LineBorder( Color.GRAY ), existingBorder ) ;
+        }
+        super.setBorder( debugBorder ) ;
     }
 }

@@ -40,19 +40,20 @@ public class QuoteRefresherPanel extends AbstractRefresherPanel {
     private void setUpUI() {
 
         quoteSectionTile = new StringTile( theme, 50, JLabel.CENTER, JLabel.BOTTOM ) ;
-        quoteSectionTile.setLabelForeground( Color.DARK_GRAY.darker() ) ;
+        quoteSectionTile.setLabelFont( new Font( "Ariel", Font.ITALIC, 50 ) );
+        quoteSectionTile.setLabelForeground( Color.GRAY ) ;
 
         quoteTextTile = new StringTile( theme, 80, JLabel.CENTER ) ;
         quoteTextTile.setLabelFont( new Font( "Roboto", Font.PLAIN, 70 ) );
         quoteTextTile.setBorder( new EmptyBorder( 0, 50, 0, 50 ) ) ;
 
-        quoteAuthorTile = new StringTile( theme, 50, JLabel.RIGHT, JLabel.TOP ) ;
+        quoteAuthorTile = new StringTile( theme, 50, JLabel.RIGHT ) ;
         quoteAuthorTile.setLabelForeground( Color.YELLOW.darker() ) ;
         quoteAuthorTile.setBorder( new EmptyBorder( 0, 0, 0, 50 ) ) ;
 
-        super.addTile( quoteSectionTile, 0,0,15,1 ) ;
-        super.addTile( quoteTextTile, 0,2,15,13 ) ;
-        super.addTile( quoteAuthorTile, 0,14,15,15 ) ;
+        super.addTile( quoteSectionTile, 0,0,15,2 ) ;
+        super.addTile( quoteTextTile, 0,3,15,12 ) ;
+        super.addTile( quoteAuthorTile, 0,13,15,15 ) ;
     }
 
     private void loadNextQuote() {
@@ -66,9 +67,9 @@ public class QuoteRefresherPanel extends AbstractRefresherPanel {
         this.currentQuote = nextQuote ;
 
         SwingUtilities.invokeLater( () ->{
-            quoteSectionTile.setLabelText( "[ " + currentQuote.getSection() + " ]" ) ;
+            quoteSectionTile.setLabelText( currentQuote.getSection() ) ;
             quoteTextTile.setLabelHTMLText( currentQuote.getQuote() ) ;
-            quoteTextTile.setLabelForeground( SwingUtils.getRandomColor().darker() ) ;
+            quoteTextTile.setLabelForeground( SwingUtils.getRandomColor() ) ;
             quoteAuthorTile.setLabelText( "- " + currentQuote.getSpeaker() ) ;
         } ) ;
     }

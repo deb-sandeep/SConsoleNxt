@@ -4,7 +4,6 @@ import com.sandy.sconsole.SConsole;
 import com.sandy.sconsole.core.behavior.ComponentFinalizer;
 import com.sandy.sconsole.core.behavior.ComponentInitializer;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.LinkedBlockingQueue;
@@ -19,7 +18,7 @@ public class RemoteKeyDispatch
     private Thread eventDispatchThread ;
     private boolean keepRunning = true ;
 
-    @Autowired private SConsole sconsole ;
+    private SConsole sconsole ;
 
     @Override
     public boolean isInvocable() { return true ; }

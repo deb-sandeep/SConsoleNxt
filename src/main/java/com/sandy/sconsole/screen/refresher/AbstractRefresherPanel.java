@@ -7,8 +7,9 @@ import lombok.Getter;
 
 public abstract class AbstractRefresherPanel extends Tile {
 
+    // Time in seconds after which this refrsher panel will be rotated.
     @NVPConfig
-    @Getter protected int displayDuration = 300 ;
+    @Getter protected int displayDuration = 30*60 ;
 
     public AbstractRefresherPanel( UITheme theme ) {
         super( theme, false ) ;
