@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -43,6 +44,7 @@ public class RefresherScreen extends Screen implements ClockTickListener {
         initializeRefresherPanel( new QuoteRefresherPanel( theme ) ) ;
         initializeRefresherPanel( new VocabRefresherPanel( theme ) ) ;
         setUpUI( theme ) ;
+        setRefresherPanel( 0 ) ;
     }
 
     private void initializeRefresherPanel( AbstractRefresherPanel panel ) {
@@ -55,34 +57,40 @@ public class RefresherScreen extends Screen implements ClockTickListener {
 
     private void setUpUI( UITheme theme ) {
 
-        dateTile = new DateTile( theme, 50 ) ;
+        dateTile = new DateTile( "dd MMM, EE", theme, 50 ) ;
         timeTile = new TimeTile( theme, 70 ) ;
         starTile = new StarTile( theme ) ;
+
+        dateTile.setHorizontalAlignment( JLabel.LEFT ) ;
 
         // Top two rows are reserved for common display elements such as
         // Date, Time and Star rating of the currently displayed refresher.
         super.addTile( dateTile, 0,  0, 5,  1 ) ;
         super.addTile( timeTile, 6,  0, 9,  1 ) ;
         super.addTile( starTile, 10, 0, 15, 1 ) ;
-
-        setRefresherPanel( 0 ) ;
     }
 
     private void setRefresherPanel( int panelIndex ) {
+
         if( panelIndex != currentRefresherPanelIndex ) {
             AbstractRefresherPanel panel = refresherPanelList.get( panelIndex ) ;
             if( currentRefresherPanel != null ) {
                 super.remove( currentRefresherPanel ) ;
+                super.invalidate() ;
             }
             currentRefresherPanel = panel ;
             currentRefresherPanelIndex = panelIndex ;
         }
 
+        log.debug( "- Setting refresher panel {}", currentRefresherPanel.getClass().getSimpleName() ) ;
         currentRefresherPanel.refresh() ;
-        super.addTile( currentRefresherPanel, 0,2,15,15 ) ;
-        super.revalidate() ;
-
         currentPanelDisplayStartTime = System.currentTimeMillis() ;
+
+        SwingUtilities.invokeLater( ()->{
+            super.addTile( currentRefresherPanel, 0,2,15,15 ) ;
+            super.revalidate() ;
+            super.repaint() ;
+        } ) ;
     }
 
     @Override
@@ -97,17 +105,20 @@ public class RefresherScreen extends Screen implements ClockTickListener {
 
     @Override
     public void clockTick( Calendar calendar ) {
+
         timeTile.updateDisplay( calendar ) ;
         dateTile.updateDisplay( calendar ) ;
 
-        long currentTimeMillis = calendar.getTimeInMillis() ;
-        long displayDuration = (currentTimeMillis - currentPanelDisplayStartTime) / 1000 ;
-        if( displayDuration >= currentRefresherPanel.getDisplayDuration() ) {
-            int nextPanelIndex = ++currentRefresherPanelIndex ;
-            if( nextPanelIndex >= refresherPanelList.size() ) {
-                nextPanelIndex = 0 ;
+        if( currentRefresherPanel != null ) {
+            long currentTimeMillis = calendar.getTimeInMillis() ;
+            long displayDuration = (currentTimeMillis - currentPanelDisplayStartTime) / 1000 ;
+            if( displayDuration >= currentRefresherPanel.getDisplayDuration() ) {
+                int nextPanelIndex = currentRefresherPanelIndex+1 ;
+                if( nextPanelIndex >= refresherPanelList.size() ) {
+                    nextPanelIndex = 0 ;
+                }
+                setRefresherPanel( nextPanelIndex ) ;
             }
-            setRefresherPanel( nextPanelIndex ) ;
         }
     }
 }

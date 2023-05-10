@@ -2,7 +2,7 @@
 <!-- ----------------------------------------------------------------------- -->
 
 1. Setting up JAVA_HOME
-2. Setting up DB_PASSWORD at a global level
+2. Setting up variables at a global level (DB_HOST,...)
 3. Home folder structure
 4. Installing sconsole as a systemd service
 
@@ -25,7 +25,7 @@ export JAVA_HOME=/usr/lib/jvm/java-1.17.0-openjdk-arm64
 
 => Source ~/.bashrc
 
-## 2. Setting up DB_PASSWORD at a global level
+## 2. Setting up variables at a global level
 <!-- ------------------------------------- -->
 
 * Edit environment.sh in /etc/profile.d/ folder
@@ -34,8 +34,10 @@ export JAVA_HOME=/usr/lib/jvm/java-1.17.0-openjdk-arm64
 #!/bin/bash
 
 export DB_PASSWORD=<password>
+export DB_HOST=<hostname>
+export WORDNIC_API_KEY=<api_key>
 ```
-* Source /etc/profile.d/environment.sh
+* source /etc/profile.d/environment.sh
 
 ## 3. Home folder structure
 <!-- ------------------ -->

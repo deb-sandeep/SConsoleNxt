@@ -7,6 +7,7 @@ import com.sandy.sconsole.dao.word.Word;
 import com.sandy.sconsole.dao.word.WordRepo;
 import com.sandy.sconsole.screen.refresher.AbstractRefresherPanel;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -41,22 +42,21 @@ public class VocabRefresherPanel extends AbstractRefresherPanel {
 
     private void setUpUI() {
 
-        EmptyBorder border = new EmptyBorder( 0, 50, 0, 50 ) ;
-
         wordTile = new StringTile( theme, 80, JLabel.CENTER, JLabel.BOTTOM ) ;
         wordTile.setLabelForeground( Color.CYAN.brighter() ) ;
 
-        meaningTile = new StringTile( theme, 60, JLabel.CENTER ) ;
-        meaningTile.setLabelFont( new Font( "Roboto", Font.PLAIN, 60 ) );
-        meaningTile.setLabelForeground( Color.GREEN.darker() ) ;
-        meaningTile.setBorder( border ) ;
+        meaningTile = new StringTile( theme, 55, JLabel.CENTER ) ;
+        meaningTile.setLabelFont( new Font( "Roboto", Font.PLAIN, 55 ) );
+        meaningTile.setLabelForeground( Color.CYAN.darker().darker().darker() ) ;
+        meaningTile.setBorder( new EmptyBorder( 0, 50, 0, 50 ) ) ;
 
-        exampleTile = new StringTile( theme, 50, JLabel.RIGHT, JLabel.TOP ) ;
-        exampleTile.setLabelForeground( Color.YELLOW.darker() ) ;
-        exampleTile.setBorder( border ) ;
+        exampleTile = new StringTile( theme, 40, JLabel.CENTER ) ;
+        exampleTile.setLabelFont( new Font( "Ariel", Font.ITALIC, 40 ) );
+        exampleTile.setLabelForeground( Color.GRAY ) ;
+        exampleTile.setBorder( new EmptyBorder( 0, 50, 0, 50 ) ) ;
 
-        super.addTile( wordTile, 0,0,15,2 ) ;
-        super.addTile( meaningTile, 0,3,15,9 ) ;
+        super.addTile( wordTile, 0,0,15,3 ) ;
+        super.addTile( meaningTile, 0,4,15,9 ) ;
         super.addTile( exampleTile, 0,10,15,15 ) ;
     }
 
@@ -66,21 +66,28 @@ public class VocabRefresherPanel extends AbstractRefresherPanel {
 
         final Word finalWord = currentWord ;
         SwingUtilities.invokeLater( () ->{
-            wordTile.setLabelText( finalWord.getWord() ) ;
-            wordTile.setLabelForeground( SwingUtils.getRandomColor().darker() ) ;
-            meaningTile.setLabelHTMLText( finalWord.getMeaning() ) ;
-            exampleTile.setLabelText( finalWord.getMeaning() ) ;
+            wordTile.setLabelText( StringUtils.capitalize( finalWord.getWord() ) ) ;
+            wordTile.setLabelForeground( SwingUtils.getRandomColor() ) ;
+
+            meaningTile.setLabelHTMLText( StringUtils.capitalize( finalWord.getMeaning() ) ) ;
+
+            String example = finalWord.getExample() ;
+            example = example == null ? "" : example ;
+            example = StringUtils.capitalize( example ) ;
+            exampleTile.setLabelHTMLText( example ) ;
         } ) ;
     }
 
     private Word getNextWord() {
 
         WordRepo wordRepo = getAppCtx().getBean( WordRepo.class ) ;
-        List<Word> words = wordRepo.findTop100ByOrderByFrequencyDescNumShowsAsc() ;
+        List<Word> words = wordRepo.findTop100ByExampleIsNotNullOrderByFrequencyDesc() ;
         Word word = words.get( new Random().nextInt( words.size() )  ) ;
 
+        if( currentWord != null ) {
         while( word.getId().equals( currentWord.getId() ) ) {
-            word = words.get( new Random().nextInt( words.size() )  ) ;
+                word = words.get( new Random().nextInt( words.size() )  ) ;
+            }
         }
         word.setNumShows( word.getNumShows()+1 ) ;
         wordRepo.save( word ) ;

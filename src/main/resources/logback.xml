@@ -37,6 +37,8 @@
     <logger name="com.zaxxer"           level="WARN"></logger>
     <logger name="SQL dialect"          level="WARN"></logger>
 
+    <logger name="com.sandy.sconsole.core.net" level="INFO"></logger>
+
     <root level="debug">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="FILE"/>
