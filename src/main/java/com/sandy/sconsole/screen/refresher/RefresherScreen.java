@@ -27,6 +27,7 @@ import static com.sandy.sconsole.SConsole.getApp;
 public class RefresherScreen extends Screen implements ClockTickListener {
 
     @Autowired private ApplicationContext appCtx ;
+    @Autowired private NVPConfigAnnotationProcessor nvpAnnotationProcessor ;
 
     private TimeTile timeTile ;
     private DateTile dateTile ;
@@ -51,6 +52,7 @@ public class RefresherScreen extends Screen implements ClockTickListener {
 
         appCtx.getBean( NVPConfigAnnotationProcessor.class )
               .processNVPConfigConsumer( panel ) ;
+        nvpAnnotationProcessor.processNVPConfigConsumer( panel ) ;
         panel.initialize() ;
         refresherPanelList.add( panel ) ;
     }
@@ -118,6 +120,14 @@ public class RefresherScreen extends Screen implements ClockTickListener {
                     nextPanelIndex = 0 ;
                 }
                 setRefresherPanel( nextPanelIndex ) ;
+            }
+            else {
+                int callbackInterval = currentRefresherPanel.getCallbackInterval() ;
+                if( callbackInterval > 0 ) {
+                    if( displayDuration % callbackInterval == 0 ) {
+                        currentRefresherPanel.refresherScreenCallback() ;
+                    }
+                }
             }
         }
     }

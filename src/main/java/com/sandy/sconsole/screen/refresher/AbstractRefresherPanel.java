@@ -19,4 +19,13 @@ public abstract class AbstractRefresherPanel extends Tile {
     public abstract void initialize() ;
 
     public abstract void refresh() ;
+
+    /**
+     * Once this panel gets activated, the refrsher screen will call back
+     * the refresherScreenCallback method in the interval returned by
+     * this method. A -1 or 0 implies no callback.
+     */
+    public int getCallbackInterval() { return -1 ; }
+
+    public void refresherScreenCallback() {} ;
 }

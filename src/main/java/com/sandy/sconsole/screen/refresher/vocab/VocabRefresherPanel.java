@@ -1,5 +1,6 @@
 package com.sandy.sconsole.screen.refresher.vocab;
 
+import com.sandy.sconsole.core.nvpconfig.annotation.NVPConfig;
 import com.sandy.sconsole.core.ui.screen.util.StringTile;
 import com.sandy.sconsole.core.ui.uiutil.SwingUtils;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
@@ -29,6 +30,9 @@ public class VocabRefresherPanel extends AbstractRefresherPanel {
 
     private Word currentWord ;
 
+    @NVPConfig
+    private int descriptionChangeInterval = 300 ;
+
     public VocabRefresherPanel( UITheme uiTheme ) {
         super( uiTheme );
     }
@@ -41,6 +45,22 @@ public class VocabRefresherPanel extends AbstractRefresherPanel {
     @Override
     public void refresh() {
         loadNextWord() ;
+    }
+
+    @Override
+    public int getCallbackInterval() {
+        return this.descriptionChangeInterval ;
+    }
+
+    @Override
+    public void refresherScreenCallback() {
+        if( currentWord.getMeanings().size() > 1 ) {
+            meaningTile.setLabelHTMLText( getRandomMeaning( currentWord ) ) ;
+        }
+
+        if( currentWord.getExamples().size() > 1 ) {
+            exampleTile.setLabelHTMLText( getRandomExample( currentWord ) ) ;
+        }
     }
 
     private void setUpUI() {
