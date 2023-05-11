@@ -96,6 +96,12 @@ public class NVPConfigTarget {
         configRepo.save( dao ) ;
     }
 
+    public void loadState() throws InvocationTargetException, IllegalAccessException {
+        NVPConfigDAO dao = configRepo.findByGroupNameAndConfigName( configGroupName, configName ) ;
+        com.sandy.sconsole.core.nvpconfig.NVPConfig cfg = new com.sandy.sconsole.core.nvpconfig.NVPConfig( dao, configRepo ) ;
+        updateTarget( cfg, true ) ;
+    }
+
     public String getFieldValue() throws IllegalAccessException {
         return convertFieldValToString() ;
     }
@@ -146,4 +152,5 @@ public class NVPConfigTarget {
         }
         return convertedVal ;
     }
+
 }

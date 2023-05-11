@@ -81,6 +81,17 @@ public class NVPManager {
                      new NVPConfigAnnotationProcessor( SConsole.getAppCtx() ) ;
         annotationProcessor.persistNVPConfigState( obj ) ;
     }
+
+    /**
+     * If there are any @NVPConfig annotated fields in the given object,
+     * they will be populated.
+     */
+    public void loadNVPConfigState( Object obj ) throws Exception {
+
+        NVPConfigAnnotationProcessor annotationProcessor =
+                new NVPConfigAnnotationProcessor( SConsole.getAppCtx() ) ;
+        annotationProcessor.loadNVPConfigState( obj ) ;
+    }
     
     public void addConfigChangeListener( NVPConfigChangeListener listener,
                                          String groupName, 

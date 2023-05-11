@@ -35,6 +35,9 @@ public class WordnikAdapter {
         return new WordnikAdapter( word ).fetchWordMeaning() ;
     }
 
+    private static final int MAX_MEANING_LENGTH = 150 ;
+    private static final int MAX_EXAMPLE_LENGTH = 170 ;
+
     private final String word ;
     private final HTTPResourceDownloader http ;
     private final Map<String, String> headers = new HashMap<>() ;
@@ -66,11 +69,13 @@ public class WordnikAdapter {
                 if( child.has( "text" ) ) {
                     String meaning = child.get( "text" ).asText().trim() ;
 
-                    if( StringUtil.isNotEmptyOrNull( meaning ) &&
-                        meaning.length() < 150 &&
-                        !meanings.contains( meaning ) ) {
-
-                        meanings.add( meaning.trim() ) ;
+                    if( StringUtil.isNotEmptyOrNull( meaning ) ) {
+                        if( removeMarkups( meaning ).length() > MAX_MEANING_LENGTH ) {
+                            log.debug( "-> Ignoring meaning [>Length] '{}'.", meaning.length() ) ;
+                        }
+                        else if( !meanings.contains( meaning ) ) {
+                            meanings.add( meaning.trim() ) ;
+                        }
                     }
                 }
             }
@@ -93,11 +98,13 @@ public class WordnikAdapter {
                 if( child.has( "text" ) ) {
                     String example = child.get( "text" ).asText() ;
 
-                    if( StringUtil.isNotEmptyOrNull( example ) &&
-                        example.length() < 120 &&
-                        !examples.contains( example ) ) {
-
-                        examples.add( example.trim() ) ;
+                    if( StringUtil.isNotEmptyOrNull( example ) ) {
+                        if( removeMarkups( example ).length() > MAX_EXAMPLE_LENGTH ) {
+                            log.debug( "-> Ignoring example [>Length] '{}'.", example.length() ) ;
+                        }
+                        else if( !examples.contains( example ) ) {
+                            examples.add( example.trim() ) ;
+                        }
                     }
                 }
             }
@@ -138,5 +145,9 @@ public class WordnikAdapter {
     private String getFormattedURL( String url ) {
         return url.replace( "${word}", this.word )
                   .replace( "${api_key}", System.getenv( "WORDNIK_API_KEY" ) ) ;
+    }
+
+    private String removeMarkups( String input ) {
+        return input.replaceAll( "<.*?>", "" ) ;
     }
 }

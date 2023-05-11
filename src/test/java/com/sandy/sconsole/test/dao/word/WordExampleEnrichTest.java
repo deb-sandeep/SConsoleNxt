@@ -1,34 +1,39 @@
 package com.sandy.sconsole.test.dao.word;
 
+import com.sandy.sconsole.core.util.StringUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 @Slf4j
 public class WordExampleEnrichTest {
 
-    private String enrichExample( String example, String word ) {
+    @Test
+    void testEnrich1() {
+        String toEnrich = "Am serah buri buri nimpah, serah pe." ;
+        String enriched = "Am <font color=white>serah</font> buri buri nimpah, <font color=white>serah</font> pe." ;
+        String enrichedStr = StringUtil.enrichExample( toEnrich, "serah" ) ;
 
-        String orginalString = example ;
-
-        example = example.replace( ( char )0x2003,' ' ) ;
-        example = StringUtils.capitalize( example.trim() ) ;
-
-        int indexOfWord = example.toLowerCase().indexOf( word.toLowerCase() ) ;
-        StringBuilder sb = new StringBuilder() ;
-        sb.append( orginalString, 0, indexOfWord ) ;
-        sb.append( "<font color='LightGray'>" ) ;
-        sb.append( orginalString, indexOfWord, indexOfWord+word.length() ) ;
-        sb.append( "</font>" ) ;
-        sb.append( orginalString, indexOfWord+word.length(), example.length()) ;
-
-        return sb.toString() ;
-    }
+        assertThat( enrichedStr, is( equalTo( enriched ) ) ) ;
+     }
 
     @Test
-    void testEnrich() {
-        String toEnrich = "I am a good boy." ;
-        String enrichedStr = enrichExample( toEnrich, "I" ) ;
-        log.debug( enrichedStr ) ;
-    }
+    void testEnrich2() {
+        String toEnrich = "Am serah buri buri nimpah, serah pe." ;
+        String enriched = "<font color=white>Am</font> serah buri buri nimpah, serah pe." ;
+        String enrichedStr = StringUtil.enrichExample( toEnrich, "Am" ) ;
+
+        assertThat( enrichedStr, is( equalTo( enriched ) ) ) ;
+     }
+
+    @Test
+    void testEnrich3() {
+        String toEnrich = "Am serah buri buri nimpah, serah pe" ;
+        String enriched = "Am serah buri buri nimpah, serah <font color=white>pe</font>" ;
+        String enrichedStr = StringUtil.enrichExample( toEnrich, "pe" ) ;
+
+        assertThat( enrichedStr, is( equalTo( enriched ) ) ) ;
+     }
 }

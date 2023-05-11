@@ -12,7 +12,7 @@ public class NVPConfig {
     private final NVPConfigDAO nvpDAO ;
     private final NVPConfigDAORepo nvpRepo ;
     
-    NVPConfig( NVPConfigDAO nvpDAO, NVPConfigDAORepo nvpRepo ) {
+    public NVPConfig( NVPConfigDAO nvpDAO, NVPConfigDAORepo nvpRepo ) {
         this.nvpDAO = nvpDAO ;
         this.nvpRepo = nvpRepo ;
     }

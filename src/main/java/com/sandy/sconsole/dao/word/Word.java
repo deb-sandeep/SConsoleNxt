@@ -33,6 +33,10 @@ public class Word {
     private int       numShows        = 0;
     private Timestamp lastDisplayTime = null;
 
+    private int numWordnikTries = 0 ;
+    private int numMeanings = 0 ;
+    private int numExamples = 0 ;
+
     @OneToMany( cascade = CascadeType.ALL,
                 mappedBy="word",
                 fetch = FetchType.EAGER )
@@ -96,11 +100,11 @@ public class Word {
 
         if( StringUtil.isEmptyOrNull( example ) ) { return ; }
 
-        example = enrichExample( example ) ;
+        String enrichedExample = StringUtil.enrichExample( example, word ) ;
 
         boolean alreadyExists = false ;
         for( WordExample we : examples ) {
-            if( we.getExample().equals( example ) ) {
+            if( we.getExample().equals( enrichedExample ) ) {
                 alreadyExists = true ;
                 break ;
             }
@@ -108,7 +112,7 @@ public class Word {
         if( !alreadyExists ) {
             WordExample we = new WordExample() ;
             we.setWord( this ) ;
-            we.setExample( example ) ;
+            we.setExample( enrichedExample ) ;
             examples.add( we ) ;
         }
     }
@@ -117,18 +121,4 @@ public class Word {
         return word ;
     }
 
-    private String enrichExample( String example ) {
-
-        example = example.replace( ( char )0x2003,' ' ) ;
-        example = StringUtils.capitalize( example.trim() ) ;
-
-        String orginalString = example ;
-        int indexOfWord = example.toLowerCase().indexOf( word.toLowerCase() ) ;
-
-        return orginalString.substring( 0, indexOfWord ) +
-                "<font color=white>" +
-                orginalString.substring( indexOfWord, indexOfWord + word.length() ) +
-                "</font>" +
-                orginalString.substring( indexOfWord + word.length(), example.length() ) ;
-    }
 }

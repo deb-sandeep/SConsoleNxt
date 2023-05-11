@@ -10,6 +10,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 
@@ -41,6 +42,13 @@ public class NVPConfigAnnotationProcessor {
         List<NVPConfigTarget> nvpConfigTargets = extractNVPConfigTargets( obj ) ;
         for( NVPConfigTarget target : nvpConfigTargets ) {
             target.persistState() ;
+        }
+    }
+
+    public void loadNVPConfigState( Object obj ) throws InvocationTargetException, IllegalAccessException {
+        List<NVPConfigTarget> nvpConfigTargets = extractNVPConfigTargets( obj ) ;
+        for( NVPConfigTarget target : nvpConfigTargets ) {
+            target.loadState() ;
         }
     }
 
@@ -165,4 +173,5 @@ public class NVPConfigAnnotationProcessor {
         }
         return retVal ;
     }
+
 }

@@ -7,6 +7,7 @@ import com.sandy.sconsole.core.nvpconfig.annotation.NVPConfigAnnotationProcessor
 import com.sandy.sconsole.dao.nvp.NVPConfigDAO;
 import com.sandy.sconsole.dao.nvp.NVPConfigDAORepo;
 import com.sandy.sconsole.test.core.nvpconfig.helper.ObserverComponent;
+import com.sandy.sconsole.test.core.nvpconfig.helper.SimpleClassWithNVPConfig;
 import com.sandy.sconsole.test.core.nvpconfig.helper.TestComponent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -111,5 +112,23 @@ public class NVPConfigAnnotationTest {
 
         assertThat( observerComponent.getObservedConfig(),
                     is( equalTo( "some_changed_value" ) ) ) ;
+    }
+
+    /**
+     * Instances of classes which are not Components can be loaded and
+     * saved as an unit by calling NVPManager APIs.
+     */
+    @Test void loadConfigState() throws Exception {
+
+        processor.processNVPConfigAnnotations( TestComponent.class.getPackageName() ) ;
+        // Update the NVPConfig field of an object programmatically
+        testComponent.setConfigKeyA( "some_changed_value" ) ;
+        nvpManager.persistNVPConfigState( testComponent ) ;
+
+        SimpleClassWithNVPConfig simpleInstance = new SimpleClassWithNVPConfig() ;
+        nvpManager.loadNVPConfigState( simpleInstance ) ;
+
+        assertThat( simpleInstance.getCfgVal(),
+                    is( equalTo( testComponent.getConfigKeyA() ) ) ) ;
     }
 }

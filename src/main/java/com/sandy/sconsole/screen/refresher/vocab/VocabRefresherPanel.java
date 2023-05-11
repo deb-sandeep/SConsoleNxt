@@ -79,10 +79,18 @@ public class VocabRefresherPanel extends AbstractRefresherPanel {
 
     private String getRandomMeaning( Word word ) {
 
+        String meaning ;
         List<WordMeaning> meanings = word.getMeanings() ;
-        int randomIndex = new Random().nextInt( meanings.size() ) ;
-        return StringUtils.capitalize( meanings.get( randomIndex )
-                                               .getMeaning() ) ;
+
+        if( meanings.isEmpty() ) {
+            meaning = word.getMeaning() ;
+        }
+        else {
+            int randomIndex = new Random().nextInt( meanings.size() ) ;
+            meaning = StringUtils.capitalize( meanings.get( randomIndex )
+                                                      .getMeaning() ) ;
+        }
+        return meaning ;
     }
 
     private String getRandomExample( Word word ) {
@@ -99,11 +107,17 @@ public class VocabRefresherPanel extends AbstractRefresherPanel {
     private Word getNextWord() {
 
         WordRepo wordRepo = getAppCtx().getBean( WordRepo.class ) ;
-        List<Word> words = wordRepo.findTop10ByWordnikEnrichedIsTrueOrderByNumShowsAscFrequencyDesc() ;
-        Word word = words.get( new Random().nextInt( words.size() )  ) ;
+        List<Word> words = wordRepo.findProbableNextWords() ;
+        Word word = null ;
 
-        if( currentWord != null ) {
+        if( words.isEmpty() ) {
+            words = wordRepo.findTop100ByExampleIsNotNullOrderByFrequencyDesc() ;
+        }
+
+        word = words.get( new Random().nextInt( words.size() )  ) ;
+        if( currentWord != null && words.size() > 1 ) {
             while( word.getId().equals( currentWord.getId() ) ) {
+                log.info( "- Picked the same word again. Trying another time." );
                 word = words.get( new Random().nextInt( words.size() )  ) ;
             }
         }

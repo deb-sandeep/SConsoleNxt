@@ -26,10 +26,11 @@ public class WordRepoTest {
     }
 
     @Test void testFindByword() {
-        assertThat( wordRepo.findByWord( "abase" ), is(notNullValue()) ) ;
+        assertThat( wordRepo.findWordForEnrichment(), is(notNullValue()) ) ;
     }
 
     @Test void saveWord() throws Exception {
+
         Word word = wordRepo.findByWord( "amorally" ) ;
         WordnikWord wordnikWord = WordnikAdapter.getWordMeaning( "amorally" ) ;
         assertThat( wordnikWord, is(notNullValue()) ) ;
