@@ -68,14 +68,13 @@ public class VocabRefresherPanel extends AbstractRefresherPanel {
         wordTile = new StringTile( theme, 80, JLabel.CENTER, JLabel.BOTTOM ) ;
         wordTile.setLabelForeground( Color.CYAN.brighter() ) ;
 
-        meaningTile = new StringTile( theme, 55, JLabel.CENTER ) ;
-        meaningTile.setLabelFont( new Font( "Roboto", Font.PLAIN, 55 ) );
-        meaningTile.setLabelForeground( Color.CYAN.darker().darker().darker() ) ;
+        meaningTile = new StringTile( theme, 65, JLabel.CENTER ) ;
+        meaningTile.setLabelFont( new Font( "Roboto", Font.PLAIN, 65 ) );
         meaningTile.setBorder( new EmptyBorder( 0, 50, 0, 50 ) ) ;
 
-        exampleTile = new StringTile( theme, 40, JLabel.CENTER ) ;
-        exampleTile.setLabelFont( new Font( "Ariel", Font.ITALIC, 40 ) );
-        exampleTile.setLabelForeground( Color.GRAY ) ;
+        exampleTile = new StringTile( theme, 50, JLabel.CENTER ) ;
+        exampleTile.setLabelFont( new Font( "Ariel", Font.ITALIC, 50 ) );
+        exampleTile.setLabelForeground( Color.GRAY.darker() ) ;
         exampleTile.setBorder( new EmptyBorder( 0, 50, 0, 50 ) ) ;
 
         super.addTile( wordTile, 0,0,15,3 ) ;
@@ -94,6 +93,8 @@ public class VocabRefresherPanel extends AbstractRefresherPanel {
             wordTile.setLabelForeground( SwingUtils.getRandomColor() ) ;
 
             meaningTile.setLabelHTMLText( getRandomMeaning( finalWord ) ) ;
+            meaningTile.setLabelForeground( SwingUtils.getRandomColor().darker().darker() ) ;
+
             exampleTile.setLabelHTMLText( getRandomExample( finalWord ) ) ;
         } ) ;
     }
@@ -120,9 +121,18 @@ public class VocabRefresherPanel extends AbstractRefresherPanel {
         if( !examples.isEmpty() ) {
             int randomIndex = new Random().nextInt( examples.size() ) ;
             String example = examples.get( randomIndex ).getExample() ;
-            return StringUtils.capitalize( example ) ;
+            example = StringUtils.capitalize( example ) ;
+            return changeExampleEmphasisColor( example ) ;
         }
         return "" ;
+    }
+
+    private String changeExampleEmphasisColor( String str ) {
+        Color color = SwingUtils.getRandomColor().darker() ;
+        String colorHex = SwingUtils.getHexColorString( color ) ;
+        String newEmph = "<font color='" + colorHex + "'>" ;
+
+        return str.replaceAll( "<font color=white>",  newEmph ) ;
     }
 
     private Word getNextWord() {

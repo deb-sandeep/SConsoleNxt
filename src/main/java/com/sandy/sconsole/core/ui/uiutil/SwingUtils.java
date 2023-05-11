@@ -74,7 +74,10 @@ public class SwingUtils {
         float r = ( float ) (rand.nextFloat() / 2f + 0.5);
         float g = ( float ) (rand.nextFloat() / 2f + 0.5);
         float b = ( float ) (rand.nextFloat() / 2f + 0.5);
-
         return new Color(r, g, b) ;
+    }
+
+    public static String getHexColorString( Color color ) {
+        return "#"+Integer.toHexString( color.getRGB() ).substring(2 ) ;
     }
 }

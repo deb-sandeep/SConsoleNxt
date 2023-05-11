@@ -47,7 +47,7 @@ public class QuoteRefresherPanel extends AbstractRefresherPanel {
         quoteTextTile.setLabelFont( new Font( "Roboto", Font.PLAIN, 70 ) );
         quoteTextTile.setBorder( new EmptyBorder( 0, 50, 0, 50 ) ) ;
 
-        quoteAuthorTile = new StringTile( theme, 50, JLabel.RIGHT ) ;
+        quoteAuthorTile = new StringTile( theme, 60, JLabel.RIGHT ) ;
         quoteAuthorTile.setLabelForeground( Color.YELLOW.darker() ) ;
         quoteAuthorTile.setBorder( new EmptyBorder( 0, 0, 0, 50 ) ) ;
 
@@ -69,7 +69,7 @@ public class QuoteRefresherPanel extends AbstractRefresherPanel {
         SwingUtilities.invokeLater( () ->{
             quoteSectionTile.setLabelText( currentQuote.getSection() ) ;
             quoteTextTile.setLabelHTMLText( currentQuote.getQuote() ) ;
-            quoteTextTile.setLabelForeground( SwingUtils.getRandomColor() ) ;
+            quoteTextTile.setLabelForeground( SwingUtils.getRandomColor().darker() ) ;
             quoteAuthorTile.setLabelText( "- " + currentQuote.getSpeaker() ) ;
         } ) ;
     }

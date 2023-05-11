@@ -42,8 +42,8 @@ public class RefresherScreen extends Screen implements ClockTickListener {
     @Override
     public void initialize( UITheme theme ) {
         super.setUpBaseUI( theme ) ;
-        initializeRefresherPanel( new QuoteRefresherPanel( theme ) ) ;
         initializeRefresherPanel( new VocabRefresherPanel( theme ) ) ;
+        initializeRefresherPanel( new QuoteRefresherPanel( theme ) ) ;
         setUpUI( theme ) ;
         setRefresherPanel( 0 ) ;
     }
