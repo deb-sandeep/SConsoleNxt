@@ -34,8 +34,6 @@ public class Word {
     private Timestamp lastDisplayTime = null;
 
     private int numWordnikTries = 0 ;
-    private int numMeanings = 0 ;
-    private int numExamples = 0 ;
 
     @OneToMany( cascade = CascadeType.ALL,
                 mappedBy="word",
@@ -81,6 +79,9 @@ public class Word {
         if( StringUtil.isEmptyOrNull( meaning ) ) { return ; }
 
         meaning = StringUtils.capitalize( meaning.trim() ) ;
+        meaning = meaning.replace( "<xref>", "" ) ;
+        meaning = meaning.replace( "</xref>", "" ) ;
+
         boolean alreadyExists = false ;
         for( WordMeaning wm : meanings ) {
             if( wm.getMeaning().equals( meaning ) ) {

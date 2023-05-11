@@ -70,10 +70,8 @@ public class WordnikAdapter {
                     String meaning = child.get( "text" ).asText().trim() ;
 
                     if( StringUtil.isNotEmptyOrNull( meaning ) ) {
-                        if( removeMarkups( meaning ).length() > MAX_MEANING_LENGTH ) {
-                            log.debug( "-> Ignoring meaning [>Length] '{}'.", meaning.length() ) ;
-                        }
-                        else if( !meanings.contains( meaning ) ) {
+                        if( removeMarkups( meaning ).length() <= MAX_MEANING_LENGTH &&
+                            !meanings.contains( meaning ) ) {
                             meanings.add( meaning.trim() ) ;
                         }
                     }
@@ -99,10 +97,8 @@ public class WordnikAdapter {
                     String example = child.get( "text" ).asText() ;
 
                     if( StringUtil.isNotEmptyOrNull( example ) ) {
-                        if( removeMarkups( example ).length() > MAX_EXAMPLE_LENGTH ) {
-                            log.debug( "-> Ignoring example [>Length] '{}'.", example.length() ) ;
-                        }
-                        else if( !examples.contains( example ) ) {
+                        if( removeMarkups( example ).length() <= MAX_EXAMPLE_LENGTH &&
+                            !examples.contains( example ) ) {
                             examples.add( example.trim() ) ;
                         }
                     }

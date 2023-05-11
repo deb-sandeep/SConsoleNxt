@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Random;
 
@@ -122,6 +123,7 @@ public class VocabRefresherPanel extends AbstractRefresherPanel {
             }
         }
         word.setNumShows( word.getNumShows()+1 ) ;
+        word.setLastDisplayTime( new Timestamp( System.currentTimeMillis() ) ) ;
         wordRepo.save( word ) ;
 
         return word ;

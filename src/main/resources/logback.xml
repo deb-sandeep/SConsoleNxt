@@ -38,6 +38,7 @@
     <logger name="SQL dialect"          level="WARN"></logger>
 
     <logger name="com.sandy.sconsole.core.net" level="INFO"></logger>
+    <logger name="com.sandy.sconsole.core.nvpconfig.annotation.NVPConfigAnnotationProcessor" level="INFO"></logger>
 
     <root level="debug">
         <appender-ref ref="STDOUT"/>

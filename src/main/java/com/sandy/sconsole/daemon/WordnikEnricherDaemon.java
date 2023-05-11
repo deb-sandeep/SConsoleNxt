@@ -28,7 +28,7 @@ public class WordnikEnricherDaemon extends DaemonBase
     private NVPManager nvpManager ;
 
     @NVPConfig
-    private int runDelaySec = 300 ;
+    private int runDelaySec = 180 ;
 
     public WordnikEnricherDaemon(){
         super( "WordnikEnricherDaemon" ) ;
@@ -92,8 +92,6 @@ public class WordnikEnricherDaemon extends DaemonBase
 
         if( !word.getExamples().isEmpty() && word.getMeanings().size()>1 ) {
             word.setWordnikEnriched( true ) ;
-            word.setNumExamples( word.getExamples().size() ) ;
-            word.setNumMeanings( word.getMeanings().size() ) ;
             word.setNumWordnikTries( word.getNumWordnikTries() + 1 ) ;
             word = wordRepo.saveAndFlush( word ) ;
             return word ;
