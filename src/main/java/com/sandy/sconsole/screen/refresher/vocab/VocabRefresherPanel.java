@@ -72,13 +72,13 @@ public class VocabRefresherPanel extends AbstractRefresherPanel {
         meaningTile.setLabelFont( new Font( "Roboto", Font.PLAIN, 65 ) );
         meaningTile.setBorder( new EmptyBorder( 0, 50, 0, 50 ) ) ;
 
-        exampleTile = new StringTile( theme, 50, JLabel.CENTER ) ;
-        exampleTile.setLabelFont( new Font( "Ariel", Font.ITALIC, 50 ) );
+        exampleTile = new StringTile( theme, 55, JLabel.CENTER ) ;
+        exampleTile.setLabelFont( new Font( "Ariel", Font.ITALIC, 55 ) );
         exampleTile.setLabelForeground( Color.GRAY.darker() ) ;
         exampleTile.setBorder( new EmptyBorder( 0, 50, 0, 50 ) ) ;
 
-        super.addTile( wordTile, 0,0,15,3 ) ;
-        super.addTile( meaningTile, 0,4,15,9 ) ;
+        super.addTile( wordTile, 0,0,15,2 ) ;
+        super.addTile( meaningTile, 0,3,15,9 ) ;
         super.addTile( exampleTile, 0,10,15,15 ) ;
     }
 

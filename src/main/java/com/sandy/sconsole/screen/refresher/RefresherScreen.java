@@ -1,5 +1,6 @@
 package com.sandy.sconsole.screen.refresher;
 
+import com.sandy.sconsole.core.SConsoleConfig;
 import com.sandy.sconsole.core.clock.ClockTickListener;
 import com.sandy.sconsole.core.nvpconfig.annotation.NVPConfigAnnotationProcessor;
 import com.sandy.sconsole.core.ui.screen.Screen;
@@ -8,6 +9,7 @@ import com.sandy.sconsole.core.ui.uiutil.UITheme;
 import com.sandy.sconsole.screen.clock.tile.DateTile;
 import com.sandy.sconsole.screen.clock.tile.TimeTile;
 import com.sandy.sconsole.screen.refresher.quote.QuoteRefresherPanel;
+import com.sandy.sconsole.screen.refresher.slide.SlideRefresherPanel;
 import com.sandy.sconsole.screen.refresher.vocab.VocabRefresherPanel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -27,6 +30,7 @@ import static com.sandy.sconsole.SConsole.getApp;
 public class RefresherScreen extends Screen implements ClockTickListener {
 
     @Autowired private ApplicationContext appCtx ;
+    @Autowired private SConsoleConfig appCfg ;
     @Autowired private NVPConfigAnnotationProcessor nvpAnnotationProcessor ;
 
     private TimeTile timeTile ;
@@ -42,6 +46,7 @@ public class RefresherScreen extends Screen implements ClockTickListener {
     @Override
     public void initialize( UITheme theme ) {
         super.setUpBaseUI( theme ) ;
+        initializeRefresherPanel( new SlideRefresherPanel( theme, appCfg ) ) ;
         initializeRefresherPanel( new VocabRefresherPanel( theme ) ) ;
         initializeRefresherPanel( new QuoteRefresherPanel( theme ) ) ;
         setUpUI( theme ) ;
@@ -63,6 +68,7 @@ public class RefresherScreen extends Screen implements ClockTickListener {
         timeTile = new TimeTile( theme, 70 ) ;
         starTile = new StarTile( theme ) ;
 
+        dateTile.setBorder( new EmptyBorder( 0, 50,0,0 ) );
         dateTile.setHorizontalAlignment( JLabel.LEFT ) ;
 
         // Top two rows are reserved for common display elements such as

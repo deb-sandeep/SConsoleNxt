@@ -4,7 +4,6 @@ import com.sandy.sconsole.core.SConsoleConfig;
 import com.sandy.sconsole.core.remote.RemoteKeyEvent;
 import com.sandy.sconsole.core.ui.screen.Screen;
 import com.sandy.sconsole.core.ui.screen.ScreenManager;
-import com.sandy.sconsole.core.ui.uiutil.SwingUtils;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
 import com.sandy.sconsole.screen.clock.ClockScreen;
 import lombok.Getter;
@@ -52,14 +51,8 @@ public class SConsoleFrame extends JFrame {
         JPanel panel = new ClockScreen() ;
 
         contentPane.add( panel ) ;
-        
-        if( SwingUtils.getScreenWidth() >= 1920 ) {
-            int height = Math.min( SwingUtils.getScreenHeight(), 1080 ) ;
-            this.setBounds( 0, 0, 1920, height ) ;
-        }
-        else {
-            SwingUtils.setMaximized( this ) ;
-        }
+
+        this.setBounds( 0,0, 1920, 1080 ) ;
     }
     
     void setScreen( Screen screen ) {

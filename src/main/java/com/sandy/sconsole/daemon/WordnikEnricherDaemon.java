@@ -30,6 +30,9 @@ public class WordnikEnricherDaemon extends DaemonBase
     @NVPConfig
     private int runDelaySec = 180 ;
 
+    @NVPConfig
+    private boolean enabled = true ;
+
     public WordnikEnricherDaemon(){
         super( "WordnikEnricherDaemon" ) ;
     }
@@ -39,34 +42,36 @@ public class WordnikEnricherDaemon extends DaemonBase
 
         while( true ) {
             try {
-                Word wordDAO = wordRepo.findWordForEnrichment() ;
-                String word = null ;
+                if( enabled ) {
+                    Word wordDAO = wordRepo.findWordForEnrichment() ;
+                    String word = null ;
 
-                if( wordDAO == null ) {
-                    log.info( "No more words left to be enriched." ) ;
-                }
-                else {
-                    word = wordDAO.getWord() ;
-                    log.debug( "Enriching word {} >", word ) ;
-                    Word enrichedWord = null ;
-                    try {
-                        enrichedWord = enrichWord( wordDAO ) ;
-                    }
-                    catch( Exception e ) {
-                        log.error( "Wordnik adapter error.", e ) ;
-                    }
-
-                    if( enrichedWord != null ) {
-                        log.debug( "  Enriched with {} meanings and {} examples.",
-                                    wordDAO.getMeanings().size(),
-                                    wordDAO.getExamples().size() );
+                    if( wordDAO == null ) {
+                        log.info( "No more words left to be enriched." ) ;
                     }
                     else {
-                        log.debug( "  Skipped enriching word." ) ;
-                        wordDAO = wordRepo.findByWord( word ) ;
-                        wordDAO.setWordnikEnriched( false ) ;
-                        wordDAO.setNumWordnikTries( wordDAO.getNumWordnikTries() + 1 ) ;
-                        wordRepo.save( wordDAO ) ;
+                        word = wordDAO.getWord() ;
+                        log.debug( "Enriching word {} >", word ) ;
+                        Word enrichedWord = null ;
+                        try {
+                            enrichedWord = enrichWord( wordDAO ) ;
+                        }
+                        catch( Exception e ) {
+                            log.error( "Wordnik adapter error.", e ) ;
+                        }
+
+                        if( enrichedWord != null ) {
+                            log.debug( "  Enriched with {} meanings and {} examples.",
+                                    wordDAO.getMeanings().size(),
+                                    wordDAO.getExamples().size() );
+                        }
+                        else {
+                            log.debug( "  Skipped enriching word." ) ;
+                            wordDAO = wordRepo.findByWord( word ) ;
+                            wordDAO.setWordnikEnriched( false ) ;
+                            wordDAO.setNumWordnikTries( wordDAO.getNumWordnikTries() + 1 ) ;
+                            wordRepo.save( wordDAO ) ;
+                        }
                     }
                 }
             }
