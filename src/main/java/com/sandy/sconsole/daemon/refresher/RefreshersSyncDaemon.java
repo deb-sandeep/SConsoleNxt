@@ -34,6 +34,9 @@ public class RefreshersSyncDaemon extends DaemonBase
     @Autowired
     private SConsoleConfig appCfg ;
 
+    @Autowired
+    private RefresherSlideManager slideManager ;
+
     @NVPConfig private int     startDelaySec = 5 ;
     @NVPConfig private int     runDelayMin = 30 ;
     @NVPConfig private boolean enabled = true ;
@@ -133,13 +136,23 @@ public class RefreshersSyncDaemon extends DaemonBase
             repoChanges.forEach( change -> {
                 log.debug( "   Applying repo change. {}", change ) ;
                 switch( change.getChangeType() ) {
-                    case ADD, COPY ->
-                            slideRepo.save( change.getNewPath().getNewSlide() ) ;
-                    case DELETE ->
-                            slideRepo.delete( slideRepo.findByPath( change.getOldPath() ) ) ;
-                    case RENAME ->
-                            slideRepo.save( slideRepo.findByPath( change.getOldPath() )
-                                                     .update( change.getNewPath() ) ) ;
+                    case ADD, COPY -> {
+                        Slide s = slideRepo.save( change.getNewPath().getNewSlide() ) ;
+                        slideManager.add( s ) ;
+                    }
+                    case DELETE -> {
+                        Slide s = slideRepo.findByPath( change.getOldPath() ) ;
+                        slideRepo.delete( s ) ;
+                        slideManager.delete( s ) ;
+                    }
+                    case RENAME -> {
+                        Slide oldSlide = slideRepo.findByPath( change.getOldPath() ) ;
+                        slideManager.delete( oldSlide ) ;
+
+                        Slide newSlide = oldSlide.update( change.getNewPath() ) ;
+                        slideRepo.save( newSlide ) ;
+                        slideManager.add( newSlide ) ;
+                    }
                 }
             } ) ;
         }
