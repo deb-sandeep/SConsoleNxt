@@ -18,7 +18,7 @@ public class SlideRefresherPanel extends AbstractRefresherPanel {
     public SlideRefresherPanel( UITheme uiTheme, SConsoleConfig cfg ) {
         super( uiTheme ) ;
 
-        this.imgTile = new ImageTile( theme, null ) ;
+        this.imgTile = new ImageTile( theme ) ;
         this.appCfg = cfg ;
     }
 

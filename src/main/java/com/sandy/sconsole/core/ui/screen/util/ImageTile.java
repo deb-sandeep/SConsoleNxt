@@ -15,18 +15,15 @@ public class ImageTile extends Tile {
 
     private JLabel imgLabel = null ;
 
-    public ImageTile( UITheme theme, File imgFile ) {
+    public ImageTile( UITheme theme ) {
         super( theme, false ) ;
-        setUpUI( imgFile ) ;
+        setUpUI() ;
     }
 
-    private void setUpUI( File imgFile ) {
+    private void setUpUI() {
         imgLabel = super.getTemplateLabel() ;
-
         super.setLayout( new BorderLayout() ) ;
         super.add( imgLabel, BorderLayout.CENTER ) ;
-
-        setImage( imgFile ) ;
     }
 
     public void setImage( File imgFile ) {

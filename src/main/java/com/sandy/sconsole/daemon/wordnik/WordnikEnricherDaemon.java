@@ -1,4 +1,4 @@
-package com.sandy.sconsole.daemon;
+package com.sandy.sconsole.daemon.wordnik;
 
 import com.sandy.sconsole.SConsole;
 import com.sandy.sconsole.core.behavior.ComponentInitializer;

@@ -209,6 +209,11 @@
             <artifactId>cron4j</artifactId>
             <version>2.2.5</version>
         </dependency>
+        <dependency>
+            <groupId>org.eclipse.jgit</groupId>
+            <artifactId>org.eclipse.jgit</artifactId>
+            <version>6.5.0.202303070854-r</version>
+        </dependency>
     </dependencies>
     <organization>
         <name>Sandeep Deb</name>
