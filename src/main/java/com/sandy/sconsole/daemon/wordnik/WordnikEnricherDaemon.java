@@ -43,21 +43,22 @@ public class WordnikEnricherDaemon extends DaemonBase
         while( true ) {
             try {
                 if( enabled ) {
+                    log.debug( "Wordnik daemon commencing run." );
                     Word wordDAO = wordRepo.findWordForEnrichment() ;
                     String word = null ;
 
                     if( wordDAO == null ) {
-                        log.info( "No more words left to be enriched." ) ;
+                        log.info( "  No more words left to be enriched." ) ;
                     }
                     else {
                         word = wordDAO.getWord() ;
-                        log.debug( "Enriching word {} >", word ) ;
+                        log.debug( "  Enriching word {} >", word ) ;
                         Word enrichedWord = null ;
                         try {
                             enrichedWord = enrichWord( wordDAO ) ;
                         }
                         catch( Exception e ) {
-                            log.error( "Wordnik adapter error.", e ) ;
+                            log.error( "  Wordnik adapter error.", e ) ;
                         }
 
                         if( enrichedWord != null ) {
@@ -78,7 +79,7 @@ public class WordnikEnricherDaemon extends DaemonBase
             finally {
                 try {
                     nvpManager.loadNVPConfigState( this ) ;
-                    log.debug( "Daemon sleeping for {} seconds. <<<", runDelaySec ) ;
+                    log.debug( "Daemon run completed. Sleeping for {} seconds.", runDelaySec ) ;
                     TimeUnit.SECONDS.sleep( runDelaySec ) ;
                 }
                 catch( Exception e ){

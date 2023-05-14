@@ -90,7 +90,6 @@ public class RefresherScreen extends Screen implements ClockTickListener {
             currentRefresherPanelIndex = panelIndex ;
         }
 
-        log.debug( "- Setting refresher panel {}", currentRefresherPanel.getClass().getSimpleName() ) ;
         currentRefresherPanel.refresh() ;
         currentPanelDisplayStartTime = System.currentTimeMillis() ;
 

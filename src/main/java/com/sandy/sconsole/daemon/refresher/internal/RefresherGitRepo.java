@@ -1,12 +1,14 @@
-package com.sandy.sconsole.daemon.refresher;
+package com.sandy.sconsole.daemon.refresher.internal;
 
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
+import org.eclipse.jgit.treewalk.TreeWalk;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -19,6 +21,33 @@ public class RefresherGitRepo {
 
     public RefresherGitRepo( File repoDir ) {
         this.repoDir = repoDir ;
+    }
+
+    public List<Path> reset() throws Exception {
+
+        List<Path> allPaths = new ArrayList<>() ;
+        try( Git git = Git.open( this.repoDir ) ) {
+
+            Repository repository = git.getRepository() ;
+
+            git.reset()
+               .setMode( ResetCommand.ResetType.HARD )
+               .call() ;
+
+            TreeWalk treeWalk = new TreeWalk( repository ) ;
+            ObjectId head = repository.resolve("HEAD^{tree}") ;
+            treeWalk.addTree( head ) ;
+            treeWalk.setRecursive( false ) ;
+            while( treeWalk.next() ) {
+                if( treeWalk.isSubtree() ) {
+                    treeWalk.enterSubtree() ;
+                }
+                else {
+                    allPaths.add( new Path( treeWalk.getPathString() ) ) ;
+                }
+            }
+        }
+        return allPaths ;
     }
 
     public List<RepoChange> pull() throws Exception {
@@ -50,9 +79,7 @@ public class RefresherGitRepo {
                                       .setNewTree(newTreeIter)
                                       .setOldTree(oldTreeIter)
                                       .call() ;
-            diffs.forEach( diff -> {
-                repoChanges.add( buildRepoChange( diff ) ) ;
-            } ) ;
+            diffs.forEach( d -> repoChanges.add( buildRepoChange( d ) ) ) ;
         }
         return repoChanges ;
     }

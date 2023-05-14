@@ -31,7 +31,6 @@ public class ImageTile extends Tile {
             log.info( "- Image file is null." );
         }
         else if( imgFile.exists() ) {
-            log.debug( "- Setting new slide. {}", imgFile.getName() ) ;
             try {
                 imgLabel.setIcon( new ImageIcon( ImageIO.read( imgFile ) ) ) ;
             }
