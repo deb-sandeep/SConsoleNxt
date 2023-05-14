@@ -4,6 +4,8 @@ import com.sandy.sconsole.core.SConsoleConfig;
 import com.sandy.sconsole.core.nvpconfig.annotation.NVPConfig;
 import com.sandy.sconsole.core.ui.screen.util.ImageTile;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
+import com.sandy.sconsole.daemon.refresher.RefresherSlideManager;
+import com.sandy.sconsole.dao.slide.Slide;
 import com.sandy.sconsole.screen.refresher.AbstractRefresherPanel;
 import lombok.extern.slf4j.Slf4j;
 
@@ -15,15 +17,18 @@ public class SlideRefresherPanel extends AbstractRefresherPanel {
 
     private final ImageTile imgTile ;
     private final SConsoleConfig appCfg;
+    private final RefresherSlideManager slideManager ;
 
     @NVPConfig
     private int slideChangeInterval = 300 ;
 
-    public SlideRefresherPanel( UITheme uiTheme, SConsoleConfig cfg ) {
+    public SlideRefresherPanel( UITheme uiTheme, SConsoleConfig cfg,
+                                RefresherSlideManager slideManager ) {
         super( uiTheme ) ;
 
         this.imgTile = new ImageTile( theme ) ;
         this.appCfg = cfg ;
+        this.slideManager = slideManager ;
     }
 
     @Override
@@ -38,13 +43,20 @@ public class SlideRefresherPanel extends AbstractRefresherPanel {
     }
 
     @Override
+    public void refresherScreenCallback() {
+        loadNextSlide() ;
+    }
+
+    @Override
     public int getCallbackInterval() {
         return this.slideChangeInterval ;
     }
 
     private void loadNextSlide() {
-        File file = new File( appCfg.getWorkspacePath(),
-                "Refreshers/Class-9/Physics/07 - Reflection of Light/01 - Mirror Formula.png" ) ;
+
+        Slide slide = slideManager.getNextSlide() ;
+        File file = new File( appCfg.getWorkspacePath(), 
+                        "Refreshers/" + slide.getPath() ) ;
         imgTile.setImage( file ) ;
     }
 }

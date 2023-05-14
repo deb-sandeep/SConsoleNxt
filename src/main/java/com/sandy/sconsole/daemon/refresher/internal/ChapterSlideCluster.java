@@ -3,6 +3,7 @@ package com.sandy.sconsole.daemon.refresher.internal;
 import com.sandy.sconsole.dao.slide.Slide;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class ChapterSlideCluster {
@@ -11,6 +12,7 @@ public class ChapterSlideCluster {
     private final String subject ;
     private final String chapter ;
 
+    private int currentSlideIndex = -1 ;
     private final List<Slide> slides = new ArrayList<>() ;
 
     public ChapterSlideCluster( String syllabus, String subject, String chapter ) {
@@ -21,7 +23,7 @@ public class ChapterSlideCluster {
 
     public void add( Slide s ) {
         slides.add( s ) ;
-        slides.sort( (s1, s2) -> s1.getSlideName().compareTo( s2.getSlideName() ) ) ;
+        slides.sort( Comparator.comparing( Slide::getSlideName ) ) ;
     }
 
     public void delete( Slide s ) {
@@ -33,7 +35,34 @@ public class ChapterSlideCluster {
         }
     }
 
+    public Slide getNextSlide() {
+        currentSlideIndex++ ;
+        if( currentSlideIndex >= slides.size() ) {
+            currentSlideIndex=-1 ;
+            return null ;
+        }
+        return slides.get( currentSlideIndex ) ;
+    }
+
     public String getKey() {
         return syllabus + "/" + subject + "/" + chapter ;
+    }
+
+    public long getAverageShowDelay() {
+        if( slides.isEmpty() ) return 0 ;
+
+        long totalNonShowDelay = 0 ;
+        long now = System.currentTimeMillis() ;
+        for( Slide slide : slides ) {
+            if( slide.getLastDisplayTime() == null ) {
+                // If a slide has not been displayed ever, assume it was
+                // last shown ten year back.
+                totalNonShowDelay += 31_536_0000L * 1000L ;
+            }
+            else {
+                totalNonShowDelay += ( now - slide.getLastDisplayTime().getTime() ) ;
+            }
+        }
+        return (totalNonShowDelay / slides.size()) ;
     }
 }

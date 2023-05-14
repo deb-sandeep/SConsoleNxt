@@ -18,8 +18,6 @@ public class RepoChange {
         COPY
     }
 
-
-
     @Getter private final Type changeType ;
     @Getter private Path oldPath ;
     @Getter private Path newPath ;

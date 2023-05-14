@@ -6,6 +6,7 @@ import com.sandy.sconsole.core.nvpconfig.annotation.NVPConfigAnnotationProcessor
 import com.sandy.sconsole.core.ui.screen.Screen;
 import com.sandy.sconsole.core.ui.screen.util.StarTile;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
+import com.sandy.sconsole.daemon.refresher.RefresherSlideManager;
 import com.sandy.sconsole.screen.clock.tile.DateTile;
 import com.sandy.sconsole.screen.clock.tile.TimeTile;
 import com.sandy.sconsole.screen.refresher.quote.QuoteRefresherPanel;
@@ -32,6 +33,7 @@ public class RefresherScreen extends Screen implements ClockTickListener {
     @Autowired private ApplicationContext appCtx ;
     @Autowired private SConsoleConfig appCfg ;
     @Autowired private NVPConfigAnnotationProcessor nvpAnnotationProcessor ;
+    @Autowired private RefresherSlideManager slideManager ;
 
     private TimeTile timeTile ;
     private DateTile dateTile ;
@@ -46,7 +48,7 @@ public class RefresherScreen extends Screen implements ClockTickListener {
     @Override
     public void initialize( UITheme theme ) {
         super.setUpBaseUI( theme ) ;
-        initializeRefresherPanel( new SlideRefresherPanel( theme, appCfg ) ) ;
+        initializeRefresherPanel( new SlideRefresherPanel( theme, appCfg, slideManager ) ) ;
         initializeRefresherPanel( new VocabRefresherPanel( theme ) ) ;
         initializeRefresherPanel( new QuoteRefresherPanel( theme ) ) ;
         setUpUI( theme ) ;
@@ -119,6 +121,7 @@ public class RefresherScreen extends Screen implements ClockTickListener {
         if( currentRefresherPanel != null ) {
             long currentTimeMillis = calendar.getTimeInMillis() ;
             long displayDuration = (currentTimeMillis - currentPanelDisplayStartTime) / 1000 ;
+
             if( displayDuration >= currentRefresherPanel.getDisplayDuration() ) {
                 int nextPanelIndex = currentRefresherPanelIndex+1 ;
                 if( nextPanelIndex >= refresherPanelList.size() ) {
@@ -129,7 +132,8 @@ public class RefresherScreen extends Screen implements ClockTickListener {
             else {
                 int callbackInterval = currentRefresherPanel.getCallbackInterval() ;
                 if( callbackInterval > 0 ) {
-                    if( displayDuration % callbackInterval == 0 ) {
+                    if( displayDuration != 0 &&
+                        displayDuration % callbackInterval == 0 ) {
                         currentRefresherPanel.refresherScreenCallback() ;
                     }
                 }
