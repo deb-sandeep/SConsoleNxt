@@ -1,14 +1,18 @@
 package com.sandy.sconsole.daemon.refresher;
 
 import com.sandy.sconsole.SConsole;
+import com.sandy.sconsole.core.SConsoleConfig;
 import com.sandy.sconsole.core.behavior.ComponentInitializer;
 import com.sandy.sconsole.daemon.refresher.internal.ChapterSlideCluster;
 import com.sandy.sconsole.dao.slide.Slide;
 import com.sandy.sconsole.dao.slide.SlideRepo;
+import com.sandy.sconsole.dao.slide.SlideVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.imageio.ImageIO;
+import java.io.File;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,91 +23,112 @@ import java.util.TreeMap;
 @Component
 public class RefresherSlideManager implements ComponentInitializer {
 
+    // This lock is shared between the slide manager and the refresher
+    // daemon. Remember that a refresher daemon while executing a pull
+    // request can delete files and hence can potentially cause an
+    // invalid slide reference to be returned by this class. The object
+    // prevents this.
+    public static final Object LOCK = new Object() ;
+
     @Autowired private SlideRepo slideRepo ;
+    @Autowired private SConsoleConfig appCfg ;
 
     // Syllabus -> Subject -> Chapter -> ChapterSlideCluster
     private final Map<String, Map<String, Map<String, ChapterSlideCluster>>> clusterMap = new TreeMap<>() ;
-
-    private final List<ChapterSlideCluster> clusters = new ArrayList<>() ;
+    private final List<ChapterSlideCluster> allClusters = new ArrayList<>() ;
     private ChapterSlideCluster currentCluster = null ;
 
     @Override
     public int getInitializationSequencePreference() {
+        // Initialize this before ScreenManagerInitializer since slides
+        // will be required for refresher screen.
         return 99 ;
     }
 
     @Override
     public void initialize( SConsole app ) throws Exception {
 
-        log.debug( "Initializing RefresherSlideManager." ) ;
+        synchronized( LOCK ) {
+            log.debug( "Initializing RefresherSlideManager." ) ;
 
-        clusterMap.clear() ;
-        slideRepo.findAll().forEach( s -> {
-            ChapterSlideCluster cluster = getCluster( s ) ;
-            cluster.add( s ) ;
-        } ) ;
+            clusterMap.clear() ;
+            slideRepo.findAll().forEach( s -> {
+                SlideVO vo = s.getVO() ;
+                getCluster( vo ).add( vo ) ;
+            } ) ;
 
-        sortClusters() ;
+            sortAllClusters() ;
 
-        // Pick the cluster that has the minimum projection score. This
-        // cluster will have slides that have been shown the minimum.
-        if( !clusters.isEmpty() ) {
-            currentCluster = clusters.get( 0 ) ;
+            // Pick the cluster that has the minimum projection score. This
+            // cluster will have slides that have been shown the minimum.
+            if( !allClusters.isEmpty() ) {
+                currentCluster = allClusters.get( 0 ) ;
+            }
         }
     }
 
-    void add( Slide s ) {
+    void add( SlideVO s ) {
         getCluster( s ).add( s ) ;
-        sortClusters() ;
+        sortAllClusters() ;
     }
 
-    void delete( Slide s ) {
+    void delete( SlideVO s ) {
         getCluster( s ).delete( s ) ;
-        sortClusters() ;
+        sortAllClusters() ;
     }
 
-    public Slide getNextSlide() {
+    public SlideVO getNextSlide() throws Exception {
 
-        if( clusters.isEmpty() ) return null ;
+        synchronized( LOCK ) {
+            if( allClusters.isEmpty() ) return null ;
 
-        Slide nextSlide = null ;
+            SlideVO nextSlide = null ;
 
-        if( currentCluster != null ) {
-            nextSlide = currentCluster.getNextSlide() ;
+            if( currentCluster != null ) {
+                nextSlide = currentCluster.getNextSlide() ;
+            }
+
+            if( nextSlide == null ) {
+                sortAllClusters() ;
+                currentCluster = allClusters.get( 0 ) ;
+                return getNextSlide() ;
+            }
+
+            updateSlideState( nextSlide ) ;
+
+            // Why do we set the image? To ensure that the slide object
+            // is self-contained before existing the synchronized block.
+            // Imagine leaving with a reference to a file while the
+            // daemon removes it in the background.
+            File file = new File( appCfg.getWorkspacePath(),
+                                  "Refreshers/" + nextSlide.getPath() ) ;
+            nextSlide.setImage( ImageIO.read( file ) ) ;
+
+            return nextSlide ;
         }
-
-        if( nextSlide == null ) {
-            sortClusters() ;
-            currentCluster = clusters.get( 0 ) ;
-            return getNextSlide() ;
-        }
-
-        updateSlideState( nextSlide ) ;
-
-        return nextSlide ;
     }
 
-    private void updateSlideState( Slide inputSlide ) {
+    private void updateSlideState( SlideVO slideVO ) {
 
         Timestamp timestamp = new Timestamp( System.currentTimeMillis() ) ;
 
-        Slide slide = slideRepo.findById( inputSlide.getId() ).get() ;
-        slide.setNumShows( slide.getNumShows()+1 ) ;
-        slide.setLastDisplayTime( timestamp ) ;
+        slideVO.setNumShows( slideVO.getNumShows()+1 ) ;
+        slideVO.setLastDisplayTime( timestamp ) ;
+
+        Slide slide = slideRepo.findById( slideVO.getId() ).get() ;
+        slide.update( slideVO ) ;
         slideRepo.save( slide ) ;
 
-        inputSlide.setNumShows( inputSlide.getNumShows()+1 ) ;
-        inputSlide.setLastDisplayTime( timestamp ) ;
     }
 
-    private void sortClusters() {
+    private void sortAllClusters() {
         // Cluster with the largest average show delay is given higher
         // precedence to be shown first.
-        clusters.sort( (c1, c2) -> ( int ) ( c2.getAverageShowDelay() -
-                                             c1.getAverageShowDelay() ) ) ;
+        allClusters.sort( ( c1, c2) -> ( int ) ( c2.getAverageShowDelay() -
+                                                 c1.getAverageShowDelay() ) ) ;
     }
 
-    private ChapterSlideCluster getCluster( Slide s ) {
+    private ChapterSlideCluster getCluster( SlideVO s ) {
 
         Map<String, Map<String, ChapterSlideCluster>> syllabusClusterMap ;
         Map<String, ChapterSlideCluster> chapterClusterMap ;
@@ -121,7 +146,7 @@ public class RefresherSlideManager implements ComponentInitializer {
                                                       s.getSubject(),
                                                       s.getChapter() ) ;
             chapterClusterMap.put( s.getChapter(), chapterCluster ) ;
-            clusters.add( chapterCluster ) ;
+            allClusters.add( chapterCluster ) ;
         }
         return chapterCluster ;
     }

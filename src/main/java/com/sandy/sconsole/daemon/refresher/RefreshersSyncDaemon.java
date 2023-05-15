@@ -70,8 +70,10 @@ public class RefreshersSyncDaemon extends DaemonBase
         if( this.resetRepoOnStartup ) {
             try {
                 log.debug( "  Resetting repository and syncing slide master." ) ;
-                resetRepoAndSyncSlideMaster() ;
-                repoJustResetFlag = true ;
+                synchronized( RefresherSlideManager.LOCK ) {
+                    resetRepoAndSyncSlideMaster();
+                    repoJustResetFlag = true;
+                }
             }
             catch( Exception e ) {
                 log.error( "  Could not reset repo and sync slide master.", e ) ;
@@ -84,7 +86,9 @@ public class RefreshersSyncDaemon extends DaemonBase
             try {
                 if( enabled && !repoJustResetFlag ) {
                     log.debug( "  Pulling repository changes and syncing slide master." ) ;
-                    pullRepoChangesAndSyncSlideMaster() ;
+                    synchronized( RefresherSlideManager.LOCK ) {
+                        pullRepoChangesAndSyncSlideMaster();
+                    }
                 }
             }
             finally {
@@ -94,10 +98,7 @@ public class RefreshersSyncDaemon extends DaemonBase
                     TimeUnit.MINUTES.sleep( runDelayMin ) ;
                     repoJustResetFlag = false ;
                 }
-                catch( Exception e ){
-                    log.error( "  Exception in Refreshers daemon. Terminating daemon.", e ) ;
-                    return ;
-                }
+                catch( Exception ignore ){}
             }
         }
     }
@@ -138,20 +139,28 @@ public class RefreshersSyncDaemon extends DaemonBase
                 switch( change.getChangeType() ) {
                     case ADD, COPY -> {
                         Slide s = slideRepo.save( change.getNewPath().getNewSlide() ) ;
-                        slideManager.add( s ) ;
+                        slideManager.add( s.getVO() ) ;
                     }
                     case DELETE -> {
                         Slide s = slideRepo.findByPath( change.getOldPath() ) ;
-                        slideRepo.delete( s ) ;
-                        slideManager.delete( s ) ;
+                        if( s != null ) {
+                            slideRepo.delete( s ) ;
+                            slideManager.delete( s.getVO() ) ;
+                        }
                     }
                     case RENAME -> {
                         Slide oldSlide = slideRepo.findByPath( change.getOldPath() ) ;
-                        slideManager.delete( oldSlide ) ;
+                        Slide newSlide = null ;
 
-                        Slide newSlide = oldSlide.update( change.getNewPath() ) ;
+                        if( oldSlide != null ) {
+                            slideManager.delete( oldSlide.getVO() ) ;
+                            newSlide = oldSlide.update( change.getNewPath() ) ;
+                        }
+                        else {
+                            newSlide = change.getNewPath().getNewSlide() ;
+                        }
                         slideRepo.save( newSlide ) ;
-                        slideManager.add( newSlide ) ;
+                        slideManager.add( newSlide.getVO() ) ;
                     }
                 }
             } ) ;

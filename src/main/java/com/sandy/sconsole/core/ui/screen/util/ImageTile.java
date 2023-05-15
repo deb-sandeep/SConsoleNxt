@@ -4,11 +4,9 @@ import com.sandy.sconsole.core.ui.screen.Tile;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.io.File;
-import java.io.IOException;
+import java.awt.image.BufferedImage;
 
 @Slf4j
 public class ImageTile extends Tile {
@@ -26,20 +24,7 @@ public class ImageTile extends Tile {
         super.add( imgLabel, BorderLayout.CENTER ) ;
     }
 
-    public void setImage( File imgFile ) {
-        if( imgFile == null ) {
-            log.info( "- Image file is null." );
-        }
-        else if( imgFile.exists() ) {
-            try {
-                imgLabel.setIcon( new ImageIcon( ImageIO.read( imgFile ) ) ) ;
-            }
-            catch( IOException e ) {
-                log.error( "Could not set image.", e ) ;
-            }
-        }
-        else {
-            log.error( "- Image file {} does not exist.", imgFile.getAbsolutePath() );
-        }
+    public void setImage( BufferedImage image ) {
+        imgLabel.setIcon( new ImageIcon( image ) ) ;
     }
 }

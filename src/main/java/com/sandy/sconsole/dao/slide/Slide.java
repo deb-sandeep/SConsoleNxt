@@ -42,4 +42,21 @@ public class Slide {
         this.slideName = newPath.getFileName() ;
         return this ;
     }
+
+    public Slide update( SlideVO vo ) {
+        this.syllabus        = vo.getSyllabus() ;
+        this.subject         = vo.getSubject() ;
+        this.chapter         = vo.getChapter() ;
+        this.slideName       = vo.getSlideName() ;
+        this.hidden          = vo.isHidden() ;
+        this.starred         = vo.isStarred() ;
+        this.rating          = vo.getRating() ;
+        this.numShows        = vo.getNumShows() ;
+        this.lastDisplayTime = vo.getLastDisplayTime() ;
+        return this ;
+    }
+
+    public SlideVO getVO() {
+        return new SlideVO().update( this ) ;
+    }
 }

@@ -5,12 +5,11 @@ import com.sandy.sconsole.core.nvpconfig.annotation.NVPConfig;
 import com.sandy.sconsole.core.ui.screen.util.ImageTile;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
 import com.sandy.sconsole.daemon.refresher.RefresherSlideManager;
-import com.sandy.sconsole.dao.slide.Slide;
+import com.sandy.sconsole.dao.slide.SlideVO;
 import com.sandy.sconsole.screen.refresher.AbstractRefresherPanel;
 import lombok.extern.slf4j.Slf4j;
 
 import java.awt.*;
-import java.io.File;
 
 @Slf4j
 public class SlideRefresherPanel extends AbstractRefresherPanel {
@@ -54,9 +53,16 @@ public class SlideRefresherPanel extends AbstractRefresherPanel {
 
     private void loadNextSlide() {
 
-        Slide slide = slideManager.getNextSlide() ;
-        File file = new File( appCfg.getWorkspacePath(), 
-                        "Refreshers/" + slide.getPath() ) ;
-        imgTile.setImage( file ) ;
+        try {
+            SlideVO slide = slideManager.getNextSlide() ;
+            imgTile.setImage( slide.getImage() ) ;
+
+            // Remove the image so that there is no excessive memory
+            // build up.
+            slide.setImage( null ) ;
+        }
+        catch( Exception e ) {
+            log.error( "Could not load slide.", e ) ;
+        }
     }
 }

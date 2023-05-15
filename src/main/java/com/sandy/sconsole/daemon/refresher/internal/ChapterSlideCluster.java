@@ -1,6 +1,6 @@
 package com.sandy.sconsole.daemon.refresher.internal;
 
-import com.sandy.sconsole.dao.slide.Slide;
+import com.sandy.sconsole.dao.slide.SlideVO;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -13,7 +13,7 @@ public class ChapterSlideCluster {
     private final String chapter ;
 
     private int currentSlideIndex = -1 ;
-    private final List<Slide> slides = new ArrayList<>() ;
+    private final List<SlideVO> slides = new ArrayList<>() ;
 
     public ChapterSlideCluster( String syllabus, String subject, String chapter ) {
         this.syllabus = syllabus ;
@@ -21,12 +21,12 @@ public class ChapterSlideCluster {
         this.chapter = chapter ;
     }
 
-    public void add( Slide s ) {
+    public void add( SlideVO s ) {
         slides.add( s ) ;
-        slides.sort( Comparator.comparing( Slide::getSlideName ) ) ;
+        slides.sort( Comparator.comparing( SlideVO::getSlideName ) ) ;
     }
 
-    public void delete( Slide s ) {
+    public void delete( SlideVO s ) {
         for( int i=0; i<slides.size(); i++ ) {
             if( slides.get( i ).getSlideName().equals( s.getSlideName() ) ) {
                 slides.remove( i ) ;
@@ -35,7 +35,7 @@ public class ChapterSlideCluster {
         }
     }
 
-    public Slide getNextSlide() {
+    public SlideVO getNextSlide() {
         currentSlideIndex++ ;
         if( currentSlideIndex >= slides.size() ) {
             currentSlideIndex=-1 ;
@@ -53,7 +53,7 @@ public class ChapterSlideCluster {
 
         long totalNonShowDelay = 0 ;
         long now = System.currentTimeMillis() ;
-        for( Slide slide : slides ) {
+        for( SlideVO slide : slides ) {
             if( slide.getLastDisplayTime() == null ) {
                 // If a slide has not been displayed ever, assume it was
                 // last shown ten year back.
