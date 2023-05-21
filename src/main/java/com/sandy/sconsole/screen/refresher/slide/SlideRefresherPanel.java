@@ -10,6 +10,7 @@ import com.sandy.sconsole.screen.refresher.AbstractRefresherPanel;
 import lombok.extern.slf4j.Slf4j;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 @Slf4j
 public class SlideRefresherPanel extends AbstractRefresherPanel {
@@ -55,6 +56,7 @@ public class SlideRefresherPanel extends AbstractRefresherPanel {
 
         try {
             SlideVO slide = slideManager.getNextSlide() ;
+            BufferedImage bufferedImage = slide.getImage() ;
             imgTile.setImage( slide.getImage() ) ;
 
             // Remove the image so that there is no excessive memory

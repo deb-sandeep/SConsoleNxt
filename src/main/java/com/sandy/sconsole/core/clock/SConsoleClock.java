@@ -80,7 +80,9 @@ public class SConsoleClock {
 
     public void stopClock() {
         SEC_TIMER.cancel() ;
-        scheduler.stop() ;
+        if( scheduler.isStarted() ) {
+            scheduler.stop() ;
+        }
     }
 
     public void addTickListener( ClockTickListener l, TimeUnit unit ) {
@@ -123,22 +125,15 @@ public class SConsoleClock {
      *
      * @param scheduleExpr A cron expression. For details see
      *     <a href="https://www.sauronsoftware.it/projects/cron4j/manual.php#p02">Patterns</a>
-     * @return An unique identifier which can be used to deschedule or reschedule
+     * @return A unique identifier which can be used to deschedule or reschedule
      *      the task.
-     *
-     * @throws Exception In case of error in the scheduling expression.
      */
-    public String scheduleTask( String scheduleExpr, Runnable task )
-            throws Exception {
+    public String scheduleTask( String scheduleExpr, Runnable task ) {
         return this.scheduler.schedule( scheduleExpr, task ) ;
     }
 
     public void descheduleTask( String id ) {
         this.scheduler.deschedule( id ) ;
-    }
-
-    public void rescheduleTask( String id, String scheduleExpr ) {
-        this.scheduler.reschedule( id, scheduleExpr ) ;
     }
 
     private void notifyTickListeners( TimeUnit timeUnit, Calendar now ) {

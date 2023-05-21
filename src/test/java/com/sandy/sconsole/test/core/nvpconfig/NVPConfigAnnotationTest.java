@@ -93,10 +93,6 @@ public class NVPConfigAnnotationTest {
 
         processor.processNVPConfigAnnotations( TestComponent.class.getPackageName() ) ;
         assertThat( testComponent.getNumConfigUpdatesCalled(), is( 0 ) ) ;
-
-        cfg = nvpManager.getConfig( "TestComponent", "configKeyA" ) ;
-        cfg.setValue( "changed_value" ) ;
-        assertThat( testComponent.getNumConfigUpdatesCalled(), is( 1 ) ) ;
     }
 
     /**

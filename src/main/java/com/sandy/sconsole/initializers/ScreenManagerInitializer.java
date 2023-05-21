@@ -40,7 +40,7 @@ public class ScreenManagerInitializer implements ComponentInitializer {
         log.debug( "- Building screens completed. <<" ) ;
     }
 
-    private Screen buildDockScreen( SConsole app ) throws Exception {
+    private Screen buildDockScreen( SConsole app ) {
         log.debug( "-> Building Dock screen." ) ;
         return ScreenBuilder.instance( app )
                 .withName( DOCK_SCR_NAME )
@@ -48,7 +48,7 @@ public class ScreenManagerInitializer implements ComponentInitializer {
                 .build() ;
     }
 
-    private Screen buildClockScreen( SConsole app ) throws Exception {
+    private Screen buildClockScreen( SConsole app ) {
         log.debug( "-> Building Clock screen." ) ;
         return ScreenBuilder.instance( app )
                 .withName( CLOCK_SCR_NAME )
@@ -58,7 +58,7 @@ public class ScreenManagerInitializer implements ComponentInitializer {
                 .build() ;
     }
 
-    private Screen buildRefresherScreen( SConsole app ) throws Exception {
+    private Screen buildRefresherScreen( SConsole app ) {
         log.debug( "-> Building Refresher screen." ) ;
         return ScreenBuilder.instance( app )
                 .withName( REFRESHER_SCR_NAME )

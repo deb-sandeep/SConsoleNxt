@@ -32,6 +32,13 @@ public class RepoChange {
         }
     }
 
+    public boolean isSlide() {
+        if( this.oldPath != null && this.oldPath.isSlide() ) {
+            return true ;
+        }
+        return this.newPath != null && this.newPath.isSlide();
+    }
+
     public String toString() {
         return changeType + " [" + oldPath + "] -> [" + newPath + "]" ;
     }

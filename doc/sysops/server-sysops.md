@@ -36,7 +36,7 @@ export JAVA_HOME=/usr/lib/jvm/java-1.17.0-openjdk-arm64
 
 export DB_PASSWORD=<password>
 export DB_HOST=<hostname>
-export WORDNIC_API_KEY=<api_key>
+export WORDNIK_API_KEY=<api_key>
 ```
 * source /etc/profile.d/environment.sh
 

@@ -134,7 +134,7 @@ public class RefreshersSyncDaemon extends DaemonBase
             RefresherGitRepo repo = new RefresherGitRepo( this.repoDir ) ;
             List<RepoChange> repoChanges = repo.pull() ;
 
-            repoChanges.forEach( change -> {
+            repoChanges.stream().filter( RepoChange::isSlide ).forEach( change -> {
                 log.debug( "   Applying repo change. {}", change ) ;
                 switch( change.getChangeType() ) {
                     case ADD, COPY -> {
