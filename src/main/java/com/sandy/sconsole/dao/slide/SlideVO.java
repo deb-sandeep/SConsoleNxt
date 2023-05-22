@@ -37,16 +37,17 @@ public class SlideVO {
     public long getMinutesSinceLastDisplay() {
 
         long now = System.currentTimeMillis() ;
-        long totalNonShowDelay = 0 ;
+        long totalNonShowDelayMillis = 0 ;
+        
         if( lastDisplayTime == null ) {
             // If a slide has not been displayed ever, assume it was
-            // last shown ten year back.
-            totalNonShowDelay += 31_536_0000L * 1000L ;
+            // last shown an year back.
+            totalNonShowDelayMillis = 31_536_000L * 1000L ;
         }
         else {
-            totalNonShowDelay += ( now - lastDisplayTime.getTime() ) ;
+            totalNonShowDelayMillis = ( now - lastDisplayTime.getTime() ) ;
         }
-        return totalNonShowDelay/60_000 ;
+        return totalNonShowDelayMillis/60_000 ;
     }
 
     public SlideVO update( Slide slide ) {

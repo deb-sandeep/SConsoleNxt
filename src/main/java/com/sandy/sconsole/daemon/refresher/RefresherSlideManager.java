@@ -122,10 +122,10 @@ public class RefresherSlideManager implements ComponentInitializer {
     }
 
     private void sortAllClusters() {
-        // Cluster with the largest average show delay is given higher
+        // Cluster with the largest average non show delay is given higher
         // precedence to be shown first.
-        allClusters.sort( ( c1, c2) -> ( int ) ( c2.getAverageShowDelayInMinutes() -
-                                                 c1.getAverageShowDelayInMinutes() ) ) ;
+        allClusters.sort( ( c1, c2) -> ( int ) ( c2.getAvgNonShowDelayInMinutes() -
+                                                 c1.getAvgNonShowDelayInMinutes() ) ) ;
     }
 
     private ChapterSlideCluster getCluster( SlideVO s ) {

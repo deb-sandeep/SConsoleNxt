@@ -21,7 +21,6 @@ public class ChapterSlideCluster {
 
     public void add( SlideVO s ) {
         slides.add( s ) ;
-        slides.sort( Comparator.comparing( SlideVO::getSlideName ) ) ;
         sortAllSLides() ;
     }
 
@@ -53,17 +52,17 @@ public class ChapterSlideCluster {
         return syllabus + "/" + subject + "/" + chapter ;
     }
 
-    public long getAverageShowDelayInMinutes() {
+    public long getAvgNonShowDelayInMinutes() {
         if( slides.isEmpty() ) return 0 ;
 
-        long totalNonShowDelay = 0 ;
+        long totalNonShowDelayInMinutes = 0 ;
         for( SlideVO slide : slides ) {
-            totalNonShowDelay += slide.getMinutesSinceLastDisplay() ;
+            totalNonShowDelayInMinutes += slide.getMinutesSinceLastDisplay() ;
         }
-        return (totalNonShowDelay / slides.size()) ;
+        return (totalNonShowDelayInMinutes / slides.size()) ;
     }
 
     public String toString() {
-        return getKey() + ". Avg show delay = " + getAverageShowDelayInMinutes() ;
+        return getKey() + ". Avg show delay = " + getAvgNonShowDelayInMinutes() ;
     }
 }

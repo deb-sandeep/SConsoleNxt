@@ -45,9 +45,9 @@ public class RefresherGitRepo {
                     treeWalk.enterSubtree() ;
                 }
                 else {
-                    String path = treeWalk.getPathString() ;
-                    if( !path.endsWith( "dummy.txt" ) ) {
-                        allPaths.add( new Path( treeWalk.getPathString() ) ) ;
+                    Path path = new Path( treeWalk.getPathString() ) ;
+                    if( path.isSlide() ) {
+                        allPaths.add( path ) ;
                     }
                 }
             }
