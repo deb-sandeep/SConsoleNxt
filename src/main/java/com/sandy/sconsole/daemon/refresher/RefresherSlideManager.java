@@ -124,8 +124,8 @@ public class RefresherSlideManager implements ComponentInitializer {
     private void sortAllClusters() {
         // Cluster with the largest average show delay is given higher
         // precedence to be shown first.
-        allClusters.sort( ( c1, c2) -> ( int ) ( c2.getAverageShowDelay() -
-                                                 c1.getAverageShowDelay() ) ) ;
+        allClusters.sort( ( c1, c2) -> ( int ) ( c2.getAverageShowDelayInMinutes() -
+                                                 c1.getAverageShowDelayInMinutes() ) ) ;
     }
 
     private ChapterSlideCluster getCluster( SlideVO s ) {

@@ -25,6 +25,8 @@ public class RefresherGitRepo {
 
     public List<Path> reset() throws Exception {
 
+        pull() ;
+
         List<Path> allPaths = new ArrayList<>() ;
         try( Git git = Git.open( this.repoDir ) ) {
 
@@ -43,7 +45,10 @@ public class RefresherGitRepo {
                     treeWalk.enterSubtree() ;
                 }
                 else {
-                    allPaths.add( new Path( treeWalk.getPathString() ) ) ;
+                    String path = treeWalk.getPathString() ;
+                    if( !path.endsWith( "dummy.txt" ) ) {
+                        allPaths.add( new Path( treeWalk.getPathString() ) ) ;
+                    }
                 }
             }
         }

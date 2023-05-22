@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("ALL")
@@ -56,6 +57,9 @@ public class WordnikEnricherDaemon extends DaemonBase
                         Word enrichedWord = null ;
                         try {
                             enrichedWord = enrichWord( wordDAO ) ;
+                        }
+                        catch( UnknownHostException uhe ) {
+                            log.error( "  Network unavailable." ) ;
                         }
                         catch( Exception e ) {
                             log.error( "  Wordnik adapter error.", e ) ;

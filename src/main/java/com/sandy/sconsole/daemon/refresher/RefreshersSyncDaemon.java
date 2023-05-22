@@ -12,6 +12,7 @@ import com.sandy.sconsole.daemon.refresher.internal.RepoChange;
 import com.sandy.sconsole.dao.slide.Slide;
 import com.sandy.sconsole.dao.slide.SlideRepo;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.jgit.api.errors.TransportException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -115,7 +116,8 @@ public class RefreshersSyncDaemon extends DaemonBase
         paths.stream().filter( Path::isSlide ).forEach( p -> {
             if( !existingSlides.remove( p.toString() ) ) {
                 log.debug( "   Inserting new slide. {}", p ) ;
-                slideRepo.save( p.getNewSlide() ) ;
+                Slide s = slideRepo.save( p.getNewSlide() ) ;
+                slideManager.add( s.getVO() ) ;
             }
         } ) ;
 
@@ -124,6 +126,7 @@ public class RefreshersSyncDaemon extends DaemonBase
             if( slide != null ) {
                 log.debug( "   Deleting slide. {}", slide.getPath() ) ;
                 slideRepo.delete( slide ) ;
+                slideManager.delete( slide.getVO() ) ;
             }
         } ) ;
     }
@@ -164,6 +167,9 @@ public class RefreshersSyncDaemon extends DaemonBase
                     }
                 }
             } ) ;
+        }
+        catch( TransportException te ) {
+            log.debug( "-> Network unavailable." ) ;
         }
         catch( Exception e ) {
             log.error( "   Error during pull.", e ) ;

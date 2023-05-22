@@ -2,9 +2,7 @@ package com.sandy.sconsole.daemon.refresher.internal;
 
 import com.sandy.sconsole.dao.slide.SlideVO;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 public class ChapterSlideCluster {
 
@@ -24,6 +22,7 @@ public class ChapterSlideCluster {
     public void add( SlideVO s ) {
         slides.add( s ) ;
         slides.sort( Comparator.comparing( SlideVO::getSlideName ) ) ;
+        sortAllSLides() ;
     }
 
     public void delete( SlideVO s ) {
@@ -33,6 +32,12 @@ public class ChapterSlideCluster {
                 break ;
             }
         }
+        sortAllSLides() ;
+    }
+
+    private void sortAllSLides() {
+        slides.sort( Comparator.comparing( SlideVO::getMinutesSinceLastDisplay ) ) ;
+        Collections.reverse( slides ) ;
     }
 
     public SlideVO getNextSlide() {
@@ -48,21 +53,17 @@ public class ChapterSlideCluster {
         return syllabus + "/" + subject + "/" + chapter ;
     }
 
-    public long getAverageShowDelay() {
+    public long getAverageShowDelayInMinutes() {
         if( slides.isEmpty() ) return 0 ;
 
         long totalNonShowDelay = 0 ;
-        long now = System.currentTimeMillis() ;
         for( SlideVO slide : slides ) {
-            if( slide.getLastDisplayTime() == null ) {
-                // If a slide has not been displayed ever, assume it was
-                // last shown ten year back.
-                totalNonShowDelay += 31_536_0000L * 1000L ;
-            }
-            else {
-                totalNonShowDelay += ( now - slide.getLastDisplayTime().getTime() ) ;
-            }
+            totalNonShowDelay += slide.getMinutesSinceLastDisplay() ;
         }
         return (totalNonShowDelay / slides.size()) ;
+    }
+
+    public String toString() {
+        return getKey() + ". Avg show delay = " + getAverageShowDelayInMinutes() ;
     }
 }

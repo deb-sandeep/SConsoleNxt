@@ -31,7 +31,7 @@ public class WordnikAdapter {
 
     public static WordnikWord getWordMeaning( String word )
         throws Exception {
-        log.debug( "- Getting word meaning for '{}' from Wordnik. >", word ) ;
+        log.debug( "- Getting word meaning for '{}' from Wordnik.", word ) ;
         return new WordnikAdapter( word ).fetchWordMeaning() ;
     }
 
