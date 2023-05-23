@@ -1,4 +1,4 @@
-package com.sandy.sconsole.utility;
+package com.sandy.sconsole.utilityapp;
 
 import com.sandy.sconsole.core.util.AbstractUtility;
 import com.sandy.sconsole.dao.word.Word;
@@ -19,15 +19,15 @@ import java.util.List;
 @ComponentScan( basePackages = { "com.sandy.sconsole.*" } )
 @EntityScan( "com.sandy.sconsole.*" )
 @EnableJpaRepositories( "com.sandy.sconsole.dao.*" )
-public class WOTDUtility extends AbstractUtility {
+public class WOTDUtilityApp extends AbstractUtility {
 
     public static void main( String[] args ) {
         try {
             log.debug( "Starting Utility - {}", MethodHandles.lookup().lookupClass() ) ;
             log.debug( "DB_HOST = {}", System.getenv( "DB_HOST" ) ) ;
 
-            SpringApplication.run( WOTDUtility.class, args ) ;
-            WOTDUtility utility = AbstractUtility.appCtx.getBean( WOTDUtility.class ) ;
+            SpringApplication.run( WOTDUtilityApp.class, args ) ;
+            WOTDUtilityApp utility = AbstractUtility.appCtx.getBean( WOTDUtilityApp.class ) ;
             utility.execute() ;
         }
         catch( Exception e ) { log.error( "Could not launch utility.", e ) ; }

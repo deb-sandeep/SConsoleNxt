@@ -10,11 +10,14 @@ import com.sandy.sconsole.core.wordnic.WordnikWord;
 import com.sandy.sconsole.dao.word.Word;
 import com.sandy.sconsole.dao.word.WordRepo;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
+
+import static com.sandy.sconsole.core.log.LogIndenter.THREAD_NAME_KEY;
 
 @SuppressWarnings("ALL")
 @Slf4j
@@ -43,6 +46,7 @@ public class WordnikEnricherDaemon extends DaemonBase
 
         while( true ) {
             try {
+                MDC.put( THREAD_NAME_KEY, "wordnikDaemon" ) ;
                 if( enabled ) {
                     log.debug( "Wordnik daemon commencing run." );
                     Word wordDAO = wordRepo.findWordForEnrichment() ;
@@ -84,6 +88,7 @@ public class WordnikEnricherDaemon extends DaemonBase
                 try {
                     nvpManager.loadNVPConfigState( this ) ;
                     log.debug( "Daemon run completed. Sleeping for {} seconds.", runDelaySec ) ;
+                    MDC.remove( THREAD_NAME_KEY ) ;
                     TimeUnit.SECONDS.sleep( runDelaySec ) ;
                 }
                 catch( Exception e ){

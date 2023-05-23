@@ -13,6 +13,7 @@ import com.sandy.sconsole.dao.slide.Slide;
 import com.sandy.sconsole.dao.slide.SlideRepo;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.api.errors.TransportException;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,6 +21,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import static com.sandy.sconsole.core.log.LogIndenter.THREAD_NAME_KEY;
 
 @Slf4j
 @Component
@@ -61,6 +64,7 @@ public class RefreshersSyncDaemon extends DaemonBase
     }
 
     public void run() {
+        MDC.put( THREAD_NAME_KEY, "refresherDaemon" ) ;
         try {
             Thread.sleep( startDelaySec ) ;
         }
@@ -169,7 +173,7 @@ public class RefreshersSyncDaemon extends DaemonBase
             } ) ;
         }
         catch( TransportException te ) {
-            log.debug( "-> Network unavailable." ) ;
+            log.debug( "   Network unavailable." ) ;
         }
         catch( Exception e ) {
             log.error( "   Error during pull.", e ) ;

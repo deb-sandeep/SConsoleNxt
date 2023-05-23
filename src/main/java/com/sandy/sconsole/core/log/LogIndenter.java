@@ -5,7 +5,9 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
 
-public abstract class LogIndenter extends MessageConverter {
+public class LogIndenter extends MessageConverter {
+
+    public static final String THREAD_NAME_KEY = "threadName" ;
 
     private static final String INDENT = "  " ;
 
@@ -42,12 +44,6 @@ public abstract class LogIndenter extends MessageConverter {
             EM_REMOVE_DBLINDENT,
             EM_RESET_INDENT
     } ;
-
-    private final String indentKey;
-
-    protected LogIndenter( String key ) {
-        this.indentKey = key ;
-    }
 
     public String convert( ILoggingEvent event) {
 
@@ -125,7 +121,7 @@ public abstract class LogIndenter extends MessageConverter {
     private String addIndent( int numIndent ) {
         String curIndent = getCurrentIndent() ;
         curIndent += StringUtils.repeat( INDENT, numIndent ) ;
-        MDC.put( this.indentKey, curIndent ) ;
+        MDC.put( getIndentKey(), curIndent ) ;
         return curIndent ;
     }
 
@@ -138,12 +134,12 @@ public abstract class LogIndenter extends MessageConverter {
         else {
             curIndent = curIndent.substring( 0, curIndent.length()-reqIndent.length() ) ;
         }
-        MDC.put( this.indentKey, curIndent ) ;
+        MDC.put( getIndentKey(), curIndent ) ;
         return curIndent ;
     }
 
     private String getCurrentIndent() {
-        String curIndent = MDC.get( this.indentKey ) ;
+        String curIndent = MDC.get( getIndentKey() ) ;
         if( curIndent == null ) {
             curIndent = "" ;
         }
@@ -151,7 +147,15 @@ public abstract class LogIndenter extends MessageConverter {
     }
 
     private String resetIndent() {
-        MDC.remove( this.indentKey ) ;
+        MDC.remove( getIndentKey() ) ;
         return "" ;
+    }
+
+    private String getIndentKey() {
+        String threadName = MDC.get( LogIndenter.THREAD_NAME_KEY ) ;
+        if( threadName == null ) {
+            return "LogIndenter.mainThreadLogIndentKey" ;
+        }
+        return "LogIndenter." + threadName + "ThreadLogIndentKey" ;
     }
 }

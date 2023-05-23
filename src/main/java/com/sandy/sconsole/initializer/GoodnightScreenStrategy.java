@@ -1,4 +1,4 @@
-package com.sandy.sconsole.initializers;
+package com.sandy.sconsole.initializer;
 
 import com.sandy.sconsole.SConsole;
 import com.sandy.sconsole.core.behavior.ComponentInitializer;

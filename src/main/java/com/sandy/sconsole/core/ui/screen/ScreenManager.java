@@ -1,6 +1,6 @@
 package com.sandy.sconsole.core.ui.screen;
 
-import com.sandy.sconsole.initializers.ScreenManagerInitializer;
+import com.sandy.sconsole.initializer.ScreenManagerInitializer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 

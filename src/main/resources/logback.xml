@@ -3,30 +3,42 @@
 
     <property name="WKSP_DIR" value="/home/sandeep/projects/workspace/sconsole/"/>
 
-    <conversionRule conversionWord="consoleMsg" converterClass="com.sandy.sconsole.core.log.ConsoleLogIndenter" />
-    <conversionRule conversionWord="fileMsg"    converterClass="com.sandy.sconsole.core.log.FileLogIndenter" />
+    <conversionRule conversionWord="indentedMsg" converterClass="com.sandy.sconsole.core.log.LogIndenter" />
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="com.sandy.sconsole.core.log.ThreadLogFilter">
+            <includedThreadName>X-clockDaemon</includedThreadName>
+            <includedThreadName>X-refresherDaemon</includedThreadName>
+            <includedThreadName>X-wordnikDaemon</includedThreadName>
+        </filter>
         <encoder>
             <pattern>
                 <!--%d{dd-MM-yyyy HH:mm:ss.SSS} %magenta([%thread]) %highlight(%-5level) %logger{15}.%M - %msg%n-->
-                %highlight(%-5level) %-3.3L %-30.30logger{0} - %consoleMsg%n
+                %d{dd-MM HH:mm:ss} %-5level %-3.3L %-30.30logger{0} - %indentedMsg%n
             </pattern>
         </encoder>
     </appender>
 
-    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${WKSP_DIR}/log/sconsole.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_FILE}.%d{yyyy-MM-dd}.gz</fileNamePattern>
-            <maxHistory>30</maxHistory>
-            <totalSizeCap>1GB</totalSizeCap>
-        </rollingPolicy>
-        <encoder>
-            <pattern>
-                %highlight(%-5level) %-3.3L %-30.30logger{0} - %fileMsg%n
-            </pattern>
-        </encoder>
+    <appender name="SIFTING-APPENDER" class="ch.qos.logback.classic.sift.SiftingAppender">
+        <discriminator>
+            <key>threadName</key>
+            <defaultValue>main</defaultValue>
+        </discriminator>
+        <sift>
+            <appender name="LOG-FILE-${threadName}" class="ch.qos.logback.core.FileAppender">
+                <file>${WKSP_DIR}/log/sconsole-${threadName}.log</file>
+                <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                    <fileNamePattern>${LOG_FILE}.%d{yyyy-MM-dd}.gz</fileNamePattern>
+                    <maxHistory>30</maxHistory>
+                    <totalSizeCap>20MB</totalSizeCap>
+                </rollingPolicy>
+                <encoder>
+                    <pattern>
+                        %d{dd-MM HH:mm:ss} %-5level %-3.3L %-30.30logger{0} - %indentedMsg%n
+                    </pattern>
+                </encoder>
+            </appender>
+        </sift>
     </appender>
 
     <logger name="org.springframework"  level="WARN"></logger>
@@ -43,7 +55,7 @@
 
     <root level="debug">
         <appender-ref ref="STDOUT"/>
-        <appender-ref ref="FILE"/>
+        <appender-ref ref="SIFTING-APPENDER"/>
     </root>
 
 </configuration>

@@ -5,10 +5,13 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.jfree.data.time.Day;
+import org.slf4j.MDC;
 
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+
+import static com.sandy.sconsole.core.log.LogIndenter.THREAD_NAME_KEY;
 
 @Slf4j
 public class SConsoleClock {
@@ -48,31 +51,37 @@ public class SConsoleClock {
 
             public void run() {
 
-                Calendar now = currentTimeProvider.getCurrentTime() ;
-                synchronized ( lock ) {
+                try {
+                    MDC.put( THREAD_NAME_KEY, "clockDaemon" ) ;
+                    Calendar now = currentTimeProvider.getCurrentTime() ;
+                    synchronized ( lock ) {
 
-                    notifyTickListeners( TimeUnit.SECONDS, now ) ;
-                    if( lastDate != null ) {
-                        // A new minute has begum
-                        if( now.get(Calendar.MINUTE) !=
-                                lastDate.get(Calendar.MINUTE)) {
-                            notifyTickListeners( TimeUnit.MINUTES, now ) ;
-                        }
+                        notifyTickListeners( TimeUnit.SECONDS, now ) ;
+                        if( lastDate != null ) {
+                            // A new minute has begum
+                            if( now.get(Calendar.MINUTE) !=
+                                    lastDate.get(Calendar.MINUTE)) {
+                                notifyTickListeners( TimeUnit.MINUTES, now ) ;
+                            }
 
-                        // A new hour has begum
-                        if( now.get(Calendar.HOUR_OF_DAY) !=
-                                lastDate.get(Calendar.HOUR_OF_DAY)) {
-                            notifyTickListeners( TimeUnit.HOURS, now ) ;
-                        }
+                            // A new hour has begum
+                            if( now.get(Calendar.HOUR_OF_DAY) !=
+                                    lastDate.get(Calendar.HOUR_OF_DAY)) {
+                                notifyTickListeners( TimeUnit.HOURS, now ) ;
+                            }
 
-                        // A new day has begum
-                        if( now.get(Calendar.DAY_OF_YEAR) !=
-                                lastDate.get(Calendar.DAY_OF_YEAR)) {
-                            computeTodayTimeMarkers() ;
-                            notifyTickListeners( TimeUnit.DAYS, now ) ;
+                            // A new day has begum
+                            if( now.get(Calendar.DAY_OF_YEAR) !=
+                                    lastDate.get(Calendar.DAY_OF_YEAR)) {
+                                computeTodayTimeMarkers() ;
+                                notifyTickListeners( TimeUnit.DAYS, now ) ;
+                            }
                         }
+                        lastDate = now ;
                     }
-                    lastDate = now ;
+                }
+                finally {
+                    MDC.remove( THREAD_NAME_KEY ) ;
                 }
             }
         }, new Date(), 1000 ) ;
