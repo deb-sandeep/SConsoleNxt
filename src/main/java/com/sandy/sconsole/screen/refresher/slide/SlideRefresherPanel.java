@@ -56,9 +56,10 @@ public class SlideRefresherPanel extends AbstractRefresherPanel {
 
         try {
             SlideVO slide = slideManager.getNextSlide() ;
+            log.debug( "  Setting new slide - {}", slide.getSlideName() ) ;
+
             BufferedImage bufferedImage = slide.getImage() ;
             imgTile.setImage( slide.getImage() ) ;
-
             // Remove the image so that there is no excessive memory
             // build up.
             slide.setImage( null ) ;
