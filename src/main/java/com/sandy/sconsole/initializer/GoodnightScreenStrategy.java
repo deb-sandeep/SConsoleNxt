@@ -3,6 +3,7 @@ package com.sandy.sconsole.initializer;
 import com.sandy.sconsole.SConsole;
 import com.sandy.sconsole.core.behavior.ComponentInitializer;
 import com.sandy.sconsole.core.clock.SConsoleClock;
+import com.sandy.sconsole.core.clock.ScheduledTask;
 import com.sandy.sconsole.core.nvpconfig.annotation.NVPConfig;
 import com.sandy.sconsole.core.nvpconfig.annotation.NVPConfigChangeListener;
 import com.sandy.sconsole.core.nvpconfig.annotation.NVPConfigGroup;
@@ -39,20 +40,28 @@ public class GoodnightScreenStrategy implements ComponentInitializer {
         }
     }
 
-    private String registerEODCallback( SConsole app ) throws Exception {
-        return app.getClock().scheduleTask( eodCronExpression, ()->{
-            if( app.getFrame() != null ) {
-                app.getFrame().changeScreen( eodScreenName ) ;
-            }
-        } ) ;
+    private String registerEODCallback( SConsole app ) {
+        return app.getClock().scheduleTask( eodCronExpression,
+                new ScheduledTask() {
+                    @Override protected void executeTask() {
+                        if( app.getFrame() != null ) {
+                            app.getFrame().changeScreen( eodScreenName );
+                        }
+                    }
+                }
+        ) ;
     }
 
-    private String registerSODCallback( SConsole app ) throws Exception {
-        return app.getClock().scheduleTask( sodCronExpression, ()->{
-            if( app.getFrame() != null ) {
-                app.getFrame().changeScreen( sodScreenName );
-            }
-        } ) ;
+    private String registerSODCallback( SConsole app ) {
+        return app.getClock().scheduleTask( sodCronExpression,
+                new ScheduledTask() {
+                    @Override protected void executeTask() {
+                        if( app.getFrame() != null ) {
+                            app.getFrame().changeScreen( sodScreenName );
+                        }
+                    }
+                }
+        ) ;
     }
 
     @NVPConfigChangeListener

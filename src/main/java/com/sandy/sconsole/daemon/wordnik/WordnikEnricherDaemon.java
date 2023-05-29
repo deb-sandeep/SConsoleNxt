@@ -87,12 +87,12 @@ public class WordnikEnricherDaemon extends DaemonBase
             finally {
                 try {
                     nvpManager.loadNVPConfigState( this ) ;
-                    log.debug( "Daemon run completed. Sleeping for {} seconds.", runDelaySec ) ;
+                    log.debug( "Daemon run completed. Sleeping for {} seconds. <<<", runDelaySec ) ;
                     MDC.remove( THREAD_NAME_KEY ) ;
                     TimeUnit.SECONDS.sleep( runDelaySec ) ;
                 }
                 catch( Exception e ){
-                    log.error( "Unanticipated exception in Wordnik daemon. Terminating.", e ) ;
+                    log.error( "Unanticipated exception in Wordnik daemon. Terminating. <<<", e ) ;
                     throw new RuntimeException( e ) ;
                 }
             }

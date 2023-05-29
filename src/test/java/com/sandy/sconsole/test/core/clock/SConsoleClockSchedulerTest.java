@@ -1,6 +1,7 @@
 package com.sandy.sconsole.test.core.clock;
 
 import com.sandy.sconsole.core.clock.SConsoleClock;
+import com.sandy.sconsole.core.clock.ScheduledTask;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,7 +33,12 @@ public class SConsoleClockSchedulerTest {
         final List<String> callLog = new ArrayList<>() ;
         clock.scheduleTask(
                 "* * * * *",
-                () -> callLog.add( "Task called." ) ) ;
+                new ScheduledTask() {
+                    @Override protected void executeTask() {
+                        callLog.add( "Task called." ) ;
+                    }
+                }
+        ) ;
         TimeUnit.MINUTES.sleep( 1 ) ;
         assertThat( callLog.size(), is( greaterThan( 0 ) ) ) ;
     }

@@ -4,6 +4,7 @@ import com.sandy.sconsole.SConsole;
 import com.sandy.sconsole.core.SConsoleConfig;
 import com.sandy.sconsole.core.behavior.ComponentInitializer;
 import com.sandy.sconsole.daemon.refresher.internal.ChapterSlideCluster;
+import com.sandy.sconsole.daemon.refresher.internal.SlideClusterDisplayPriorityComparator;
 import com.sandy.sconsole.dao.slide.Slide;
 import com.sandy.sconsole.dao.slide.SlideRepo;
 import com.sandy.sconsole.dao.slide.SlideVO;
@@ -33,6 +34,9 @@ public class RefresherSlideManager implements ComponentInitializer {
     @Autowired private SlideRepo slideRepo ;
     @Autowired private SConsoleConfig appCfg ;
 
+    private final SlideClusterDisplayPriorityComparator clusterComparator =
+            new SlideClusterDisplayPriorityComparator() ;
+
     // Syllabus -> Subject -> Chapter -> ChapterSlideCluster
     private final Map<String, Map<String, Map<String, ChapterSlideCluster>>> clusterMap = new TreeMap<>() ;
     private final List<ChapterSlideCluster> allClusters = new ArrayList<>() ;
@@ -57,7 +61,7 @@ public class RefresherSlideManager implements ComponentInitializer {
                 getCluster( vo ).add( vo ) ;
             } ) ;
 
-            sortAllClusters() ;
+            allClusters.sort( clusterComparator ) ;
 
             // Pick the cluster that has the minimum projection score. This
             // cluster will have slides that have been shown the minimum.
@@ -69,12 +73,12 @@ public class RefresherSlideManager implements ComponentInitializer {
 
     void add( SlideVO s ) {
         getCluster( s ).add( s ) ;
-        sortAllClusters() ;
+        allClusters.sort( clusterComparator ) ;
     }
 
     void delete( SlideVO s ) {
         getCluster( s ).delete( s ) ;
-        sortAllClusters() ;
+        allClusters.sort( clusterComparator ) ;
     }
 
     public SlideVO getNextSlide() throws Exception {
@@ -89,7 +93,7 @@ public class RefresherSlideManager implements ComponentInitializer {
             }
 
             if( nextSlide == null ) {
-                sortAllClusters() ;
+                allClusters.sort( clusterComparator ) ;
                 currentCluster = allClusters.get( 0 ) ;
                 return getNextSlide() ;
             }
@@ -119,13 +123,6 @@ public class RefresherSlideManager implements ComponentInitializer {
         slide.update( slideVO ) ;
         slideRepo.save( slide ) ;
 
-    }
-
-    private void sortAllClusters() {
-        // Cluster with the largest average non show delay is given higher
-        // precedence to be shown first.
-        allClusters.sort( ( c1, c2) -> ( int ) ( c2.getAvgNonShowDelayInMinutes() -
-                                                 c1.getAvgNonShowDelayInMinutes() ) ) ;
     }
 
     private ChapterSlideCluster getCluster( SlideVO s ) {

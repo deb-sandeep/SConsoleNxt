@@ -34,7 +34,7 @@ public class SlideVO {
                 "/" + slideName ;
     }
 
-    public long getMinutesSinceLastDisplay() {
+    public long getSecondsSinceLastDisplay() {
 
         long now = System.currentTimeMillis() ;
         long totalNonShowDelayMillis = 0 ;
@@ -47,7 +47,7 @@ public class SlideVO {
         else {
             totalNonShowDelayMillis = ( now - lastDisplayTime.getTime() ) ;
         }
-        return totalNonShowDelayMillis/60_000 ;
+        return totalNonShowDelayMillis/1_000 ;
     }
 
     public SlideVO update( Slide slide ) {

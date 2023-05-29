@@ -1,5 +1,6 @@
 package com.sandy.sconsole.core.clock;
 
+import com.sandy.sconsole.core.log.LogIndenter;
 import it.sauronsoftware.cron4j.Scheduler;
 import lombok.Getter;
 import lombok.Setter;
@@ -81,6 +82,7 @@ public class SConsoleClock {
                     }
                 }
                 finally {
+                    LogIndenter.resetIndent() ;
                     MDC.remove( THREAD_NAME_KEY ) ;
                 }
             }
@@ -97,9 +99,9 @@ public class SConsoleClock {
     public void addTickListener( ClockTickListener l, TimeUnit unit ) {
 
         if( !( unit == TimeUnit.SECONDS ||
-                unit == TimeUnit.MINUTES ||
-                unit == TimeUnit.DAYS ||
-                unit == TimeUnit.HOURS ) ) {
+               unit == TimeUnit.MINUTES ||
+               unit == TimeUnit.DAYS ||
+               unit == TimeUnit.HOURS ) ) {
             throw new IllegalArgumentException( "Currently clock only " +
                     "supports tick listeners for SECONDS, MINUTES, HOURS and DAYS." ) ;
         }
@@ -137,7 +139,7 @@ public class SConsoleClock {
      * @return A unique identifier which can be used to deschedule or reschedule
      *      the task.
      */
-    public String scheduleTask( String scheduleExpr, Runnable task ) {
+    public String scheduleTask( String scheduleExpr, ScheduledTask task ) {
         return this.scheduler.schedule( scheduleExpr, task ) ;
     }
 
@@ -155,8 +157,10 @@ public class SConsoleClock {
                 ClockTickListener l = listeners.get( i ) ;
                 try {
                     if( l.isAsync() ) {
+                        Map<String, String> mdcCtxMap = MDC.getCopyOfContextMap() ;
                         new Thread( () -> {
                             try {
+                                MDC.setContextMap( mdcCtxMap ) ;
                                 l.clockTick( now ) ;
                             }
                             catch( Exception e ) {

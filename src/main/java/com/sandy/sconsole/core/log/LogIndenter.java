@@ -138,7 +138,7 @@ public class LogIndenter extends MessageConverter {
         return curIndent ;
     }
 
-    private String getCurrentIndent() {
+    private static String getCurrentIndent() {
         String curIndent = MDC.get( getIndentKey() ) ;
         if( curIndent == null ) {
             curIndent = "" ;
@@ -146,12 +146,12 @@ public class LogIndenter extends MessageConverter {
         return curIndent ;
     }
 
-    private String resetIndent() {
+    public static String resetIndent() {
         MDC.remove( getIndentKey() ) ;
         return "" ;
     }
 
-    private String getIndentKey() {
+    private static String getIndentKey() {
         String threadName = MDC.get( LogIndenter.THREAD_NAME_KEY ) ;
         if( threadName == null ) {
             return "LogIndenter.mainThreadLogIndentKey" ;

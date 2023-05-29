@@ -80,28 +80,6 @@ public class RefresherScreen extends Screen implements ClockTickListener {
         super.addTile( starTile, 10, 0, 15, 1 ) ;
     }
 
-    private void setRefresherPanel( int panelIndex ) {
-
-        if( panelIndex != currentRefresherPanelIndex ) {
-            AbstractRefresherPanel panel = refresherPanelList.get( panelIndex ) ;
-            if( currentRefresherPanel != null ) {
-                super.remove( currentRefresherPanel ) ;
-                super.invalidate() ;
-            }
-            currentRefresherPanel = panel ;
-            currentRefresherPanelIndex = panelIndex ;
-        }
-
-        currentRefresherPanel.refresh() ;
-        currentPanelDisplayStartTime = System.currentTimeMillis() ;
-
-        SwingUtilities.invokeLater( ()->{
-            super.addTile( currentRefresherPanel, 0,2,15,15 ) ;
-            super.revalidate() ;
-            super.repaint() ;
-        } ) ;
-    }
-
     @Override
     public void beforeActivation() {
         getApp().getClock().addTickListener( this, TimeUnit.SECONDS ) ;
@@ -134,10 +112,35 @@ public class RefresherScreen extends Screen implements ClockTickListener {
                 if( callbackInterval > 0 ) {
                     if( displayDuration != 0 &&
                         displayDuration % callbackInterval == 0 ) {
+                        log.debug( "Changing refresher panel content" ) ;
                         currentRefresherPanel.refresherScreenCallback() ;
                     }
                 }
             }
         }
+    }
+
+    private void setRefresherPanel( int panelIndex ) {
+
+        if( panelIndex != currentRefresherPanelIndex ) {
+            AbstractRefresherPanel panel = refresherPanelList.get( panelIndex ) ;
+            if( currentRefresherPanel != null ) {
+                super.remove( currentRefresherPanel ) ;
+                super.invalidate() ;
+            }
+
+            log.debug( "Setting refresher panel - {}", panel.getClass().getSimpleName() ) ;
+            currentRefresherPanel = panel ;
+            currentRefresherPanelIndex = panelIndex ;
+        }
+
+        currentRefresherPanel.refresh() ;
+        currentPanelDisplayStartTime = System.currentTimeMillis() ;
+
+        SwingUtilities.invokeLater( ()->{
+            super.addTile( currentRefresherPanel, 0,2,15,15 ) ;
+            super.revalidate() ;
+            super.repaint() ;
+        } ) ;
     }
 }

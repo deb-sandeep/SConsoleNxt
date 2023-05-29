@@ -13,6 +13,8 @@ public class ChapterSlideCluster {
     private int currentSlideIndex = -1 ;
     private final List<SlideVO> slides = new ArrayList<>() ;
 
+    private final SlideDisplayPriorityComparator slideComparator = new SlideDisplayPriorityComparator() ;
+
     public ChapterSlideCluster( String syllabus, String subject, String chapter ) {
         this.syllabus = syllabus ;
         this.subject = subject ;
@@ -21,7 +23,7 @@ public class ChapterSlideCluster {
 
     public void add( SlideVO s ) {
         slides.add( s ) ;
-        sortAllSLides() ;
+        slides.sort( slideComparator ) ;
     }
 
     public void delete( SlideVO s ) {
@@ -31,12 +33,7 @@ public class ChapterSlideCluster {
                 break ;
             }
         }
-        sortAllSLides() ;
-    }
-
-    private void sortAllSLides() {
-        slides.sort( Comparator.comparing( SlideVO::getMinutesSinceLastDisplay ) ) ;
-        Collections.reverse( slides ) ;
+        slides.sort( slideComparator ) ;
     }
 
     public SlideVO getNextSlide() {
@@ -52,17 +49,26 @@ public class ChapterSlideCluster {
         return syllabus + "/" + subject + "/" + chapter ;
     }
 
-    public long getAvgNonShowDelayInMinutes() {
+    public int getAvgNonShowDelayInSeconds() {
         if( slides.isEmpty() ) return 0 ;
 
-        long totalNonShowDelayInMinutes = 0 ;
+        int totalNonShowDelayInMinutes = 0 ;
         for( SlideVO slide : slides ) {
-            totalNonShowDelayInMinutes += slide.getMinutesSinceLastDisplay() ;
+            totalNonShowDelayInMinutes += slide.getSecondsSinceLastDisplay() ;
         }
         return (totalNonShowDelayInMinutes / slides.size()) ;
     }
 
+    public int getMinimumSlideShows() {
+
+        int minNumShows = Integer.MAX_VALUE ;
+        for( SlideVO slide : slides ) {
+            minNumShows = Math.min( slide.getNumShows(), minNumShows ) ;
+        }
+        return minNumShows ;
+    }
+
     public String toString() {
-        return getKey() + ". Avg show delay = " + getAvgNonShowDelayInMinutes() ;
+        return getKey() + ". Avg show delay = " + getAvgNonShowDelayInSeconds() ;
     }
 }
