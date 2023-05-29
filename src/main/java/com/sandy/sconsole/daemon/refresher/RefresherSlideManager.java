@@ -89,15 +89,20 @@ public class RefresherSlideManager implements ComponentInitializer {
             SlideVO nextSlide = null ;
 
             if( currentCluster != null ) {
+                log.debug( "  Current cluster is not empty. Getting next slide." ) ;
                 nextSlide = currentCluster.getNextSlide() ;
             }
 
             if( nextSlide == null ) {
+                log.debug( "  Next slide is null. Sorting clusters." ) ;
                 allClusters.sort( clusterComparator ) ;
+                allClusters.forEach( c -> log.debug( "    {}", c.getKey() ) ) ;
+
                 currentCluster = allClusters.get( 0 ) ;
                 return getNextSlide() ;
             }
 
+            log.debug( "  Next slide = {}", nextSlide.getPath() ) ;
             updateSlideState( nextSlide ) ;
 
             // Why do we set the image? To ensure that the slide object

@@ -7,7 +7,7 @@
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <filter class="com.sandy.sconsole.core.log.ThreadLogFilter">
-            <includedThreadName>X-clockDaemon</includedThreadName>
+            <includedThreadName>clockDaemon</includedThreadName>
             <includedThreadName>X-refresherDaemon</includedThreadName>
             <includedThreadName>X-wordnikDaemon</includedThreadName>
         </filter>
