@@ -1,7 +1,6 @@
 package com.sandy.sconsole.dao.slide;
 
 import com.sandy.sconsole.daemon.refresher.internal.Path;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -10,7 +9,6 @@ import java.util.List;
 
 public interface SlideRepo extends JpaRepository<Slide, Integer> {
 
-    @NotNull
     @Query( "SELECT s " +
             "FROM Slide s " +
             "ORDER BY " +

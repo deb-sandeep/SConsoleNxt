@@ -11,7 +11,6 @@ import com.sandy.sconsole.core.ui.screen.ScreenManager;
 import com.sandy.sconsole.core.ui.uiutil.DefaultUITheme;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeansException;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -62,7 +61,7 @@ public class SConsole
     }
 
     @Override
-    public void setApplicationContext( @NotNull ApplicationContext applicationContext )
+    public void setApplicationContext( ApplicationContext applicationContext )
             throws BeansException {
         APP_CTX = ( ConfigurableApplicationContext )applicationContext;
     }
@@ -100,7 +99,7 @@ public class SConsole
 
     public SConsoleClock getClock() { return this.clock; }
 
-    public ApplicationContext getCtx() { return SConsole.APP_CTX ; } ;
+    public ApplicationContext getCtx() { return SConsole.APP_CTX ; }
 
     public SConsoleConfig getConfig() {
         if( cfg == null ) {
@@ -170,7 +169,7 @@ public class SConsole
         SpringApplication.run( SConsole.class, args )
                          .addApplicationListener(
                                  new ApplicationListener<ContextClosedEvent>() {
-            public void onApplicationEvent( @NotNull ContextClosedEvent event ) {
+            public void onApplicationEvent( ContextClosedEvent event ) {
                 getApp().discoverAndInvokeFinalizers() ;
             }
         } ) ;

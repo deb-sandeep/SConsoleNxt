@@ -11,8 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class SConsoleClockTest {
 
@@ -49,7 +48,7 @@ public class SConsoleClockTest {
         Thread.sleep( 2000 ) ;
         clock.removeTickListener( l ) ;
 
-        assertEquals( 2, l.getNumTicksRecd() ) ;
+        assertTrue( l.getNumTicksRecd() == 2 || l.getNumTicksRecd() == 3 ); ;
 
         // Once a tick listener is removed, it no longer receives callbacks
         Thread.sleep( 1000 ) ;

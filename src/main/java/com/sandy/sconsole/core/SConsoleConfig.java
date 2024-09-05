@@ -8,7 +8,7 @@ import org.springframework.context.annotation.PropertySource;
 import java.io.File;
 
 @Configuration( "config" )
-@PropertySource( "classpath:sconsole.properties" )
+@PropertySource( "classpath:config/sconsole.properties" )
 @ConfigurationProperties( "sconsole" )
 @Data
 public class SConsoleConfig {
