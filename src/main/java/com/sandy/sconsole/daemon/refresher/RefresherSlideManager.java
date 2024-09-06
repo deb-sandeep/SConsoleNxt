@@ -53,8 +53,6 @@ public class RefresherSlideManager implements ComponentInitializer {
     public void initialize( SConsole app ) throws Exception {
 
         synchronized( LOCK ) {
-            log.debug( "Initializing RefresherSlideManager." ) ;
-
             clusterMap.clear() ;
             slideRepo.findAll().forEach( s -> {
                 SlideVO vo = s.getVO() ;

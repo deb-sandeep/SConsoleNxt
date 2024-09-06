@@ -69,6 +69,17 @@
                     <mainClass>com.sandy.sconsole.SConsole</mainClass>
                 </configuration>
            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>config/sconsole.properties</exclude>
+                        <exclude>config/sconsole.prod</exclude>
+                        <exclude>web/**</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 

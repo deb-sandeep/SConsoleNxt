@@ -42,13 +42,13 @@ public class GoodnightScreenStrategy implements ComponentInitializer {
 
     private String registerEODCallback( SConsole app ) {
         return app.getClock().scheduleTask( eodCronExpression,
-                new ScheduledTask() {
-                    @Override protected void executeTask() {
-                        if( app.getFrame() != null ) {
-                            app.getFrame().changeScreen( eodScreenName );
-                        }
+            new ScheduledTask() {
+                @Override protected void executeTask() {
+                    if( app.getFrame() != null ) {
+                        app.getFrame().changeScreen( eodScreenName );
                     }
                 }
+            }
         ) ;
     }
 

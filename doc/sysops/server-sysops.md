@@ -34,6 +34,7 @@ export JAVA_HOME=/usr/lib/jvm/java-1.17.0-openjdk-arm64
 ```
 #!/bin/bash
 
+export DB_USER=<user name>
 export DB_PASSWORD=<password>
 export DB_HOST=<hostname>
 export WORDNIK_API_KEY=<api_key>
@@ -47,8 +48,8 @@ export WORDNIK_API_KEY=<api_key>
 Desktop
 projects
    +- bin
-      +- sconsole -> sconsole-0.1-SNAPSHOT/
-      +- sconsole-0.1-SNAPSHOT   
+      +- sconsole -> sconsole-1.0/
+      +- sconsole-1.0
    +- workspace
       +- sconsole
         +- log

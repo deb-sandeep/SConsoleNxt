@@ -31,7 +31,6 @@
             <outputDirectory>/config</outputDirectory>
             <includes>
                 <include>sconsole.properties</include>
-                <include>application.properties</include>
             </includes>
         </fileSet>
         <fileSet>

@@ -53,7 +53,6 @@ public class ScreenManagerInitializer implements ComponentInitializer {
         return ScreenBuilder.instance( app )
                 .withName( CLOCK_SCR_NAME )
                 .withScreenClass( ClockScreen.class )
-                //.withShowOnStartup()
                 .withParentScreen( screenManager.getScreen( DOCK_SCR_NAME ) )
                 .build() ;
     }

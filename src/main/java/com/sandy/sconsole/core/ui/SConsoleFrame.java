@@ -32,10 +32,27 @@ public class SConsoleFrame extends JFrame {
         setScreen( screenManager.getDefaultScreen() ) ;
         
         if( config.isShowSwingApp() ) {
-            setVisible( true ) ;
+            makeFrameVisible() ;
         }
         else {
             log.info( "[*** IMP ***] Application has been configured not to show the Swing UI" ) ;
+        }
+    }
+    
+    private void makeFrameVisible() {
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment() ;
+        GraphicsDevice[] devices = ge.getScreenDevices() ;
+        if( devices.length > 1 ) {
+            for( GraphicsDevice d : devices ) {
+                if( d.getDefaultConfiguration().getBounds().height == 1080 ) {
+                    d.setFullScreenWindow( this ) ;
+                    super.setVisible( true ) ;
+                    break ;
+                }
+            }
+        }
+        else {
+            setVisible( true ) ;
         }
     }
     

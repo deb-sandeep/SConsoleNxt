@@ -11,6 +11,7 @@ public interface SlideRepo extends JpaRepository<Slide, Integer> {
 
     @Query( "SELECT s " +
             "FROM Slide s " +
+            "WHERE s.hidden = false " +
             "ORDER BY " +
             "   s.syllabus ASC, " +
             "   s.subject ASC, " +

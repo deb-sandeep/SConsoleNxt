@@ -4,6 +4,7 @@ After=network.target multi-user.target lightdm.service
 Requires=lightdm.service
 
 [Service]
+Environment="DB_USER=[user name here]"
 Environment="DB_PASSWORD=[password here]"
 Environment="DB_HOST=localhost"
 Environment="WORDNIK_API_KEY=[Key here]"

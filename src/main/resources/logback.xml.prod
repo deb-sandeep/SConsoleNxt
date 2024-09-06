@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true" scanPeriod="5 seconds">
 
-    <property name="WKSP_DIR" value="/Users/sandeep/softwares/bin/sconsole/"/>
+    <property name="WKSP_DIR" value="/home/sandeep/projects/workspace/sconsole/"/>
 
     <conversionRule conversionWord="indentedMsg" converterClass="com.sandy.sconsole.core.log.LogIndenter" />
 

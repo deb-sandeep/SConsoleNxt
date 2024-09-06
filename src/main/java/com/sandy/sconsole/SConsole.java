@@ -23,6 +23,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.swing.*;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -120,8 +121,11 @@ public class SConsole
                         .values()
         ) ;
 
-        initializers.sort( (i1, i2) -> i1.getInitializationSequencePreference() -
-                                       i2.getInitializationSequencePreference() );
+        initializers.sort(
+            Comparator.comparingInt(
+                ComponentInitializer::getInitializationSequencePreference
+            )
+        ) ;
 
         for( ComponentInitializer si : initializers ) {
             log.debug( "-> Initializing {} [{}]",
