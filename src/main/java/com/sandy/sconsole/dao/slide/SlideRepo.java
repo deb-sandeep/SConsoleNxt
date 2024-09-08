@@ -11,7 +11,6 @@ public interface SlideRepo extends JpaRepository<Slide, Integer> {
 
     @Query( "SELECT s " +
             "FROM Slide s " +
-            "WHERE s.hidden = false " +
             "ORDER BY " +
             "   s.syllabus ASC, " +
             "   s.subject ASC, " +
@@ -25,13 +24,16 @@ public interface SlideRepo extends JpaRepository<Slide, Integer> {
             "WHERE s.syllabus  = :#{#path.syllabus} AND " +
             "      s.subject   = :#{#path.subject}  AND " +
             "      s.chapter   = :#{#path.chapter}  AND " +
-            "      s.slideName = :#{#path.fileName} "
+            "      s.slideName = :#{#path.fileName} AND " +
+            "      s.hidden    = false "
     )
     Slide findByPath( @Param( "path" ) Path path ) ;
 
     @Query( "SELECT s " +
             "FROM Slide s " +
-            "WHERE s.syllabus = :syllabus " +
+            "WHERE " +
+            "    s.syllabus = :syllabus AND " +
+            "    s.hidden = false " +
             "ORDER BY " +
             "   s.subject ASC, " +
             "   s.chapter ASC, " +
@@ -43,7 +45,8 @@ public interface SlideRepo extends JpaRepository<Slide, Integer> {
             "FROM Slide  s " +
             "WHERE " +
             "   s.syllabus = :syllabus AND " +
-            "   s.subject = :subject " +
+            "   s.subject = :subject AND " +
+            "   s.hidden = false " +
             "ORDER BY " +
             "   s.chapter ASC, " +
             "   s.slideName ASC "
@@ -56,7 +59,8 @@ public interface SlideRepo extends JpaRepository<Slide, Integer> {
             "WHERE " +
             "   s.syllabus = :syllabus AND " +
             "   s.subject = :subject AND " +
-            "   s.chapter = :chapter " +
+            "   s.chapter = :chapter AND " +
+            "   s.hidden = false " +
             "ORDER BY " +
             "   s.slideName ASC "
     )

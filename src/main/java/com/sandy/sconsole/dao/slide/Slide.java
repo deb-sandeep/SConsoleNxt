@@ -21,13 +21,17 @@ public class Slide {
     private String subject ;
     private String chapter ;
     private String slideName ;
-
-    private boolean   hidden          = false;
-    private boolean   starred         = false;
+    
     private float     rating          = 0;
     private int       numShows        = 0;
     private Timestamp lastDisplayTime = null;
 
+    @Column(nullable = false, name="hidden", columnDefinition = "BOOLEAN")
+    private boolean hidden = false;
+    
+    @Column(nullable = false, name="starred", columnDefinition = "BOOLEAN")
+    private boolean starred = false;
+    
     public String getPath() {
         return syllabus +
                 "/" + subject +

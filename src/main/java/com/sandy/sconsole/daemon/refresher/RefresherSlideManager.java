@@ -56,7 +56,7 @@ public class RefresherSlideManager implements ComponentInitializer {
             clusterMap.clear() ;
             slideRepo.findAll().forEach( s -> {
                 SlideVO vo = s.getVO() ;
-                getCluster( vo ).add( vo ) ;
+                add( vo ) ;
             } ) ;
 
             allClusters.sort( clusterComparator ) ;
@@ -70,8 +70,14 @@ public class RefresherSlideManager implements ComponentInitializer {
     }
 
     void add( SlideVO s ) {
-        getCluster( s ).add( s ) ;
-        allClusters.sort( clusterComparator ) ;
+        if( !s.isHidden() ) {
+            log.debug( "Adding slide " + s.getPath() + "." );
+            getCluster( s ).add( s ) ;
+            allClusters.sort( clusterComparator ) ;
+        }
+        else {
+            log.debug( "Not adding hidden slide " + s.getPath() );
+        }
     }
 
     void delete( SlideVO s ) {
