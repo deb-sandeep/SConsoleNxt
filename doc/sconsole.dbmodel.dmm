@@ -1260,7 +1260,7 @@
 			"collation": "",
 			"charset": "",
 			"rowformat": "",
-			"database": "",
+			"database": "sconsolenxt",
 			"initautoinc": "",
 			"temporary": false,
 			"ifnotexists": false
@@ -1269,7 +1269,7 @@
 			"id": "c17be34e-081a-4590-becf-6e0ac4ff6b06",
 			"visible": false,
 			"name": "topic_master",
-			"desc": "",
+			"desc": "First level topics for a syllabus",
 			"estimatedSize": "",
 			"cols": [
 				{
@@ -1385,7 +1385,7 @@
 			"collation": "",
 			"charset": "",
 			"rowformat": "",
-			"database": "",
+			"database": "sconsolenxt",
 			"initautoinc": "",
 			"temporary": false,
 			"ifnotexists": false
@@ -1394,7 +1394,7 @@
 			"id": "74e3d227-cba7-4b22-aa34-fc123abb195a",
 			"visible": false,
 			"name": "book_master",
-			"desc": "",
+			"desc": "Metadata of individual books",
 			"estimatedSize": "",
 			"cols": [
 				{
@@ -1508,7 +1508,7 @@
 					"datatype": "VARCHAR",
 					"param": "8",
 					"pk": false,
-					"nn": false,
+					"nn": true,
 					"fk": false,
 					"comment": "",
 					"defaultvalue": "",
@@ -1541,6 +1541,17 @@
 							"colid": "dba5b3d9-62ec-4761-b34e-e2466600a962"
 						}
 					]
+				},
+				{
+					"id": "692eb5f2-f07c-4030-8209-78c765d22747",
+					"isPk": false,
+					"name": "UNIQUE",
+					"cols": [
+						{
+							"id": "edb4b954-b40d-4e66-8c68-fb5df42f0566",
+							"colid": "bf435652-11fc-4b3d-bf7a-51bbae83a569"
+						}
+					]
 				}
 			],
 			"indexes": [],
@@ -1552,7 +1563,7 @@
 			"collation": "",
 			"charset": "",
 			"rowformat": "",
-			"database": "",
+			"database": "sconsolenxt",
 			"initautoinc": "",
 			"temporary": false,
 			"ifnotexists": false
@@ -1561,7 +1572,7 @@
 			"id": "af87fb32-ca82-4d55-975a-a59d21bb572c",
 			"visible": false,
 			"name": "syllabus_master",
-			"desc": "",
+			"desc": "(e.g. IIT-Physics, ISC-Physics, IIT-Chem, etc.)",
 			"estimatedSize": "",
 			"cols": [
 				{
@@ -1635,7 +1646,7 @@
 			"collation": "",
 			"charset": "",
 			"rowformat": "",
-			"database": "",
+			"database": "sconsolenxt",
 			"initautoinc": "",
 			"temporary": false,
 			"ifnotexists": false
@@ -1644,7 +1655,7 @@
 			"id": "bf7639c2-16e0-4876-83b9-eb1b5ddf956a",
 			"visible": false,
 			"name": "subtopic_master",
-			"desc": "",
+			"desc": "Second level topics for a syllabus",
 			"estimatedSize": "",
 			"cols": [
 				{
@@ -1737,7 +1748,7 @@
 			"collation": "",
 			"charset": "",
 			"rowformat": "",
-			"database": "",
+			"database": "sconsolenxt",
 			"initautoinc": "",
 			"temporary": false,
 			"ifnotexists": false
@@ -1745,8 +1756,8 @@
 		"0b713a2b-d568-40a1-bac1-552360d56264": {
 			"id": "0b713a2b-d568-40a1-bac1-552360d56264",
 			"visible": false,
-			"name": "syllabus_books_master",
-			"desc": "",
+			"name": "syllabus_book_map",
+			"desc": "Map of books applicable for a syllabus",
 			"estimatedSize": "",
 			"cols": [
 				{
@@ -1840,7 +1851,7 @@
 			"collation": "",
 			"charset": "",
 			"rowformat": "",
-			"database": "",
+			"database": "sconsolenxt",
 			"initautoinc": "",
 			"temporary": false,
 			"ifnotexists": false
@@ -1849,7 +1860,7 @@
 			"id": "03cce6fc-31fa-4e39-a437-0e6e33eafd0e",
 			"visible": false,
 			"name": "problem_master",
-			"desc": "",
+			"desc": "Problems in a chapter",
 			"estimatedSize": "",
 			"cols": [
 				{
@@ -2006,7 +2017,7 @@
 			"collation": "",
 			"charset": "",
 			"rowformat": "",
-			"database": "",
+			"database": "sconsolenxt",
 			"initautoinc": "",
 			"temporary": false,
 			"ifnotexists": false
@@ -2015,7 +2026,7 @@
 			"id": "aa118985-ca82-4c98-bbdf-c6654aa4f75a",
 			"visible": false,
 			"name": "problem_type_master",
-			"desc": "",
+			"desc": "Type of problems (MCQ, ART, SCQ, NT, MAT, etc.)",
 			"estimatedSize": "",
 			"cols": [
 				{
@@ -2066,7 +2077,7 @@
 			"collation": "",
 			"charset": "",
 			"rowformat": "",
-			"database": "",
+			"database": "sconsolenxt",
 			"initautoinc": "",
 			"temporary": false,
 			"ifnotexists": false
@@ -2074,8 +2085,8 @@
 		"6dbd3fc8-8082-48e9-981c-75c0d80f2d12": {
 			"id": "6dbd3fc8-8082-48e9-981c-75c0d80f2d12",
 			"visible": false,
-			"name": "book_chapters",
-			"desc": "",
+			"name": "chapter",
+			"desc": "Chapters for a book",
 			"estimatedSize": "",
 			"cols": [
 				{
@@ -2189,7 +2200,7 @@
 			"collation": "",
 			"charset": "",
 			"rowformat": "",
-			"database": "",
+			"database": "sconsolenxt",
 			"initautoinc": "",
 			"temporary": false,
 			"ifnotexists": false
@@ -2197,8 +2208,8 @@
 		"d7bd2a76-c755-4927-9857-08e74b1d0a96": {
 			"id": "d7bd2a76-c755-4927-9857-08e74b1d0a96",
 			"visible": false,
-			"name": "topic_book_chapter_map",
-			"desc": "",
+			"name": "topic_chapter_map",
+			"desc": "Map of chapters applicable for a syllabus topic",
 			"estimatedSize": "",
 			"cols": [
 				{
@@ -2313,7 +2324,7 @@
 			"collation": "",
 			"charset": "",
 			"rowformat": "",
-			"database": "",
+			"database": "sconsolenxt",
 			"initautoinc": "",
 			"temporary": false,
 			"ifnotexists": false
@@ -2378,7 +2389,7 @@
 		},
 		"c1a1164e-7478-40b2-899f-31f750116f01": {
 			"id": "c1a1164e-7478-40b2-899f-31f750116f01",
-			"name": "subject_master_syllabus_master",
+			"name": "fk_subject_syllabus",
 			"desc": "",
 			"type": "identifying",
 			"parent_key": "069f12f6-4a9a-4173-9cca-eb23f40c7c18",
@@ -2400,11 +2411,13 @@
 			"generate": true,
 			"generateCustomCode": true,
 			"customCode": "",
-			"relationColor": "transparent"
+			"relationColor": "#ffeb3b",
+			"ri_pd": "Restrict",
+			"ri_pu": "Cascade"
 		},
 		"ae0d1bbb-da7a-4024-a241-dc98fd633654": {
 			"id": "ae0d1bbb-da7a-4024-a241-dc98fd633654",
-			"name": "syllabus_master_topic_master",
+			"name": "fk_syllabus_topic",
 			"desc": "",
 			"type": "identifying",
 			"parent_key": "e9c28f90-a6f5-45b0-91fa-36580ccb169e",
@@ -2426,13 +2439,13 @@
 			"generate": true,
 			"generateCustomCode": true,
 			"customCode": "",
-			"relationColor": "transparent",
+			"relationColor": "#e91e63",
 			"ri_pd": "Cascade",
 			"ri_pu": "Cascade"
 		},
 		"f0286e9e-eb01-4d47-b842-22fa5021d187": {
 			"id": "f0286e9e-eb01-4d47-b842-22fa5021d187",
-			"name": "syllabus_topic_master_syllabus_subtopic_master",
+			"name": "fk_topic_subtopic",
 			"desc": "",
 			"type": "identifying",
 			"parent_key": "d8c58e9a-e1ad-4ae5-b4d6-b4ad4099e493",
@@ -2454,11 +2467,13 @@
 			"generate": true,
 			"generateCustomCode": true,
 			"customCode": "",
-			"relationColor": "transparent"
+			"relationColor": "#e91e63",
+			"ri_pd": "Cascade",
+			"ri_pu": "Cascade"
 		},
 		"2a56f867-73cf-4d44-8558-79be5b30b9f4": {
 			"id": "2a56f867-73cf-4d44-8558-79be5b30b9f4",
-			"name": "subject_master_book_master",
+			"name": "fk_subject_book",
 			"desc": "",
 			"type": "identifying",
 			"parent_key": "069f12f6-4a9a-4173-9cca-eb23f40c7c18",
@@ -2480,11 +2495,13 @@
 			"generate": true,
 			"generateCustomCode": true,
 			"customCode": "",
-			"relationColor": "transparent"
+			"relationColor": "#ffeb3b",
+			"ri_pd": "Restrict",
+			"ri_pu": "Cascade"
 		},
 		"ebf45113-0ab2-40eb-ab5c-1c4dff5f01f8": {
 			"id": "ebf45113-0ab2-40eb-ab5c-1c4dff5f01f8",
-			"name": "syllabus_master_syllabus_books",
+			"name": "fk_syllabus_syllabus-book-map",
 			"desc": "",
 			"type": "identifying",
 			"parent_key": "e9c28f90-a6f5-45b0-91fa-36580ccb169e",
@@ -2506,11 +2523,13 @@
 			"generate": true,
 			"generateCustomCode": true,
 			"customCode": "",
-			"relationColor": "transparent"
+			"relationColor": "#e91e63",
+			"ri_pd": "Cascade",
+			"ri_pu": "Cascade"
 		},
 		"3d4f22bd-2463-437b-a119-42bc7bd20a59": {
 			"id": "3d4f22bd-2463-437b-a119-42bc7bd20a59",
-			"name": "book_master_syllabus_books",
+			"name": "fk_book_syllabus-book-map",
 			"desc": "",
 			"type": "identifying",
 			"parent_key": "8d9deccf-57c3-4e91-b4c4-c36318f8b186",
@@ -2532,11 +2551,13 @@
 			"generate": true,
 			"generateCustomCode": true,
 			"customCode": "",
-			"relationColor": "transparent"
+			"relationColor": "#e91e63",
+			"ri_pd": "Cascade",
+			"ri_pu": "Cascade"
 		},
 		"65e31e3f-1d61-4cbe-97c1-60935d56bd65": {
 			"id": "65e31e3f-1d61-4cbe-97c1-60935d56bd65",
-			"name": "problem_type_master_problem_master",
+			"name": "fk_problem-type_problem",
 			"desc": "",
 			"type": "identifying",
 			"parent_key": "e9d6f91b-804c-43ea-b38d-efacbb904773",
@@ -2558,11 +2579,13 @@
 			"generate": true,
 			"generateCustomCode": true,
 			"customCode": "",
-			"relationColor": "transparent"
+			"relationColor": "#ffeb3b",
+			"ri_pd": "Restrict",
+			"ri_pu": "Cascade"
 		},
 		"1bb56b3a-7199-4f78-a9ab-24b76dbbe6b9": {
 			"id": "1bb56b3a-7199-4f78-a9ab-24b76dbbe6b9",
-			"name": "book_master_book_chapters",
+			"name": "fk_book_chapter",
 			"desc": "",
 			"type": "identifying",
 			"parent_key": "8d9deccf-57c3-4e91-b4c4-c36318f8b186",
@@ -2584,11 +2607,13 @@
 			"generate": true,
 			"generateCustomCode": true,
 			"customCode": "",
-			"relationColor": "transparent"
+			"relationColor": "#e91e63",
+			"ri_pd": "Cascade",
+			"ri_pu": "Cascade"
 		},
 		"f5ff06ae-2405-436b-aa5d-a857e781acd4": {
 			"id": "f5ff06ae-2405-436b-aa5d-a857e781acd4",
-			"name": "book_chapters_problem_master",
+			"name": "fk_chapter_problem",
 			"desc": "",
 			"type": "identifying",
 			"parent_key": "250cd6d7-134b-4527-8d9d-f034a006918f",
@@ -2615,11 +2640,13 @@
 			"generate": true,
 			"generateCustomCode": true,
 			"customCode": "",
-			"relationColor": "transparent"
+			"relationColor": "#e91e63",
+			"ri_pd": "Cascade",
+			"ri_pu": "Cascade"
 		},
 		"5c30f7eb-41a0-4875-8911-6798f1e93618": {
 			"id": "5c30f7eb-41a0-4875-8911-6798f1e93618",
-			"name": "syllabus_topic_master_syllabus_topic_book_chapter_map",
+			"name": "fk_topic_topic-chapter-map",
 			"desc": "",
 			"type": "identifying",
 			"parent_key": "d8c58e9a-e1ad-4ae5-b4d6-b4ad4099e493",
@@ -2641,11 +2668,13 @@
 			"generate": true,
 			"generateCustomCode": true,
 			"customCode": "",
-			"relationColor": "transparent"
+			"relationColor": "#e91e63",
+			"ri_pd": "Cascade",
+			"ri_pu": "Cascade"
 		},
 		"6ad7754e-5bcf-49f6-9562-0d63bfb84818": {
 			"id": "6ad7754e-5bcf-49f6-9562-0d63bfb84818",
-			"name": "book_chapters_syllabus_topic_book_chapter_map",
+			"name": "fk_chapter_topic-chapter-map",
 			"desc": "",
 			"type": "identifying",
 			"parent_key": "250cd6d7-134b-4527-8d9d-f034a006918f",
@@ -2672,7 +2701,9 @@
 			"generate": true,
 			"generateCustomCode": true,
 			"customCode": "",
-			"relationColor": "transparent"
+			"relationColor": "#e91e63",
+			"ri_pd": "Cascade",
+			"ri_pu": "Cascade"
 		}
 	},
 	"notes": {},
@@ -2690,7 +2721,7 @@
 		"replaceSpace": "_",
 		"color": "transparent",
 		"sideSelections": true,
-		"isDirty": true,
+		"isDirty": false,
 		"storedin": {
 			"major": 9,
 			"minor": 0,
@@ -2701,7 +2732,7 @@
 			"minor": 0,
 			"extra": 0
 		},
-		"writeFileParam": false,
+		"writeFileParam": true,
 		"authorName": "",
 		"companyDetails": "",
 		"companyUrl": "",
@@ -2718,7 +2749,7 @@
 			"indentationString": "spaces",
 			"indentationSize": 2,
 			"limitItemsOnLine": true,
-			"maxListItemsOnLine": 3,
+			"maxListItemsOnLine": "1",
 			"statementDelimiter": ";",
 			"routineDelimiter": "//",
 			"keywordCase": "upper",
@@ -2733,7 +2764,7 @@
 			"includeWarnings": "yes",
 			"includeCreationSql": "no"
 		},
-		"lastSaved": 1735668460478,
+		"lastSaved": 1735740015621,
 		"connectionId": "7af83ebc-4655-4802-a6d0-2c6890f3e1ce",
 		"modelHTMLReportDir": "/Users/sandeep/temp"
 	},
@@ -2993,28 +3024,15 @@
 			"id": "a645338f-6646-4afa-9f22-57449311fbfb",
 			"keysgraphics": true,
 			"linegraphics": "detailed",
-			"zoom": 1.1,
+			"zoom": 0.9,
 			"background": "transparent",
 			"lineColor": "transparent",
 			"isOpen": true,
 			"main": false,
 			"diagramItems": {
-				"cf501777-e1e3-4947-88ab-87af891ac817": {
-					"referencedItemId": "cf501777-e1e3-4947-88ab-87af891ac817",
-					"x": 72,
-					"y": 198,
-					"gHeight": 45,
-					"gWidth": 252,
-					"color": "#ffffff",
-					"background": "#03a9f4",
-					"resized": true,
-					"autoExpand": true,
-					"backgroundOpacity": "10",
-					"collapsed": false
-				},
 				"c17be34e-081a-4590-becf-6e0ac4ff6b06": {
 					"referencedItemId": "c17be34e-081a-4590-becf-6e0ac4ff6b06",
-					"x": 776,
+					"x": 777,
 					"y": 55,
 					"gHeight": 99,
 					"gWidth": 252,
@@ -3079,8 +3097,8 @@
 				},
 				"03cce6fc-31fa-4e39-a437-0e6e33eafd0e": {
 					"referencedItemId": "03cce6fc-31fa-4e39-a437-0e6e33eafd0e",
-					"x": 428,
-					"y": 572,
+					"x": 429,
+					"y": 575,
 					"gHeight": 135,
 					"gWidth": 253,
 					"color": "#ffffff",
@@ -3121,7 +3139,20 @@
 					"x": 1180,
 					"y": 204,
 					"gHeight": 99,
-					"gWidth": 216,
+					"gWidth": 193,
+					"color": "#ffffff",
+					"background": "#03a9f4",
+					"resized": false,
+					"autoExpand": true,
+					"backgroundOpacity": "10",
+					"collapsed": false
+				},
+				"cf501777-e1e3-4947-88ab-87af891ac817": {
+					"referencedItemId": "cf501777-e1e3-4947-88ab-87af891ac817",
+					"x": 73,
+					"y": 182,
+					"gHeight": 45,
+					"gWidth": 247,
 					"color": "#ffffff",
 					"background": "#03a9f4",
 					"resized": false,
@@ -3145,7 +3176,7 @@
 			"boxAlign": "center",
 			"showIndicatorCaptions": true,
 			"showEstimatedSize": false,
-			"showSchemaContainer": true,
+			"showSchemaContainer": false,
 			"showEmbeddedInParents": true,
 			"showCardinalityCaptions": true,
 			"showRelationshipNames": false,
