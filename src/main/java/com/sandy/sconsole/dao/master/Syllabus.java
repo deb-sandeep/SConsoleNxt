@@ -16,7 +16,7 @@ public class Syllabus {
     @Column( name = "syllabus_name", nullable = false, length = 64 )
     private String syllabusName;
     
-    @ManyToOne( fetch = FetchType.LAZY, optional = false )
+    @ManyToOne( fetch = FetchType.EAGER, optional = false )
     @JoinColumn( name = "subject_name", nullable = false )
     private Subject subject;
     
