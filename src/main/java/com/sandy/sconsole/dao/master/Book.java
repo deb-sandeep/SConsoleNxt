@@ -19,7 +19,7 @@ public class Book {
     
     @ManyToOne( fetch = FetchType.LAZY, optional = false )
     @JoinColumn( name = "subject_name", nullable = false )
-    private Subject subjectName;
+    private Subject subject;
     
     @Column( name = "book_name", nullable = false, length = 128 )
     private String bookName;

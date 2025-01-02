@@ -18,7 +18,7 @@ public class Syllabus {
     
     @ManyToOne( fetch = FetchType.LAZY, optional = false )
     @JoinColumn( name = "subject_name", nullable = false )
-    private Subject subjectName;
+    private Subject subject;
     
     @OneToMany( mappedBy = "syllabusName" )
     private Set<Topic> topics = new LinkedHashSet<>();

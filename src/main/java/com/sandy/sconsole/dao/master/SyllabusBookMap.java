@@ -19,7 +19,7 @@ public class SyllabusBookMap {
     @ManyToOne( fetch = FetchType.LAZY, optional = false )
     @OnDelete( action = OnDeleteAction.CASCADE )
     @JoinColumn( name = "syllabus_name", nullable = false )
-    private Syllabus syllabusName;
+    private Syllabus syllabus;
     
     @ManyToOne( fetch = FetchType.LAZY, optional = false )
     @OnDelete( action = OnDeleteAction.CASCADE )
