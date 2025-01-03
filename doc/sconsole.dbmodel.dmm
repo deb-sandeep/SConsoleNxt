@@ -2439,8 +2439,8 @@
 			"generate": true,
 			"generateCustomCode": true,
 			"customCode": "",
-			"relationColor": "#e91e63",
-			"ri_pd": "Cascade",
+			"relationColor": "#ffeb3b",
+			"ri_pd": "Restrict",
 			"ri_pu": "Cascade"
 		},
 		"f0286e9e-eb01-4d47-b842-22fa5021d187": {
@@ -2467,8 +2467,8 @@
 			"generate": true,
 			"generateCustomCode": true,
 			"customCode": "",
-			"relationColor": "#e91e63",
-			"ri_pd": "Cascade",
+			"relationColor": "#ffeb3b",
+			"ri_pd": "Restrict",
 			"ri_pu": "Cascade"
 		},
 		"2a56f867-73cf-4d44-8558-79be5b30b9f4": {
@@ -2523,8 +2523,8 @@
 			"generate": true,
 			"generateCustomCode": true,
 			"customCode": "",
-			"relationColor": "#e91e63",
-			"ri_pd": "Cascade",
+			"relationColor": "#ffeb3b",
+			"ri_pd": "Restrict",
 			"ri_pu": "Cascade"
 		},
 		"3d4f22bd-2463-437b-a119-42bc7bd20a59": {
@@ -2551,8 +2551,8 @@
 			"generate": true,
 			"generateCustomCode": true,
 			"customCode": "",
-			"relationColor": "#e91e63",
-			"ri_pd": "Cascade",
+			"relationColor": "#ffeb3b",
+			"ri_pd": "Restrict",
 			"ri_pu": "Cascade"
 		},
 		"65e31e3f-1d61-4cbe-97c1-60935d56bd65": {
@@ -2607,8 +2607,8 @@
 			"generate": true,
 			"generateCustomCode": true,
 			"customCode": "",
-			"relationColor": "#e91e63",
-			"ri_pd": "Cascade",
+			"relationColor": "#ffeb3b",
+			"ri_pd": "Restrict",
 			"ri_pu": "Cascade"
 		},
 		"f5ff06ae-2405-436b-aa5d-a857e781acd4": {
@@ -2640,8 +2640,8 @@
 			"generate": true,
 			"generateCustomCode": true,
 			"customCode": "",
-			"relationColor": "#e91e63",
-			"ri_pd": "Cascade",
+			"relationColor": "#ffeb3b",
+			"ri_pd": "Restrict",
 			"ri_pu": "Cascade"
 		},
 		"5c30f7eb-41a0-4875-8911-6798f1e93618": {
@@ -2668,8 +2668,8 @@
 			"generate": true,
 			"generateCustomCode": true,
 			"customCode": "",
-			"relationColor": "#e91e63",
-			"ri_pd": "Cascade",
+			"relationColor": "#ffeb3b",
+			"ri_pd": "Restrict",
 			"ri_pu": "Cascade"
 		},
 		"6ad7754e-5bcf-49f6-9562-0d63bfb84818": {
@@ -2701,8 +2701,8 @@
 			"generate": true,
 			"generateCustomCode": true,
 			"customCode": "",
-			"relationColor": "#e91e63",
-			"ri_pd": "Cascade",
+			"relationColor": "#ffeb3b",
+			"ri_pd": "Restrict",
 			"ri_pu": "Cascade"
 		}
 	},
@@ -2764,9 +2764,9 @@
 			"includeWarnings": "yes",
 			"includeCreationSql": "no"
 		},
-		"lastSaved": 1735754411341,
+		"lastSaved": 1735883859756,
 		"connectionId": "7af83ebc-4655-4802-a6d0-2c6890f3e1ce",
-		"modelScriptFilePath": "/Users/sandeep/projects/sconsole/SConsoleNxt/src/main/dbscripts/db-v202501012325.sql",
+		"modelScriptFilePath": "/Users/sandeep/projects/sconsole/SConsoleNxt/src/main/dbscripts/db-v202501012325",
 		"modelHTMLReportDir": "/Users/sandeep/temp"
 	},
 	"otherObjects": {},
