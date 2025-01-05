@@ -6,7 +6,6 @@ CREATE TABLE sconsolenxt.problem_type_master(
   COLLATE = `utf8mb4_0900_ai_ci`
 ;
 
-
 CREATE TABLE sconsolenxt.subject_master(
   subject_name VARCHAR(64) NOT NULL,
   PRIMARY KEY(subject_name)
@@ -14,7 +13,6 @@ CREATE TABLE sconsolenxt.subject_master(
   ROW_FORMAT = Dynamic DEFAULT CHARACTER SET = `utf8mb4`
   COLLATE = `utf8mb4_0900_ai_ci`
 ;
-
 
 CREATE TABLE sconsolenxt.syllabus_master(
   syllabus_name VARCHAR(64) NOT NULL,
@@ -24,7 +22,6 @@ CREATE TABLE sconsolenxt.syllabus_master(
   ROW_FORMAT = Dynamic DEFAULT CHARACTER SET = `utf8mb4`
   COLLATE = `utf8mb4_0900_ai_ci`
 ;
-
 
 CREATE TABLE sconsolenxt.topic_master(
   id INT NOT NULL AUTO_INCREMENT,
@@ -39,20 +36,6 @@ CREATE TABLE sconsolenxt.topic_master(
   COLLATE = `utf8mb4_0900_ai_ci`
 ;
 
-
-CREATE TABLE sconsolenxt.subtopic_master(
-  id INT NOT NULL AUTO_INCREMENT,
-  topic_id INT NOT NULL,
-  subtopic_name VARCHAR(256) NOT NULL,
-  jee_mains BIT(1) DEFAULT b'0',
-  jee_adv BIT(1) DEFAULT b'0',
-  PRIMARY KEY(id)
-) COMMENT 'Second level topics for a syllabus' ENGINE = InnoDB
-  ROW_FORMAT = Dynamic AUTO_INCREMENT = 1 DEFAULT CHARACTER SET = `utf8mb4`
-  COLLATE = `utf8mb4_0900_ai_ci`
-;
-
-
 CREATE TABLE sconsolenxt.book_master(
   id INT NOT NULL AUTO_INCREMENT,
   subject_name VARCHAR(64) NOT NULL,
@@ -66,7 +49,6 @@ CREATE TABLE sconsolenxt.book_master(
   AUTO_INCREMENT = 1 DEFAULT CHARACTER SET = `utf8mb4`
   COLLATE = `utf8mb4_0900_ai_ci`
 ;
-
 
 CREATE TABLE sconsolenxt.chapter_master(
   book_id INT NOT NULL,
@@ -84,7 +66,6 @@ CREATE TABLE sconsolenxt.chapter_master(
   DEFAULT CHARACTER SET = `utf8mb4` COLLATE = `utf8mb4_0900_ai_ci`
 ;
 
-
 CREATE TABLE sconsolenxt.problem_master(
   id INT NOT NULL AUTO_INCREMENT,
   book_id INT NOT NULL,
@@ -98,7 +79,6 @@ CREATE TABLE sconsolenxt.problem_master(
   COLLATE = `utf8mb4_0900_ai_ci`
 ;
 
-
 CREATE TABLE sconsolenxt.syllabus_book_map(
   id INT NOT NULL AUTO_INCREMENT,
   syllabus_name VARCHAR(64) NOT NULL,
@@ -108,7 +88,6 @@ CREATE TABLE sconsolenxt.syllabus_book_map(
   ROW_FORMAT = Dynamic AUTO_INCREMENT = 1 DEFAULT CHARACTER SET = `utf8mb4`
   COLLATE = `utf8mb4_0900_ai_ci`
 ;
-
 
 CREATE TABLE sconsolenxt.topic_chapter_map(
   id INT NOT NULL AUTO_INCREMENT,
@@ -121,20 +100,17 @@ CREATE TABLE sconsolenxt.topic_chapter_map(
   COLLATE = `utf8mb4_0900_ai_ci`
 ;
 
-
 ALTER TABLE sconsolenxt.chapter_master
   ADD CONSTRAINT fk_book_chapter
     FOREIGN KEY (book_id) REFERENCES sconsolenxt.book_master (id) ON DELETE Restrict
       ON UPDATE Cascade
 ;
 
-
 ALTER TABLE sconsolenxt.syllabus_book_map
   ADD CONSTRAINT `fk_book_syllabus-book-map`
     FOREIGN KEY (book_id) REFERENCES sconsolenxt.book_master (id) ON DELETE Restrict
       ON UPDATE Cascade
 ;
-
 
 ALTER TABLE sconsolenxt.problem_master
   ADD CONSTRAINT fk_chapter_problem
@@ -150,7 +126,6 @@ ALTER TABLE sconsolenxt.problem_master
         ) ON DELETE Restrict ON UPDATE Cascade
 ;
 
-
 ALTER TABLE sconsolenxt.topic_chapter_map
   ADD CONSTRAINT `fk_chapter_topic-chapter-map`
     FOREIGN KEY
@@ -165,7 +140,6 @@ ALTER TABLE sconsolenxt.topic_chapter_map
         ) ON DELETE Restrict ON UPDATE Cascade
 ;
 
-
 ALTER TABLE sconsolenxt.problem_master
   ADD CONSTRAINT `fk_problem-type_problem`
     FOREIGN KEY (problem_type)
@@ -173,20 +147,17 @@ ALTER TABLE sconsolenxt.problem_master
       ON UPDATE Cascade
 ;
 
-
 ALTER TABLE sconsolenxt.book_master
   ADD CONSTRAINT fk_subject_book
     FOREIGN KEY (subject_name) REFERENCES sconsolenxt.subject_master (subject_name)
       ON DELETE Restrict ON UPDATE Cascade
 ;
 
-
 ALTER TABLE sconsolenxt.syllabus_master
   ADD CONSTRAINT fk_subject_syllabus
     FOREIGN KEY (subject_name) REFERENCES sconsolenxt.subject_master (subject_name)
       ON DELETE Restrict ON UPDATE Cascade
 ;
-
 
 ALTER TABLE sconsolenxt.syllabus_book_map
   ADD CONSTRAINT `fk_syllabus_syllabus-book-map`
@@ -195,7 +166,6 @@ ALTER TABLE sconsolenxt.syllabus_book_map
       ON UPDATE Cascade
 ;
 
-
 ALTER TABLE sconsolenxt.topic_master
   ADD CONSTRAINT fk_syllabus_topic
     FOREIGN KEY (syllabus_name)
@@ -203,17 +173,8 @@ ALTER TABLE sconsolenxt.topic_master
       ON UPDATE Cascade
 ;
 
-
-ALTER TABLE sconsolenxt.subtopic_master
-  ADD CONSTRAINT fk_topic_subtopic
-    FOREIGN KEY (topic_id) REFERENCES sconsolenxt.topic_master (id)
-      ON DELETE Restrict ON UPDATE Cascade
-;
-
-
 ALTER TABLE sconsolenxt.topic_chapter_map
   ADD CONSTRAINT `fk_topic_topic-chapter-map`
     FOREIGN KEY (topic_id) REFERENCES sconsolenxt.topic_master (id)
       ON DELETE Restrict ON UPDATE Cascade
 ;
-

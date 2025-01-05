@@ -6,9 +6,6 @@ import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
-
 @Getter
 @Setter
 @Entity
@@ -29,14 +26,4 @@ public class Topic {
     
     @Column( name = "topic_name", nullable = false, length = 256 )
     private String topicName;
-    
-    @OneToMany( mappedBy = "topic" )
-    private Set<Subtopic> subtopics = new LinkedHashSet<>();
-    
-    @Column( name = "jee_mains" )
-    private Boolean jeeMains;
-    
-    @Column( name = "jee_adv" )
-    private Boolean jeeAdv;
-    
 }
