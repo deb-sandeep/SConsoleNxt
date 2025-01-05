@@ -33,4 +33,10 @@ public class Topic {
     @OneToMany( mappedBy = "topic" )
     private Set<Subtopic> subtopics = new LinkedHashSet<>();
     
+    @Column( name = "jee_mains" )
+    private Boolean jeeMains;
+    
+    @Column( name = "jee_adv" )
+    private Boolean jeeAdv;
+    
 }

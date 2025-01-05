@@ -1,3 +1,58 @@
+CREATE TABLE sconsolenxt.problem_type_master(
+  problem_type VARCHAR(8) NOT NULL,
+  PRIMARY KEY(problem_type)
+) COMMENT 'Type of problems (MCQ, ART, SCQ, NT, MAT, etc.)' ENGINE = InnoDB
+  ROW_FORMAT = Dynamic DEFAULT CHARACTER SET = `utf8mb4`
+  COLLATE = `utf8mb4_0900_ai_ci`
+;
+
+
+CREATE TABLE sconsolenxt.subject_master(
+  subject_name VARCHAR(64) NOT NULL,
+  PRIMARY KEY(subject_name)
+) COMMENT 'Master catalog of subjects being managed by SConsole' ENGINE = InnoDB
+  ROW_FORMAT = Dynamic DEFAULT CHARACTER SET = `utf8mb4`
+  COLLATE = `utf8mb4_0900_ai_ci`
+;
+
+
+CREATE TABLE sconsolenxt.syllabus_master(
+  syllabus_name VARCHAR(64) NOT NULL,
+  subject_name VARCHAR(64) NOT NULL,
+  PRIMARY KEY(syllabus_name)
+) COMMENT '(e.g. IIT-Physics, ISC-Physics, IIT-Chem, etc.)' ENGINE = InnoDB
+  ROW_FORMAT = Dynamic DEFAULT CHARACTER SET = `utf8mb4`
+  COLLATE = `utf8mb4_0900_ai_ci`
+;
+
+
+CREATE TABLE sconsolenxt.topic_master(
+  id INT NOT NULL AUTO_INCREMENT,
+  syllabus_name VARCHAR(64) NOT NULL,
+  section VARCHAR(64) NOT NULL,
+  topic_name VARCHAR(256) NOT NULL,
+  jee_mains BIT(1) DEFAULT b'0',
+  jee_adv BIT(1) DEFAULT b'0',
+  PRIMARY KEY(id)
+) COMMENT 'First level topics for a syllabus' ENGINE = InnoDB
+  ROW_FORMAT = Dynamic AUTO_INCREMENT = 1 DEFAULT CHARACTER SET = `utf8mb4`
+  COLLATE = `utf8mb4_0900_ai_ci`
+;
+
+
+CREATE TABLE sconsolenxt.subtopic_master(
+  id INT NOT NULL AUTO_INCREMENT,
+  topic_id INT NOT NULL,
+  subtopic_name VARCHAR(256) NOT NULL,
+  jee_mains BIT(1) DEFAULT b'0',
+  jee_adv BIT(1) DEFAULT b'0',
+  PRIMARY KEY(id)
+) COMMENT 'Second level topics for a syllabus' ENGINE = InnoDB
+  ROW_FORMAT = Dynamic AUTO_INCREMENT = 1 DEFAULT CHARACTER SET = `utf8mb4`
+  COLLATE = `utf8mb4_0900_ai_ci`
+;
+
+
 CREATE TABLE sconsolenxt.book_master(
   id INT NOT NULL AUTO_INCREMENT,
   subject_name VARCHAR(64) NOT NULL,
@@ -44,35 +99,6 @@ CREATE TABLE sconsolenxt.problem_master(
 ;
 
 
-CREATE TABLE sconsolenxt.problem_type_master(
-  problem_type VARCHAR(8) NOT NULL,
-  PRIMARY KEY(problem_type)
-) COMMENT 'Type of problems (MCQ, ART, SCQ, NT, MAT, etc.)' ENGINE = InnoDB
-  ROW_FORMAT = Dynamic DEFAULT CHARACTER SET = `utf8mb4`
-  COLLATE = `utf8mb4_0900_ai_ci`
-;
-
-
-CREATE TABLE sconsolenxt.subject_master(
-  subject_name VARCHAR(64) NOT NULL,
-  PRIMARY KEY(subject_name)
-) COMMENT 'Master catalog of subjects being managed by SConsole' ENGINE = InnoDB
-  ROW_FORMAT = Dynamic DEFAULT CHARACTER SET = `utf8mb4`
-  COLLATE = `utf8mb4_0900_ai_ci`
-;
-
-
-CREATE TABLE sconsolenxt.subtopic_master(
-  id INT NOT NULL AUTO_INCREMENT,
-  topic_id INT NOT NULL,
-  subtopic_name VARCHAR(256) NOT NULL,
-  PRIMARY KEY(id)
-) COMMENT 'Second level topics for a syllabus' ENGINE = InnoDB
-  ROW_FORMAT = Dynamic AUTO_INCREMENT = 1 DEFAULT CHARACTER SET = `utf8mb4`
-  COLLATE = `utf8mb4_0900_ai_ci`
-;
-
-
 CREATE TABLE sconsolenxt.syllabus_book_map(
   id INT NOT NULL AUTO_INCREMENT,
   syllabus_name VARCHAR(64) NOT NULL,
@@ -84,16 +110,6 @@ CREATE TABLE sconsolenxt.syllabus_book_map(
 ;
 
 
-CREATE TABLE sconsolenxt.syllabus_master(
-  syllabus_name VARCHAR(64) NOT NULL,
-  subject_name VARCHAR(64) NOT NULL,
-  PRIMARY KEY(syllabus_name)
-) COMMENT '(e.g. IIT-Physics, ISC-Physics, IIT-Chem, etc.)' ENGINE = InnoDB
-  ROW_FORMAT = Dynamic DEFAULT CHARACTER SET = `utf8mb4`
-  COLLATE = `utf8mb4_0900_ai_ci`
-;
-
-
 CREATE TABLE sconsolenxt.topic_chapter_map(
   id INT NOT NULL AUTO_INCREMENT,
   topic_id INT NOT NULL,
@@ -101,18 +117,6 @@ CREATE TABLE sconsolenxt.topic_chapter_map(
   chapter_num INT NOT NULL,
   PRIMARY KEY(id)
 ) COMMENT 'Map of chapters applicable for a syllabus topic' ENGINE = InnoDB
-  ROW_FORMAT = Dynamic AUTO_INCREMENT = 1 DEFAULT CHARACTER SET = `utf8mb4`
-  COLLATE = `utf8mb4_0900_ai_ci`
-;
-
-
-CREATE TABLE sconsolenxt.topic_master(
-  id INT NOT NULL AUTO_INCREMENT,
-  syllabus_name VARCHAR(64) NOT NULL,
-  section VARCHAR(64) NOT NULL,
-  topic_name VARCHAR(256) NOT NULL,
-  PRIMARY KEY(id)
-) COMMENT 'First level topics for a syllabus' ENGINE = InnoDB
   ROW_FORMAT = Dynamic AUTO_INCREMENT = 1 DEFAULT CHARACTER SET = `utf8mb4`
   COLLATE = `utf8mb4_0900_ai_ci`
 ;

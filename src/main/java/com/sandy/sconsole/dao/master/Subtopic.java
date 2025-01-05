@@ -24,4 +24,9 @@ public class Subtopic {
     @Column( name = "subtopic_name", nullable = false, length = 256 )
     private String subtopicName;
     
+    @Column( name = "jee_mains" )
+    private Boolean jeeMains;
+    
+    @Column( name = "jee_adv" )
+    private Boolean jeeAdv;
 }
