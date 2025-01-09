@@ -27,10 +27,15 @@ public class BookMeta {
     
     @Data
     public static class ProblemCluster {
+        private String metadata ;
         private String type = null ;
         private String lctSequence = null ;
         private int startIndex ;
         private int endIndex ;
+        
+        public ProblemCluster( String metadata ) {
+            this.metadata = metadata ;
+        }
     }
     
     @Data

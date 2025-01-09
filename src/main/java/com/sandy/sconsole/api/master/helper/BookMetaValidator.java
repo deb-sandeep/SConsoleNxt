@@ -27,43 +27,58 @@ public class BookMetaValidator {
 
     public void validateBookMeta( BookMeta meta ) {
         
+        // 1 - Perform a structural validation (mandatory fields)
         validateMandatoryFields( meta ) ;
-        validateSubjectExists( meta.getSubject(), meta.getValidationMsgs() ) ;
         
-        Book book = validateBookExists( meta ) ;
-        if( book != null ) {
-            validateChapterDiscrepancy( meta.getChapters(),
-                    book.getChapters(),
-                    meta.getValidationMsgs() ) ;
+        // 2 - Check if subject exits. If not, there is no need to
+        //     validate further. The entire file is defunct.
+        boolean subjectExists = validateSubjectExists( meta.getSubject(),
+                                                       meta.getValidationMsgs() ) ;
+        
+        if( subjectExists ) {
+            // 3 - If subject exists, validate the chapter metadata values.
+            //     This recursively validates the problem cluster metadata too.
+            for( BookMeta.ChapterMeta chapterMeta : meta.getChapters() ) {
+                validateChapterMetaValues( chapterMeta ) ;
+            }
+
+            // 4 - Check if the book exists. If it does, check if the chapter
+            //     metadata has changed. If it has, then the differences need
+            //     to be approved by the user.
+            Book book = validateBookExists( meta ) ;
+            if( book != null ) {
+                validateChapterDiscrepancy( meta.getChapters(),
+                                            book.getChapters(),
+                                            meta.getValidationMsgs() ) ;
+            }
         }
         
-        for( BookMeta.ChapterMeta chapterMeta : meta.getChapters() ) {
-            validateChapterMetaValues( chapterMeta ) ;
-        }
-        
+        // Finally update the consolidated message count.
         meta.updateMsgCount() ;
     }
     
     private void validateMandatoryFields( BookMeta meta ) {
         
+        List<ValidationMsg> msgs = meta.getValidationMsgs() ;
+        
         if( meta.getSubject() == null ) {
-            meta.getValidationMsgs().add( errMsg( "subject", "Subject is missing" ) ) ;
+            msgs.add( errMsg( "subject", "Subject is missing" ) ) ;
         }
         
         if( meta.getSeries() == null ) {
-            meta.getValidationMsgs().add( warnMsg( "series", "Series is missing" ) ) ;
+            msgs.add( warnMsg( "series", "Series is missing" ) ) ;
         }
         
         if( meta.getName() == null ) {
-            meta.getValidationMsgs().add( errMsg( "name", "Name is missing" ) ) ;
+            msgs.add( errMsg( "name", "Name is missing" ) ) ;
         }
         
         if( meta.getAuthor() == null ) {
-            meta.getValidationMsgs().add( errMsg( "author", "Author is missing" ) ) ;
+            msgs.add( errMsg( "author", "Author is missing" ) ) ;
         }
         
         if( meta.getShortName() == null ) {
-            meta.getValidationMsgs().add( errMsg( "shortName", "Short name is missing" ) ) ;
+            msgs.add( errMsg( "shortName", "Short name is missing" ) ) ;
         }
         
         for( BookMeta.ChapterMeta chapter : meta.getChapters() ) {
@@ -80,23 +95,26 @@ public class BookMetaValidator {
         }
     }
     
-    private void validateSubjectExists( String subject, List<BookMeta.ValidationMsg> msgs ) {
+    private boolean validateSubjectExists( String subject, List<BookMeta.ValidationMsg> msgs ) {
         
-        boolean absent = subjectRepo.findById( subject ).isEmpty() ;
-        if( absent ) {
+        boolean present = subjectRepo.findById( subject ).isPresent();
+        if( !present ) {
             msgs.add( errMsg( "subject", subject, "Subject not registered" ) ) ;
         }
+        return present ;
     }
     
     private Book validateBookExists( BookMeta meta ) {
         
+        List<ValidationMsg> msgs = meta.getValidationMsgs() ;
         String bookId = meta.getSubject() + " > " + meta.getName() + " by " + meta.getAuthor() ;
         Book book = bookRepo.findBook( meta.getSubject(), meta.getName(), meta.getAuthor() ) ;
+        
         if( book == null ) {
-            meta.getValidationMsgs().add( infoMsg( "name", bookId, "New book will be registered" ) ) ;
+            msgs.add( infoMsg( "name", bookId, "New book will be registered" ) ) ;
         }
         else {
-            meta.getValidationMsgs().add( warnMsg( "name", bookId, "Book exists and will be overwritten" ) ) ;
+            msgs.add( warnMsg( "name", bookId, "Book exists and will be overwritten" ) ) ;
         }
         return book ;
     }
@@ -105,44 +123,45 @@ public class BookMetaValidator {
                                              Set<Chapter> existingChapters,
                                              List<ValidationMsg> msgs ) {
         
-        log.error( "TODO: This function needs implementation after a new book save." );
+        log.error( "TODO: **** This function needs implementation after a new book save." );
     }
     
-    private void validateChapterMetaValues( ChapterMeta chapterMeta ) {
+    private void validateChapterMetaValues( ChapterMeta meta ) {
         
-        // A chapter title is of the format "<chaterNum:num> - <chapterTitle>"
-        String[] titleParts = chapterMeta.getTitle().split( "-" ) ;
+        List<ValidationMsg> msgs = meta.getValidationMsgs() ;
+        String[] titleParts = meta.getTitle().split( "-" ) ;
+        
         if( titleParts.length < 2 ) {
-            chapterMeta.getValidationMsgs().add( errMsg( "title", "Title format is incorrect" ) ) ;
+            msgs.add( errMsg( "title", "Title format is incorrect" ) ) ;
         }
         else {
             try {
                 Integer.parseInt( titleParts[0].trim() ) ;
             }
             catch( Exception e ) {
-                chapterMeta.getValidationMsgs()
-                        .add( errMsg( "title", "Chapter number is not a number" ) ) ;
+                msgs.add( errMsg( "title", "Chapter number is not a number" ) ) ;
             }
             
             if( StringUtil.isEmptyOrNull( titleParts[1] ) ) {
-                chapterMeta.getValidationMsgs()
-                        .add( errMsg( "title", "Chapter title is missing" ) ) ;
+                msgs.add( errMsg( "title", "Chapter title is missing" ) ) ;
             }
         }
         
-        for( ExerciseMeta exercise : chapterMeta.getExercises() ) {
+        for( ExerciseMeta exercise : meta.getExercises() ) {
             validateExerciseMetaValues( exercise ) ;
         }
     }
     
     private void validateExerciseMetaValues( ExerciseMeta exercise ) {
         
+        List<ValidationMsg> msgs = exercise.getValidationMsgs() ;
+        
         if( StringUtil.isEmptyOrNull( exercise.getName() ) ) {
-            exercise.getValidationMsgs().add( errMsg( "name", "Name is missing or empty" ) ) ;
+            msgs.add( errMsg( "name", "Name is missing or empty" ) ) ;
         }
         
         if( exercise.getProblems().isEmpty() ) {
-            exercise.getValidationMsgs().add( errMsg( "problems", "No problems defined" ) ) ;
+            msgs.add( errMsg( "problems", "No problems defined" ) ) ;
         }
         
         for( String problemClusterMeta : exercise.getProblems() ) {
@@ -158,18 +177,18 @@ public class BookMetaValidator {
     // <SUB|SCA|MCA|MMT|LCT|NVT> <LCT_SEQ>? <START_COUNT>-<END_COUNT>
     private ProblemCluster parseAndValidateProblemCluster( String data, List<ValidationMsg> msgs ) {
         
-        ProblemCluster cluster = new ProblemCluster() ;
-        String[] parts = data.split( " " ) ;
+        ProblemCluster cluster = new ProblemCluster( data ) ;
         
+        String[] parts = data.split( " " ) ;
         if( parts.length < 2 ) {
             msgs.add( errMsg( "problems", data, "Invalid problem cluster format" ) ) ;
-            return null ;
+            return cluster ;
         }
         
         ProblemType type = problemTypeRepo.findById( parts[0].trim() ).orElse( null ) ;
         if( type == null ) {
             msgs.add( errMsg( "problems", data, "Invalid problem type - " + parts[0] ) ) ;
-            return null ;
+            return cluster ;
         }
         else {
             cluster.setType( type.getProblemType() ) ;
@@ -178,7 +197,7 @@ public class BookMetaValidator {
         if( type.getProblemType().equals( "LCT" )  ) {
             if( parts.length != 3 ) {
                 msgs.add( errMsg( "problems", data, "LCT problem type should have 3 parts" ) ) ;
-                return null ;
+                return cluster ;
             }
             else {
                 cluster.setLctSequence( parts[1].trim() );
