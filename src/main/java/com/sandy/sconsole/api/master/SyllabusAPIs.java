@@ -16,7 +16,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping( "/Master/Syllabus" )
-public class SyllabusController {
+public class SyllabusAPIs {
     
     @Autowired
     private SyllabusRepo syllabusRepo = null ;

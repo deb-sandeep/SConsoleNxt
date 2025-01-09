@@ -30,9 +30,6 @@ public class Book {
     @Column( name = "book_short_name", length = 64 )
     private String bookShortName;
     
-    @Column( name = "acronym", nullable = false, length = 8 )
-    private String acronym;
-    
     @OneToMany( mappedBy = "book" )
     private Set<Chapter> chapters = new LinkedHashSet<>();
     

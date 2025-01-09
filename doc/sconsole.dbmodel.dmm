@@ -69,6 +69,27 @@
 					"defaultvalue": "",
 					"enum": "",
 					"fk": false,
+					"id": "069e4508-e6de-43ec-9832-1e4b2ae56303",
+					"name": "series_name",
+					"nn": false,
+					"param": "128",
+					"pk": false,
+					"unsigned": false,
+					"zerofill": false,
+					"estimatedSize": "",
+					"data": "",
+					"binary": false
+				},
+				{
+					"after": "",
+					"autoinc": false,
+					"charset": "",
+					"collation": "",
+					"comment": "",
+					"datatype": "VARCHAR",
+					"defaultvalue": "",
+					"enum": "",
+					"fk": false,
 					"id": "8eebec49-039c-4982-80d1-0f3f7e3ccf1c",
 					"name": "book_name",
 					"nn": true,
@@ -121,27 +142,6 @@
 					"estimatedSize": "",
 					"data": "",
 					"binary": false
-				},
-				{
-					"after": "",
-					"autoinc": false,
-					"charset": "",
-					"collation": "",
-					"comment": "",
-					"datatype": "VARCHAR",
-					"defaultvalue": "",
-					"enum": "",
-					"fk": false,
-					"id": "bf435652-11fc-4b3d-bf7a-51bbae83a569",
-					"name": "acronym",
-					"nn": true,
-					"param": "8",
-					"pk": false,
-					"unsigned": false,
-					"zerofill": false,
-					"estimatedSize": "",
-					"data": "",
-					"binary": false
 				}
 			],
 			"indexes": [],
@@ -158,15 +158,23 @@
 					"name": "PRIMARY"
 				},
 				{
+					"id": "200486d6-7bf7-492c-a1f7-5ab8bbd97804",
+					"isPk": false,
+					"name": "UNIQUE",
 					"cols": [
 						{
-							"colid": "bf435652-11fc-4b3d-bf7a-51bbae83a569",
-							"id": "edb4b954-b40d-4e66-8c68-fb5df42f0566"
+							"id": "d0591021-dc58-4c8d-8301-3369d1626cf1",
+							"colid": "b1870f45-6e7d-4d51-974f-843892da2190"
+						},
+						{
+							"id": "4f34fc60-ba72-4116-8e48-e8a4c71fef8f",
+							"colid": "fce6673d-8c22-41db-bbb6-b3ba7504d1a5"
+						},
+						{
+							"id": "bb85961d-b5b0-4314-a3bd-15d037a08404",
+							"colid": "8eebec49-039c-4982-80d1-0f3f7e3ccf1c"
 						}
-					],
-					"id": "692eb5f2-f07c-4030-8209-78c765d22747",
-					"isPk": false,
-					"name": "UNIQUE"
+					]
 				}
 			],
 			"lines": [],
@@ -453,8 +461,8 @@
 			"initautoinc": "1",
 			"name": "problem_master",
 			"relations": [
-				"65e31e3f-1d61-4cbe-97c1-60935d56bd65",
-				"f5ff06ae-2405-436b-aa5d-a857e781acd4"
+				"f5ff06ae-2405-436b-aa5d-a857e781acd4",
+				"65e31e3f-1d61-4cbe-97c1-60935d56bd65"
 			],
 			"rowformat": "Dynamic",
 			"tabletype": "InnoDB",
@@ -2284,34 +2292,6 @@
 			"customCode": "",
 			"relationColor": "#ffeb3b"
 		},
-		"65e31e3f-1d61-4cbe-97c1-60935d56bd65": {
-			"c_p": "one",
-			"c_cp": "",
-			"c_cch": "",
-			"c_ch": "many",
-			"c_mch": "true",
-			"c_mp": "true",
-			"desc": "",
-			"type": "identifying",
-			"child": "03cce6fc-31fa-4e39-a437-0e6e33eafd0e",
-			"id": "65e31e3f-1d61-4cbe-97c1-60935d56bd65",
-			"name": "fk_problem-type_problem",
-			"parent": "aa118985-ca82-4c98-bbdf-c6654aa4f75a",
-			"parent_key": "e9d6f91b-804c-43ea-b38d-efacbb904773",
-			"cols": [
-				{
-					"childcol": "4c644588-a69b-421a-869e-0aa2e476e7de",
-					"id": "e06ca216-2021-4f4f-b0a2-7fdb6e86c801",
-					"parentcol": "a2b81a36-721e-4bad-a247-ed961d359406"
-				}
-			],
-			"ri_pd": "Restrict",
-			"ri_pu": "Cascade",
-			"generate": true,
-			"generateCustomCode": true,
-			"customCode": "",
-			"relationColor": "#ffeb3b"
-		},
 		"f5ff06ae-2405-436b-aa5d-a857e781acd4": {
 			"c_p": "one",
 			"c_cp": "",
@@ -2336,6 +2316,34 @@
 					"childcol": "31a7755e-baa8-4f87-b849-b3848bc1f0ef",
 					"id": "770f86fd-96c1-4333-918b-db42bd1c1469",
 					"parentcol": "2e7f2f92-0c2b-41a3-9467-a9e16cd28cad"
+				}
+			],
+			"ri_pd": "Restrict",
+			"ri_pu": "Cascade",
+			"generate": true,
+			"generateCustomCode": true,
+			"customCode": "",
+			"relationColor": "#ffeb3b"
+		},
+		"65e31e3f-1d61-4cbe-97c1-60935d56bd65": {
+			"c_p": "one",
+			"c_cp": "",
+			"c_cch": "",
+			"c_ch": "many",
+			"c_mch": "true",
+			"c_mp": "true",
+			"desc": "",
+			"type": "identifying",
+			"child": "03cce6fc-31fa-4e39-a437-0e6e33eafd0e",
+			"id": "65e31e3f-1d61-4cbe-97c1-60935d56bd65",
+			"name": "fk_problem-type_problem",
+			"parent": "aa118985-ca82-4c98-bbdf-c6654aa4f75a",
+			"parent_key": "e9d6f91b-804c-43ea-b38d-efacbb904773",
+			"cols": [
+				{
+					"childcol": "4c644588-a69b-421a-869e-0aa2e476e7de",
+					"id": "e06ca216-2021-4f4f-b0a2-7fdb6e86c801",
+					"parentcol": "a2b81a36-721e-4bad-a247-ed961d359406"
 				}
 			],
 			"ri_pd": "Restrict",
@@ -2633,7 +2641,7 @@
 			"includeWarnings": "yes",
 			"includeCreationSql": "no"
 		},
-		"lastSaved": 1736073290670,
+		"lastSaved": 1736081781837,
 		"connectionId": "7af83ebc-4655-4802-a6d0-2c6890f3e1ce",
 		"modelHTMLReportDir": "/Users/sandeep/temp",
 		"modelScriptFilePath": "/Users/sandeep/projects/sconsole/SConsoleNxt/src/main/dbscripts/db-v202501012325.sql"
@@ -3155,18 +3163,18 @@
 		"78004c0b-6bfe-4d86-90d2-90e0fb83032e"
 	],
 	"order": [
-		"aa118985-ca82-4c98-bbdf-c6654aa4f75a",
-		"cf501777-e1e3-4947-88ab-87af891ac817",
-		"af87fb32-ca82-4d55-975a-a59d21bb572c",
-		"c17be34e-081a-4590-becf-6e0ac4ff6b06",
 		"74e3d227-cba7-4b22-aa34-fc123abb195a",
 		"6dbd3fc8-8082-48e9-981c-75c0d80f2d12",
-		"03cce6fc-31fa-4e39-a437-0e6e33eafd0e",
-		"0b713a2b-d568-40a1-bac1-552360d56264",
-		"d7bd2a76-c755-4927-9857-08e74b1d0a96",
 		"58be8bc9-d0ff-468c-b6d1-08134498fad1",
+		"03cce6fc-31fa-4e39-a437-0e6e33eafd0e",
+		"aa118985-ca82-4c98-bbdf-c6654aa4f75a",
 		"7294167e-b95e-495b-b37c-c5d1235c52cf",
 		"547f7366-3873-4566-a514-76d35dee76ca",
+		"cf501777-e1e3-4947-88ab-87af891ac817",
+		"0b713a2b-d568-40a1-bac1-552360d56264",
+		"af87fb32-ca82-4d55-975a-a59d21bb572c",
+		"d7bd2a76-c755-4927-9857-08e74b1d0a96",
+		"c17be34e-081a-4590-becf-6e0ac4ff6b06",
 		"bb382f8e-1823-4fd6-95ea-6e4cff93233a",
 		"f26a0d5f-a5b3-46a7-936c-e288c96716da",
 		"07ecb06c-b86e-48dd-a494-bae034e854d7",
