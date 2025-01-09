@@ -201,3 +201,7 @@ ALTER TABLE sconsolenxt.book_master ADD
                                author
         )
 ;
+
+ALTER TABLE sconsolenxt.problem_type_master ADD COLUMN
+    `description` VARCHAR(128) NOT NULL AFTER problem_type
+;

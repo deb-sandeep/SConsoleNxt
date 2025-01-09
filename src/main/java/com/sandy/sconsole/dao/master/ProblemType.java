@@ -15,4 +15,7 @@ public class ProblemType {
     @Id
     @Column( name = "problem_type", nullable = false, length = 8 )
     private String problemType;
+    
+    @Column( name = "description", nullable = false, length = 128 )
+    private String description;
 }

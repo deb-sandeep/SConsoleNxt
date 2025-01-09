@@ -76,3 +76,10 @@ insert into sconsolenxt.topic_master ( syllabus_name, section, topic_name ) valu
 insert into sconsolenxt.topic_master ( syllabus_name, section, topic_name ) values ( "IIT Maths",     "Vectors",                 "Vector Algebra"                );
 insert into sconsolenxt.topic_master ( syllabus_name, section, topic_name ) values ( "IIT Maths",     "Geometry",                "2D Geometry"                   );
 insert into sconsolenxt.topic_master ( syllabus_name, section, topic_name ) values ( "IIT Maths",     "Geometry",                "3D Geometry"                   );
+
+INSERT INTO `sconsolenxt`.`problem_type_master` (`problem_type`, `description`) VALUES ('SUB', 'Subjective type');
+INSERT INTO `sconsolenxt`.`problem_type_master` (`problem_type`, `description`) VALUES ('SCA', 'Single Correct Answer');
+INSERT INTO `sconsolenxt`.`problem_type_master` (`problem_type`, `description`) VALUES ('MCA', 'Multiple Correct Answer');
+INSERT INTO `sconsolenxt`.`problem_type_master` (`problem_type`, `description`) VALUES ('LCT', 'Linked Comprehension Type');
+INSERT INTO `sconsolenxt`.`problem_type_master` (`problem_type`, `description`) VALUES ('MMT', 'Matrix Match Type');
+INSERT INTO `sconsolenxt`.`problem_type_master` (`problem_type`, `description`) VALUES ('NVT', 'Numerical Value Type');

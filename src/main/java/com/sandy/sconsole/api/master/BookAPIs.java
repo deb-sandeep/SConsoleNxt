@@ -28,13 +28,12 @@ public class BookAPIs {
     @Autowired
     private BookAPIHelper helper = null ;
     
-    @PostMapping( "/Upload" )
-    public ResponseEntity<BookMeta> uploadMetadataFile(
+    @PostMapping( "/ValidateMetaFile" )
+    public ResponseEntity<BookMeta> validateMetaFile(
             @RequestParam( "file" ) MultipartFile multipartFile ) {
         try {
             File savedFile = helper.saveUploadedFile( multipartFile ) ;
-            BookMeta meta = helper.parseBookMeta( savedFile ) ;
-            helper.validateBookMeta( meta ) ;
+            BookMeta meta = helper.parseAndValidateBookMeta( savedFile ) ;
             
             return status( HttpStatus.OK ).body( meta ) ;
         }

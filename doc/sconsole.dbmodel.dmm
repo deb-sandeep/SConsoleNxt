@@ -158,21 +158,21 @@
 					"name": "PRIMARY"
 				},
 				{
-					"id": "200486d6-7bf7-492c-a1f7-5ab8bbd97804",
+					"id": "e86775dc-0733-4312-beff-cb7d90b4adb6",
 					"isPk": false,
 					"name": "UNIQUE",
 					"cols": [
 						{
-							"id": "d0591021-dc58-4c8d-8301-3369d1626cf1",
+							"id": "33f780d0-d660-4069-917d-e60800dacb6a",
 							"colid": "b1870f45-6e7d-4d51-974f-843892da2190"
 						},
 						{
-							"id": "4f34fc60-ba72-4116-8e48-e8a4c71fef8f",
-							"colid": "fce6673d-8c22-41db-bbb6-b3ba7504d1a5"
+							"id": "98cb02ce-7eec-4d56-a51d-cd160d4dae0a",
+							"colid": "8eebec49-039c-4982-80d1-0f3f7e3ccf1c"
 						},
 						{
-							"id": "bb85961d-b5b0-4314-a3bd-15d037a08404",
-							"colid": "8eebec49-039c-4982-80d1-0f3f7e3ccf1c"
+							"id": "80f84e31-abe0-4ba6-9113-d677138110cd",
+							"colid": "fce6673d-8c22-41db-bbb6-b3ba7504d1a5"
 						}
 					]
 				}
@@ -652,6 +652,27 @@
 					"estimatedSize": "",
 					"data": "",
 					"binary": false
+				},
+				{
+					"id": "0258b32f-3de4-4afe-bae2-6517f35b4bb8",
+					"name": "description",
+					"datatype": "VARCHAR",
+					"param": "128",
+					"pk": false,
+					"nn": true,
+					"fk": false,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"after": "",
+					"autoinc": false,
+					"collation": "",
+					"charset": "",
+					"binary": false,
+					"zerofill": false,
+					"unsigned": false,
+					"enum": "",
+					"estimatedSize": ""
 				}
 			],
 			"indexes": [],
@@ -929,7 +950,7 @@
 			"desc": "",
 			"embeddable": false,
 			"id": "547f7366-3873-4566-a514-76d35dee76ca",
-			"initautoinc": "71",
+			"initautoinc": "72",
 			"name": "slide_master",
 			"relations": [],
 			"rowformat": "Dynamic",
@@ -1570,7 +1591,7 @@
 			"desc": "First level topics for a syllabus",
 			"embeddable": false,
 			"id": "c17be34e-081a-4590-becf-6e0ac4ff6b06",
-			"initautoinc": "1",
+			"initautoinc": "79",
 			"name": "topic_master",
 			"relations": [
 				"5c30f7eb-41a0-4875-8911-6798f1e93618",
@@ -2641,10 +2662,9 @@
 			"includeWarnings": "yes",
 			"includeCreationSql": "no"
 		},
-		"lastSaved": 1736081781837,
+		"lastSaved": 1736408031271,
 		"connectionId": "7af83ebc-4655-4802-a6d0-2c6890f3e1ce",
-		"modelHTMLReportDir": "/Users/sandeep/temp",
-		"modelScriptFilePath": "/Users/sandeep/projects/sconsole/SConsoleNxt/src/main/dbscripts/db-v202501012325.sql"
+		"modelHTMLReportDir": "/Users/sandeep/temp"
 	},
 	"otherObjects": {},
 	"diagrams": {
@@ -2964,7 +2984,7 @@
 					"referencedItemId": "aa118985-ca82-4c98-bbdf-c6654aa4f75a",
 					"x": 65,
 					"y": 621,
-					"gHeight": 45,
+					"gHeight": 63,
 					"gWidth": 241,
 					"color": "#ffffff",
 					"background": "#03a9f4",
