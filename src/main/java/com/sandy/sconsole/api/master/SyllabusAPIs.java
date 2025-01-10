@@ -1,10 +1,10 @@
 package com.sandy.sconsole.api.master;
 
+import com.sandy.sconsole.core.api.AR;
 import com.sandy.sconsole.dao.master.Syllabus;
 import com.sandy.sconsole.dao.master.repo.SyllabusRepo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,16 +22,15 @@ public class SyllabusAPIs {
     private SyllabusRepo syllabusRepo = null ;
     
     @GetMapping( "/All" )
-    public ResponseEntity<List<Syllabus>> getAllSyllabus() {
+    public ResponseEntity<AR<List<Syllabus>>> getAllSyllabus() {
         try {
             List<Syllabus> allSyllabus = new ArrayList<>();
             syllabusRepo.findAll().forEach( allSyllabus::add ) ;
             
-            return ResponseEntity.ok( allSyllabus ) ;
+            return AR.success( allSyllabus ) ;
         }
         catch( Exception e ) {
-            log.error( "Error :: Getting syllabus.", e );
-            return ResponseEntity.status( HttpStatus.INTERNAL_SERVER_ERROR ).body( null );
+            return AR.failure( e ) ;
         }
     }
 }
