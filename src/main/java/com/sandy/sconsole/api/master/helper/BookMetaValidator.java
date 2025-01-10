@@ -179,12 +179,14 @@ public class BookMetaValidator {
         
         ProblemCluster cluster = new ProblemCluster( data ) ;
         
+        // 1 - Check if metadata has the right number of fields
         String[] parts = data.split( " " ) ;
-        if( parts.length < 2 ) {
+        if( parts.length < 2 || parts.length > 3) {
             msgs.add( errMsg( "problems", data, "Invalid problem cluster format" ) ) ;
             return cluster ;
         }
         
+        // 2 - Check if the problem type specified is valid
         ProblemType type = problemTypeRepo.findById( parts[0].trim() ).orElse( null ) ;
         if( type == null ) {
             msgs.add( errMsg( "problems", data, "Invalid problem type - " + parts[0] ) ) ;
@@ -194,6 +196,7 @@ public class BookMetaValidator {
             cluster.setType( type.getProblemType() ) ;
         }
         
+        // 3 - If we are dealing with LCT, check if the sequence is present
         if( type.getProblemType().equals( "LCT" )  ) {
             if( parts.length != 3 ) {
                 msgs.add( errMsg( "problems", data, "LCT problem type should have 3 parts" ) ) ;
@@ -204,14 +207,34 @@ public class BookMetaValidator {
             }
         }
         
+        // 4 - Parse the problem range. In case only one number is present,
+        //     it means the cluster has only one problem. This is rare, so we
+        //     issue a warning.
         String[] rangeParts = parts[parts.length-1].split( "-" ) ;
-        cluster.setStartIndex( Integer.parseInt( rangeParts[0] ) ) ;
+        int startIndex, endIndex ;
+        
+        try {
+            startIndex = Integer.parseInt( rangeParts[0].trim() ) ;
+        }
+        catch( Exception e ) {
+            msgs.add( errMsg( "problems", data, "Problem range boundary is not integer" ) ) ;
+            return cluster ;
+        }
+        
+        cluster.setStartIndex( startIndex ) ;
         if( rangeParts.length == 1 ) {
             msgs.add( warnMsg( "problems", data, "Cluster has only one problem" ) ) ;
             cluster.setEndIndex( cluster.getStartIndex() ) ;
         }
         else {
-            cluster.setEndIndex( Integer.parseInt( rangeParts[1] ) ) ;
+            try {
+                endIndex = Integer.parseInt( rangeParts[1].trim() ) ;
+            }
+            catch( Exception e ) {
+                msgs.add( errMsg( "problems", data, "Problem range boundary is not integer" ) ) ;
+                return cluster ;
+            }
+            cluster.setEndIndex( endIndex ) ;
         }
         return cluster ;
     }
