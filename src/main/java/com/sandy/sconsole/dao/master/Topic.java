@@ -1,5 +1,6 @@
 package com.sandy.sconsole.dao.master;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,6 +20,7 @@ public class Topic {
     @ManyToOne( fetch = FetchType.LAZY, optional = false )
     @OnDelete( action = OnDeleteAction.CASCADE )
     @JoinColumn( name = "syllabus_name", nullable = false )
+    @JsonIgnore
     private Syllabus syllabusName;
     
     @Column( name = "section", nullable = false, length = 64 )

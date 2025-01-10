@@ -19,7 +19,7 @@ public class SConsoleWebController {
         final CorsConfiguration               config = new CorsConfiguration();
         
         config.setAllowCredentials( true ) ;
-        config.setAllowedOrigins( List.of( "*" ) ) ;
+        config.setAllowedOriginPatterns( List.of( "*" ) ) ;
         config.setAllowedMethods( List.of( "*" ) ) ;
         config.setAllowedHeaders( List.of( "*" ) ) ;
         config.setAllowedHeaders( Arrays.asList("Origin", "Content-Type", "Accept") ) ;
