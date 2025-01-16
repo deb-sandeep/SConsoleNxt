@@ -83,3 +83,5 @@ INSERT INTO `sconsolenxt`.`problem_type_master` (`problem_type`, `description`) 
 INSERT INTO `sconsolenxt`.`problem_type_master` (`problem_type`, `description`) VALUES ('LCT', 'Linked Comprehension Type');
 INSERT INTO `sconsolenxt`.`problem_type_master` (`problem_type`, `description`) VALUES ('MMT', 'Matrix Match Type');
 INSERT INTO `sconsolenxt`.`problem_type_master` (`problem_type`, `description`) VALUES ('NVT', 'Numerical Value Type');
+INSERT INTO `sconsolenxt`.`problem_type_master` (`problem_type`, `description`) VALUES ('ART', 'Assertion Reasoning Type');
+INSERT INTO `sconsolenxt`.`problem_type_master` (`problem_type`, `description`) VALUES ('CMT', 'Column Match Type');

@@ -36,6 +36,8 @@ public class BookAPIs {
             File savedFile = helper.saveUploadedFile( multipartFile ) ;
             BookMeta meta = helper.parseAndValidateBookMeta( savedFile ) ;
             
+            meta.setServerFileName( savedFile.getName() );
+            
             return success( meta ) ;
         }
         catch( Exception e ) {

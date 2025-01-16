@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Set;
 
 import static com.sandy.sconsole.api.master.helper.BookMeta.*;
-import static com.sandy.sconsole.api.master.helper.BookMeta.errMsg;
 
 @Slf4j
 @Component
@@ -33,7 +32,7 @@ public class BookMetaValidator {
         // 2 - Check if subject exits. If not, there is no need to
         //     validate further. The entire file is defunct.
         boolean subjectExists = validateSubjectExists( meta.getSubject(),
-                                                       meta.getValidationMsgs() ) ;
+                                                       meta.getValidationMessages() ) ;
         
         if( subjectExists ) {
             // 3 - If subject exists, validate the chapter metadata values.
@@ -49,101 +48,98 @@ public class BookMetaValidator {
             if( book != null ) {
                 validateChapterDiscrepancy( meta.getChapters(),
                                             book.getChapters(),
-                                            meta.getValidationMsgs() ) ;
+                                            meta.getValidationMessages() ) ;
             }
         }
-        
-        // Finally update the consolidated message count.
-        meta.updateMsgCount() ;
     }
     
     private void validateMandatoryFields( BookMeta meta ) {
         
-        List<ValidationMsg> msgs = meta.getValidationMsgs() ;
+        ValidationMessages msgs = meta.getValidationMessages() ;
         
         if( meta.getSubject() == null ) {
-            msgs.add( errMsg( "subject", "Subject is missing" ) ) ;
+            msgs.addError( "subject", "Attribute is missing" ) ;
         }
         
         if( meta.getSeries() == null ) {
-            msgs.add( warnMsg( "series", "Series is missing" ) ) ;
+            msgs.addWarning( "series", "Attribute is missing" ) ;
         }
         
         if( meta.getName() == null ) {
-            msgs.add( errMsg( "name", "Name is missing" ) ) ;
+            msgs.addError( "name", "Attribute is missing" ) ;
         }
         
         if( meta.getAuthor() == null ) {
-            msgs.add( errMsg( "author", "Author is missing" ) ) ;
+            msgs.addError( "author", "Attribute is missing" ) ;
         }
         
         if( meta.getShortName() == null ) {
-            msgs.add( errMsg( "shortName", "Short name is missing" ) ) ;
+            msgs.addError( "shortName", "Attribute is missing" ) ;
         }
         
         for( BookMeta.ChapterMeta chapter : meta.getChapters() ) {
             
             if( chapter.getTitle() == null ) {
-                chapter.getValidationMsgs().add( errMsg( "title", "Title is missing" ) ) ;
+                chapter.getValidationMessages().addError( "title", "Attribute is missing" ) ;
             }
             for( BookMeta.ExerciseMeta exercise : chapter.getExercises() ) {
                 
                 if( exercise.getName() == null ) {
-                    exercise.getValidationMsgs().add( errMsg( "name", "Name is missing" ) ) ;
+                    exercise.getValidationMessages().addError( "name", "Attribute is missing" ) ;
                 }
             }
         }
     }
     
-    private boolean validateSubjectExists( String subject, List<BookMeta.ValidationMsg> msgs ) {
+    private boolean validateSubjectExists( String subject, ValidationMessages msgs ) {
         
         boolean present = subjectRepo.findById( subject ).isPresent();
         if( !present ) {
-            msgs.add( errMsg( "subject", subject, "Subject not registered" ) ) ;
+            msgs.addError( "subject", "Subject not registered" ) ;
         }
         return present ;
     }
     
     private Book validateBookExists( BookMeta meta ) {
         
-        List<ValidationMsg> msgs = meta.getValidationMsgs() ;
+        ValidationMessages msgs = meta.getValidationMessages() ;
         String bookId = meta.getSubject() + " > " + meta.getName() + " by " + meta.getAuthor() ;
         Book book = bookRepo.findBook( meta.getSubject(), meta.getName(), meta.getAuthor() ) ;
         
         if( book == null ) {
-            msgs.add( infoMsg( "name", bookId, "New book will be registered" ) ) ;
+            msgs.addInfo( "name", "New book will be registered" ) ;
         }
         else {
-            msgs.add( warnMsg( "name", bookId, "Book exists and will be overwritten" ) ) ;
+            msgs.addWarning( "name", "Book exists and will be overwritten" ) ;
         }
         return book ;
     }
     
     private void validateChapterDiscrepancy( List<ChapterMeta> chapters,
                                              Set<Chapter> existingChapters,
-                                             List<ValidationMsg> msgs ) {
+                                             ValidationMessages msgs ) {
         
         log.error( "TODO: **** This function needs implementation after a new book save." );
     }
     
     private void validateChapterMetaValues( ChapterMeta meta ) {
         
-        List<ValidationMsg> msgs = meta.getValidationMsgs() ;
+        ValidationMessages msgs = meta.getValidationMessages() ;
         String[] titleParts = meta.getTitle().split( "-" ) ;
         
         if( titleParts.length < 2 ) {
-            msgs.add( errMsg( "title", "Title format is incorrect" ) ) ;
+            msgs.addError( "title", "Title format is incorrect. Format: <number> - <chapter title>" ) ;
         }
         else {
             try {
                 Integer.parseInt( titleParts[0].trim() ) ;
             }
             catch( Exception e ) {
-                msgs.add( errMsg( "title", "Chapter number is not a number" ) ) ;
+                msgs.addError( "title", "Chapter number is not a number" ) ;
             }
             
             if( StringUtil.isEmptyOrNull( titleParts[1] ) ) {
-                msgs.add( errMsg( "title", "Chapter title is missing" ) ) ;
+                msgs.addError( "title", "Chapter title is missing" ) ;
             }
         }
         
@@ -154,20 +150,20 @@ public class BookMetaValidator {
     
     private void validateExerciseMetaValues( ExerciseMeta exercise ) {
         
-        List<ValidationMsg> msgs = exercise.getValidationMsgs() ;
+        ValidationMessages msgs = exercise.getValidationMessages() ;
         
         if( StringUtil.isEmptyOrNull( exercise.getName() ) ) {
-            msgs.add( errMsg( "name", "Name is missing or empty" ) ) ;
+            msgs.addError( "name", "Attribute is missing or empty" ) ;
         }
         
         if( exercise.getProblems().isEmpty() ) {
-            msgs.add( errMsg( "problems", "No problems defined" ) ) ;
+            msgs.addError( "title", "No problems defined" ) ;
         }
         
         for( String problemClusterMeta : exercise.getProblems() ) {
             ProblemCluster problemCluster ;
             problemCluster = parseAndValidateProblemCluster( problemClusterMeta,
-                                                             exercise.getValidationMsgs() ) ;
+                                                             exercise.getValidationMessages() ) ;
             
             exercise.getProblemClusters().add( problemCluster ) ;
         }
@@ -175,21 +171,21 @@ public class BookMetaValidator {
     
     // Problem cluster meta is of the format
     // <SUB|SCA|MCA|MMT|LCT|NVT> <LCT_SEQ>? <START_COUNT>-<END_COUNT>
-    private ProblemCluster parseAndValidateProblemCluster( String data, List<ValidationMsg> msgs ) {
+    private ProblemCluster parseAndValidateProblemCluster( String data, ValidationMessages msgs ) {
         
         ProblemCluster cluster = new ProblemCluster( data ) ;
         
         // 1 - Check if metadata has the right number of fields
         String[] parts = data.split( " " ) ;
         if( parts.length < 2 || parts.length > 3) {
-            msgs.add( errMsg( "problems", data, "Invalid problem cluster format" ) ) ;
+            msgs.addError( data, "Invalid problem cluster format" ) ;
             return cluster ;
         }
         
         // 2 - Check if the problem type specified is valid
         ProblemType type = problemTypeRepo.findById( parts[0].trim() ).orElse( null ) ;
         if( type == null ) {
-            msgs.add( errMsg( "problems", data, "Invalid problem type - " + parts[0] ) ) ;
+            msgs.addError( data, "Invalid problem type - " + parts[0] ) ;
             return cluster ;
         }
         else {
@@ -199,7 +195,7 @@ public class BookMetaValidator {
         // 3 - If we are dealing with LCT, check if the sequence is present
         if( type.getProblemType().equals( "LCT" )  ) {
             if( parts.length != 3 ) {
-                msgs.add( errMsg( "problems", data, "LCT problem type should have 3 parts" ) ) ;
+                msgs.addError( data, "LCT problem type should have 3 parts" ) ;
                 return cluster ;
             }
             else {
@@ -217,13 +213,13 @@ public class BookMetaValidator {
             startIndex = Integer.parseInt( rangeParts[0].trim() ) ;
         }
         catch( Exception e ) {
-            msgs.add( errMsg( "problems", data, "Problem range boundary is not integer" ) ) ;
+            msgs.addError( data, "Problem range boundary is not integer" ) ;
             return cluster ;
         }
         
         cluster.setStartIndex( startIndex ) ;
         if( rangeParts.length == 1 ) {
-            msgs.add( warnMsg( "problems", data, "Cluster has only one problem" ) ) ;
+            msgs.addWarning( data, "Cluster has only one problem" ) ;
             cluster.setEndIndex( cluster.getStartIndex() ) ;
         }
         else {
@@ -231,7 +227,7 @@ public class BookMetaValidator {
                 endIndex = Integer.parseInt( rangeParts[1].trim() ) ;
             }
             catch( Exception e ) {
-                msgs.add( errMsg( "problems", data, "Problem range boundary is not integer" ) ) ;
+                msgs.addError( data, "Problem range boundary is not integer" ) ;
                 return cluster ;
             }
             cluster.setEndIndex( endIndex ) ;

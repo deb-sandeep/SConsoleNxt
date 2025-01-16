@@ -1,10 +1,13 @@
 package com.sandy.sconsole.api.master.helper;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Data
 public class BookMeta {
@@ -14,15 +17,68 @@ public class BookMeta {
         private int numError = 0 ;
         private int numWarning = 0 ;
         private int numInfo = 0 ;
+        
+        @JsonProperty( "total" )
+        public int getTotalMessages() {
+            return numError + numWarning + numInfo ;
+        }
+        
+        public void aggregateCount( ValidationMsgCount anotherCounter ) {
+            this.numError   += anotherCounter.numError ;
+            this.numWarning += anotherCounter.numWarning ;
+            this.numInfo    += anotherCounter.numInfo ;
+        }
     }
     
     @Data
     public static class ValidationMsg {
+        
         public enum Type { ERROR, WARNING, INFO }
-        private Type type = null ;
-        private String field = null ;
-        private String value = null ;
-        private String msg = null ;
+        private Type type ;
+        private String msg ;
+
+        public ValidationMsg( Type type, String msg ) {
+            this.type = type ;
+            this.msg = msg ;
+        }
+    }
+    
+    @Data
+    public static class ValidationMessages {
+        
+        private Map<String, List<ValidationMsg>> messages = new HashMap<>() ;
+
+        @JsonProperty( "msgCount" )
+        public ValidationMsgCount getMsgCount() {
+            ValidationMsgCount msgCount = new ValidationMsgCount() ;
+            for( List<ValidationMsg> msgs : messages.values() ) {
+                for( ValidationMsg msg : msgs ) {
+                    switch( msg.getType() ) {
+                        case ERROR -> msgCount.numError++;
+                        case WARNING -> msgCount.numWarning++;
+                        case INFO -> msgCount.numInfo++;
+                    }
+                }
+            }
+            return msgCount ;
+        }
+        
+        public void addError( String field, String msg ) {
+            addMsg( field, ValidationMsg.Type.ERROR, msg ) ;
+        }
+        
+        public void addWarning( String field, String msg ) {
+            addMsg( field, ValidationMsg.Type.WARNING, msg ) ;
+        }
+        
+        public void addInfo( String field, String msg ) {
+            addMsg( field, ValidationMsg.Type.INFO, msg ) ;
+        }
+
+        private void addMsg( String field, ValidationMsg.Type type, String msg ) {
+            List<ValidationMsg> msgs = messages.computeIfAbsent( field, k -> new ArrayList<>() );
+            msgs.add( new ValidationMsg( type, msg ) ) ;
+        }
     }
     
     @Data
@@ -45,9 +101,8 @@ public class BookMeta {
         
         @JsonIgnore
         private List<ProblemCluster> problemClusters = new ArrayList<>() ;
-        
-        private List<ValidationMsg> validationMsgs = new ArrayList<>() ;
-        private ValidationMsgCount msgCount = new ValidationMsgCount() ;
+
+        private ValidationMessages validationMessages = new ValidationMessages() ;
     }
     
     @Data
@@ -55,8 +110,19 @@ public class BookMeta {
         private String title = null ;
         private List<ExerciseMeta> exercises = new ArrayList<>() ;
         
-        private List<ValidationMsg> validationMsgs = new ArrayList<>() ;
-        private ValidationMsgCount  msgCount = new ValidationMsgCount() ;
+        private ValidationMessages validationMessages = new ValidationMessages() ;
+        private ValidationMsgCount totalMsgCount = new ValidationMsgCount() ;
+        
+        @JsonProperty( "totalMsgCount" )
+        public ValidationMsgCount getTotalMsgCount() {
+            ValidationMsgCount totalMsgCount = new ValidationMsgCount() ;
+            
+            totalMsgCount.aggregateCount( validationMessages.getMsgCount() ) ;
+            for( ExerciseMeta exercise : this.exercises ) {
+                totalMsgCount.aggregateCount( exercise.validationMessages.getMsgCount() ) ;
+            }
+            return totalMsgCount ;
+        }
     }
     
     private String subject = null ;
@@ -66,73 +132,18 @@ public class BookMeta {
     private String shortName = null ;
     private List<ChapterMeta> chapters = new ArrayList<>() ;
     
-    private List<ValidationMsg> validationMsgs = new ArrayList<>() ;
-    private ValidationMsgCount  msgCount       = new ValidationMsgCount() ;
-    private ValidationMsgCount  totalMsgCount  = new ValidationMsgCount() ;
+    private ValidationMessages validationMessages = new ValidationMessages() ;
+    private ValidationMsgCount totalMsgCount  = new ValidationMsgCount() ;
     
-    public void updateMsgCount() {
-        updateMsgCount( validationMsgs, msgCount ) ;
-        for( ChapterMeta chapter : chapters ) {
-            updateMsgCount( chapter.validationMsgs, chapter.msgCount ) ;
-            for( ExerciseMeta exercise : chapter.exercises ) {
-                updateMsgCount( exercise.validationMsgs, exercise.msgCount ) ;
-            }
+    private String serverFileName = null ;
+    
+    @JsonProperty( "totalMsgCount" )
+    public ValidationMsgCount getTotalMsgCount() {
+        ValidationMsgCount totalMsgCount = new ValidationMsgCount() ;
+        totalMsgCount.aggregateCount( validationMessages.getMsgCount() ) ;
+        for( ChapterMeta chapter : this.chapters ) {
+            totalMsgCount.aggregateCount( chapter.getTotalMsgCount() ) ;
         }
+        return totalMsgCount ;
     }
-    
-    private void aggregateTotalMsgCount( ValidationMsgCount counter ) {
-        this.totalMsgCount.numError += counter.numError ;
-        this.totalMsgCount.numWarning += counter.numWarning ;
-        this.totalMsgCount.numInfo += counter.numInfo ;
-    }
-    
-    private void updateMsgCount( List<ValidationMsg> msgs, ValidationMsgCount counter ) {
-        for( ValidationMsg msg : msgs ) {
-            switch( msg.getType() ) {
-                case ERROR -> counter.numError++;
-                case WARNING -> counter.numWarning++;
-                case INFO -> counter.numInfo++;
-            }
-        }
-        aggregateTotalMsgCount( counter ) ;
-    }
-    
-    public static ValidationMsg errMsg( String field, String msg ) {
-        return createValidationMsg( BookMeta.ValidationMsg.Type.ERROR, field, null, msg ) ;
-    }
-    
-    public static  BookMeta.ValidationMsg errMsg( String field, String value, String msg ) {
-        return createValidationMsg( BookMeta.ValidationMsg.Type.ERROR, field, value, msg ) ;
-    }
-    
-    public static  BookMeta.ValidationMsg warnMsg( String field, String msg ) {
-        return createValidationMsg( BookMeta.ValidationMsg.Type.WARNING, field, null, msg ) ;
-    }
-    
-    public static  BookMeta.ValidationMsg warnMsg( String field, String value, String msg ) {
-        return createValidationMsg( BookMeta.ValidationMsg.Type.WARNING, field, value, msg ) ;
-    }
-    
-    public static  BookMeta.ValidationMsg infoMsg( String field, String msg ) {
-        return createValidationMsg( BookMeta.ValidationMsg.Type.INFO, field, null, msg ) ;
-    }
-    
-    public static  BookMeta.ValidationMsg infoMsg( String field, String value, String msg ) {
-        return createValidationMsg( BookMeta.ValidationMsg.Type.INFO, field, value, msg ) ;
-    }
-    
-    public static  BookMeta.ValidationMsg createValidationMsg(
-                                            BookMeta.ValidationMsg.Type type,
-                                            String field,
-                                            String value,
-                                            String msg ) {
-        
-        BookMeta.ValidationMsg vMsg = new BookMeta.ValidationMsg() ;
-        vMsg.setType( type ) ;
-        vMsg.setField( field ) ;
-        vMsg.setValue( value );
-        vMsg.setMsg( msg ) ;
-        return vMsg ;
-    }
-    
 }
