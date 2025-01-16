@@ -2,6 +2,8 @@ package com.sandy.sconsole.api.master.helper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.sandy.sconsole.api.master.dto.BookMeta;
+import com.sandy.sconsole.api.master.dto.SaveMetaResponse;
 import com.sandy.sconsole.core.SConsoleConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +45,10 @@ public class BookAPIHelper {
         return destFile ;
     }
     
+    public File getUploadedFile( String fileName ) {
+        return new File( getUploadFolder(), fileName ) ;
+    }
+    
     public BookMeta parseAndValidateBookMeta( File metaFile ) throws Exception {
         
         ObjectMapper mapper = new ObjectMapper( new YAMLFactory() ) ;
@@ -54,5 +60,9 @@ public class BookAPIHelper {
         return meta ;
     }
     
-
+    
+    public SaveMetaResponse saveBookMeta( BookMeta meta ) throws Exception {
+        // Check if the file is valid - no error messages
+        return new SaveMetaResponse() ;
+    }
 }

@@ -20,6 +20,14 @@ public class AR<T> {
         public static ExecutionResult OK = new ExecutionResult( Status.OK, "Processing success" ) ;
         public static ExecutionResult ERROR = new ExecutionResult( Status.ERROR, "Processing failure" ) ;
         
+        public static ExecutionResult ERROR( String message ) {
+            return new ExecutionResult( Status.ERROR, message ) ;
+        }
+        
+        public static ExecutionResult ERROR( Throwable t ) {
+            return new ExecutionResult( Status.ERROR, t.getMessage(), t ) ;
+        }
+        
         public enum Status { OK, ERROR }
         
         private Status status ;
@@ -28,10 +36,6 @@ public class AR<T> {
         
         public ExecutionResult( Status status, String message ) {
             this( status, message, null ) ;
-        }
-        
-        public ExecutionResult( Throwable e ) {
-            this( Status.ERROR, e.getMessage(), e ) ;
         }
         
         public ExecutionResult( Status status, String message, Throwable e ) {
@@ -45,22 +49,30 @@ public class AR<T> {
         return ResponseEntity.ok( new AR<>( data ) ) ;
     }
     
-    public static <T> ResponseEntity<AR<T>> failure( Throwable e ) {
-        log.error( "Internal Server Error", e ) ;
+    public static <T> ResponseEntity<AR<T>> systemError( Throwable t ) {
+        log.error( "Internal Server Error", t ) ;
         return ResponseEntity.status( HttpStatus.INTERNAL_SERVER_ERROR )
-                             .body( new AR<>( e ) ) ;
+                             .body( new AR<>( ExecutionResult.ERROR( t ) ) ) ;
+    }
+    
+    public static <T> ResponseEntity<AR<T>> badRequest( String message ) {
+        return ResponseEntity.status( HttpStatus.BAD_REQUEST )
+                             .body( new AR<>( ExecutionResult.ERROR( message ) ) ) ;
     }
     
     private T data ;
     private ExecutionResult executionResult ;
     
     public AR( T data ) {
-        this.data = data ;
-        this.executionResult = ExecutionResult.OK ;
+        this( ExecutionResult.OK, data ) ;
     }
     
-    public AR( Throwable t ) {
-        this.data = null ;
-        this.executionResult = new ExecutionResult( t ) ;
+    public AR( ExecutionResult result ) {
+        this( result, null ) ;
+    }
+
+    public AR( ExecutionResult result, T data ) {
+        this.data = data ;
+        this.executionResult = result ;
     }
 }
