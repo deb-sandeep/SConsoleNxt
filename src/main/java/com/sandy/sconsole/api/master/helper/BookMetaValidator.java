@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 import static com.sandy.sconsole.api.master.dto.BookMeta.*;
 
 @Slf4j
@@ -131,8 +133,38 @@ public class BookMetaValidator {
             }
         }
         
+        validateDuplicateExercise( meta.getExercises() ) ;
+        
         for( ExerciseMeta exercise : meta.getExercises() ) {
             validateExerciseMetaValues( exercise ) ;
+        }
+    }
+    
+    private void validateDuplicateExercise( List<ExerciseMeta> exMetas ) {
+        
+        boolean[] duplicateMarkers = new boolean[ exMetas.size() ] ;
+
+        for( int i=0; i<exMetas.size(); i++ ) {
+            ExerciseMeta thisMeta = exMetas.get( i ) ;
+            String thisMetaName = thisMeta.getName().trim().toUpperCase() ;
+            
+            for( int j=0; j<exMetas.size(); j++ ) {
+                if( i != j ) {
+                    ExerciseMeta meta = exMetas.get( j ) ;
+                    if( meta.getName().trim().toUpperCase().equals( thisMetaName ) ) {
+                        duplicateMarkers[i] = true ;
+                        duplicateMarkers[j] = true ;
+                    }
+                }
+            }
+        }
+        
+        for( int i=0; i<exMetas.size(); i++ ) {
+            if( duplicateMarkers[i] ) {
+                exMetas.get( i )
+                       .getValidationMessages()
+                       .addError( "name", "Duplicate exercise name" ) ;
+            }
         }
     }
     
