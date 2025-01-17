@@ -15,7 +15,7 @@ CREATE TABLE sconsolenxt.book_master(
 CREATE TABLE sconsolenxt.chapter_master(
   book_id INT NOT NULL,
   chapter_num INT NOT NULL,
-  chapter_name INT NOT NULL,
+  chapter_name VARCHAR(128) NOT NULL,
   PRIMARY KEY(
     book_id,
     chapter_num

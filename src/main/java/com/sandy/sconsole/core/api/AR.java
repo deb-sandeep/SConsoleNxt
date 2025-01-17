@@ -20,11 +20,11 @@ public class AR<T> {
         public static ExecutionResult OK = new ExecutionResult( Status.OK, "Processing success" ) ;
         public static ExecutionResult ERROR = new ExecutionResult( Status.ERROR, "Processing failure" ) ;
         
-        public static ExecutionResult ERROR( String message ) {
+        static ExecutionResult ERROR( String message ) {
             return new ExecutionResult( Status.ERROR, message ) ;
         }
         
-        public static ExecutionResult ERROR( Throwable t ) {
+        static ExecutionResult ERROR( Throwable t ) {
             return new ExecutionResult( Status.ERROR, t.getMessage(), t ) ;
         }
         
@@ -45,21 +45,6 @@ public class AR<T> {
         }
     }
     
-    public static <T> ResponseEntity<AR<T>> success( T data ) {
-        return ResponseEntity.ok( new AR<>( data ) ) ;
-    }
-    
-    public static <T> ResponseEntity<AR<T>> systemError( Throwable t ) {
-        log.error( "Internal Server Error", t ) ;
-        return ResponseEntity.status( HttpStatus.INTERNAL_SERVER_ERROR )
-                             .body( new AR<>( ExecutionResult.ERROR( t ) ) ) ;
-    }
-    
-    public static <T> ResponseEntity<AR<T>> badRequest( String message ) {
-        return ResponseEntity.status( HttpStatus.BAD_REQUEST )
-                             .body( new AR<>( ExecutionResult.ERROR( message ) ) ) ;
-    }
-    
     private T data ;
     private ExecutionResult executionResult ;
     
@@ -74,5 +59,25 @@ public class AR<T> {
     public AR( ExecutionResult result, T data ) {
         this.data = data ;
         this.executionResult = result ;
+    }
+
+    public static <T> ResponseEntity<AR<T>> success( T data ) {
+        return ResponseEntity.ok( new AR<>( data ) ) ;
+    }
+    
+    public static <T> ResponseEntity<AR<T>> functionalError( String message ) {
+        log.error( "Functional error : " + message ) ;
+        return ResponseEntity.ok( new AR<>( ExecutionResult.ERROR( message ) ) ) ;
+    }
+    
+    public static <T> ResponseEntity<AR<T>> systemError( Throwable t ) {
+        log.error( "Internal Server Error", t ) ;
+        return ResponseEntity.status( HttpStatus.INTERNAL_SERVER_ERROR )
+                .body( new AR<>( ExecutionResult.ERROR( t ) ) ) ;
+    }
+    
+    public static <T> ResponseEntity<AR<T>> badRequest( String message ) {
+        return ResponseEntity.status( HttpStatus.BAD_REQUEST )
+                .body( new AR<>( ExecutionResult.ERROR( message ) ) ) ;
     }
 }

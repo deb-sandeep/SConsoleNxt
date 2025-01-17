@@ -1,7 +1,7 @@
 package com.sandy.sconsole.api.master;
 
-import com.sandy.sconsole.api.master.dto.SaveMetaRequest;
-import com.sandy.sconsole.api.master.dto.SaveMetaResponse;
+import com.sandy.sconsole.api.master.dto.SaveBookMetaReq;
+import com.sandy.sconsole.api.master.dto.SaveBookMetaRes;
 import com.sandy.sconsole.api.master.helper.BookAPIHelper;
 import com.sandy.sconsole.api.master.dto.BookMeta;
 import com.sandy.sconsole.core.api.AR;
@@ -14,9 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 
-import static com.sandy.sconsole.core.api.AR.systemError;
-import static com.sandy.sconsole.core.api.AR.badRequest;
-import static com.sandy.sconsole.core.api.AR.success;
+import static com.sandy.sconsole.core.api.AR.*;
 
 @Slf4j
 @RestController
@@ -46,8 +44,8 @@ public class BookAPIs {
     }
     
     @PostMapping( "/SaveMeta" )
-    public ResponseEntity<AR<SaveMetaResponse>> saveMetaFile(
-            @RequestBody SaveMetaRequest request ) {
+    public ResponseEntity<AR<SaveBookMetaRes>> saveMetaFile(
+            @RequestBody SaveBookMetaReq request ) {
         
         try {
             String uploadedFileName = request.getUploadedFileName() ;
@@ -57,7 +55,11 @@ public class BookAPIs {
             }
 
             BookMeta meta = helper.parseAndValidateBookMeta( savedFile ) ;
-            SaveMetaResponse response = helper.saveBookMeta( meta ) ;
+            if( meta.getTotalMsgCount().getNumError() > 0 ) {
+                return functionalError( "Cannot save book meta with errors." ) ;
+            }
+            
+            SaveBookMetaRes response = helper.saveBookMeta( meta ) ;
             return success( response ) ;
         }
         catch( Exception e ) {

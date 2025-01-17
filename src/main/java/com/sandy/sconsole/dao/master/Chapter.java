@@ -14,6 +14,7 @@ import java.util.Set;
 @Entity
 @Table( name = "chapter_master" )
 public class Chapter {
+    
     @EmbeddedId
     private ChapterId id;
     
@@ -24,9 +25,8 @@ public class Chapter {
     private Book book;
     
     @Column( name = "chapter_name", nullable = false )
-    private Integer chapterName;
+    private String chapterName;
     
     @OneToMany( mappedBy = "chapter" )
     private Set<Problem> problems = new LinkedHashSet<>();
-    
 }

@@ -30,7 +30,7 @@ public class SyllabusAPIs {
             return AR.success( allSyllabus ) ;
         }
         catch( Exception e ) {
-            return AR.failure( e ) ;
+            return AR.systemError( e ) ;
         }
     }
 }

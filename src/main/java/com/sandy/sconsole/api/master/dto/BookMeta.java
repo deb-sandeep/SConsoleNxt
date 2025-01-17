@@ -110,6 +110,14 @@ public class BookMeta {
         private String title = null ;
         private List<ExerciseMeta> exercises = new ArrayList<>() ;
         
+        // Chapter number and name are derived during parsing from the
+        // title which is of the format <num> - <name>
+        @JsonIgnore
+        private int chapterNum = 0 ;
+        
+        @JsonIgnore
+        private String chapterName = null ;
+        
         private ValidationMessages validationMessages = new ValidationMessages() ;
         private ValidationMsgCount totalMsgCount = new ValidationMsgCount() ;
         

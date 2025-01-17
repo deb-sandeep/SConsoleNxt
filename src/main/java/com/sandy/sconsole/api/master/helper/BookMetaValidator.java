@@ -3,7 +3,6 @@ package com.sandy.sconsole.api.master.helper;
 import com.sandy.sconsole.api.master.dto.BookMeta;
 import com.sandy.sconsole.core.util.StringUtil;
 import com.sandy.sconsole.dao.master.Book;
-import com.sandy.sconsole.dao.master.Chapter;
 import com.sandy.sconsole.dao.master.ProblemType;
 import com.sandy.sconsole.dao.master.repo.BookRepo;
 import com.sandy.sconsole.dao.master.repo.ProblemTypeRepo;
@@ -11,9 +10,6 @@ import com.sandy.sconsole.dao.master.repo.SubjectRepo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
-import java.util.Set;
 
 import static com.sandy.sconsole.api.master.dto.BookMeta.*;
 
@@ -34,22 +30,17 @@ public class BookMetaValidator {
         //     validate further. The entire file is defunct.
         boolean subjectExists = validateSubjectExists( meta.getSubject(),
                                                        meta.getValidationMessages() ) ;
-        
         if( subjectExists ) {
-            // 3 - If subject exists, validate the chapter metadata values.
-            //     This recursively validates the problem cluster metadata too.
-            for( BookMeta.ChapterMeta chapterMeta : meta.getChapters() ) {
-                validateChapterMetaValues( chapterMeta ) ;
-            }
-
-            // 4 - Check if the book exists. If it does, check if the chapter
-            //     metadata has changed. If it has, then the differences need
-            //     to be approved by the user.
+            // 3 - Check if the book exists. If it does, we can't upload
+            //     the same book again.
             Book book = validateBookExists( meta ) ;
-            if( book != null ) {
-                validateChapterDiscrepancy( meta.getChapters(),
-                                            book.getChapters(),
-                                            meta.getValidationMessages() ) ;
+
+            if( book == null ) {
+                // 4 - If subject exists, validate the chapter metadata values.
+                //     This recursively validates the problem cluster metadata too.
+                for( BookMeta.ChapterMeta chapterMeta : meta.getChapters() ) {
+                    validateChapterMetaValues( chapterMeta ) ;
+                }
             }
         }
     }
@@ -111,16 +102,9 @@ public class BookMetaValidator {
             msgs.addInfo( "name", "New book will be registered" ) ;
         }
         else {
-            msgs.addWarning( "name", "Book exists and will be overwritten" ) ;
+            msgs.addError( "name", "Book exists. Please delete the book before uploading." ) ;
         }
         return book ;
-    }
-    
-    private void validateChapterDiscrepancy( List<ChapterMeta> chapters,
-                                             Set<Chapter> existingChapters,
-                                             ValidationMessages msgs ) {
-        
-        log.error( "TODO: **** This function needs implementation after a new book save." );
     }
     
     private void validateChapterMetaValues( ChapterMeta meta ) {
@@ -133,7 +117,7 @@ public class BookMetaValidator {
         }
         else {
             try {
-                Integer.parseInt( titleParts[0].trim() ) ;
+                meta.setChapterNum( Integer.parseInt( titleParts[0].trim() ) ) ;
             }
             catch( Exception e ) {
                 msgs.addError( "title", "Chapter number is not a number" ) ;
@@ -141,6 +125,9 @@ public class BookMetaValidator {
             
             if( StringUtil.isEmptyOrNull( titleParts[1] ) ) {
                 msgs.addError( "title", "Chapter title is missing" ) ;
+            }
+            else {
+                meta.setChapterName( titleParts[1].trim() ) ;
             }
         }
         

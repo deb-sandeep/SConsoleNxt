@@ -24,6 +24,9 @@ public class Book {
     @Column( name = "book_name", nullable = false, length = 128 )
     private String bookName;
     
+    @Column( name = "series_name", length = 128 )
+    private String seriesName ;
+    
     @Column( name = "author", nullable = false, length = 128 )
     private String author;
     
