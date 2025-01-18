@@ -1,3 +1,22 @@
+INSERT INTO sconsolenxt.subject_master (subject_name) VALUES ('Physics');
+INSERT INTO sconsolenxt.subject_master (subject_name) VALUES ('Chemistry');
+INSERT INTO sconsolenxt.subject_master (subject_name) VALUES ('Maths');
+INSERT INTO sconsolenxt.subject_master (subject_name) VALUES ('Reasoning');
+INSERT INTO sconsolenxt.subject_master (subject_name) VALUES ('Speed Math');
+
+INSERT INTO sconsolenxt.syllabus_master (syllabus_name, subject_name) VALUES ('IIT Physics', 'Physics');
+INSERT INTO sconsolenxt.syllabus_master (syllabus_name, subject_name) VALUES ('IIT Chemistry', 'Chemistry');
+INSERT INTO sconsolenxt.syllabus_master (syllabus_name, subject_name) VALUES ('IIT Maths', 'Maths');
+
+INSERT INTO sconsolenxt.problem_type_master (problem_type, description) VALUES ('SUB', 'Subjective type');
+INSERT INTO sconsolenxt.problem_type_master (problem_type, description) VALUES ('SCA', 'Single Correct Answer');
+INSERT INTO sconsolenxt.problem_type_master (problem_type, description) VALUES ('MCA', 'Multiple Correct Answer');
+INSERT INTO sconsolenxt.problem_type_master (problem_type, description) VALUES ('LCT', 'Linked Comprehension Type');
+INSERT INTO sconsolenxt.problem_type_master (problem_type, description) VALUES ('MMT', 'Matrix Match Type');
+INSERT INTO sconsolenxt.problem_type_master (problem_type, description) VALUES ('NVT', 'Numerical Value Type');
+INSERT INTO sconsolenxt.problem_type_master (problem_type, description) VALUES ('ART', 'Assertion Reasoning Type');
+INSERT INTO sconsolenxt.problem_type_master (problem_type, description) VALUES ('CMT', 'Column Match Type');
+
 insert into sconsolenxt.topic_master ( syllabus_name, section, topic_name ) values ( "IIT Physics",   "General Physics",         "Measurement"                   );
 insert into sconsolenxt.topic_master ( syllabus_name, section, topic_name ) values ( "IIT Physics",   "General Physics",         "Practical Skills"              );
 insert into sconsolenxt.topic_master ( syllabus_name, section, topic_name ) values ( "IIT Physics",   "Mechanics",               "Kinematics"                    );
@@ -76,12 +95,3 @@ insert into sconsolenxt.topic_master ( syllabus_name, section, topic_name ) valu
 insert into sconsolenxt.topic_master ( syllabus_name, section, topic_name ) values ( "IIT Maths",     "Vectors",                 "Vector Algebra"                );
 insert into sconsolenxt.topic_master ( syllabus_name, section, topic_name ) values ( "IIT Maths",     "Geometry",                "2D Geometry"                   );
 insert into sconsolenxt.topic_master ( syllabus_name, section, topic_name ) values ( "IIT Maths",     "Geometry",                "3D Geometry"                   );
-
-INSERT INTO `sconsolenxt`.`problem_type_master` (`problem_type`, `description`) VALUES ('SUB', 'Subjective type');
-INSERT INTO `sconsolenxt`.`problem_type_master` (`problem_type`, `description`) VALUES ('SCA', 'Single Correct Answer');
-INSERT INTO `sconsolenxt`.`problem_type_master` (`problem_type`, `description`) VALUES ('MCA', 'Multiple Correct Answer');
-INSERT INTO `sconsolenxt`.`problem_type_master` (`problem_type`, `description`) VALUES ('LCT', 'Linked Comprehension Type');
-INSERT INTO `sconsolenxt`.`problem_type_master` (`problem_type`, `description`) VALUES ('MMT', 'Matrix Match Type');
-INSERT INTO `sconsolenxt`.`problem_type_master` (`problem_type`, `description`) VALUES ('NVT', 'Numerical Value Type');
-INSERT INTO `sconsolenxt`.`problem_type_master` (`problem_type`, `description`) VALUES ('ART', 'Assertion Reasoning Type');
-INSERT INTO `sconsolenxt`.`problem_type_master` (`problem_type`, `description`) VALUES ('CMT', 'Column Match Type');

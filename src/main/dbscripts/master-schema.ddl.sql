@@ -5,10 +5,15 @@ CREATE TABLE sconsolenxt.book_master(
   book_name VARCHAR(128) NOT NULL,
   author VARCHAR(128) NOT NULL,
   book_short_name VARCHAR(64),
-  PRIMARY KEY(id)
+  PRIMARY KEY(id),
+  CONSTRAINT `UNIQUE` UNIQUE(
+    subject_name,
+    book_name,
+    author
+  )
 ) COMMENT 'Metadata of individual books' ENGINE = InnoDB ROW_FORMAT = Dynamic
   AUTO_INCREMENT = 1 DEFAULT CHARACTER SET = `utf8mb4`
-  COLLATE = `utf8mb4_0900_ai_ci`
+  COLLATE = `utf8mb4_unicode_ci`
 ;
 
 
@@ -25,7 +30,8 @@ CREATE TABLE sconsolenxt.chapter_master(
     chapter_num
   )
 ) COMMENT 'Chapters for a book' ENGINE = InnoDB ROW_FORMAT = Dynamic
-  DEFAULT CHARACTER SET = `utf8mb4` COLLATE = `utf8mb4_0900_ai_ci`
+  AUTO_INCREMENT = 1 DEFAULT CHARACTER SET = `utf8mb4`
+  COLLATE = `utf8mb4_unicode_ci`
 ;
 
 
@@ -39,16 +45,17 @@ CREATE TABLE sconsolenxt.problem_master(
   PRIMARY KEY(id)
 ) COMMENT 'Problems in a chapter' ENGINE = InnoDB ROW_FORMAT = Dynamic
   AUTO_INCREMENT = 1 DEFAULT CHARACTER SET = `utf8mb4`
-  COLLATE = `utf8mb4_0900_ai_ci`
+  COLLATE = `utf8mb4_unicode_ci`
 ;
 
 
 CREATE TABLE sconsolenxt.problem_type_master(
   problem_type VARCHAR(8) NOT NULL,
+  `description` VARCHAR(128) NOT NULL,
   PRIMARY KEY(problem_type)
 ) COMMENT 'Type of problems (MCQ, ART, SCQ, NT, MAT, etc.)' ENGINE = InnoDB
   ROW_FORMAT = Dynamic DEFAULT CHARACTER SET = `utf8mb4`
-  COLLATE = `utf8mb4_0900_ai_ci`
+  COLLATE = `utf8mb4_unicode_ci`
 ;
 
 
@@ -57,7 +64,7 @@ CREATE TABLE sconsolenxt.subject_master(
   PRIMARY KEY(subject_name)
 ) COMMENT 'Master catalog of subjects being managed by SConsole' ENGINE = InnoDB
   ROW_FORMAT = Dynamic DEFAULT CHARACTER SET = `utf8mb4`
-  COLLATE = `utf8mb4_0900_ai_ci`
+  COLLATE = `utf8mb4_unicode_ci`
 ;
 
 
@@ -68,7 +75,7 @@ CREATE TABLE sconsolenxt.syllabus_book_map(
   PRIMARY KEY(id)
 ) COMMENT 'Map of books applicable for a syllabus' ENGINE = InnoDB
   ROW_FORMAT = Dynamic AUTO_INCREMENT = 1 DEFAULT CHARACTER SET = `utf8mb4`
-  COLLATE = `utf8mb4_0900_ai_ci`
+  COLLATE = `utf8mb4_unicode_ci`
 ;
 
 
@@ -78,7 +85,7 @@ CREATE TABLE sconsolenxt.syllabus_master(
   PRIMARY KEY(syllabus_name)
 ) COMMENT '(e.g. IIT-Physics, ISC-Physics, IIT-Chem, etc.)' ENGINE = InnoDB
   ROW_FORMAT = Dynamic DEFAULT CHARACTER SET = `utf8mb4`
-  COLLATE = `utf8mb4_0900_ai_ci`
+  COLLATE = `utf8mb4_unicode_ci`
 ;
 
 
@@ -90,7 +97,7 @@ CREATE TABLE sconsolenxt.topic_chapter_map(
   PRIMARY KEY(id)
 ) COMMENT 'Map of chapters applicable for a syllabus topic' ENGINE = InnoDB
   ROW_FORMAT = Dynamic AUTO_INCREMENT = 1 DEFAULT CHARACTER SET = `utf8mb4`
-  COLLATE = `utf8mb4_0900_ai_ci`
+  COLLATE = `utf8mb4_unicode_ci`
 ;
 
 
@@ -102,7 +109,7 @@ CREATE TABLE sconsolenxt.topic_master(
   PRIMARY KEY(id)
 ) COMMENT 'First level topics for a syllabus' ENGINE = InnoDB
   ROW_FORMAT = Dynamic AUTO_INCREMENT = 1 DEFAULT CHARACTER SET = `utf8mb4`
-  COLLATE = `utf8mb4_0900_ai_ci`
+  COLLATE = `utf8mb4_unicode_ci`
 ;
 
 
@@ -192,16 +199,4 @@ ALTER TABLE sconsolenxt.topic_chapter_map
   ADD CONSTRAINT `fk_topic_topic-chapter-map`
     FOREIGN KEY (topic_id) REFERENCES sconsolenxt.topic_master (id)
       ON DELETE Restrict ON UPDATE Cascade
-;
-
-ALTER TABLE sconsolenxt.book_master ADD
-    CONSTRAINT `UNIQUE` UNIQUE(
-                               subject_name,
-                               book_name,
-                               author
-        )
-;
-
-ALTER TABLE sconsolenxt.problem_type_master ADD COLUMN
-    `description` VARCHAR(128) NOT NULL AFTER problem_type
 ;
