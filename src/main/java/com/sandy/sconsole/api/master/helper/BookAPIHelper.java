@@ -3,6 +3,7 @@ package com.sandy.sconsole.api.master.helper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.sandy.sconsole.api.master.dto.BookMeta;
+import com.sandy.sconsole.api.master.dto.BookSummary;
 import com.sandy.sconsole.api.master.dto.SaveBookMetaRes;
 import com.sandy.sconsole.core.SConsoleConfig;
 import com.sandy.sconsole.dao.master.*;
@@ -23,6 +24,12 @@ import java.util.List;
 public class BookAPIHelper {
     
     private static final SimpleDateFormat SDF = new SimpleDateFormat( "yyyyMMddHHmmss" ) ;
+    
+    public static class InvalidMetaFileException extends Exception {
+        InvalidMetaFileException( String msg, Exception cause ) {
+            super( msg, cause ) ;
+        }
+    }
     
     @Autowired SConsoleConfig config ;
     @Autowired BookMetaValidator validator ;
@@ -59,14 +66,19 @@ public class BookAPIHelper {
         return new File( getUploadFolder(), fileName ) ;
     }
     
-    public BookMeta parseAndValidateBookMeta( File metaFile ) throws Exception {
+    public BookMeta parseAndValidateBookMeta( File metaFile )
+            throws InvalidMetaFileException {
         
-        ObjectMapper mapper = new ObjectMapper( new YAMLFactory() ) ;
-        mapper.findAndRegisterModules() ;
-        
-        BookMeta meta = mapper.readValue( metaFile, BookMeta.class );
-        validator.validateBookMeta( meta ) ;
-        
+        BookMeta meta ;
+        try {
+            ObjectMapper mapper = new ObjectMapper( new YAMLFactory() ) ;
+            mapper.findAndRegisterModules() ;
+            meta = mapper.readValue( metaFile, BookMeta.class );
+            validator.validateBookMeta( meta ) ;
+        }
+        catch( Exception e ) {
+            throw new InvalidMetaFileException( "Meta file is invalid. Check syntax.", e ) ;
+        }
         return meta ;
     }
     
@@ -142,5 +154,9 @@ public class BookAPIHelper {
                 stats.incProblemsCreated() ;
             }
         }
+    }
+    
+    public List<BookSummary> getAllBookSummaries() {
+        return bookRepo.findAllBooks() ;
     }
 }

@@ -28,6 +28,10 @@ public class AR<T> {
             return new ExecutionResult( Status.ERROR, t.getMessage(), t ) ;
         }
         
+        static ExecutionResult ERROR( String message, Throwable t ) {
+            return new ExecutionResult( Status.ERROR, message, t ) ;
+        }
+        
         public enum Status { OK, ERROR }
         
         private Status status ;
@@ -68,6 +72,11 @@ public class AR<T> {
     public static <T> ResponseEntity<AR<T>> functionalError( String message ) {
         log.error( "Functional error : " + message ) ;
         return ResponseEntity.ok( new AR<>( ExecutionResult.ERROR( message ) ) ) ;
+    }
+    
+    public static <T> ResponseEntity<AR<T>> functionalError( String message, Throwable cause ) {
+        log.error( "Functional error : " + message ) ;
+        return ResponseEntity.ok( new AR<>( ExecutionResult.ERROR( message, cause ) ) ) ;
     }
     
     public static <T> ResponseEntity<AR<T>> systemError( Throwable t ) {
