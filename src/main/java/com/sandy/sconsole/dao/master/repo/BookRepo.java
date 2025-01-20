@@ -4,10 +4,20 @@ import com.sandy.sconsole.api.master.dto.BookSummary;
 import com.sandy.sconsole.dao.master.Book;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
 public interface BookRepo extends CrudRepository<Book, Integer> {
+    
+    interface ProblemTypeCount {
+        int getChapterNum() ;
+        String getChapterName() ;
+        int getExerciseNum() ;
+        String getExerciseName() ;
+        String getProblemType() ;
+        int getNumProblems() ;
+    }
     
     List<Book> findBySubject_SubjectNameIgnoreCase( String subjectName ) ;
     
@@ -44,4 +54,33 @@ public interface BookRepo extends CrudRepository<Book, Integer> {
             b.author asc
     """ )
     List<BookSummary> findAllBooks() ;
+    
+    @Query( """
+        select
+            c.id.chapterNum as chapterNum,
+            c.chapterName as chapterName,
+            p.exerciseNum as exerciseNum,
+            p.exerciseName as exerciseName,
+            p.problemType.problemType as problemType,
+            count( p.problemId ) as numProblems
+        from Book b
+            left outer join Chapter c
+                on c.book = b
+            left outer join Problem p
+                on p.chapter.book = b and
+                   p.chapter = c
+            where
+                b.id = :bookId
+        group by
+            c.id.chapterNum,
+            c.chapterName,
+            p.exerciseNum,
+            p.exerciseName,
+            p.problemType
+        order by
+            c.id.chapterNum asc,
+            p.exerciseNum asc,
+            p.problemType.problemType asc
+    """ )
+    List<ProblemTypeCount> getProblemSummariesForChapter( @Param( "bookId" ) int bookId ) ;
 }

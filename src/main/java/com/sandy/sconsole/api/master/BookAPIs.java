@@ -42,6 +42,18 @@ public class BookAPIs {
         }
     }
     
+    @GetMapping( "{bookId}/ProblemSummary" )
+    public ResponseEntity<AR<BookProblemSummary>> getProblemsSummary(
+            @PathVariable( "bookId" ) int bookId ) {
+    
+        try {
+            return success( helper.getBookProblemsSummary( bookId ) ) ;
+        }
+        catch( Exception e ) {
+            return systemError( e );
+        }
+    }
+    
     @PostMapping( "/ValidateMetaFile" )
     public ResponseEntity<AR<BookMeta>> validateMetaFile(
             @RequestParam( "file" ) MultipartFile multipartFile ) {

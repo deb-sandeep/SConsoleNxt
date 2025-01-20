@@ -3,6 +3,7 @@ package com.sandy.sconsole.api.master.helper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.sandy.sconsole.api.master.dto.BookMeta;
+import com.sandy.sconsole.api.master.dto.BookProblemSummary;
 import com.sandy.sconsole.api.master.dto.BookSummary;
 import com.sandy.sconsole.api.master.dto.SaveBookMetaRes;
 import com.sandy.sconsole.core.SConsoleConfig;
@@ -114,7 +115,7 @@ public class BookAPIHelper {
             Chapter chapter = new Chapter() ;
             chapter.setId( chapterId );
             chapter.setBook( book ) ;
-            chapter.setChapterName( chMeta.getTitle() ) ;
+            chapter.setChapterName( chMeta.getChapterName() ) ;
             
             chapter = chapterRepo.save( chapter ) ;
             stats.incChaptersCreated() ;
@@ -161,5 +162,52 @@ public class BookAPIHelper {
     
     public List<BookSummary> getAllBookSummaries() {
         return bookRepo.findAllBooks() ;
+    }
+    
+    public BookProblemSummary getBookProblemsSummary( int bookId ) {
+        
+        Book book = bookRepo.findById( bookId ).get() ;
+        BookProblemSummary bps = new BookProblemSummary( book ) ;
+        
+        List<BookRepo.ProblemTypeCount> problemTypeCounts ;
+        problemTypeCounts = bookRepo.getProblemSummariesForChapter( bookId ) ;
+        
+        int lastChNum = -1 ;
+        int lastExNum = -1 ;
+        BookProblemSummary.ChapterProblemSummary cps = null ;
+        BookProblemSummary.ExerciseProblemSummary eps = null ;
+        
+        for( BookRepo.ProblemTypeCount ptc : problemTypeCounts ) {
+            if( ptc.getChapterNum() != lastChNum ) {
+                cps = new BookProblemSummary.ChapterProblemSummary( ptc ) ;
+                eps = new BookProblemSummary.ExerciseProblemSummary( ptc ) ;
+                
+                cps.getExerciseProblemSummaries().add( eps ) ;
+                bps.getChapterProblemSummaries().add( cps ) ;
+                
+                lastChNum = ptc.getChapterNum() ;
+                lastExNum = ptc.getExerciseNum() ;
+            }
+            else if( ptc.getExerciseNum() != lastExNum ) {
+                eps = new BookProblemSummary.ExerciseProblemSummary( ptc ) ;
+                if( cps != null ) {
+                    cps.getExerciseProblemSummaries().add( eps ) ;
+                }
+                else {
+                    throw new IllegalStateException( "CPS is null. This should not happen." ) ;
+                }
+                lastExNum = ptc.getExerciseNum() ;
+            }
+            else {
+                if( eps != null ) {
+                    eps.updateProblemTypeCount( ptc ) ;
+                }
+                else {
+                    throw new IllegalStateException( "EPS is null. This should not happen." ) ;
+                }
+            }
+        }
+        
+        return bps ;
     }
 }
