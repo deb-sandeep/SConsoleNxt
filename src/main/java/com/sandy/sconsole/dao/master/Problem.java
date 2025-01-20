@@ -21,6 +21,9 @@ public class Problem {
     @OnDelete( action = OnDeleteAction.CASCADE )
     private Chapter chapter;
     
+    @Column( name = "exercise_num", nullable = false)
+    private Integer exerciseNum;
+    
     @Column( name = "exercise_name", nullable = false, length = 64 )
     private String exerciseName;
     

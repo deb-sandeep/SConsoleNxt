@@ -119,14 +119,16 @@ public class BookAPIHelper {
             chapter = chapterRepo.save( chapter ) ;
             stats.incChaptersCreated() ;
             
-            for( BookMeta.ExerciseMeta exMeta : chMeta.getExercises() ) {
+            for( int i=0; i<chMeta.getExercises().size(); i++ ) {
+                BookMeta.ExerciseMeta exMeta = chMeta.getExercises().get( i ) ;
                 stats.incExercisesCreated() ;
-                addProblemsToChapter( chapter, exMeta, stats ) ;
+                addProblemsToChapter( chapter, (i+1), exMeta, stats ) ;
             }
         }
     }
     
     private void addProblemsToChapter( Chapter chapter,
+                                       int exerciseNum,
                                        BookMeta.ExerciseMeta exMeta,
                                        SaveBookMetaRes stats ) {
         
@@ -146,6 +148,7 @@ public class BookAPIHelper {
                 
                 Problem problem = new Problem() ;
                 problem.setChapter( chapter ) ;
+                problem.setExerciseNum( exerciseNum ) ;
                 problem.setExerciseName( exName ) ;
                 problem.setProblemType( type ) ;
                 problem.setProblemId( problemId ) ;
