@@ -4,7 +4,10 @@ import com.sandy.sconsole.api.master.dto.*;
 import com.sandy.sconsole.api.master.helper.BookAPIHelper;
 import com.sandy.sconsole.core.api.AR;
 import com.sandy.sconsole.dao.master.Book;
+import com.sandy.sconsole.dao.master.Chapter;
+import com.sandy.sconsole.dao.master.ChapterId;
 import com.sandy.sconsole.dao.master.repo.BookRepo;
+import com.sandy.sconsole.dao.master.repo.ChapterRepo;
 import com.sandy.sconsole.dao.master.repo.SyllabusRepo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.PropertyUtils;
@@ -23,6 +26,8 @@ import static java.text.MessageFormat.format;
 @RestController
 @RequestMapping( "/Master/Book" )
 public class BookAPIs {
+    @Autowired
+    private ChapterRepo chapterRepo;
     @Autowired
     private BookRepo bookRepo;
     
@@ -97,18 +102,43 @@ public class BookAPIs {
         }
     }
     
-    @PostMapping( "/UpdateAttribute" )
-    public ResponseEntity<AR<String>> saveMetaFile(
+    @PostMapping( "{bookId}/UpdateAttribute" )
+    public ResponseEntity<AR<String>> updateBookAttribute (
+            @PathVariable( "bookId" ) Integer bookId,
             @RequestBody AttrChangeRequest request ) {
         
         try {
-            Book book = bookRepo.findById( request.getId() ).get() ;
+            Book book = bookRepo.findById( bookId ).get() ;
             PropertyUtils.setProperty( book, request.getAttribute(), request.getValue() ) ;
             bookRepo.save( book ) ;
             return success( format( "Attribute '{0}' updated to '{1}' for book '{2}'",
                                     request.getAttribute(),
                                     request.getValue(),
                                     book.getBookShortName() ) ) ;
+        }
+        catch( Exception e ) {
+            return systemError( e );
+        }
+    }
+
+    @PostMapping( "{bookId}/{chapterNum}/UpdateChapterName" )
+    public ResponseEntity<AR<String>> updateChapterName (
+            @PathVariable( "bookId" ) Integer bookId,
+            @PathVariable( "chapterNum" ) Integer chapterNum,
+            @RequestBody AttrChangeRequest request ) {
+        
+        try {
+            ChapterId chapterId = new ChapterId() ;
+            chapterId.setBookId( bookId ) ;
+            chapterId.setChapterNum( chapterNum ) ;
+            
+            Chapter ch = chapterRepo.findById( chapterId ).get() ;
+            ch.setChapterName( request.getValue() ) ;
+            
+            chapterRepo.save( ch ) ;
+            
+            return success( format( "Chapter name updated to '{1}'",
+                                    request.getValue() ) ) ;
         }
         catch( Exception e ) {
             return systemError( e );
