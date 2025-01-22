@@ -210,4 +210,20 @@ public class BookAPIHelper {
         
         return bps ;
     }
+    
+    public int updateExerciseName( int bookId, int chapterNum,
+                                   int exerciseNum, String exerciseName ) {
+        
+        List<Problem> problems = problemRepo.getProblems( bookId, chapterNum, exerciseNum ) ;
+        problems.forEach( p -> {
+            String oldProblemId = p.getProblemId() ;
+            String newProblemId = exerciseName + oldProblemId.substring( oldProblemId.indexOf( '/' ) ) ;
+            
+            p.setExerciseName( exerciseName ) ;
+            p.setProblemId( newProblemId ) ;
+        } ) ;
+        problemRepo.saveAll( problems ) ;
+        return problems.size() ;
+    }
+    
 }

@@ -144,4 +144,23 @@ public class BookAPIs {
             return systemError( e );
         }
     }
+
+    @PostMapping( "{bookId}/{chapterNum}/{exerciseNum}/UpdateExerciseName" )
+    public ResponseEntity<AR<String>> updateExerciseName (
+                @PathVariable( "bookId" ) Integer bookId,
+                @PathVariable( "chapterNum" ) Integer chapterNum,
+                @PathVariable( "exerciseNum" ) Integer exerciseNum,
+                @RequestBody AttrChangeRequest request ) {
+        
+        try {
+            int numProblemsUpdated = helper.updateExerciseName( bookId,
+                                                                chapterNum,
+                                                                exerciseNum,
+                                                                request.getValue() ) ;
+            return success( format( "{0} problems updated", numProblemsUpdated ) ) ;
+        }
+        catch( Exception e ) {
+            return systemError( e );
+        }
+    }
 }
