@@ -34,6 +34,7 @@ public interface BookRepo extends CrudRepository<Book, Integer> {
     @Query( """
         select b.id as id,
                b.subject.subjectName as subjectName,
+               sbm.syllabus.syllabusName as syllabusName,
                b.seriesName as seriesName,
                b.bookName as bookName,
                b.author as author,
@@ -42,12 +43,14 @@ public interface BookRepo extends CrudRepository<Book, Integer> {
                count( p ) as numProblems
         from Book b
             left outer join Chapter c
-                on b = c.book
+                on c.book = b
             left outer join Problem p
-                on b = p.chapter.book and
-                   c = p.chapter
+                on p.chapter.book = b and
+                   p.chapter = c
+            left outer join SyllabusBookMap sbm
+                on sbm.book = b
         group by
-            b.id
+            b.id, sbm.syllabus.syllabusName
         order by
             b.subject.subjectName asc,
             b.seriesName asc,

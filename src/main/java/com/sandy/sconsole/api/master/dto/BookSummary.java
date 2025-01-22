@@ -4,6 +4,7 @@ public interface BookSummary {
     
     Integer getId() ;
     String getSubjectName() ;
+    String getSyllabusName() ;
     String getSeriesName() ;
     String getBookName() ;
     String getAuthor() ;

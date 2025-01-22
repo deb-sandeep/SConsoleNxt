@@ -10,6 +10,7 @@ import java.util.*;
 public class BookProblemSummary {
     
     private int id ;
+    private String syllabusName ;
     private String subjectName ;
     private String seriesName ;
     private String bookName ;

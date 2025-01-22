@@ -36,10 +36,12 @@ public class BookAPIHelper {
     @Autowired BookMetaValidator validator ;
     
     @Autowired SubjectRepo subjectRepo ;
+    @Autowired SyllabusRepo syllabusRepo ;
     @Autowired BookRepo bookRepo ;
     @Autowired ChapterRepo chapterRepo ;
     @Autowired ProblemRepo problemRepo ;
     @Autowired ProblemTypeRepo problemTypeRepo ;
+    @Autowired SyllabusBookMapRepo syllabusBookMapRepo ;
     
     private File uploadDir = null ;
     
@@ -98,8 +100,21 @@ public class BookAPIHelper {
         book = bookRepo.save( book ) ;
         
         addChaptersToBook( book, meta.getChapters(), stats ) ;
+        addBookSyllabusMapping( book ) ;
 
         return stats ;
+    }
+    
+    private void addBookSyllabusMapping( Book book ) {
+    
+        List<Syllabus> syllabuses = syllabusRepo.findBySubject( book.getSubject() ) ;
+        if( syllabuses != null && syllabuses.size() == 1 ) {
+            SyllabusBookMap map = new SyllabusBookMap() ;
+            map.setSyllabus( syllabuses.get( 0 ) ) ;
+            map.setBook( book ) ;
+            
+            syllabusBookMapRepo.save( map ) ;
+        }
     }
     
     private void addChaptersToBook( Book book,
@@ -167,7 +182,10 @@ public class BookAPIHelper {
     public BookProblemSummary getBookProblemsSummary( int bookId ) {
         
         Book book = bookRepo.findById( bookId ).get() ;
+        Syllabus syllabus = syllabusBookMapRepo.findByBook( book ) ;
+        
         BookProblemSummary bps = new BookProblemSummary( book ) ;
+        bps.setSyllabusName( syllabus.getSyllabusName() ) ;
         
         List<BookRepo.ProblemTypeCount> problemTypeCounts ;
         problemTypeCounts = bookRepo.getProblemSummariesForChapter( bookId ) ;
