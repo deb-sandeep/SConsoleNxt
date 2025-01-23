@@ -2683,7 +2683,7 @@
 			"includeWarnings": "yes",
 			"includeCreationSql": "no"
 		},
-		"lastSaved": 1737541309145,
+		"lastSaved": 1737541372156,
 		"connectionId": "7af83ebc-4655-4802-a6d0-2c6890f3e1ce",
 		"modelHTMLReportDir": "/Users/sandeep/temp"
 	},
@@ -3035,7 +3035,7 @@
 					"gHeight": 99,
 					"gWidth": 193,
 					"color": "#ffffff",
-					"background": "#03a9f4",
+					"background": "#ff5722",
 					"resized": false,
 					"autoExpand": true,
 					"backgroundOpacity": "10",

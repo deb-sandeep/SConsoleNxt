@@ -1,5 +1,8 @@
-package com.sandy.sconsole.dao.master;
+package com.sandy.sconsole.dao.master.repo;
 
+import com.sandy.sconsole.dao.master.Book;
+import com.sandy.sconsole.dao.master.Syllabus;
+import com.sandy.sconsole.dao.master.SyllabusBookMap;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;

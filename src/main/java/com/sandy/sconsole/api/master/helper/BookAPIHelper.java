@@ -123,9 +123,7 @@ public class BookAPIHelper {
 
         for( BookMeta.ChapterMeta chMeta : chMetas ) {
             
-            ChapterId chapterId = new ChapterId() ;
-            chapterId.setBookId( book.getId() ) ;
-            chapterId.setChapterNum( chMeta.getChapterNum() ) ;
+            ChapterId chapterId = new ChapterId( book.getId(), chMeta.getChapterNum() ) ;
             
             Chapter chapter = new Chapter() ;
             chapter.setId( chapterId );

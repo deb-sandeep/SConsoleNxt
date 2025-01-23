@@ -21,10 +21,10 @@ public class Topic {
     @OnDelete( action = OnDeleteAction.CASCADE )
     @JoinColumn( name = "syllabus_name", nullable = false )
     @JsonIgnore
-    private Syllabus syllabusName;
+    private Syllabus syllabus;
     
     @Column( name = "section", nullable = false, length = 64 )
-    private String section;
+    private String sectionName;
     
     @Column( name = "topic_name", nullable = false, length = 256 )
     private String topicName;

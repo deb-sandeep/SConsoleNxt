@@ -2,6 +2,7 @@ package com.sandy.sconsole.api.master;
 
 import com.sandy.sconsole.api.master.dto.*;
 import com.sandy.sconsole.api.master.helper.BookAPIHelper;
+import com.sandy.sconsole.api.master.helper.ChapterTopicMappingHelper;
 import com.sandy.sconsole.core.api.AR;
 import com.sandy.sconsole.dao.master.Book;
 import com.sandy.sconsole.dao.master.Chapter;
@@ -26,8 +27,10 @@ import static java.text.MessageFormat.format;
 @RestController
 @RequestMapping( "/Master/Book" )
 public class BookAPIs {
+    
     @Autowired
     private ChapterRepo chapterRepo;
+    
     @Autowired
     private BookRepo bookRepo;
     
@@ -35,12 +38,15 @@ public class BookAPIs {
     private SyllabusRepo syllabusRepo = null ;
     
     @Autowired
-    private BookAPIHelper helper = null ;
+    private BookAPIHelper bookHelper = null ;
+    
+    @Autowired
+    private ChapterTopicMappingHelper chapterTopicMappingHelper = null ;
     
     @GetMapping( "/Listing" )
     public ResponseEntity<AR<List<BookSummary>>> getBookListing() {
         try {
-            return success( helper.getAllBookSummaries() ) ;
+            return success( bookHelper.getAllBookSummaries() ) ;
         }
         catch( Exception e ) {
             return systemError( e );
@@ -52,7 +58,7 @@ public class BookAPIs {
             @PathVariable( "bookId" ) int bookId ) {
     
         try {
-            return success( helper.getBookProblemsSummary( bookId ) ) ;
+            return success( bookHelper.getBookProblemsSummary( bookId ) ) ;
         }
         catch( Exception e ) {
             return systemError( e );
@@ -63,8 +69,8 @@ public class BookAPIs {
     public ResponseEntity<AR<BookMeta>> validateMetaFile(
             @RequestParam( "file" ) MultipartFile multipartFile ) {
         try {
-            File savedFile = helper.saveUploadedFile( multipartFile ) ;
-            BookMeta meta = helper.parseAndValidateBookMeta( savedFile ) ;
+            File savedFile = bookHelper.saveUploadedFile( multipartFile ) ;
+            BookMeta meta = bookHelper.parseAndValidateBookMeta( savedFile ) ;
             
             meta.setServerFileName( savedFile.getName() );
             
@@ -84,17 +90,17 @@ public class BookAPIs {
         
         try {
             String uploadedFileName = request.getUploadedFileName() ;
-            File savedFile = helper.getUploadedFile( uploadedFileName ) ;
+            File savedFile = bookHelper.getUploadedFile( uploadedFileName ) ;
             if( !savedFile.exists() ) {
                 return badRequest( "Uploaded file " + uploadedFileName + " does not exist." ) ;
             }
 
-            BookMeta meta = helper.parseAndValidateBookMeta( savedFile ) ;
+            BookMeta meta = bookHelper.parseAndValidateBookMeta( savedFile ) ;
             if( meta.getTotalMsgCount().getNumError() > 0 ) {
                 return functionalError( "Cannot save book meta with errors." ) ;
             }
             
-            SaveBookMetaRes response = helper.saveBookMeta( meta ) ;
+            SaveBookMetaRes response = bookHelper.saveBookMeta( meta ) ;
             return success( response ) ;
         }
         catch( Exception e ) {
@@ -128,11 +134,9 @@ public class BookAPIs {
             @RequestBody AttrChangeRequest request ) {
         
         try {
-            ChapterId chapterId = new ChapterId() ;
-            chapterId.setBookId( bookId ) ;
-            chapterId.setChapterNum( chapterNum ) ;
-            
+            ChapterId chapterId = new ChapterId( bookId, chapterNum ) ;
             Chapter ch = chapterRepo.findById( chapterId ).get() ;
+            
             ch.setChapterName( request.getValue() ) ;
             
             chapterRepo.save( ch ) ;
@@ -153,11 +157,37 @@ public class BookAPIs {
                 @RequestBody AttrChangeRequest request ) {
         
         try {
-            int numProblemsUpdated = helper.updateExerciseName( bookId,
+            int numProblemsUpdated = bookHelper.updateExerciseName( bookId,
                                                                 chapterNum,
                                                                 exerciseNum,
                                                                 request.getValue() ) ;
             return success( format( "{0} problems updated", numProblemsUpdated ) ) ;
+        }
+        catch( Exception e ) {
+            return systemError( e );
+        }
+    }
+    
+    @PutMapping( "/ChapterTopicMapping" )
+    public ResponseEntity<AR<String>> createOrUpdateChapterTopicMapping(
+            @RequestBody ChapterTopicMappingReq mappingReq ) {
+        
+        try {
+            chapterTopicMappingHelper.createOrUpdateMapping( mappingReq ) ;
+            return success( "Chapter topic mapping successful" ) ;
+        }
+        catch( Exception e ) {
+            return systemError( e );
+        }
+    }
+    
+    @DeleteMapping( "/ChapterTopicMapping/{mapId}" )
+    public ResponseEntity<AR<String>> deleteChapterTopicMapping(
+            @PathVariable( "mapId" ) Integer mapId ) {
+        
+        try {
+            chapterTopicMappingHelper.deleteMapping( mapId ) ;
+            return success( "Chapter topic mapping deleted successfully" );
         }
         catch( Exception e ) {
             return systemError( e );

@@ -24,6 +24,13 @@ public class ChapterId implements Serializable {
     @Column( name = "chapter_num", nullable = false )
     private Integer chapterNum;
     
+    public ChapterId() {}
+    
+    public ChapterId( int bookId, int chapterNum ) {
+        this.bookId = bookId ;
+        this.chapterNum = chapterNum ;
+    }
+    
     @Override
     public boolean equals( Object o ) {
         if( this == o )

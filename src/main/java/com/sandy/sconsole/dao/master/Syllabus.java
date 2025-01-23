@@ -20,7 +20,7 @@ public class Syllabus {
     @JoinColumn( name = "subject_name", nullable = false )
     private Subject subject;
     
-    @OneToMany( mappedBy = "syllabusName" )
+    @OneToMany( mappedBy = "syllabus" )
     private Set<Topic> topics = new LinkedHashSet<>();
     
 }

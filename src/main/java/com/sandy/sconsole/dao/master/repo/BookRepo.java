@@ -54,7 +54,7 @@ public interface BookRepo extends CrudRepository<Book, Integer> {
         order by
             b.subject.subjectName asc,
             b.seriesName asc,
-            b.author asc
+            b.id asc
     """ )
     List<BookSummary> findAllBooks() ;
     
