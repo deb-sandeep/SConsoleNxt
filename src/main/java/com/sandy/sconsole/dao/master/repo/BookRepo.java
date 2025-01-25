@@ -1,6 +1,5 @@
 package com.sandy.sconsole.dao.master.repo;
 
-import com.sandy.sconsole.api.master.dto.BookSummary;
 import com.sandy.sconsole.dao.master.Book;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -9,6 +8,19 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface BookRepo extends CrudRepository<Book, Integer> {
+    
+    interface BookSummary {
+        
+        Integer getId() ;
+        String getSubjectName() ;
+        String getSyllabusName() ;
+        String getSeriesName() ;
+        String getBookName() ;
+        String getAuthor() ;
+        String getBookShortName() ;
+        int getNumChapters() ;
+        int getNumProblems() ;
+    }
     
     interface ProblemTypeCount {
         int getChapterNum() ;

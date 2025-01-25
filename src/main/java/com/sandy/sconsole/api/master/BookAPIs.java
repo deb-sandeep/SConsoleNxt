@@ -1,15 +1,12 @@
 package com.sandy.sconsole.api.master;
 
-import com.sandy.sconsole.api.master.dto.*;
+import com.sandy.sconsole.api.master.vo.*;
 import com.sandy.sconsole.api.master.helper.BookAPIHelper;
 import com.sandy.sconsole.api.master.helper.ChapterTopicMappingHelper;
+import com.sandy.sconsole.api.master.vo.reqres.*;
 import com.sandy.sconsole.core.api.AR;
-import com.sandy.sconsole.dao.master.Book;
-import com.sandy.sconsole.dao.master.Chapter;
-import com.sandy.sconsole.dao.master.ChapterId;
-import com.sandy.sconsole.dao.master.repo.BookRepo;
-import com.sandy.sconsole.dao.master.repo.ChapterRepo;
-import com.sandy.sconsole.dao.master.repo.SyllabusRepo;
+import com.sandy.sconsole.dao.master.*;
+import com.sandy.sconsole.dao.master.repo.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.sandy.sconsole.core.api.AR.*;
@@ -27,6 +25,8 @@ import static java.text.MessageFormat.format;
 @RestController
 @RequestMapping( "/Master/Book" )
 public class BookAPIs {
+    @Autowired
+    private TopicRepo topicRepo;
     
     @Autowired
     private ChapterRepo chapterRepo;
@@ -43,8 +43,11 @@ public class BookAPIs {
     @Autowired
     private ChapterTopicMappingHelper chapterTopicMappingHelper = null ;
     
+    @Autowired
+    private SyllabusBookMapRepo sbmRepo = null ;
+    
     @GetMapping( "/Listing" )
-    public ResponseEntity<AR<List<BookSummary>>> getBookListing() {
+    public ResponseEntity<AR<List<BookRepo.BookSummary>>> getBookListing() {
         try {
             return success( bookHelper.getAllBookSummaries() ) ;
         }
@@ -111,7 +114,7 @@ public class BookAPIs {
     @PostMapping( "{bookId}/UpdateAttribute" )
     public ResponseEntity<AR<String>> updateBookAttribute (
             @PathVariable( "bookId" ) Integer bookId,
-            @RequestBody AttrChangeRequest request ) {
+            @RequestBody AttrChangeReq request ) {
         
         try {
             Book book = bookRepo.findById( bookId ).get() ;
@@ -131,7 +134,7 @@ public class BookAPIs {
     public ResponseEntity<AR<String>> updateChapterName (
             @PathVariable( "bookId" ) Integer bookId,
             @PathVariable( "chapterNum" ) Integer chapterNum,
-            @RequestBody AttrChangeRequest request ) {
+            @RequestBody AttrChangeReq request ) {
         
         try {
             ChapterId chapterId = new ChapterId( bookId, chapterNum ) ;
@@ -154,7 +157,7 @@ public class BookAPIs {
                 @PathVariable( "bookId" ) Integer bookId,
                 @PathVariable( "chapterNum" ) Integer chapterNum,
                 @PathVariable( "exerciseNum" ) Integer exerciseNum,
-                @RequestBody AttrChangeRequest request ) {
+                @RequestBody AttrChangeReq request ) {
         
         try {
             int numProblemsUpdated = bookHelper.updateExerciseName( bookId,
@@ -188,6 +191,37 @@ public class BookAPIs {
         try {
             chapterTopicMappingHelper.deleteMapping( mapId ) ;
             return success( "Chapter topic mapping deleted successfully" );
+        }
+        catch( Exception e ) {
+            return systemError( e );
+        }
+    }
+    
+    /**
+     * Assumption is that all the books are mapped to syllabus and the syllabus
+     * of all the books provided as input are the same. Validation is not done
+     * on the server side.
+     */
+    @GetMapping( "/TopicMappings" )
+    public ResponseEntity<AR<BookTopicMappingRes>> getBookTopicMappings(
+            @RequestParam( "bookIds" ) Integer[] bookIds ) {
+        
+        try {
+            List<BookTopicMappingVO> btmVOList ;
+            Syllabus syllabus ;
+            List<TopicVO> topics = new ArrayList<>() ;
+            
+            syllabus = sbmRepo.findByBookId( bookIds[0] ) ;
+            btmVOList = chapterTopicMappingHelper.getBookTopicMappings( bookIds, syllabus ) ;
+            topicRepo.findTopics( syllabus.getSyllabusName() )
+                     .forEach( t -> topics.add( new TopicVO( t ) ) ) ;
+            
+            BookTopicMappingRes res = new BookTopicMappingRes() ;
+            res.setSyllabusName( syllabus.getSyllabusName() ) ;
+            res.setTopics( topics ) ;
+            res.setBookTopicMappingList( btmVOList ) ;
+            
+            return success( res ) ;
         }
         catch( Exception e ) {
             return systemError( e );

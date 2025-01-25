@@ -1,4 +1,4 @@
-package com.sandy.sconsole.api.master.dto;
+package com.sandy.sconsole.api.master.vo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;

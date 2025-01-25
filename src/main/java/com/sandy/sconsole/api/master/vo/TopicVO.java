@@ -1,17 +1,17 @@
-package com.sandy.sconsole.api.master.dto;
+package com.sandy.sconsole.api.master.vo;
 
 import com.sandy.sconsole.dao.master.Topic;
 import lombok.Data;
 
 @Data
-public class TopicDTO {
+public class TopicVO {
     
     private int topicId ;
     private String syllabusName ;
     private String sectionName ;
     private String topicName ;
     
-    public TopicDTO( Topic t ) {
+    public TopicVO( Topic t ) {
         this.topicId = t.getId() ;
         this.syllabusName = t.getSyllabus().getSyllabusName() ;
         this.sectionName = t.getSectionName() ;

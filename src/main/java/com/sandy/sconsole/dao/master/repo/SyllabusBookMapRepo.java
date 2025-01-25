@@ -15,4 +15,11 @@ public interface SyllabusBookMapRepo extends CrudRepository<SyllabusBookMap, Int
         where sbm.book = :book
     """)
     Syllabus findByBook( @Param( "book" ) Book book ) ;
+    
+    @Query( """
+        select sbm.syllabus
+        from SyllabusBookMap sbm
+        where sbm.book.id = :bookId
+    """)
+    Syllabus findByBookId( @Param( "bookId" ) int bookId ) ;
 }

@@ -2,10 +2,9 @@ package com.sandy.sconsole.api.master.helper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.sandy.sconsole.api.master.dto.BookMeta;
-import com.sandy.sconsole.api.master.dto.BookProblemSummary;
-import com.sandy.sconsole.api.master.dto.BookSummary;
-import com.sandy.sconsole.api.master.dto.SaveBookMetaRes;
+import com.sandy.sconsole.api.master.vo.BookMeta;
+import com.sandy.sconsole.api.master.vo.BookProblemSummary;
+import com.sandy.sconsole.api.master.vo.reqres.SaveBookMetaRes;
 import com.sandy.sconsole.core.SConsoleConfig;
 import com.sandy.sconsole.dao.master.*;
 import com.sandy.sconsole.dao.master.repo.*;
@@ -173,7 +172,7 @@ public class BookAPIHelper {
         }
     }
     
-    public List<BookSummary> getAllBookSummaries() {
+    public List<BookRepo.BookSummary> getAllBookSummaries() {
         return bookRepo.findAllBooks() ;
     }
     
@@ -183,7 +182,7 @@ public class BookAPIHelper {
         Syllabus syllabus = syllabusBookMapRepo.findByBook( book ) ;
         
         BookProblemSummary bps = new BookProblemSummary( book ) ;
-        bps.setSyllabusName( syllabus.getSyllabusName() ) ;
+        bps.getBook().setSyllabusName( syllabus.getSyllabusName() ) ;
         
         List<BookRepo.ProblemTypeCount> problemTypeCounts ;
         problemTypeCounts = bookRepo.getProblemSummariesForChapter( bookId ) ;

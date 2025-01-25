@@ -1,6 +1,6 @@
 package com.sandy.sconsole.api.master.helper;
 
-import com.sandy.sconsole.api.master.dto.BookMeta;
+import com.sandy.sconsole.api.master.vo.BookMeta;
 import com.sandy.sconsole.core.util.StringUtil;
 import com.sandy.sconsole.dao.master.Book;
 import com.sandy.sconsole.dao.master.ProblemType;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-import static com.sandy.sconsole.api.master.dto.BookMeta.*;
+import static com.sandy.sconsole.api.master.vo.BookMeta.*;
 
 @Slf4j
 @Component

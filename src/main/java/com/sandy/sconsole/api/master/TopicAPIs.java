@@ -1,6 +1,6 @@
 package com.sandy.sconsole.api.master;
 
-import com.sandy.sconsole.api.master.dto.TopicDTO;
+import com.sandy.sconsole.api.master.vo.TopicVO;
 import com.sandy.sconsole.core.api.AR;
 import com.sandy.sconsole.dao.master.Topic;
 import com.sandy.sconsole.dao.master.repo.TopicRepo;
@@ -24,10 +24,10 @@ public class TopicAPIs {
     private TopicRepo topicRepo = null ;
     
     @GetMapping( "/All" )
-    public ResponseEntity<AR<List<TopicDTO>>> getTopics(
+    public ResponseEntity<AR<List<TopicVO>>> getTopics(
             @PathParam ( "syllabusName" ) String syllabusName ) {
         try {
-            List<TopicDTO> dtos ;
+            List<TopicVO> dtos ;
             if( syllabusName == null ) {
                 dtos = convertToDTO( topicRepo.findAll() ) ;
             }
@@ -41,9 +41,9 @@ public class TopicAPIs {
         }
     }
     
-    private List<TopicDTO> convertToDTO( Iterable<Topic> topics ) {
-        List<TopicDTO> dtos = new ArrayList<>() ;
-        topics.forEach( t -> dtos.add( new TopicDTO( t ) ) );
+    private List<TopicVO> convertToDTO( Iterable<Topic> topics ) {
+        List<TopicVO> dtos = new ArrayList<>() ;
+        topics.forEach( t -> dtos.add( new TopicVO( t ) ) );
         return dtos ;
     }
 }

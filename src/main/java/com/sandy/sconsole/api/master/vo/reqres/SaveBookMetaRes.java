@@ -1,4 +1,4 @@
-package com.sandy.sconsole.api.master.dto;
+package com.sandy.sconsole.api.master.vo.reqres;
 
 import lombok.Data;
 
