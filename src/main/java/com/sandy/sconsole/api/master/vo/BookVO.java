@@ -13,6 +13,7 @@ public class BookVO {
     private String bookName ;
     private String author ;
     private String bookShortName ;
+    private boolean topicMappingDone ;
     
     public BookVO(){}
     
@@ -23,5 +24,6 @@ public class BookVO {
         this.bookName = book.getBookName() ;
         this.author = book.getAuthor() ;
         this.bookShortName = book.getBookShortName() ;
+        this.topicMappingDone = book.isTopicMappingDone() ;
     }
 }

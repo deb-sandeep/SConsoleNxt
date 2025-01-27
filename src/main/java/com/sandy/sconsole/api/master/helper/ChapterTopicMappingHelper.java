@@ -20,7 +20,7 @@ public class ChapterTopicMappingHelper {
     @Autowired TopicChapterMapRepo tcmRepo ;
     @Autowired SyllabusBookMapRepo sbmRepo ;
     
-    public void createOrUpdateMapping( ChapterTopicMappingReq req ) {
+    public int createOrUpdateMapping( ChapterTopicMappingReq req ) {
         
         TopicChapterMap map ;
         
@@ -38,7 +38,7 @@ public class ChapterTopicMappingHelper {
         map.setChapter( ch ) ;
         map.setTopic( topic ) ;
         
-        tcmRepo.save( map ) ;
+        return tcmRepo.save( map ).getId() ;
     }
     
     public void deleteMapping( Integer mapId ) {

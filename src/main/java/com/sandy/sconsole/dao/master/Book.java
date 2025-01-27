@@ -33,7 +33,9 @@ public class Book {
     @Column( name = "book_short_name", length = 64 )
     private String bookShortName;
     
+    @Column( name = "topic_mapping_done" )
+    private boolean topicMappingDone ;
+
     @OneToMany( mappedBy = "book" )
     private Set<Chapter> chapters = new LinkedHashSet<>();
-    
 }

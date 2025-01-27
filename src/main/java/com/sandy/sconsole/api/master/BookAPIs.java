@@ -8,8 +8,10 @@ import com.sandy.sconsole.core.api.AR;
 import com.sandy.sconsole.dao.master.*;
 import com.sandy.sconsole.dao.master.repo.*;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -118,8 +120,13 @@ public class BookAPIs {
         
         try {
             Book book = bookRepo.findById( bookId ).get() ;
-            PropertyUtils.setProperty( book, request.getAttribute(), request.getValue() ) ;
+            
+            Class<?> propertyType = PropertyUtils.getPropertyType( book, request.getAttribute() ) ;
+            Object convertedValue = ConvertUtils.convert( request.getValue(), propertyType ) ;
+            PropertyUtils.setProperty( book, request.getAttribute(), convertedValue ) ;
+            
             bookRepo.save( book ) ;
+            
             return success( format( "Attribute '{0}' updated to '{1}' for book '{2}'",
                                     request.getAttribute(),
                                     request.getValue(),
@@ -171,14 +178,17 @@ public class BookAPIs {
         }
     }
     
-    @PutMapping( "/ChapterTopicMapping" )
-    public ResponseEntity<AR<String>> createOrUpdateChapterTopicMapping(
+    @PostMapping( "/ChapterTopicMapping" )
+    public ResponseEntity<AR<Integer>> createOrUpdateChapterTopicMapping(
             @RequestBody ChapterTopicMappingReq mappingReq ) {
         
         try {
-            chapterTopicMappingHelper.createOrUpdateMapping( mappingReq ) ;
-            return success( "Chapter topic mapping successful" ) ;
+            int mappingId = chapterTopicMappingHelper.createOrUpdateMapping( mappingReq ) ;
+            return success( mappingId ) ;
         }
+        catch( DataIntegrityViolationException dive ) {
+            return functionalError( "Entry already exists", dive ) ;
+         }
         catch( Exception e ) {
             return systemError( e );
         }
@@ -210,6 +220,10 @@ public class BookAPIs {
             List<BookTopicMappingVO> btmVOList ;
             Syllabus syllabus ;
             List<TopicVO> topics = new ArrayList<>() ;
+            
+            if( bookIds == null || bookIds.length == 0 ) {
+                return functionalError( "No books specified" ) ;
+            }
             
             syllabus = sbmRepo.findByBookId( bookIds[0] ) ;
             btmVOList = chapterTopicMappingHelper.getBookTopicMappings( bookIds, syllabus ) ;
