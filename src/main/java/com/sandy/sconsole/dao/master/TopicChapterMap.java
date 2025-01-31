@@ -26,4 +26,6 @@ public class TopicChapterMap {
     @OnDelete( action = OnDeleteAction.CASCADE )
     private Chapter chapter;
     
+    @Column( name = "attempt_seq", nullable = false )
+    private Integer attemptSeq;
 }
