@@ -48,6 +48,9 @@ public class BookAPIs {
     @Autowired
     private SyllabusBookMapRepo sbmRepo = null ;
     
+    @Autowired
+    private TopicChapterMapRepo tcmRepo = null ;
+    
     @GetMapping( "/Listing" )
     public ResponseEntity<AR<List<BookRepo.BookSummary>>> getBookListing() {
         try {
@@ -187,6 +190,7 @@ public class BookAPIs {
             return success( mappingId ) ;
         }
         catch( DataIntegrityViolationException dive ) {
+            log.error( "Duplicate entry.", dive ) ;
             return functionalError( "Entry already exists", dive ) ;
          }
         catch( Exception e ) {

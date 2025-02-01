@@ -26,6 +26,7 @@ public class ChapterTopicMappingHelper {
         
         if( req.getMappingId() == -1 ) {
             map = new TopicChapterMap() ;
+            map.setAttemptSeq( tcmRepo.getNextAttemptSequence( req.getTopicId() ) ) ;
         }
         else {
             map = tcmRepo.findById( req.getMappingId() ).get() ;

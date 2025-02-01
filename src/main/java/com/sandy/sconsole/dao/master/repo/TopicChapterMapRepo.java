@@ -1,6 +1,7 @@
 package com.sandy.sconsole.dao.master.repo;
 
 import com.sandy.sconsole.dao.master.Chapter;
+import com.sandy.sconsole.dao.master.Topic;
 import com.sandy.sconsole.dao.master.TopicChapterMap;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -9,11 +10,20 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface TopicChapterMapRepo extends CrudRepository<TopicChapterMap, Integer> {
+    List<TopicChapterMap> findByTopicOrderByChapter_Book_IdAsc( Topic topic );
     
     interface CTM {
         Chapter getChapter() ;
         TopicChapterMap getTopicChapterMap() ;
     }
+    
+    @Query( """
+        select max(tcm.attemptSeq)+1
+        from TopicChapterMap tcm
+        where
+            tcm.topic.id = :topicId
+    """)
+    int getNextAttemptSequence( @Param( "topicId" ) int topicId ) ;
     
     @Query( """
         select c as chapter,
