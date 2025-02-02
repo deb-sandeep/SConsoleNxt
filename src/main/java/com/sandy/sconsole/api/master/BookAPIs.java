@@ -1,8 +1,8 @@
 package com.sandy.sconsole.api.master;
 
 import com.sandy.sconsole.api.master.vo.*;
-import com.sandy.sconsole.api.master.helper.BookAPIHelper;
-import com.sandy.sconsole.api.master.helper.ChapterTopicMappingHelper;
+import com.sandy.sconsole.api.master.helper.BookHelper;
+import com.sandy.sconsole.api.master.helper.TopicMappingHelper;
 import com.sandy.sconsole.api.master.vo.reqres.*;
 import com.sandy.sconsole.core.api.AR;
 import com.sandy.sconsole.dao.master.*;
@@ -11,12 +11,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,34 +25,19 @@ import static java.text.MessageFormat.format;
 @RequestMapping( "/Master/Book" )
 public class BookAPIs {
     
-    @Autowired
-    private TopicRepo topicRepo;
+    @Autowired private ChapterRepo chapterRepo;
     
-    @Autowired
-    private ChapterRepo chapterRepo;
+    @Autowired private BookRepo bookRepo;
     
-    @Autowired
-    private BookRepo bookRepo;
+    @Autowired private SyllabusBookMapRepo sbmRepo = null ;
     
-    @Autowired
-    private ProblemRepo problemRepo ;
+    @Autowired private TopicRepo topicRepo;
     
-    @Autowired
-    private SyllabusRepo syllabusRepo = null ;
+    @Autowired private BookHelper bookHelper = null ;
     
-    @Autowired
-    private BookAPIHelper bookHelper = null ;
-    
-    @Autowired
-    private ChapterTopicMappingHelper chapterTopicMappingHelper = null ;
-    
-    @Autowired
-    private SyllabusBookMapRepo sbmRepo = null ;
-    
-    @Autowired
-    private TopicChapterMapRepo tcmRepo = null ;
-    
-    @GetMapping( "/Listing" )
+    @Autowired private TopicMappingHelper helper = null ;
+
+    @GetMapping( "Listing" )
     public ResponseEntity<AR<List<BookRepo.BookSummary>>> getBookListing() {
         try {
             return success( bookHelper.getAllBookSummaries() ) ;
@@ -77,43 +59,35 @@ public class BookAPIs {
         }
     }
     
-    @PostMapping( "/ValidateMetaFile" )
-    public ResponseEntity<AR<BookMeta>> validateMetaFile(
-            @RequestParam( "file" ) MultipartFile multipartFile ) {
-        try {
-            File savedFile = bookHelper.saveUploadedFile( multipartFile ) ;
-            BookMeta meta = bookHelper.parseAndValidateBookMeta( savedFile ) ;
-            
-            meta.setServerFileName( savedFile.getName() );
-            
-            return success( meta ) ;
-        }
-        catch( BookAPIHelper.InvalidMetaFileException ife ) {
-            return functionalError( ife.getMessage(), ife.getCause() ) ;
-        }
-        catch( Exception e ) {
-            return systemError( e );
-        }
-    }
-    
-    @PostMapping( "/SaveMeta" )
-    public ResponseEntity<AR<SaveBookMetaRes>> saveMetaFile(
-            @RequestBody SaveBookMetaReq request ) {
+    /**
+     * Assumption is that all the books are mapped to syllabus and the syllabus
+     * of all the books provided as input are the same. Validation is not done
+     * on the server side.
+     */
+    @GetMapping( "TopicMappings" )
+    public ResponseEntity<AR<BookTopicMappingRes>> getBookTopicMappings(
+            @RequestParam( "bookIds" ) Integer[] bookIds ) {
         
         try {
-            String uploadedFileName = request.getUploadedFileName() ;
-            File savedFile = bookHelper.getUploadedFile( uploadedFileName ) ;
-            if( !savedFile.exists() ) {
-                return badRequest( "Uploaded file " + uploadedFileName + " does not exist." ) ;
-            }
-
-            BookMeta meta = bookHelper.parseAndValidateBookMeta( savedFile ) ;
-            if( meta.getTotalMsgCount().getNumError() > 0 ) {
-                return functionalError( "Cannot save book meta with errors." ) ;
+            List<BookTopicMappingVO> btmVOList ;
+            Syllabus syllabus ;
+            List<TopicVO> topics = new ArrayList<>() ;
+            
+            if( bookIds == null || bookIds.length == 0 ) {
+                return functionalError( "No books specified" ) ;
             }
             
-            SaveBookMetaRes response = bookHelper.saveBookMeta( meta ) ;
-            return success( response ) ;
+            syllabus = sbmRepo.findByBookId( bookIds[0] ) ;
+            btmVOList = helper.getBookTopicMappings( bookIds, syllabus ) ;
+            topicRepo.findTopics( syllabus.getSyllabusName() )
+                    .forEach( t -> topics.add( new TopicVO( t ) ) ) ;
+            
+            BookTopicMappingRes res = new BookTopicMappingRes() ;
+            res.setSyllabusName( syllabus.getSyllabusName() ) ;
+            res.setTopics( topics ) ;
+            res.setBookTopicMappingList( btmVOList ) ;
+            
+            return success( res ) ;
         }
         catch( Exception e ) {
             return systemError( e );
@@ -179,100 +153,6 @@ public class BookAPIs {
                                                                 exerciseNum,
                                                                 request.getValue() ) ;
             return success( format( "{0} problems updated", numProblemsUpdated ) ) ;
-        }
-        catch( Exception e ) {
-            return systemError( e );
-        }
-    }
-    
-    @PostMapping( "ChapterTopicMapping" )
-    public ResponseEntity<AR<Integer>> createOrUpdateChapterTopicMapping(
-            @RequestBody ChapterTopicMappingReq mappingReq ) {
-        
-        try {
-            int mappingId = chapterTopicMappingHelper.createOrUpdateMapping( mappingReq ) ;
-            return success( mappingId ) ;
-        }
-        catch( DataIntegrityViolationException dive ) {
-            log.error( "Duplicate entry.", dive ) ;
-            return functionalError( "Entry already exists", dive ) ;
-         }
-        catch( Exception e ) {
-            return systemError( e );
-        }
-    }
-    
-    @DeleteMapping( "ChapterTopicMapping/{mapId}" )
-    public ResponseEntity<AR<String>> deleteChapterTopicMapping(
-            @PathVariable( "mapId" ) Integer mapId ) {
-        
-        try {
-            chapterTopicMappingHelper.deleteMapping( mapId ) ;
-            return success( "Chapter topic mapping deleted successfully" );
-        }
-        catch( Exception e ) {
-            return systemError( e );
-        }
-    }
-    
-    /**
-     * Assumption is that all the books are mapped to syllabus and the syllabus
-     * of all the books provided as input are the same. Validation is not done
-     * on the server side.
-     */
-    @GetMapping( "TopicMappings" )
-    public ResponseEntity<AR<BookTopicMappingRes>> getBookTopicMappings(
-            @RequestParam( "bookIds" ) Integer[] bookIds ) {
-        
-        try {
-            List<BookTopicMappingVO> btmVOList ;
-            Syllabus syllabus ;
-            List<TopicVO> topics = new ArrayList<>() ;
-            
-            if( bookIds == null || bookIds.length == 0 ) {
-                return functionalError( "No books specified" ) ;
-            }
-            
-            syllabus = sbmRepo.findByBookId( bookIds[0] ) ;
-            btmVOList = chapterTopicMappingHelper.getBookTopicMappings( bookIds, syllabus ) ;
-            topicRepo.findTopics( syllabus.getSyllabusName() )
-                     .forEach( t -> topics.add( new TopicVO( t ) ) ) ;
-            
-            BookTopicMappingRes res = new BookTopicMappingRes() ;
-            res.setSyllabusName( syllabus.getSyllabusName() ) ;
-            res.setTopics( topics ) ;
-            res.setBookTopicMappingList( btmVOList ) ;
-            
-            return success( res ) ;
-        }
-        catch( Exception e ) {
-            return systemError( e );
-        }
-    }
-    
-    @GetMapping( "{bookId}/{chapterNum}/ProblemTopicMappings" )
-    public ResponseEntity<AR<ChapterProblemsTopicMappingVO>> getProblemTopicMappings(
-                                @PathVariable( "bookId" ) int bookId,
-                                @PathVariable( "chapterNum" ) int chapterNum ) {
-    
-        try {
-            ChapterProblemsTopicMappingVO result ;
-            List<Object[]> records = this.problemRepo.getProblemTopicMappings( bookId, chapterNum ) ;
-            
-            ChapterId chapterId = new ChapterId( bookId, chapterNum ) ;
-            Chapter chapter = chapterRepo.findById( chapterId ).get() ;
-            Syllabus syllabus = syllabusRepo.findBySubject( chapter.getBook().getSubject() ).get( 0 ) ;
-            
-            result = new ChapterProblemsTopicMappingVO( chapter, syllabus ) ;
-            
-            records.forEach( record -> {
-                Problem p = ( Problem )record[0] ;
-                TopicChapterMap tcm = ( TopicChapterMap )record[1] ;
-
-                result.addProblemMapping( p, tcm ) ;
-            } ) ;
-            
-            return success( result ) ;
         }
         catch( Exception e ) {
             return systemError( e );

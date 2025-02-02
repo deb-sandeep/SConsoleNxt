@@ -1,0 +1,6 @@
+* Populate topic_chapter_problem_map when a topic is associated with a chapter
+* Need the topic passed on the next page
+* Tweakie for exercises
+* Hide the rows that are mapped to a different topic (optionally show)
+* Mass select exercise problems
+*

@@ -39,4 +39,26 @@ public interface ProblemRepo extends CrudRepository<Problem, Integer> {
     """)
     List<Object[]> getProblemTopicMappings( @Param( "bookId" ) int bookId,
                                             @Param( "chapterNum" ) int chapterNum ) ;
+    
+    @Query( """
+        select p
+        from Problem p
+        where
+            p.chapter.book.id = :bookId and
+            p.chapter.id.chapterNum = :chapterNum and
+            p not in (
+                select tcpm.problem
+                from TopicChapterProblemMap tcpm
+                where
+                    tcpm.problem.chapter.book.id = :bookId and
+                    tcpm.problem.chapter.id.chapterNum = :chapterNum
+            )
+        order by
+            p.exerciseNum asc,
+            p.id asc
+    """)
+    List<Problem> getUnassociatedProblemsForChapter( @Param( "bookId" ) int bookId,
+                                                     @Param( "chapterNum" ) int chapterNum ) ;
+
+    
 }

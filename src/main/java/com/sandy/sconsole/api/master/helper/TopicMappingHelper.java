@@ -12,13 +12,16 @@ import java.util.*;
 
 @Slf4j
 @Component
-public class ChapterTopicMappingHelper {
+public class TopicMappingHelper {
+    @Autowired
+    private ProblemRepo problemRepo;
     
     @Autowired BookRepo bookRepo ;
     @Autowired ChapterRepo chapterRepo ;
     @Autowired TopicRepo topicRepo ;
     @Autowired TopicChapterMapRepo tcmRepo ;
     @Autowired SyllabusBookMapRepo sbmRepo ;
+    @Autowired TopicChapterProblemMapRepo tcpmRepo ;
     
     public int createOrUpdateMapping( ChapterTopicMappingReq req ) {
         
@@ -26,7 +29,8 @@ public class ChapterTopicMappingHelper {
         
         if( req.getMappingId() == -1 ) {
             map = new TopicChapterMap() ;
-            map.setAttemptSeq( tcmRepo.getNextAttemptSequence( req.getTopicId() ) ) ;
+            Integer nextAttemptSeq = tcmRepo.getNextAttemptSequence( req.getTopicId() ) ;
+            map.setAttemptSeq( nextAttemptSeq == null ? 1 : nextAttemptSeq ) ;
         }
         else {
             map = tcmRepo.findById( req.getMappingId() ).get() ;
@@ -38,8 +42,28 @@ public class ChapterTopicMappingHelper {
         
         map.setChapter( ch ) ;
         map.setTopic( topic ) ;
+        map = tcmRepo.save( map ) ;
         
-        return tcmRepo.save( map ).getId() ;
+        associateUnallocatedProblems( req.getBookId(), req.getChapterNum(), map ) ;
+        
+        return map.getId() ;
+    }
+    
+    private void associateUnallocatedProblems( int bookId, int chapterNum, TopicChapterMap tcm ) {
+        
+        List<Problem> problems ;
+        
+        problems = problemRepo.getUnassociatedProblemsForChapter( bookId, chapterNum ) ;
+        if( !problems.isEmpty() ) {
+            final List<TopicChapterProblemMap> tcpmList = new ArrayList<>() ;
+            problems.forEach( p -> {
+                TopicChapterProblemMap tcpm = new TopicChapterProblemMap() ;
+                tcpm.setProblem( p ) ;
+                tcpm.setTopicChapterMap( tcm ) ;
+                tcpmList.add( tcpm ) ;
+            } ) ;
+            tcpmRepo.saveAll( tcpmList ) ;
+        }
     }
     
     public void deleteMapping( Integer mapId ) {

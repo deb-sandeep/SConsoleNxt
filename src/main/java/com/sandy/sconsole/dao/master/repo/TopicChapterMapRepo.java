@@ -24,7 +24,7 @@ public interface TopicChapterMapRepo extends CrudRepository<TopicChapterMap, Int
         where
             tcm.topic.id = :topicId
     """)
-    int getNextAttemptSequence( @Param( "topicId" ) int topicId ) ;
+    Integer getNextAttemptSequence( @Param( "topicId" ) int topicId ) ;
     
     @Query( """
         select c as chapter,
