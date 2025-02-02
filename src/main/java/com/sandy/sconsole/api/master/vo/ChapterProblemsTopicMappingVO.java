@@ -13,17 +13,42 @@ import java.util.List;
 public class ChapterProblemsTopicMappingVO {
     
     @Data
-    public static class ProblemTopicMapping {
+    public static class ExerciseProblems {
+        private int exerciseNum ;
+        private String exerciseName ;
+        private List<ProblemTopicMapping> problems = new ArrayList<>() ;
         
-        private ProblemVO problem = null ;
+        ExerciseProblems( Problem problem, TopicChapterMap tcm ) {
+            this.exerciseNum = problem.getExerciseNum() ;
+            this.exerciseName = problem.getExerciseName() ;
+            this.problems.add( new ProblemTopicMapping( problem, tcm ) ) ;
+        }
+    }
+    
+    @Data
+    public static class ProblemTopicMapping {
+        private int problemId ;
+        private String problemType ;
+        private String problemKey ;
         private int mappingId = -1 ;
         private TopicVO topic = null ;
+        
+        ProblemTopicMapping( Problem problem, TopicChapterMap tcm ) {
+            this.problemId = problem.getId() ;
+            this.problemType = problem.getProblemType().getProblemType() ;
+            this.problemKey = problem.getProblemKey() ;
+            
+            if( tcm != null ) {
+                this.mappingId = tcm.getId() ;
+                this.topic = new TopicVO( tcm.getTopic() ) ;
+            }
+        }
     }
-
-    private BookVO book ;
+    
     private int chapterNum ;
     private String chapterName ;
-    private List<ProblemTopicMapping> problems = new ArrayList<>();
+    private BookVO book ;
+    private List<ExerciseProblems> exercises = new ArrayList<>();
     
     public ChapterProblemsTopicMappingVO( Chapter chapter, Syllabus syllabus ) {
         this.book = new BookVO( chapter.getBook() ) ;
@@ -33,13 +58,20 @@ public class ChapterProblemsTopicMappingVO {
     }
     
     public void addProblemMapping( Problem problem, TopicChapterMap tcm ) {
-        ProblemTopicMapping ptm = new ProblemTopicMapping() ;
-        ptm.setProblem( new ProblemVO( problem ) ) ;
-        if( tcm != null ) {
-            ptm.setMappingId( tcm.getId() ) ;
-            ptm.setTopic( new TopicVO( tcm.getTopic() ) ) ;
-        }
         
-        this.problems.add( ptm ) ;
+        ProblemTopicMapping ptm = new ProblemTopicMapping( problem, tcm ) ;
+        
+        if( exercises.isEmpty() ) {
+            exercises.add( new ExerciseProblems( problem, tcm ) );
+        }
+        else {
+            ExerciseProblems lastEps = exercises.get( exercises.size()-1 ) ;
+            if( lastEps.getExerciseNum() == problem.getExerciseNum() ) {
+                lastEps.getProblems().add( ptm ) ;
+            }
+            else {
+                exercises.add( new ExerciseProblems( problem, tcm ) ) ;
+            }
+        }
     }
 }
