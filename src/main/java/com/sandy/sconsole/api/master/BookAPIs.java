@@ -27,6 +27,7 @@ import static java.text.MessageFormat.format;
 @RestController
 @RequestMapping( "/Master/Book" )
 public class BookAPIs {
+    
     @Autowired
     private TopicRepo topicRepo;
     
@@ -35,6 +36,9 @@ public class BookAPIs {
     
     @Autowired
     private BookRepo bookRepo;
+    
+    @Autowired
+    private ProblemRepo problemRepo ;
     
     @Autowired
     private SyllabusRepo syllabusRepo = null ;
@@ -181,7 +185,7 @@ public class BookAPIs {
         }
     }
     
-    @PostMapping( "/ChapterTopicMapping" )
+    @PostMapping( "ChapterTopicMapping" )
     public ResponseEntity<AR<Integer>> createOrUpdateChapterTopicMapping(
             @RequestBody ChapterTopicMappingReq mappingReq ) {
         
@@ -198,7 +202,7 @@ public class BookAPIs {
         }
     }
     
-    @DeleteMapping( "/ChapterTopicMapping/{mapId}" )
+    @DeleteMapping( "ChapterTopicMapping/{mapId}" )
     public ResponseEntity<AR<String>> deleteChapterTopicMapping(
             @PathVariable( "mapId" ) Integer mapId ) {
         
@@ -216,7 +220,7 @@ public class BookAPIs {
      * of all the books provided as input are the same. Validation is not done
      * on the server side.
      */
-    @GetMapping( "/TopicMappings" )
+    @GetMapping( "TopicMappings" )
     public ResponseEntity<AR<BookTopicMappingRes>> getBookTopicMappings(
             @RequestParam( "bookIds" ) Integer[] bookIds ) {
         
@@ -240,6 +244,35 @@ public class BookAPIs {
             res.setBookTopicMappingList( btmVOList ) ;
             
             return success( res ) ;
+        }
+        catch( Exception e ) {
+            return systemError( e );
+        }
+    }
+    
+    @GetMapping( "{bookId}/{chapterNum}/ProblemTopicMappings" )
+    public ResponseEntity<AR<ChapterProblemsTopicMappingVO>> getProblemTopicMappings(
+                                @PathVariable( "bookId" ) int bookId,
+                                @PathVariable( "chapterNum" ) int chapterNum ) {
+    
+        try {
+            ChapterProblemsTopicMappingVO result ;
+            List<Object[]> records = this.problemRepo.getProblemTopicMappings( bookId, chapterNum ) ;
+            
+            ChapterId chapterId = new ChapterId( bookId, chapterNum ) ;
+            Chapter chapter = chapterRepo.findById( chapterId ).get() ;
+            Syllabus syllabus = syllabusRepo.findBySubject( chapter.getBook().getSubject() ).get( 0 ) ;
+            
+            result = new ChapterProblemsTopicMappingVO( chapter, syllabus ) ;
+            
+            records.forEach( record -> {
+                Problem p = ( Problem )record[0] ;
+                TopicChapterMap tcm = ( TopicChapterMap )record[1] ;
+
+                result.addProblemMapping( p, tcm ) ;
+            } ) ;
+            
+            return success( result ) ;
         }
         catch( Exception e ) {
             return systemError( e );

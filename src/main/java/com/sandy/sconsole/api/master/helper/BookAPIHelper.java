@@ -153,18 +153,18 @@ public class BookAPIHelper {
             
             for( int i=cluster.getStartIndex(); i<=cluster.getEndIndex(); i++ ) {
                 
-                String problemId = exName + "/" + type.getProblemType() ;
+                String problemKey = exName + "/" + type.getProblemType() ;
                 if( cluster.getLctSequence() != null ) {
-                    problemId += "-" + cluster.getLctSequence() ;
+                    problemKey += "-" + cluster.getLctSequence() ;
                 }
-                problemId += "/" + i ;
+                problemKey += "/" + i ;
                 
                 Problem problem = new Problem() ;
                 problem.setChapter( chapter ) ;
                 problem.setExerciseNum( exerciseNum ) ;
                 problem.setExerciseName( exName ) ;
                 problem.setProblemType( type ) ;
-                problem.setProblemId( problemId ) ;
+                problem.setProblemKey( problemKey ) ;
                 
                 problemRepo.save( problem ) ;
                 stats.incProblemsCreated() ;
@@ -231,11 +231,11 @@ public class BookAPIHelper {
         
         List<Problem> problems = problemRepo.getProblems( bookId, chapterNum, exerciseNum ) ;
         problems.forEach( p -> {
-            String oldProblemId = p.getProblemId() ;
-            String newProblemId = exerciseName + oldProblemId.substring( oldProblemId.indexOf( '/' ) ) ;
+            String oldProblemKey = p.getProblemKey() ;
+            String newProblemKey = exerciseName + oldProblemKey.substring( oldProblemKey.indexOf( '/' ) ) ;
             
             p.setExerciseName( exerciseName ) ;
-            p.setProblemId( newProblemId ) ;
+            p.setProblemKey( newProblemKey ) ;
         } ) ;
         problemRepo.saveAll( problems ) ;
         return problems.size() ;

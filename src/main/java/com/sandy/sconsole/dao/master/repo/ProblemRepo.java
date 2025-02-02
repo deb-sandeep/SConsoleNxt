@@ -22,4 +22,21 @@ public interface ProblemRepo extends CrudRepository<Problem, Integer> {
     List<Problem> getProblems( @Param( "bookId" ) int bookId,
                                @Param( "chapterNum" ) int chapterNum,
                                @Param( "exerciseNum" ) int exerciseNum ) ;
+    
+    @Query( """
+        select p, tcpm
+        from Problem p
+            left outer join TopicChapterProblemMap tcpm
+                on tcpm.problem = p
+            left outer join TopicChapterMap tcm
+                on tcm = tcpm.topicChapterMap
+        where
+            p.chapter.book.id = :bookId and
+            p.chapter.id.chapterNum = :chapterNum
+        order by
+            p.exerciseNum asc,
+            p.id asc
+    """)
+    List<Object[]> getProblemTopicMappings( @Param( "bookId" ) int bookId,
+                                            @Param( "chapterNum" ) int chapterNum ) ;
 }

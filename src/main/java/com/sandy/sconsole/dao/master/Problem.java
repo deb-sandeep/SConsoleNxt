@@ -31,7 +31,7 @@ public class Problem {
     @JoinColumn( name = "problem_type", nullable = false )
     private ProblemType problemType;
     
-    @Column( name = "problem_id", nullable = false, length = 64 )
-    private String problemId;
+    @Column( name = "problem_key", nullable = false, length = 64 )
+    private String problemKey;
     
 }

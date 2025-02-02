@@ -79,7 +79,7 @@ public interface BookRepo extends CrudRepository<Book, Integer> {
             p.exerciseNum as exerciseNum,
             p.exerciseName as exerciseName,
             p.problemType.problemType as problemType,
-            count( p.problemId ) as numProblems
+            count( p.problemKey ) as numProblems
         from Book b
             left outer join Chapter c
                 on c.book = b
