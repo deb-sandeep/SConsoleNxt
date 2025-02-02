@@ -11,6 +11,7 @@ import org.hibernate.annotations.OnDeleteAction;
 @Entity
 @Table( name = "topic_chapter_map" )
 public class TopicChapterMap {
+    
     @Id
     @GeneratedValue( strategy = GenerationType.IDENTITY )
     @Column( name = "id", nullable = false )
@@ -28,4 +29,7 @@ public class TopicChapterMap {
     
     @Column( name = "attempt_seq", nullable = false )
     private Integer attemptSeq;
+    
+    @Column( name = "problem_mapping_done", nullable = false )
+    private Boolean problemMappingDone = false;
 }

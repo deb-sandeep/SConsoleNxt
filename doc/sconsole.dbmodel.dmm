@@ -7,7 +7,7 @@
 			"desc": "Metadata of individual books",
 			"embeddable": false,
 			"id": "74e3d227-cba7-4b22-aa34-fc123abb195a",
-			"initautoinc": "17",
+			"initautoinc": "27",
 			"name": "book_master",
 			"relations": [
 				"2a56f867-73cf-4d44-8558-79be5b30b9f4",
@@ -479,11 +479,12 @@
 			"desc": "Problems in a chapter",
 			"embeddable": false,
 			"id": "03cce6fc-31fa-4e39-a437-0e6e33eafd0e",
-			"initautoinc": "21364",
+			"initautoinc": "39041",
 			"name": "problem_master",
 			"relations": [
 				"65e31e3f-1d61-4cbe-97c1-60935d56bd65",
-				"f5ff06ae-2405-436b-aa5d-a857e781acd4"
+				"f5ff06ae-2405-436b-aa5d-a857e781acd4",
+				"bbabede8-0ecf-4b16-976a-9f701c5e50a8"
 			],
 			"rowformat": "Dynamic",
 			"tabletype": "InnoDB",
@@ -1323,7 +1324,7 @@
 			"desc": "Map of books applicable for a syllabus",
 			"embeddable": false,
 			"id": "0b713a2b-d568-40a1-bac1-552360d56264",
-			"initautoinc": "17",
+			"initautoinc": "27",
 			"name": "syllabus_book_map",
 			"relations": [
 				"ebf45113-0ab2-40eb-ab5c-1c4dff5f01f8",
@@ -1520,11 +1521,12 @@
 			"desc": "Map of chapters applicable for a syllabus topic",
 			"embeddable": false,
 			"id": "d7bd2a76-c755-4927-9857-08e74b1d0a96",
-			"initautoinc": "25",
+			"initautoinc": "191",
 			"name": "topic_chapter_map",
 			"relations": [
 				"5c30f7eb-41a0-4875-8911-6798f1e93618",
-				"6ad7754e-5bcf-49f6-9562-0d63bfb84818"
+				"6ad7754e-5bcf-49f6-9562-0d63bfb84818",
+				"d7910001-16e3-4d7f-8e69-47d701577a6c"
 			],
 			"rowformat": "Dynamic",
 			"tabletype": "InnoDB",
@@ -1612,6 +1614,48 @@
 					"estimatedSize": "",
 					"data": "",
 					"binary": false
+				},
+				{
+					"after": "",
+					"autoinc": false,
+					"charset": "",
+					"collation": "",
+					"comment": "",
+					"datatype": "INT",
+					"defaultvalue": "0",
+					"enum": "",
+					"fk": false,
+					"id": "2c9b4b0b-8b28-41a0-a666-c04d34d412b4",
+					"name": "attempt_seq",
+					"nn": true,
+					"param": "",
+					"pk": false,
+					"unsigned": false,
+					"zerofill": false,
+					"estimatedSize": "",
+					"data": "",
+					"binary": false
+				},
+				{
+					"after": "",
+					"autoinc": false,
+					"charset": "",
+					"collation": "",
+					"comment": "",
+					"datatype": "TINYINT",
+					"defaultvalue": "0",
+					"enum": "",
+					"fk": false,
+					"id": "0f00a46b-7be4-4500-a787-e5ed2b8f680e",
+					"name": "problem_mapping_done",
+					"nn": true,
+					"param": "1",
+					"pk": false,
+					"unsigned": false,
+					"zerofill": false,
+					"estimatedSize": "",
+					"data": "",
+					"binary": false
 				}
 			],
 			"indexes": [],
@@ -1663,7 +1707,7 @@
 			"desc": "First level topics for a syllabus",
 			"embeddable": false,
 			"id": "c17be34e-081a-4590-becf-6e0ac4ff6b06",
-			"initautoinc": "79",
+			"initautoinc": "124",
 			"name": "topic_master",
 			"relations": [
 				"5c30f7eb-41a0-4875-8911-6798f1e93618",
@@ -2326,6 +2370,109 @@
 			"customCode": "",
 			"ifnotexists": false,
 			"temporary": false
+		},
+		"58d2c04d-6f53-4432-b9ae-3a30949d646f": {
+			"id": "58d2c04d-6f53-4432-b9ae-3a30949d646f",
+			"visible": false,
+			"name": "topic_chapter_problem_map",
+			"desc": "List of all problems from a chapter selected for a topic.",
+			"estimatedSize": "",
+			"cols": [
+				{
+					"id": "0aff36f4-b5ec-4d3a-8f17-3ff177995156",
+					"name": "id",
+					"datatype": "INT",
+					"param": "",
+					"pk": true,
+					"nn": true,
+					"fk": false,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"after": "",
+					"autoinc": true,
+					"collation": "",
+					"charset": "",
+					"binary": false,
+					"zerofill": false,
+					"unsigned": false,
+					"enum": "",
+					"estimatedSize": ""
+				},
+				{
+					"after": "",
+					"autoinc": false,
+					"charset": "",
+					"collation": "",
+					"comment": "",
+					"datatype": "INT",
+					"defaultvalue": "",
+					"enum": "",
+					"fk": true,
+					"id": "db8fd724-aa82-4369-aa86-8f3331f8a50f",
+					"name": "topic_chapter_map_id",
+					"nn": true,
+					"param": "",
+					"pk": false,
+					"unsigned": false,
+					"zerofill": false,
+					"estimatedSize": "",
+					"data": "",
+					"binary": false
+				},
+				{
+					"after": "",
+					"autoinc": false,
+					"charset": "",
+					"collation": "",
+					"comment": "",
+					"datatype": "INT",
+					"defaultvalue": "",
+					"enum": "",
+					"fk": true,
+					"id": "296a092f-65ee-4fd4-ada0-77aacd2b70bb",
+					"name": "problem_master_id",
+					"nn": true,
+					"param": "",
+					"pk": false,
+					"unsigned": false,
+					"zerofill": false,
+					"estimatedSize": "",
+					"data": "",
+					"binary": false
+				}
+			],
+			"relations": [
+				"d7910001-16e3-4d7f-8e69-47d701577a6c",
+				"bbabede8-0ecf-4b16-976a-9f701c5e50a8"
+			],
+			"lines": [],
+			"keys": [
+				{
+					"id": "eca1671d-1260-4153-a6bb-7fc79a1721c2",
+					"name": "PRIMARY",
+					"isPk": true,
+					"cols": [
+						{
+							"id": "4bcd7db2-d9aa-45f4-9956-922004bc4c79",
+							"colid": "0aff36f4-b5ec-4d3a-8f17-3ff177995156"
+						}
+					]
+				}
+			],
+			"indexes": [],
+			"embeddable": false,
+			"generate": true,
+			"generateCustomCode": true,
+			"customCode": "",
+			"tabletype": "",
+			"collation": "",
+			"charset": "",
+			"rowformat": "",
+			"database": "",
+			"initautoinc": "",
+			"temporary": false,
+			"ifnotexists": false
 		}
 	},
 	"relations": {
@@ -2674,6 +2821,62 @@
 			"generateCustomCode": true,
 			"customCode": "",
 			"relationColor": "transparent"
+		},
+		"d7910001-16e3-4d7f-8e69-47d701577a6c": {
+			"id": "d7910001-16e3-4d7f-8e69-47d701577a6c",
+			"name": "fk_TCM_TCPM",
+			"desc": "",
+			"type": "identifying",
+			"parent_key": "d80863ed-8a71-4980-b3cc-e5d64aa5f394",
+			"parent": "d7bd2a76-c755-4927-9857-08e74b1d0a96",
+			"child": "58d2c04d-6f53-4432-b9ae-3a30949d646f",
+			"c_mp": "true",
+			"c_mch": "true",
+			"c_p": "one",
+			"c_ch": "many",
+			"c_cp": "",
+			"c_cch": "",
+			"cols": [
+				{
+					"id": "41aebabd-7a87-45ae-be13-4428bc9e2305",
+					"parentcol": "5a5abaf0-09da-4deb-b1ec-cbc73d199078",
+					"childcol": "db8fd724-aa82-4369-aa86-8f3331f8a50f"
+				}
+			],
+			"generate": true,
+			"generateCustomCode": true,
+			"customCode": "",
+			"relationColor": "transparent",
+			"ri_pd": "Restrict",
+			"ri_pu": "Cascade"
+		},
+		"bbabede8-0ecf-4b16-976a-9f701c5e50a8": {
+			"id": "bbabede8-0ecf-4b16-976a-9f701c5e50a8",
+			"name": "fk_problem_TCPM",
+			"desc": "",
+			"type": "identifying",
+			"parent_key": "14f259b6-49ed-4f11-8c8d-64f350c1ffeb",
+			"parent": "03cce6fc-31fa-4e39-a437-0e6e33eafd0e",
+			"child": "58d2c04d-6f53-4432-b9ae-3a30949d646f",
+			"c_mp": "true",
+			"c_mch": "true",
+			"c_p": "one",
+			"c_ch": "many",
+			"c_cp": "",
+			"c_cch": "",
+			"cols": [
+				{
+					"id": "9a27cfc0-d601-470a-85ef-34b3280caced",
+					"parentcol": "5c9a58f3-34c5-41f6-970a-14a01fcfcbf8",
+					"childcol": "296a092f-65ee-4fd4-ada0-77aacd2b70bb"
+				}
+			],
+			"generate": true,
+			"generateCustomCode": true,
+			"customCode": "",
+			"relationColor": "transparent",
+			"ri_pd": "Restrict",
+			"ri_pu": "Cascade"
 		}
 	},
 	"notes": {},
@@ -2734,7 +2937,7 @@
 			"includeWarnings": "yes",
 			"includeCreationSql": "no"
 		},
-		"lastSaved": 1737570560433,
+		"lastSaved": 1738479524641,
 		"connectionId": "7af83ebc-4655-4802-a6d0-2c6890f3e1ce",
 		"modelHTMLReportDir": "/Users/sandeep/temp"
 	},
@@ -2940,6 +3143,19 @@
 					"resized": false,
 					"autoExpand": true,
 					"backgroundOpacity": "10"
+				},
+				"58d2c04d-6f53-4432-b9ae-3a30949d646f": {
+					"referencedItemId": "58d2c04d-6f53-4432-b9ae-3a30949d646f",
+					"x": 1177,
+					"y": 567,
+					"gHeight": 60,
+					"gWidth": 200,
+					"color": "#ffffff",
+					"background": "#03a9f4",
+					"resized": false,
+					"autoExpand": true,
+					"backgroundOpacity": "10",
+					"collapsed": false
 				}
 			},
 			"scroll": {
@@ -3083,10 +3299,10 @@
 					"referencedItemId": "d7bd2a76-c755-4927-9857-08e74b1d0a96",
 					"x": 1180,
 					"y": 204,
-					"gHeight": 99,
-					"gWidth": 193,
+					"gHeight": 135,
+					"gWidth": 292,
 					"color": "#ffffff",
-					"background": "#ff5722",
+					"background": "#03a9f4",
 					"resized": false,
 					"autoExpand": true,
 					"backgroundOpacity": "10",
@@ -3100,6 +3316,19 @@
 					"gWidth": 247,
 					"color": "#ffffff",
 					"background": "#009688",
+					"resized": false,
+					"autoExpand": true,
+					"backgroundOpacity": "10",
+					"collapsed": false
+				},
+				"58d2c04d-6f53-4432-b9ae-3a30949d646f": {
+					"referencedItemId": "58d2c04d-6f53-4432-b9ae-3a30949d646f",
+					"x": 1177,
+					"y": 567,
+					"gHeight": 81,
+					"gWidth": 241,
+					"color": "#ffffff",
+					"background": "#03a9f4",
 					"resized": false,
 					"autoExpand": true,
 					"backgroundOpacity": "10",
@@ -3273,6 +3502,7 @@
 		"bb382f8e-1823-4fd6-95ea-6e4cff93233a",
 		"f26a0d5f-a5b3-46a7-936c-e288c96716da",
 		"07ecb06c-b86e-48dd-a494-bae034e854d7",
+		"58d2c04d-6f53-4432-b9ae-3a30949d646f",
 		"c9889e60-3f92-49f6-a274-ca9d023bf7c9",
 		"10898ae7-34a4-4697-ba4c-96869007b8b3",
 		"1bb56b3a-7199-4f78-a9ab-24b76dbbe6b9",
@@ -3284,7 +3514,9 @@
 		"c1a1164e-7478-40b2-899f-31f750116f01",
 		"ebf45113-0ab2-40eb-ab5c-1c4dff5f01f8",
 		"ae0d1bbb-da7a-4024-a241-dc98fd633654",
-		"5c30f7eb-41a0-4875-8911-6798f1e93618"
+		"5c30f7eb-41a0-4875-8911-6798f1e93618",
+		"d7910001-16e3-4d7f-8e69-47d701577a6c",
+		"bbabede8-0ecf-4b16-976a-9f701c5e50a8"
 	],
 	"collapsedTreeItems": [],
 	"reverseStats": {
@@ -3302,7 +3534,7 @@
 				"replaceSpace": "_",
 				"color": "transparent",
 				"sideSelections": true,
-				"isDirty": false,
+				"isDirty": true,
 				"storedin": {
 					"major": 9,
 					"minor": 1,
@@ -3345,7 +3577,7 @@
 					"includeWarnings": "yes",
 					"includeCreationSql": "no"
 				},
-				"lastSaved": 1737570560433,
+				"lastSaved": 1737970559670,
 				"connectionId": "7af83ebc-4655-4802-a6d0-2c6890f3e1ce",
 				"modelHTMLReportDir": "/Users/sandeep/temp",
 				"filePath": "/Users/sandeep/projects/sconsole/SConsoleNxt/doc/sconsole.dbmodel.dmm"
@@ -3358,7 +3590,7 @@
 					"desc": "Metadata of individual books",
 					"embeddable": false,
 					"id": "74e3d227-cba7-4b22-aa34-fc123abb195a",
-					"initautoinc": "18",
+					"initautoinc": "27",
 					"name": "book_master",
 					"relations": [
 						"2a56f867-73cf-4d44-8558-79be5b30b9f4",
@@ -3487,6 +3719,27 @@
 							"name": "book_short_name",
 							"nn": false,
 							"param": "64",
+							"pk": false,
+							"unsigned": false,
+							"zerofill": false,
+							"estimatedSize": "",
+							"data": "",
+							"binary": false
+						},
+						{
+							"after": "",
+							"autoinc": false,
+							"charset": "",
+							"collation": "",
+							"comment": "",
+							"datatype": "TINYINT",
+							"defaultvalue": "0",
+							"enum": "",
+							"fk": false,
+							"id": "4f6d35cc-7a0d-4dfa-9abb-febe4f50fed5",
+							"name": "topic_mapping_done",
+							"nn": true,
+							"param": "1",
 							"pk": false,
 							"unsigned": false,
 							"zerofill": false,
@@ -3809,7 +4062,7 @@
 					"desc": "Problems in a chapter",
 					"embeddable": false,
 					"id": "03cce6fc-31fa-4e39-a437-0e6e33eafd0e",
-					"initautoinc": "18564",
+					"initautoinc": "39041",
 					"name": "problem_master",
 					"relations": [
 						"65e31e3f-1d61-4cbe-97c1-60935d56bd65",
@@ -3882,25 +4135,25 @@
 							"binary": false
 						},
 						{
-							"id": "6ba6f61e-5408-464b-9f9b-42968aa81fa5",
-							"name": "exercise_num",
-							"datatype": "INT",
-							"param": "",
-							"pk": false,
-							"nn": true,
-							"fk": false,
-							"comment": "",
-							"defaultvalue": "",
-							"data": "",
 							"after": "",
 							"autoinc": false,
-							"collation": "",
 							"charset": "",
-							"binary": false,
-							"zerofill": false,
-							"unsigned": false,
+							"collation": "",
+							"comment": "",
+							"datatype": "INT",
+							"defaultvalue": "",
 							"enum": "",
-							"estimatedSize": ""
+							"fk": false,
+							"id": "6ba6f61e-5408-464b-9f9b-42968aa81fa5",
+							"name": "exercise_num",
+							"nn": true,
+							"param": "",
+							"pk": false,
+							"unsigned": false,
+							"zerofill": false,
+							"estimatedSize": "",
+							"data": "",
+							"binary": false
 						},
 						{
 							"after": "",
@@ -4653,7 +4906,7 @@
 					"desc": "Map of books applicable for a syllabus",
 					"embeddable": false,
 					"id": "0b713a2b-d568-40a1-bac1-552360d56264",
-					"initautoinc": "1",
+					"initautoinc": "27",
 					"name": "syllabus_book_map",
 					"relations": [
 						"ebf45113-0ab2-40eb-ab5c-1c4dff5f01f8",
@@ -4738,6 +4991,17 @@
 							"id": "d900a489-9416-4df8-ab39-bb3a4533bfc1",
 							"isPk": true,
 							"name": "PRIMARY"
+						},
+						{
+							"cols": [
+								{
+									"colid": "4d8b2126-5245-4950-ba03-9f0dd95a8fab",
+									"id": "78195acc-d308-4e76-9881-71419ed1b44b"
+								}
+							],
+							"id": "895de8ab-5db1-4bb2-b95a-82b60a1988fc",
+							"isPk": false,
+							"name": "uk_sbm_book-id"
 						}
 					],
 					"lines": [],
@@ -4839,7 +5103,7 @@
 					"desc": "Map of chapters applicable for a syllabus topic",
 					"embeddable": false,
 					"id": "d7bd2a76-c755-4927-9857-08e74b1d0a96",
-					"initautoinc": "1",
+					"initautoinc": "183",
 					"name": "topic_chapter_map",
 					"relations": [
 						"5c30f7eb-41a0-4875-8911-6798f1e93618",
@@ -4931,6 +5195,27 @@
 							"estimatedSize": "",
 							"data": "",
 							"binary": false
+						},
+						{
+							"after": "",
+							"autoinc": false,
+							"charset": "",
+							"collation": "",
+							"comment": "",
+							"datatype": "INT",
+							"defaultvalue": "0",
+							"enum": "",
+							"fk": false,
+							"id": "2c9b4b0b-8b28-41a0-a666-c04d34d412b4",
+							"name": "attempt_seq",
+							"nn": true,
+							"param": "",
+							"pk": false,
+							"unsigned": false,
+							"zerofill": false,
+							"estimatedSize": "",
+							"data": "",
+							"binary": false
 						}
 					],
 					"indexes": [],
@@ -4945,6 +5230,25 @@
 							"id": "d80863ed-8a71-4980-b3cc-e5d64aa5f394",
 							"isPk": true,
 							"name": "PRIMARY"
+						},
+						{
+							"cols": [
+								{
+									"colid": "f1bef65d-067e-4b32-8081-c124378bb06d",
+									"id": "0e3c699f-e3ac-4645-bc4e-cf1f182f25b6"
+								},
+								{
+									"colid": "f023e370-d378-436b-8dcf-5879b0695f34",
+									"id": "7b6e9274-c4f2-4dec-8045-4c3bf6276b79"
+								},
+								{
+									"colid": "1dd7e285-a948-4c90-a589-dddf6887a734",
+									"id": "f185e3ee-2cb1-461b-8e76-5d66053a442b"
+								}
+							],
+							"id": "2e62cf10-81f9-4c4f-acd6-b6b0a162191a",
+							"isPk": false,
+							"name": "uk_topic-chapter-map"
 						}
 					],
 					"lines": [],
@@ -4963,7 +5267,7 @@
 					"desc": "First level topics for a syllabus",
 					"embeddable": false,
 					"id": "c17be34e-081a-4590-becf-6e0ac4ff6b06",
-					"initautoinc": "79",
+					"initautoinc": "124",
 					"name": "topic_master",
 					"relations": [
 						"5c30f7eb-41a0-4875-8911-6798f1e93618",
@@ -5778,7 +6082,7 @@
 					"c_p": "one",
 					"c_cp": "",
 					"c_cch": "",
-					"c_ch": "many",
+					"c_ch": "one",
 					"c_mch": "true",
 					"c_mp": "true",
 					"desc": "",
@@ -6035,7 +6339,7 @@
 					"includeWarnings": "yes",
 					"includeCreationSql": "no"
 				},
-				"lastSaved": 1737570560433,
+				"lastSaved": 1737970559670,
 				"connectionId": "7af83ebc-4655-4802-a6d0-2c6890f3e1ce",
 				"modelHTMLReportDir": "/Users/sandeep/temp",
 				"filePath": "/Users/sandeep/projects/sconsole/SConsoleNxt/doc/sconsole.dbmodel.dmm"
@@ -6048,7 +6352,7 @@
 					"desc": "Metadata of individual books",
 					"embeddable": false,
 					"id": "74e3d227-cba7-4b22-aa34-fc123abb195a",
-					"initautoinc": "17",
+					"initautoinc": "27",
 					"name": "book_master",
 					"relations": [
 						"2a56f867-73cf-4d44-8558-79be5b30b9f4",
@@ -6520,7 +6824,7 @@
 					"desc": "Problems in a chapter",
 					"embeddable": false,
 					"id": "03cce6fc-31fa-4e39-a437-0e6e33eafd0e",
-					"initautoinc": "21364",
+					"initautoinc": "39041",
 					"name": "problem_master",
 					"relations": [
 						"65e31e3f-1d61-4cbe-97c1-60935d56bd65",
@@ -7364,7 +7668,7 @@
 					"desc": "Map of books applicable for a syllabus",
 					"embeddable": false,
 					"id": "0b713a2b-d568-40a1-bac1-552360d56264",
-					"initautoinc": "17",
+					"initautoinc": "27",
 					"name": "syllabus_book_map",
 					"relations": [
 						"ebf45113-0ab2-40eb-ab5c-1c4dff5f01f8",
@@ -7561,7 +7865,7 @@
 					"desc": "Map of chapters applicable for a syllabus topic",
 					"embeddable": false,
 					"id": "d7bd2a76-c755-4927-9857-08e74b1d0a96",
-					"initautoinc": "25",
+					"initautoinc": "191",
 					"name": "topic_chapter_map",
 					"relations": [
 						"5c30f7eb-41a0-4875-8911-6798f1e93618",
@@ -7653,6 +7957,48 @@
 							"estimatedSize": "",
 							"data": "",
 							"binary": false
+						},
+						{
+							"after": "",
+							"autoinc": false,
+							"charset": "",
+							"collation": "",
+							"comment": "",
+							"datatype": "INT",
+							"defaultvalue": "0",
+							"enum": "",
+							"fk": false,
+							"id": "2c9b4b0b-8b28-41a0-a666-c04d34d412b4",
+							"name": "attempt_seq",
+							"nn": true,
+							"param": "",
+							"pk": false,
+							"unsigned": false,
+							"zerofill": false,
+							"estimatedSize": "",
+							"data": "",
+							"binary": false
+						},
+						{
+							"after": "",
+							"autoinc": false,
+							"charset": "",
+							"collation": "",
+							"comment": "",
+							"datatype": "TINYINT",
+							"defaultvalue": "0",
+							"enum": "",
+							"fk": false,
+							"id": "0f00a46b-7be4-4500-a787-e5ed2b8f680e",
+							"name": "problem_mapping_done",
+							"nn": true,
+							"param": "1",
+							"pk": false,
+							"unsigned": false,
+							"zerofill": false,
+							"estimatedSize": "",
+							"data": "",
+							"binary": false
 						}
 					],
 					"indexes": [],
@@ -7704,7 +8050,7 @@
 					"desc": "First level topics for a syllabus",
 					"embeddable": false,
 					"id": "c17be34e-081a-4590-becf-6e0ac4ff6b06",
-					"initautoinc": "79",
+					"initautoinc": "124",
 					"name": "topic_master",
 					"relations": [
 						"5c30f7eb-41a0-4875-8911-6798f1e93618",

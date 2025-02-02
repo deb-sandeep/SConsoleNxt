@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface TopicChapterMapRepo extends CrudRepository<TopicChapterMap, Integer> {
+    
     List<TopicChapterMap> findByTopicOrderByChapter_Book_IdAsc( Topic topic );
     
     interface CTM {
@@ -39,4 +40,24 @@ public interface TopicChapterMapRepo extends CrudRepository<TopicChapterMap, Int
             tcm.topic.id asc
     """ )
     List<Object[]> getTopicMappingsForBooks( @Param( "bookIds" ) Integer[] ids ) ;
+    
+    @Query( """
+        select tcm
+        from TopicChapterMap tcm
+        where
+            tcm.topic.syllabus.syllabusName = :syllabusName
+        order by
+            tcm.topic.id asc,
+            tcm.attemptSeq asc
+    """)
+    List<TopicChapterMap> getTopicChapterMappingsForSyllabus( @Param( "syllabusName" ) String syllabusName ) ;
+    
+    @Query( """
+        select tcm
+        from TopicChapterMap tcm
+        order by
+            tcm.topic.id asc,
+            tcm.attemptSeq asc
+    """)
+    List<TopicChapterMap> getAllTopicChapterMappings() ;
 }

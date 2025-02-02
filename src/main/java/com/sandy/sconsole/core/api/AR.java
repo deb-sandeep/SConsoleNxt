@@ -64,6 +64,10 @@ public class AR<T> {
         this.data = data ;
         this.executionResult = result ;
     }
+    
+    public static ResponseEntity<AR<String>> success() {
+        return success( "Success" ) ;
+    }
 
     public static <T> ResponseEntity<AR<T>> success( T data ) {
         return ResponseEntity.ok( new AR<>( data ) ) ;
