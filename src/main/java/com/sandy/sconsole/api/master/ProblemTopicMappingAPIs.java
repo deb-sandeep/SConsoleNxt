@@ -6,6 +6,7 @@ import com.sandy.sconsole.dao.master.*;
 import com.sandy.sconsole.dao.master.repo.ChapterRepo;
 import com.sandy.sconsole.dao.master.repo.ProblemRepo;
 import com.sandy.sconsole.dao.master.repo.SyllabusRepo;
+import com.sandy.sconsole.dao.master.repo.TopicRepo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -28,12 +29,15 @@ public class ProblemTopicMappingAPIs {
     
     @Autowired private ProblemRepo problemRepo ;
     
-    @Autowired private SyllabusRepo syllabusRepo = null ;
+    @Autowired private SyllabusRepo syllabusRepo ;
     
-    @GetMapping( "{bookId}/{chapterNum}" )
+    @Autowired private TopicRepo topicRepo ;
+    
+    @GetMapping( "{bookId}/{chapterNum}/{selTopicId}" )
     public ResponseEntity<AR<ChapterProblemsTopicMappingVO>> getProblemTopicMappings(
                                 @PathVariable( "bookId" ) int bookId,
-                                @PathVariable( "chapterNum" ) int chapterNum ) {
+                                @PathVariable( "chapterNum" ) int chapterNum,
+                                @PathVariable( "selTopicId" ) int selTopicId ) {
     
         try {
             ChapterProblemsTopicMappingVO result ;
@@ -42,14 +46,15 @@ public class ProblemTopicMappingAPIs {
             ChapterId chapterId = new ChapterId( bookId, chapterNum ) ;
             Chapter chapter = chapterRepo.findById( chapterId ).get() ;
             Syllabus syllabus = syllabusRepo.findBySubject( chapter.getBook().getSubject() ).get( 0 ) ;
+            Topic topic = topicRepo.findById( selTopicId ).get() ;
             
-            result = new ChapterProblemsTopicMappingVO( chapter, syllabus ) ;
+            result = new ChapterProblemsTopicMappingVO( chapter, syllabus, topic ) ;
             
             records.forEach( record -> {
                 Problem p = ( Problem )record[0] ;
                 TopicChapterProblemMap tcm = ( TopicChapterProblemMap )record[1] ;
 
-                result.addProblemMapping( p, tcm.getTopicChapterMap() ) ;
+                result.addProblemMapping( p, tcm ) ;
             } ) ;
             
             return success( result ) ;
