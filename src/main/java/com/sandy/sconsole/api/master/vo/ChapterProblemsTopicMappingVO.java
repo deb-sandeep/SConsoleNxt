@@ -45,15 +45,13 @@ public class ChapterProblemsTopicMappingVO {
     private int chapterNum ;
     private String chapterName ;
     private BookVO book ;
-    private TopicVO selTopic ;
     private List<ExerciseProblems> exercises = new ArrayList<>();
     
-    public ChapterProblemsTopicMappingVO( Chapter chapter, Syllabus syllabus, Topic topic ) {
+    public ChapterProblemsTopicMappingVO( Chapter chapter, Syllabus syllabus ) {
         this.book = new BookVO( chapter.getBook() ) ;
         this.book.setSyllabusName( syllabus.getSyllabusName() ) ;
         this.chapterNum = chapter.getId().getChapterNum() ;
         this.chapterName = chapter.getChapterName() ;
-        this.selTopic = new TopicVO( topic ) ;
     }
     
     public void addProblemMapping( Problem problem, TopicChapterProblemMap tcpm ) {

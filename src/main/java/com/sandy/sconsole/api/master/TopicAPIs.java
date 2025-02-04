@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,6 +26,16 @@ public class TopicAPIs {
     
     @Autowired
     private TopicRepo topicRepo = null ;
+    
+    @GetMapping( "/{topicId}" )
+    public ResponseEntity<AR<TopicVO>> getTopic( @PathVariable( "topicId" ) int topicId ) {
+        try {
+            return success( new TopicVO( topicRepo.findById( topicId ).get() ) ) ;
+        }
+        catch( Exception e ) {
+            return systemError( e ) ;
+        }
+    }
     
     @GetMapping( "/All" )
     public ResponseEntity<AR<List<TopicVO>>> getTopics(

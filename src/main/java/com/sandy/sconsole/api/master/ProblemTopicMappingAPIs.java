@@ -28,30 +28,20 @@ public class ProblemTopicMappingAPIs {
     
     @Autowired private SyllabusRepo syllabusRepo ;
     
-    @Autowired private TopicRepo topicRepo ;
-    
-    @Autowired private TopicChapterMapRepo tcmRepo ;
-    
-    @GetMapping( "{topicChapterMappingId}" )
-    public ResponseEntity<AR<ChapterProblemsTopicMappingVO>> getProblemTopicMappings(
-                                @PathVariable( "topicChapterMappingId" ) int topicChapterMappingId ) {
+    @GetMapping( "Book/{bookId}/Chapter/{chapterNum}" )
+    public ResponseEntity<AR<ChapterProblemsTopicMappingVO>> getProblemTopicMappingsForChapter(
+                                @PathVariable( "bookId" ) int bookId,
+                                @PathVariable( "chapterNum" ) int chapterNum ) {
     
         try {
             ChapterProblemsTopicMappingVO result ;
             
-            TopicChapterMap tcm = tcmRepo.findById( topicChapterMappingId ).get() ;
-            
-            Chapter chapter = tcm.getChapter() ;
-            Topic topic = tcm.getTopic() ;
+            Chapter chapter = chapterRepo.findById( new ChapterId( bookId, chapterNum ) ).get() ;
             Syllabus syllabus = syllabusRepo.findBySubject( chapter.getBook().getSubject() ).get( 0 ) ;
-            
-            int bookId = tcm.getChapter().getBook().getId() ;
-            int chapterNum = tcm.getChapter().getId().getChapterNum() ;
-            int selTopicId = tcm.getTopic().getId() ;
             
             List<Object[]> records = this.problemRepo.getProblemTopicMappings( bookId, chapterNum ) ;
             
-            result = new ChapterProblemsTopicMappingVO( chapter, syllabus, topic ) ;
+            result = new ChapterProblemsTopicMappingVO( chapter, syllabus ) ;
             
             records.forEach( record -> {
                 Problem p = ( Problem )record[0] ;
@@ -66,6 +56,4 @@ public class ProblemTopicMappingAPIs {
             return systemError( e );
         }
     }
-    
-    // Attach, detach, force attach, etc.
 }
