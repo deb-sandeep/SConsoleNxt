@@ -3,10 +3,7 @@ package com.sandy.sconsole.api.master;
 import com.sandy.sconsole.api.master.vo.ChapterProblemsTopicMappingVO;
 import com.sandy.sconsole.core.api.AR;
 import com.sandy.sconsole.dao.master.*;
-import com.sandy.sconsole.dao.master.repo.ChapterRepo;
-import com.sandy.sconsole.dao.master.repo.ProblemRepo;
-import com.sandy.sconsole.dao.master.repo.SyllabusRepo;
-import com.sandy.sconsole.dao.master.repo.TopicRepo;
+import com.sandy.sconsole.dao.master.repo.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -33,28 +30,34 @@ public class ProblemTopicMappingAPIs {
     
     @Autowired private TopicRepo topicRepo ;
     
-    @GetMapping( "{bookId}/{chapterNum}/{selTopicId}" )
+    @Autowired private TopicChapterMapRepo tcmRepo ;
+    
+    @GetMapping( "{topicChapterMappingId}" )
     public ResponseEntity<AR<ChapterProblemsTopicMappingVO>> getProblemTopicMappings(
-                                @PathVariable( "bookId" ) int bookId,
-                                @PathVariable( "chapterNum" ) int chapterNum,
-                                @PathVariable( "selTopicId" ) int selTopicId ) {
+                                @PathVariable( "topicChapterMappingId" ) int topicChapterMappingId ) {
     
         try {
             ChapterProblemsTopicMappingVO result ;
-            List<Object[]> records = this.problemRepo.getProblemTopicMappings( bookId, chapterNum ) ;
             
-            ChapterId chapterId = new ChapterId( bookId, chapterNum ) ;
-            Chapter chapter = chapterRepo.findById( chapterId ).get() ;
+            TopicChapterMap tcm = tcmRepo.findById( topicChapterMappingId ).get() ;
+            
+            Chapter chapter = tcm.getChapter() ;
+            Topic topic = tcm.getTopic() ;
             Syllabus syllabus = syllabusRepo.findBySubject( chapter.getBook().getSubject() ).get( 0 ) ;
-            Topic topic = topicRepo.findById( selTopicId ).get() ;
+            
+            int bookId = tcm.getChapter().getBook().getId() ;
+            int chapterNum = tcm.getChapter().getId().getChapterNum() ;
+            int selTopicId = tcm.getTopic().getId() ;
+            
+            List<Object[]> records = this.problemRepo.getProblemTopicMappings( bookId, chapterNum ) ;
             
             result = new ChapterProblemsTopicMappingVO( chapter, syllabus, topic ) ;
             
             records.forEach( record -> {
                 Problem p = ( Problem )record[0] ;
-                TopicChapterProblemMap tcm = ( TopicChapterProblemMap )record[1] ;
+                TopicChapterProblemMap tcmForProblem = ( TopicChapterProblemMap )record[1] ;
 
-                result.addProblemMapping( p, tcm ) ;
+                result.addProblemMapping( p, tcmForProblem ) ;
             } ) ;
             
             return success( result ) ;
