@@ -4,7 +4,6 @@ import com.sandy.sconsole.api.master.helper.TopicMappingHelper;
 import com.sandy.sconsole.api.master.vo.TopicChapterMappingVO;
 import com.sandy.sconsole.api.master.vo.reqres.ChapterTopicMappingReq;
 import com.sandy.sconsole.core.api.AR;
-import com.sandy.sconsole.dao.master.Topic;
 import com.sandy.sconsole.dao.master.TopicChapterMap;
 import com.sandy.sconsole.dao.master.repo.TopicChapterMapRepo;
 import jakarta.websocket.server.PathParam;
@@ -14,7 +13,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.sandy.sconsole.core.api.AR.*;
@@ -33,7 +31,7 @@ public class ChapterTopicMappingAPIs {
             @RequestBody ChapterTopicMappingReq mappingReq ) {
         
         try {
-            int mappingId = helper.createOrUpdateMapping( mappingReq ) ;
+            int mappingId = helper.saveChapterTopicMapping( mappingReq ) ;
             return success( mappingId ) ;
         }
         catch( DataIntegrityViolationException dive ) {
@@ -50,7 +48,7 @@ public class ChapterTopicMappingAPIs {
             @PathVariable( "mapId" ) Integer mapId ) {
         
         try {
-            helper.deleteMapping( mapId ) ;
+            helper.deleteTopicChapterMapping( mapId ) ;
             return success( "Chapter topic mapping deleted successfully" );
         }
         catch( Exception e ) {
@@ -63,39 +61,11 @@ public class ChapterTopicMappingAPIs {
             @PathParam( "syllabusName" ) String syllabusName ) {
         
         try {
-            List<TopicChapterMappingVO> voList ;
-            if( syllabusName == null ) {
-                voList = convertToDTO( tcmRepo.getAllTopicChapterMappings() ) ;
-            }
-            else {
-                voList = convertToDTO( tcmRepo.getTopicChapterMappingsForSyllabus( syllabusName ) ) ;
-            }
-            return success( voList ) ;
+            return success( helper.getTopicChapterMappings( syllabusName ) ) ;
         }
         catch( Exception e ) {
             return systemError( e ) ;
         }
-    }
-    
-    private List<TopicChapterMappingVO> convertToDTO( List<TopicChapterMap> tcmList ) {
-        
-        List<TopicChapterMappingVO> voList = new ArrayList<>() ;
-        
-        Topic                 lastTopic = null ;
-        TopicChapterMappingVO currentVO = null ;
-        
-        for( int i=0; i<tcmList.size(); i++ ) {
-            TopicChapterMap tcm = tcmList.get( i ) ;
-            if( lastTopic == null || tcm.getTopic() != lastTopic ) {
-                currentVO = new TopicChapterMappingVO( tcm ) ;
-                voList.add( currentVO ) ;
-            }
-            else {
-                currentVO.addChapter( tcm ) ;
-            }
-            lastTopic = tcm.getTopic() ;
-        }
-        return voList ;
     }
     
     @PostMapping( "/SwapAttemptSequence/{mappingId1}/{mappingId2}" )

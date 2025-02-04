@@ -4,7 +4,9 @@ import com.sandy.sconsole.dao.master.TopicChapterMap;
 import lombok.Data;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Data
 public class TopicChapterMappingVO {
@@ -18,6 +20,7 @@ public class TopicChapterMappingVO {
         private int chapterNum ;
         private String chapterName ;
         private boolean problemMappingDone ;
+        private Map<String, Integer> problemTypeCountMap = new HashMap<>() ;
         
         ChapterMapping( TopicChapterMap tcm ) {
             this.mappingId          = tcm.getId() ;
@@ -28,6 +31,10 @@ public class TopicChapterMappingVO {
             this.chapterName        = tcm.getChapter().getChapterName() ;
             this.problemMappingDone = tcm.getProblemMappingDone() ;
         }
+        
+        public int getProblemCount() {
+            return problemTypeCountMap.values().stream().reduce( 0, Integer::sum ) ;
+        }
     }
     
     private int topicId ;
@@ -35,6 +42,8 @@ public class TopicChapterMappingVO {
     private String topicSection ;
     private String syllabusName ;
     private List<ChapterMapping> chapters ;
+    private Map<String, Integer> problemTypeCountMap = new HashMap<>() ;
+    private int problemCount ;
     
     public TopicChapterMappingVO( TopicChapterMap tcm ) {
         this.topicId      = tcm.getTopic().getId() ;
@@ -42,11 +51,23 @@ public class TopicChapterMappingVO {
         this.topicSection = tcm.getTopic().getSectionName() ;
         this.syllabusName = tcm.getTopic().getSyllabus().getSyllabusName() ;
         this.chapters     = new ArrayList<>() ;
-        
-        addChapter( tcm ) ;
     }
     
-    public void addChapter( TopicChapterMap tcm ) {
-        this.chapters.add( new ChapterMapping( tcm ) ) ;
+    public ChapterMapping addChapter( TopicChapterMap tcm ) {
+        ChapterMapping cm = new ChapterMapping( tcm ) ;
+        this.chapters.add( cm ) ;
+        return cm ;
+    }
+    
+    public void calculateProblemCounts() {
+        chapters.forEach( ch -> ch.getProblemTypeCountMap()
+                                  .forEach( ( problemType, count) -> {
+            int newCount = count ;
+            if( problemTypeCountMap.containsKey( problemType ) ) {
+                newCount += problemTypeCountMap.get( problemType ) + count ;
+            }
+            problemTypeCountMap.put( problemType, newCount ) ;
+            problemCount += count ;
+        } ) );
     }
 }

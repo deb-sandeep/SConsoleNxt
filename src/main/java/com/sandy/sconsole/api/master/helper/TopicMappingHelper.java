@@ -1,6 +1,7 @@
 package com.sandy.sconsole.api.master.helper;
 
-import com.sandy.sconsole.api.master.vo.*;
+import com.sandy.sconsole.api.master.vo.BookTopicMappingVO;
+import com.sandy.sconsole.api.master.vo.TopicChapterMappingVO;
 import com.sandy.sconsole.api.master.vo.reqres.ChapterTopicMappingReq;
 import com.sandy.sconsole.dao.master.*;
 import com.sandy.sconsole.dao.master.repo.*;
@@ -8,7 +9,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import static com.sandy.sconsole.api.master.vo.TopicChapterMappingVO.ChapterMapping;
 
 @Slf4j
 @Component
@@ -23,7 +29,7 @@ public class TopicMappingHelper {
     @Autowired SyllabusBookMapRepo sbmRepo ;
     @Autowired TopicChapterProblemMapRepo tcpmRepo ;
     
-    public int createOrUpdateMapping( ChapterTopicMappingReq req ) {
+    public int saveChapterTopicMapping( ChapterTopicMappingReq req ) {
         
         TopicChapterMap map ;
         
@@ -44,14 +50,29 @@ public class TopicMappingHelper {
         map.setTopic( topic ) ;
         map = tcmRepo.save( map ) ;
         
-        associateUnallocatedProblems( req.getBookId(), req.getChapterNum(), map ) ;
+        linkAvailableChapterProblemsToTopic( map ) ;
         
         return map.getId() ;
     }
     
-    private void associateUnallocatedProblems( int bookId, int chapterNum, TopicChapterMap tcm ) {
+    /**
+     * Given a topic-chapter mapping, this method allocates all the available
+     * (not allocated) problems from the chapter (from topic-chapter mapping)
+     * to the topic.
+     * <p>
+     * This is called during the creation of a topic chapter mapping to
+     * mass link the available problems from the chapter to the topic. The
+     * assumption (and fact) is that majority of chapters have a one-one mapping
+     * with topics. Any fine-tuning (moving problems from one chapter to
+     * another topic) can be done via the user interface by force linking the
+     * problems to a different topic.
+     */
+    private void linkAvailableChapterProblemsToTopic( TopicChapterMap tcm ) {
         
         List<Problem> problems ;
+        
+        final int bookId = tcm.getChapter().getBook().getId() ;
+        final int chapterNum = tcm.getChapter().getId().getChapterNum() ;
         
         problems = problemRepo.getUnassociatedProblemsForChapter( bookId, chapterNum ) ;
         if( !problems.isEmpty() ) {
@@ -66,7 +87,12 @@ public class TopicMappingHelper {
         }
     }
     
-    public void deleteMapping( Integer mapId ) {
+    /**
+     * Note that the associated problems {@link TopicChapterProblemMap} are
+     * deleted by database referential integrity constraint of cascade delete,
+     * hence no explicit action is needed in code.
+     */
+    public void deleteTopicChapterMapping( Integer mapId ) {
         tcmRepo.deleteById( mapId ) ;
     }
     
@@ -89,5 +115,49 @@ public class TopicMappingHelper {
         }
         
         return new ArrayList<>( btmMap.values() ) ;
+    }
+    
+    public List<TopicChapterMappingVO> getTopicChapterMappings( String syllabusName ) {
+        
+        List<TopicChapterMappingVO> voList ;
+        if( syllabusName == null ) {
+            voList = createTCMVO( tcmRepo.getAllTopicChapterMappings() ) ;
+        }
+        else {
+            voList = createTCMVO( tcmRepo.getTopicChapterMappingsForSyllabus( syllabusName ) ) ;
+        }
+        return voList ;
+    }
+    
+    private List<TopicChapterMappingVO> createTCMVO( List<TopicChapterMap> tcmList ) {
+        
+        List<TopicChapterMappingVO> voList = new ArrayList<>() ;
+        Map<Integer, ChapterMapping> cmMap = new LinkedHashMap<>() ;
+        
+        Topic                 lastTopic = null ;
+        TopicChapterMappingVO currentVO = null ;
+        ChapterMapping        cm ;
+        
+        for( int i=0; i<tcmList.size(); i++ ) {
+            TopicChapterMap tcm = tcmList.get( i ) ;
+            if( lastTopic == null || tcm.getTopic() != lastTopic ) {
+                currentVO = new TopicChapterMappingVO( tcm ) ;
+                voList.add( currentVO ) ;
+            }
+            cm = currentVO.addChapter( tcm ) ;
+            lastTopic = tcm.getTopic() ;
+            
+            cmMap.put( cm.getMappingId(), cm ) ;
+        }
+        
+        Integer[] mappingIds = cmMap.keySet().toArray( new Integer[0] ) ;
+        tcpmRepo.getTopicChapterProblemTypeCounts( mappingIds )
+                .forEach( count -> cmMap.get( count.getMappingId() )
+                                        .getProblemTypeCountMap()
+                                        .put( count.getProblemType(), count.getCount() ) ) ;
+        
+        voList.forEach( TopicChapterMappingVO::calculateProblemCounts );
+        
+        return voList ;
     }
 }
