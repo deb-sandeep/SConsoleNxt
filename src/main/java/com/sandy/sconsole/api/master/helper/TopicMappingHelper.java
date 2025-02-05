@@ -9,10 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.sandy.sconsole.api.master.vo.TopicChapterMappingVO.ChapterMapping;
 
@@ -53,6 +50,43 @@ public class TopicMappingHelper {
         linkAvailableChapterProblemsToTopic( map ) ;
         
         return map.getId() ;
+    }
+    
+    /**
+     * This function deletes any existing mapping of the specified problems and
+     * links them to the specified topic chapter mapping id. This effectively
+     * 'reassigns' a problem from one topic chapter mapping to another.
+     * <p>
+     * IMPORTANT: If this behavior needs to be restricted, it is assumed that
+     * the verification is done at the client end.
+     */
+    public Map<Integer, Integer> linkProblemsToTopicChapterMapping(
+                                int topicChapterMapId, Integer[] problemIds ) {
+        
+        // Delete any existing linkages of the problems, effectively
+        // 'reassigning' the problems to the specified topic chapter mapping.
+        unlinkProblems( problemIds ) ;
+        
+        TopicChapterMap tcm = tcmRepo.findById( topicChapterMapId ).get() ;
+        
+        final List<TopicChapterProblemMap> tcpmList = new ArrayList<>() ;
+        for( Problem p : problemRepo.findAllById( Arrays.asList( problemIds ) ) ) {
+            TopicChapterProblemMap tcpm = new TopicChapterProblemMap() ;
+            tcpm.setProblem( p ) ;
+            tcpm.setTopicChapterMap( tcm ) ;
+            tcpmList.add( tcpm ) ;
+        }
+        
+        Map<Integer, Integer> problemMappingIds = new LinkedHashMap<>() ;
+        for( TopicChapterProblemMap tcpm : tcpmRepo.saveAll( tcpmList ) ) {
+            problemMappingIds.put( tcpm.getProblem().getId(), tcpm.getId() ) ;
+        }
+        
+        return problemMappingIds ;
+    }
+    
+    public void unlinkProblems( Integer[] problemIds ) {
+        tcpmRepo.deleteProblemMappings( problemIds ) ;
     }
     
     /**

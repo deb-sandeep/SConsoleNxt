@@ -1,6 +1,7 @@
 package com.sandy.sconsole.dao.master.repo;
 
 import com.sandy.sconsole.dao.master.TopicChapterProblemMap;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -30,5 +31,12 @@ public interface TopicChapterProblemMapRepo extends CrudRepository<TopicChapterP
             p.problemType.problemType
     """)
     List<TCProblemTypeCount> getTopicChapterProblemTypeCounts( @Param( "tcmIds" ) Integer[] tcmIds ) ;
+    
+    @Modifying
+    @Query( """
+        delete from TopicChapterProblemMap tcpm
+        where tcpm.problem.id in :problemIds
+    """)
+    void deleteProblemMappings( @Param( "problemIds" ) Integer[] problemIds ) ;
     
 }
