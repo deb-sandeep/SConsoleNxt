@@ -7,12 +7,12 @@
 			"desc": "Metadata of individual books",
 			"embeddable": false,
 			"id": "74e3d227-cba7-4b22-aa34-fc123abb195a",
-			"initautoinc": "27",
+			"initautoinc": "30",
 			"name": "book_master",
 			"relations": [
-				"2a56f867-73cf-4d44-8558-79be5b30b9f4",
-				"1bb56b3a-7199-4f78-a9ab-24b76dbbe6b9",
-				"3d4f22bd-2463-437b-a119-42bc7bd20a59"
+				"0d399d9a-be95-4c1a-a5d8-2597aeb0b36b",
+				"b9944571-2183-4a3f-a2a2-5165f8611508",
+				"425ec97c-46a8-4632-a8d8-9a69158dbb38"
 			],
 			"rowformat": "Dynamic",
 			"tabletype": "InnoDB",
@@ -165,7 +165,27 @@
 					"binary": false
 				}
 			],
-			"indexes": [],
+			"indexes": [
+				{
+					"cols": [
+						{
+							"colid": "b1870f45-6e7d-4d51-974f-843892da2190",
+							"id": "a2132eb7-7bb6-45fc-8a5d-ade56b2a970c",
+							"mysql": {
+								"expression": "",
+								"desc": false
+							}
+						}
+					],
+					"fulltext": false,
+					"id": "e85deed4-0b49-47f4-8fab-248291665398",
+					"name": "fk_book_subject_idx",
+					"unique": false,
+					"algorithm": "na",
+					"lockoption": "na",
+					"using": "BTREE"
+				}
+			],
 			"keys": [
 				{
 					"cols": [
@@ -177,25 +197,6 @@
 					"id": "8d9deccf-57c3-4e91-b4c4-c36318f8b186",
 					"isPk": true,
 					"name": "PRIMARY"
-				},
-				{
-					"cols": [
-						{
-							"colid": "b1870f45-6e7d-4d51-974f-843892da2190",
-							"id": "33f780d0-d660-4069-917d-e60800dacb6a"
-						},
-						{
-							"colid": "8eebec49-039c-4982-80d1-0f3f7e3ccf1c",
-							"id": "98cb02ce-7eec-4d56-a51d-cd160d4dae0a"
-						},
-						{
-							"colid": "fce6673d-8c22-41db-bbb6-b3ba7504d1a5",
-							"id": "80f84e31-abe0-4ba6-9113-d677138110cd"
-						}
-					],
-					"id": "e86775dc-0733-4312-beff-cb7d90b4adb6",
-					"isPk": false,
-					"name": "UNIQUE"
 				}
 			],
 			"lines": [],
@@ -217,9 +218,9 @@
 			"initautoinc": "",
 			"name": "chapter_master",
 			"relations": [
-				"1bb56b3a-7199-4f78-a9ab-24b76dbbe6b9",
-				"f5ff06ae-2405-436b-aa5d-a857e781acd4",
-				"6ad7754e-5bcf-49f6-9562-0d63bfb84818"
+				"b9944571-2183-4a3f-a2a2-5165f8611508",
+				"a1e923b9-f3e4-4e85-b746-91a2d848c9d2",
+				"cab20cf1-56be-4126-8426-b6a5909b1852"
 			],
 			"rowformat": "Dynamic",
 			"tabletype": "InnoDB",
@@ -309,16 +310,16 @@
 					"cols": [
 						{
 							"colid": "77313c5e-5e7c-4aeb-acca-9880b0820b40",
-							"id": "4d5c253e-ffa2-458d-94cd-22fc740e0266"
+							"id": "f990f08e-6b23-436a-b6e4-f326f2c0c0fa"
 						},
 						{
 							"colid": "2e7f2f92-0c2b-41a3-9467-a9e16cd28cad",
-							"id": "562c003d-7f11-4569-9ab8-ff171a6850ca"
+							"id": "1cdd1b75-59f3-497b-a844-55ff095d1664"
 						}
 					],
-					"id": "9fd65c8e-53f5-4d4b-8d3d-4253b426a977",
+					"id": "468f2efb-6f67-4771-a276-275c2b7096ed",
 					"isPk": false,
-					"name": "UNIQUE"
+					"name": "uk_chapter"
 				}
 			],
 			"lines": [],
@@ -479,12 +480,12 @@
 			"desc": "Problems in a chapter",
 			"embeddable": false,
 			"id": "03cce6fc-31fa-4e39-a437-0e6e33eafd0e",
-			"initautoinc": "39041",
+			"initautoinc": "45397",
 			"name": "problem_master",
 			"relations": [
-				"65e31e3f-1d61-4cbe-97c1-60935d56bd65",
-				"f5ff06ae-2405-436b-aa5d-a857e781acd4",
-				"bbabede8-0ecf-4b16-976a-9f701c5e50a8"
+				"517bde49-7772-4a6a-a20f-cdd14875cc76",
+				"a1e923b9-f3e4-4e85-b746-91a2d848c9d2",
+				"51ce49de-71ba-4353-9b9a-fa48807dcb72"
 			],
 			"rowformat": "Dynamic",
 			"tabletype": "InnoDB",
@@ -625,8 +626,8 @@
 					"defaultvalue": "",
 					"enum": "",
 					"fk": false,
-					"id": "e7b48e66-ed10-484e-9f73-188de06bbfc8",
-					"name": "problem_id",
+					"id": "f5afd9d4-2f80-4161-9066-eb1a9f0c43f2",
+					"name": "problem_key",
 					"nn": true,
 					"param": "64",
 					"pk": false,
@@ -670,7 +671,7 @@
 			"initautoinc": "",
 			"name": "problem_type_master",
 			"relations": [
-				"65e31e3f-1d61-4cbe-97c1-60935d56bd65"
+				"517bde49-7772-4a6a-a20f-cdd14875cc76"
 			],
 			"rowformat": "Dynamic",
 			"tabletype": "InnoDB",
@@ -1266,8 +1267,8 @@
 			"initautoinc": "",
 			"name": "subject_master",
 			"relations": [
-				"2a56f867-73cf-4d44-8558-79be5b30b9f4",
-				"c1a1164e-7478-40b2-899f-31f750116f01"
+				"0d399d9a-be95-4c1a-a5d8-2597aeb0b36b",
+				"24bfd54f-313e-434c-b881-38ff6ba023e6"
 			],
 			"rowformat": "Dynamic",
 			"tabletype": "InnoDB",
@@ -1324,11 +1325,11 @@
 			"desc": "Map of books applicable for a syllabus",
 			"embeddable": false,
 			"id": "0b713a2b-d568-40a1-bac1-552360d56264",
-			"initautoinc": "27",
+			"initautoinc": "30",
 			"name": "syllabus_book_map",
 			"relations": [
-				"ebf45113-0ab2-40eb-ab5c-1c4dff5f01f8",
-				"3d4f22bd-2463-437b-a119-42bc7bd20a59"
+				"cb070c98-64fa-485d-9592-0cfc62f79320",
+				"425ec97c-46a8-4632-a8d8-9a69158dbb38"
 			],
 			"rowformat": "Dynamic",
 			"tabletype": "InnoDB",
@@ -1414,12 +1415,12 @@
 					"cols": [
 						{
 							"colid": "4d8b2126-5245-4950-ba03-9f0dd95a8fab",
-							"id": "78195acc-d308-4e76-9881-71419ed1b44b"
+							"id": "0b20955c-30ff-4b12-ab37-69897ecb8862"
 						}
 					],
-					"id": "895de8ab-5db1-4bb2-b95a-82b60a1988fc",
+					"id": "d8e7562b-9ee1-4e8f-b43e-6f498d363d2b",
 					"isPk": false,
-					"name": "uk_sbm_book-id"
+					"name": "uk_SBM_book"
 				}
 			],
 			"lines": [],
@@ -1441,9 +1442,9 @@
 			"initautoinc": "",
 			"name": "syllabus_master",
 			"relations": [
-				"ebf45113-0ab2-40eb-ab5c-1c4dff5f01f8",
-				"c1a1164e-7478-40b2-899f-31f750116f01",
-				"ae0d1bbb-da7a-4024-a241-dc98fd633654"
+				"cb070c98-64fa-485d-9592-0cfc62f79320",
+				"24bfd54f-313e-434c-b881-38ff6ba023e6",
+				"e8fcea1d-98c1-43de-a544-819d0b10aa33"
 			],
 			"rowformat": "Dynamic",
 			"tabletype": "InnoDB",
@@ -1489,6 +1490,27 @@
 					"estimatedSize": "",
 					"data": "",
 					"binary": false
+				},
+				{
+					"after": "",
+					"autoinc": false,
+					"charset": "",
+					"collation": "",
+					"comment": "",
+					"datatype": "VARCHAR",
+					"defaultvalue": "'000000'",
+					"enum": "",
+					"fk": false,
+					"id": "be4bca49-0a65-4dc7-88d1-ab2da045c439",
+					"name": "color",
+					"nn": true,
+					"param": "8",
+					"pk": false,
+					"unsigned": false,
+					"zerofill": false,
+					"estimatedSize": "",
+					"data": "",
+					"binary": false
 				}
 			],
 			"indexes": [],
@@ -1521,12 +1543,12 @@
 			"desc": "Map of chapters applicable for a syllabus topic",
 			"embeddable": false,
 			"id": "d7bd2a76-c755-4927-9857-08e74b1d0a96",
-			"initautoinc": "191",
+			"initautoinc": "162",
 			"name": "topic_chapter_map",
 			"relations": [
-				"5c30f7eb-41a0-4875-8911-6798f1e93618",
-				"6ad7754e-5bcf-49f6-9562-0d63bfb84818",
-				"d7910001-16e3-4d7f-8e69-47d701577a6c"
+				"6fd8104d-6f77-478d-b00a-b2749ea49ba9",
+				"cab20cf1-56be-4126-8426-b6a5909b1852",
+				"9215c6d7-cf32-4274-88d4-04f178fb2655"
 			],
 			"rowformat": "Dynamic",
 			"tabletype": "InnoDB",
@@ -1658,7 +1680,27 @@
 					"binary": false
 				}
 			],
-			"indexes": [],
+			"indexes": [
+				{
+					"cols": [
+						{
+							"colid": "f1bef65d-067e-4b32-8081-c124378bb06d",
+							"id": "65194496-7500-48e1-8357-726af1b58746",
+							"mysql": {
+								"expression": "",
+								"desc": false
+							}
+						}
+					],
+					"fulltext": false,
+					"id": "94ff1fde-5bd5-4613-91d0-7f3ecd9dc624",
+					"name": "fk_topic_topic-chapter-map",
+					"unique": false,
+					"algorithm": "na",
+					"lockoption": "na",
+					"using": "BTREE"
+				}
+			],
 			"keys": [
 				{
 					"cols": [
@@ -1675,20 +1717,20 @@
 					"cols": [
 						{
 							"colid": "f1bef65d-067e-4b32-8081-c124378bb06d",
-							"id": "0e3c699f-e3ac-4645-bc4e-cf1f182f25b6"
+							"id": "a448aa20-a1ee-4e64-a204-ff52eb39a676"
 						},
 						{
 							"colid": "f023e370-d378-436b-8dcf-5879b0695f34",
-							"id": "7b6e9274-c4f2-4dec-8045-4c3bf6276b79"
+							"id": "0fbfcd35-f29f-4041-89ad-977cb9194573"
 						},
 						{
 							"colid": "1dd7e285-a948-4c90-a589-dddf6887a734",
-							"id": "f185e3ee-2cb1-461b-8e76-5d66053a442b"
+							"id": "607b917d-f8e1-42f7-b57b-26b298a79888"
 						}
 					],
-					"id": "2e62cf10-81f9-4c4f-acd6-b6b0a162191a",
+					"id": "60f84ee3-af52-45ff-94fd-5dc0b1ea96fc",
 					"isPk": false,
-					"name": "uk_topic-chapter-map"
+					"name": "uk_TCM"
 				}
 			],
 			"lines": [],
@@ -1707,11 +1749,11 @@
 			"desc": "List of all problems from a chapter selected for a topic.",
 			"embeddable": false,
 			"id": "58d2c04d-6f53-4432-b9ae-3a30949d646f",
-			"initautoinc": "1",
+			"initautoinc": "32697",
 			"name": "topic_chapter_problem_map",
 			"relations": [
-				"d7910001-16e3-4d7f-8e69-47d701577a6c",
-				"bbabede8-0ecf-4b16-976a-9f701c5e50a8"
+				"9215c6d7-cf32-4274-88d4-04f178fb2655",
+				"51ce49de-71ba-4353-9b9a-fa48807dcb72"
 			],
 			"rowformat": "Dynamic",
 			"tabletype": "InnoDB",
@@ -1797,12 +1839,12 @@
 					"cols": [
 						{
 							"colid": "6ffcdc2e-434d-4663-b799-06623d2ded5f",
-							"id": "076ba689-45cd-4ca3-a305-3585661de55c"
+							"id": "52f372eb-a136-45d7-ad6a-4c51734acc93"
 						}
 					],
-					"id": "c32cd0c8-7fd0-47f5-9f33-692615830a89",
+					"id": "d8e0e57e-c22b-4c2d-bc37-6a0f9423688a",
 					"isPk": false,
-					"name": "uk_TCM_PM"
+					"name": "uk_TCPM"
 				}
 			],
 			"lines": [],
@@ -1821,11 +1863,12 @@
 			"desc": "First level topics for a syllabus",
 			"embeddable": false,
 			"id": "c17be34e-081a-4590-becf-6e0ac4ff6b06",
-			"initautoinc": "124",
+			"initautoinc": "126",
 			"name": "topic_master",
 			"relations": [
-				"5c30f7eb-41a0-4875-8911-6798f1e93618",
-				"ae0d1bbb-da7a-4024-a241-dc98fd633654"
+				"6fd8104d-6f77-478d-b00a-b2749ea49ba9",
+				"e8fcea1d-98c1-43de-a544-819d0b10aa33",
+				"b55efe8f-b570-4f30-a879-e6ab22102f34"
 			],
 			"rowformat": "Dynamic",
 			"tabletype": "InnoDB",
@@ -1932,6 +1975,359 @@
 			"lines": [],
 			"generate": true,
 			"visible": false,
+			"generateCustomCode": true,
+			"estimatedSize": "",
+			"customCode": "",
+			"ifnotexists": false,
+			"temporary": false
+		},
+		"db1371cf-7f8f-409e-be95-7536efcac9cb": {
+			"collation": "utf8mb4_general_ci",
+			"charset": "utf8mb4",
+			"database": "sconsolenxt",
+			"desc": "Assignment information of topics to specific tracks",
+			"embeddable": false,
+			"id": "db1371cf-7f8f-409e-be95-7536efcac9cb",
+			"initautoinc": "",
+			"name": "topic_track_assignment",
+			"relations": [
+				"ebb61ce9-c70e-4c24-b4b1-04c7f5e4f63d",
+				"b55efe8f-b570-4f30-a879-e6ab22102f34"
+			],
+			"rowformat": "Dynamic",
+			"tabletype": "InnoDB",
+			"cols": [
+				{
+					"after": "",
+					"autoinc": false,
+					"charset": "",
+					"collation": "",
+					"comment": "",
+					"datatype": "INT",
+					"defaultvalue": "",
+					"enum": "",
+					"fk": false,
+					"id": "67b9fcc9-3e75-44d9-84f8-9d2b9ddc84bb",
+					"name": "id",
+					"nn": true,
+					"param": "",
+					"pk": true,
+					"unsigned": false,
+					"zerofill": false,
+					"estimatedSize": "",
+					"data": "",
+					"binary": false
+				},
+				{
+					"after": "",
+					"autoinc": false,
+					"charset": "",
+					"collation": "",
+					"comment": "",
+					"datatype": "INT",
+					"defaultvalue": "",
+					"enum": "",
+					"fk": true,
+					"id": "68af6359-9f96-447b-9553-7785e4c68103",
+					"name": "track_id",
+					"nn": true,
+					"param": "",
+					"pk": false,
+					"unsigned": false,
+					"zerofill": false,
+					"estimatedSize": "",
+					"data": "",
+					"binary": false
+				},
+				{
+					"after": "",
+					"autoinc": false,
+					"charset": "",
+					"collation": "",
+					"comment": "",
+					"datatype": "INT",
+					"defaultvalue": "",
+					"enum": "",
+					"fk": false,
+					"id": "43c276d1-7fa9-4ed7-bedf-8faec8879376",
+					"name": "sequence",
+					"nn": true,
+					"param": "",
+					"pk": false,
+					"unsigned": false,
+					"zerofill": false,
+					"estimatedSize": "",
+					"data": "",
+					"binary": false
+				},
+				{
+					"after": "",
+					"autoinc": false,
+					"charset": "",
+					"collation": "",
+					"comment": "",
+					"datatype": "INT",
+					"defaultvalue": "",
+					"enum": "",
+					"fk": true,
+					"id": "ec8c1bf8-9a4d-47d5-8038-ad7a91733fec",
+					"name": "topic_id",
+					"nn": true,
+					"param": "",
+					"pk": false,
+					"unsigned": false,
+					"zerofill": false,
+					"estimatedSize": "",
+					"data": "",
+					"binary": false
+				},
+				{
+					"after": "",
+					"autoinc": false,
+					"charset": "",
+					"collation": "",
+					"comment": "",
+					"datatype": "INT",
+					"defaultvalue": "0",
+					"enum": "",
+					"fk": false,
+					"id": "ec210a7d-caea-486d-96b5-0a907a81cb30",
+					"name": "buffer_left",
+					"nn": true,
+					"param": "",
+					"pk": false,
+					"unsigned": false,
+					"zerofill": false,
+					"estimatedSize": "",
+					"data": "",
+					"binary": false
+				},
+				{
+					"after": "",
+					"autoinc": false,
+					"charset": "",
+					"collation": "",
+					"comment": "",
+					"datatype": "INT",
+					"defaultvalue": "3",
+					"enum": "",
+					"fk": false,
+					"id": "82c338b8-8b01-4f6b-aec6-4b3d60246470",
+					"name": "buffer_right",
+					"nn": true,
+					"param": "",
+					"pk": false,
+					"unsigned": false,
+					"zerofill": false,
+					"estimatedSize": "",
+					"data": "",
+					"binary": false
+				},
+				{
+					"after": "",
+					"autoinc": false,
+					"charset": "",
+					"collation": "",
+					"comment": "",
+					"datatype": "INT",
+					"defaultvalue": "3",
+					"enum": "",
+					"fk": false,
+					"id": "520ed12c-30e4-432a-baa5-5a9b1850962d",
+					"name": "theory_margin",
+					"nn": true,
+					"param": "",
+					"pk": false,
+					"unsigned": false,
+					"zerofill": false,
+					"estimatedSize": "",
+					"data": "",
+					"binary": false
+				},
+				{
+					"after": "",
+					"autoinc": false,
+					"charset": "",
+					"collation": "",
+					"comment": "",
+					"datatype": "DATE",
+					"defaultvalue": "",
+					"enum": "",
+					"fk": false,
+					"id": "f271b054-a977-44f6-bd4e-095b5c36699c",
+					"name": "start_date",
+					"nn": true,
+					"param": "",
+					"pk": false,
+					"unsigned": false,
+					"zerofill": false,
+					"estimatedSize": "",
+					"data": "",
+					"binary": false
+				},
+				{
+					"after": "",
+					"autoinc": false,
+					"charset": "",
+					"collation": "",
+					"comment": "",
+					"datatype": "DATE",
+					"defaultvalue": "",
+					"enum": "",
+					"fk": false,
+					"id": "6165ae32-1472-443d-8033-4da1b639d4b1",
+					"name": "end_date",
+					"nn": true,
+					"param": "",
+					"pk": false,
+					"unsigned": false,
+					"zerofill": false,
+					"estimatedSize": "",
+					"data": "",
+					"binary": false
+				}
+			],
+			"indexes": [],
+			"keys": [
+				{
+					"cols": [
+						{
+							"colid": "67b9fcc9-3e75-44d9-84f8-9d2b9ddc84bb",
+							"id": "2f426355-ae00-416d-a0cb-abd63550e9e6"
+						}
+					],
+					"id": "1d140b36-315e-446e-867c-e9081f4de6bc",
+					"isPk": true,
+					"name": "PRIMARY"
+				},
+				{
+					"cols": [
+						{
+							"colid": "ec8c1bf8-9a4d-47d5-8038-ad7a91733fec",
+							"id": "b0d1f2ee-b704-4ad2-b584-3c0cebf548d2"
+						}
+					],
+					"id": "83f61d4f-c117-4dcc-b883-a5951cc4cf91",
+					"isPk": false,
+					"name": "UNIQUE"
+				}
+			],
+			"lines": [],
+			"generate": true,
+			"visible": true,
+			"generateCustomCode": true,
+			"estimatedSize": "",
+			"customCode": "",
+			"ifnotexists": false,
+			"temporary": false
+		},
+		"e6087dae-fbd3-4e9d-8764-46a7e4bb5b48": {
+			"collation": "utf8mb4_general_ci",
+			"charset": "utf8mb4",
+			"database": "sconsolenxt",
+			"desc": "Master data of study tracks and their properties",
+			"embeddable": false,
+			"id": "e6087dae-fbd3-4e9d-8764-46a7e4bb5b48",
+			"initautoinc": "7",
+			"name": "track_master",
+			"relations": [
+				"ebb61ce9-c70e-4c24-b4b1-04c7f5e4f63d"
+			],
+			"rowformat": "Dynamic",
+			"tabletype": "InnoDB",
+			"cols": [
+				{
+					"after": "",
+					"autoinc": true,
+					"charset": "",
+					"collation": "",
+					"comment": "",
+					"datatype": "INT",
+					"defaultvalue": "",
+					"enum": "",
+					"fk": false,
+					"id": "6ee7ccf6-85f3-46f4-82c3-90047e4f4192",
+					"name": "id",
+					"nn": true,
+					"param": "",
+					"pk": true,
+					"unsigned": false,
+					"zerofill": false,
+					"estimatedSize": "",
+					"data": "",
+					"binary": false
+				},
+				{
+					"after": "",
+					"autoinc": false,
+					"charset": "",
+					"collation": "",
+					"comment": "",
+					"datatype": "VARCHAR",
+					"defaultvalue": "",
+					"enum": "",
+					"fk": false,
+					"id": "38fcf635-fd1c-4e39-8994-25ba2bcbec0c",
+					"name": "track_name",
+					"nn": true,
+					"param": "64",
+					"pk": false,
+					"unsigned": false,
+					"zerofill": false,
+					"estimatedSize": "",
+					"data": "",
+					"binary": false
+				},
+				{
+					"after": "",
+					"autoinc": false,
+					"charset": "",
+					"collation": "",
+					"comment": "",
+					"datatype": "VARCHAR",
+					"defaultvalue": "",
+					"enum": "",
+					"fk": false,
+					"id": "f443bff5-8130-413d-8374-6823da5d83e2",
+					"name": "color",
+					"nn": false,
+					"param": "8",
+					"pk": false,
+					"unsigned": false,
+					"zerofill": false,
+					"estimatedSize": "",
+					"data": "",
+					"binary": false
+				}
+			],
+			"indexes": [],
+			"keys": [
+				{
+					"cols": [
+						{
+							"colid": "6ee7ccf6-85f3-46f4-82c3-90047e4f4192",
+							"id": "349d1434-6b0c-4308-9cc0-12bfecb206aa"
+						}
+					],
+					"id": "9741e916-8a05-4cc4-906d-de153485fdbb",
+					"isPk": true,
+					"name": "PRIMARY"
+				},
+				{
+					"cols": [
+						{
+							"colid": "38fcf635-fd1c-4e39-8994-25ba2bcbec0c",
+							"id": "c66628a7-14a6-4d75-8b74-f2d9f78a89d6"
+						}
+					],
+					"id": "47cebfcd-6c38-4370-92d1-0fa99bb7b621",
+					"isPk": false,
+					"name": "UNIQUE"
+				}
+			],
+			"lines": [],
+			"generate": true,
+			"visible": true,
 			"generateCustomCode": true,
 			"estimatedSize": "",
 			"customCode": "",
@@ -2487,7 +2883,7 @@
 		}
 	},
 	"relations": {
-		"2a56f867-73cf-4d44-8558-79be5b30b9f4": {
+		"0d399d9a-be95-4c1a-a5d8-2597aeb0b36b": {
 			"c_p": "one",
 			"c_cp": "",
 			"c_cch": "",
@@ -2497,14 +2893,14 @@
 			"desc": "",
 			"type": "identifying",
 			"child": "74e3d227-cba7-4b22-aa34-fc123abb195a",
-			"id": "2a56f867-73cf-4d44-8558-79be5b30b9f4",
-			"name": "fk_subject_book",
+			"id": "0d399d9a-be95-4c1a-a5d8-2597aeb0b36b",
+			"name": "fk_book_subject",
 			"parent": "cf501777-e1e3-4947-88ab-87af891ac817",
 			"parent_key": "069f12f6-4a9a-4173-9cca-eb23f40c7c18",
 			"cols": [
 				{
 					"childcol": "b1870f45-6e7d-4d51-974f-843892da2190",
-					"id": "45a70343-a681-446e-b8bc-6ce824657163",
+					"id": "52b037fc-3c56-47b7-b113-c83331e3f52c",
 					"parentcol": "b5ae4c42-ff8f-4c93-ba43-3e50349701b4"
 				}
 			],
@@ -2513,9 +2909,9 @@
 			"generate": true,
 			"generateCustomCode": true,
 			"customCode": "",
-			"relationColor": "#ffeb3b"
+			"relationColor": "#ff9800"
 		},
-		"1bb56b3a-7199-4f78-a9ab-24b76dbbe6b9": {
+		"b9944571-2183-4a3f-a2a2-5165f8611508": {
 			"c_p": "one",
 			"c_cp": "",
 			"c_cch": "",
@@ -2525,14 +2921,14 @@
 			"desc": "",
 			"type": "identifying",
 			"child": "6dbd3fc8-8082-48e9-981c-75c0d80f2d12",
-			"id": "1bb56b3a-7199-4f78-a9ab-24b76dbbe6b9",
-			"name": "fk_book_chapter",
+			"id": "b9944571-2183-4a3f-a2a2-5165f8611508",
+			"name": "fk_chapter_book",
 			"parent": "74e3d227-cba7-4b22-aa34-fc123abb195a",
 			"parent_key": "8d9deccf-57c3-4e91-b4c4-c36318f8b186",
 			"cols": [
 				{
 					"childcol": "77313c5e-5e7c-4aeb-acca-9880b0820b40",
-					"id": "b1342e90-afe9-4b33-a777-d3eb24c97bf9",
+					"id": "3fbf0f31-d953-4489-a0d1-622cfdc0979d",
 					"parentcol": "dba5b3d9-62ec-4761-b34e-e2466600a962"
 				}
 			],
@@ -2541,9 +2937,9 @@
 			"generate": true,
 			"generateCustomCode": true,
 			"customCode": "",
-			"relationColor": "#ffeb3b"
+			"relationColor": "#ff9800"
 		},
-		"65e31e3f-1d61-4cbe-97c1-60935d56bd65": {
+		"517bde49-7772-4a6a-a20f-cdd14875cc76": {
 			"c_p": "one",
 			"c_cp": "",
 			"c_cch": "",
@@ -2553,14 +2949,14 @@
 			"desc": "",
 			"type": "identifying",
 			"child": "03cce6fc-31fa-4e39-a437-0e6e33eafd0e",
-			"id": "65e31e3f-1d61-4cbe-97c1-60935d56bd65",
-			"name": "fk_problem-type_problem",
+			"id": "517bde49-7772-4a6a-a20f-cdd14875cc76",
+			"name": "fk_problem_PT",
 			"parent": "aa118985-ca82-4c98-bbdf-c6654aa4f75a",
 			"parent_key": "e9d6f91b-804c-43ea-b38d-efacbb904773",
 			"cols": [
 				{
 					"childcol": "4c644588-a69b-421a-869e-0aa2e476e7de",
-					"id": "e06ca216-2021-4f4f-b0a2-7fdb6e86c801",
+					"id": "6b04f193-c9f3-4bed-a536-1e6ab8b91281",
 					"parentcol": "a2b81a36-721e-4bad-a247-ed961d359406"
 				}
 			],
@@ -2569,9 +2965,9 @@
 			"generate": true,
 			"generateCustomCode": true,
 			"customCode": "",
-			"relationColor": "#ffeb3b"
+			"relationColor": "#ff9800"
 		},
-		"f5ff06ae-2405-436b-aa5d-a857e781acd4": {
+		"a1e923b9-f3e4-4e85-b746-91a2d848c9d2": {
 			"c_p": "one",
 			"c_cp": "",
 			"c_cch": "",
@@ -2581,19 +2977,19 @@
 			"desc": "",
 			"type": "identifying",
 			"child": "03cce6fc-31fa-4e39-a437-0e6e33eafd0e",
-			"id": "f5ff06ae-2405-436b-aa5d-a857e781acd4",
-			"name": "fk_chapter_problem",
+			"id": "a1e923b9-f3e4-4e85-b746-91a2d848c9d2",
+			"name": "fk_problem_chapter",
 			"parent": "6dbd3fc8-8082-48e9-981c-75c0d80f2d12",
 			"parent_key": "250cd6d7-134b-4527-8d9d-f034a006918f",
 			"cols": [
 				{
 					"childcol": "1a5afc29-da99-461d-9a62-f8f61bde5ac9",
-					"id": "31d57a3e-84a2-4df5-ac05-3b9c58bd8b8c",
+					"id": "683c5d66-c4c1-4cf9-a20c-0059b37678e0",
 					"parentcol": "77313c5e-5e7c-4aeb-acca-9880b0820b40"
 				},
 				{
 					"childcol": "31a7755e-baa8-4f87-b849-b3848bc1f0ef",
-					"id": "770f86fd-96c1-4333-918b-db42bd1c1469",
+					"id": "ea220614-1b99-4689-881b-e063fff373ff",
 					"parentcol": "2e7f2f92-0c2b-41a3-9467-a9e16cd28cad"
 				}
 			],
@@ -2602,9 +2998,9 @@
 			"generate": true,
 			"generateCustomCode": true,
 			"customCode": "",
-			"relationColor": "#ffeb3b"
+			"relationColor": "#ff9800"
 		},
-		"ebf45113-0ab2-40eb-ab5c-1c4dff5f01f8": {
+		"cb070c98-64fa-485d-9592-0cfc62f79320": {
 			"c_p": "one",
 			"c_cp": "",
 			"c_cch": "",
@@ -2614,14 +3010,14 @@
 			"desc": "",
 			"type": "identifying",
 			"child": "0b713a2b-d568-40a1-bac1-552360d56264",
-			"id": "ebf45113-0ab2-40eb-ab5c-1c4dff5f01f8",
-			"name": "fk_syllabus_syllabus-book-map",
+			"id": "cb070c98-64fa-485d-9592-0cfc62f79320",
+			"name": "fk_SBM_syllabus",
 			"parent": "af87fb32-ca82-4d55-975a-a59d21bb572c",
 			"parent_key": "e9c28f90-a6f5-45b0-91fa-36580ccb169e",
 			"cols": [
 				{
 					"childcol": "5ee077c4-e270-42e9-8388-f02fe1e7221e",
-					"id": "ffc2016e-c282-4318-b865-f29f3d3c7326",
+					"id": "cf1e32b2-50c5-46d4-ba10-0227ba94dd14",
 					"parentcol": "1ca9641b-ccdb-47f8-8d0b-10440a10501a"
 				}
 			],
@@ -2630,9 +3026,9 @@
 			"generate": true,
 			"generateCustomCode": true,
 			"customCode": "",
-			"relationColor": "#ffeb3b"
+			"relationColor": "#ff9800"
 		},
-		"3d4f22bd-2463-437b-a119-42bc7bd20a59": {
+		"425ec97c-46a8-4632-a8d8-9a69158dbb38": {
 			"c_p": "one",
 			"c_cp": "",
 			"c_cch": "",
@@ -2642,14 +3038,14 @@
 			"desc": "",
 			"type": "identifying",
 			"child": "0b713a2b-d568-40a1-bac1-552360d56264",
-			"id": "3d4f22bd-2463-437b-a119-42bc7bd20a59",
-			"name": "fk_book_syllabus-book-map",
+			"id": "425ec97c-46a8-4632-a8d8-9a69158dbb38",
+			"name": "fk_SBM_book",
 			"parent": "74e3d227-cba7-4b22-aa34-fc123abb195a",
 			"parent_key": "8d9deccf-57c3-4e91-b4c4-c36318f8b186",
 			"cols": [
 				{
 					"childcol": "4d8b2126-5245-4950-ba03-9f0dd95a8fab",
-					"id": "8ab91d87-53e3-48cd-bb77-93debe7eec55",
+					"id": "54a159f0-bf31-4ca1-8839-416abf00d819",
 					"parentcol": "dba5b3d9-62ec-4761-b34e-e2466600a962"
 				}
 			],
@@ -2658,9 +3054,9 @@
 			"generate": true,
 			"generateCustomCode": true,
 			"customCode": "",
-			"relationColor": "#ffeb3b"
+			"relationColor": "#ff9800"
 		},
-		"c1a1164e-7478-40b2-899f-31f750116f01": {
+		"24bfd54f-313e-434c-b881-38ff6ba023e6": {
 			"c_p": "one",
 			"c_cp": "",
 			"c_cch": "",
@@ -2670,14 +3066,14 @@
 			"desc": "",
 			"type": "identifying",
 			"child": "af87fb32-ca82-4d55-975a-a59d21bb572c",
-			"id": "c1a1164e-7478-40b2-899f-31f750116f01",
-			"name": "fk_subject_syllabus",
+			"id": "24bfd54f-313e-434c-b881-38ff6ba023e6",
+			"name": "fk_syllabus_subject",
 			"parent": "cf501777-e1e3-4947-88ab-87af891ac817",
 			"parent_key": "069f12f6-4a9a-4173-9cca-eb23f40c7c18",
 			"cols": [
 				{
 					"childcol": "c1b5bc2c-591c-4c94-9ca4-4b9d568a0847",
-					"id": "a70ce039-d04d-4518-a2e9-6f53bac7d353",
+					"id": "d2fd5cd3-e81c-451e-89a4-098c220fd9f1",
 					"parentcol": "b5ae4c42-ff8f-4c93-ba43-3e50349701b4"
 				}
 			],
@@ -2686,9 +3082,9 @@
 			"generate": true,
 			"generateCustomCode": true,
 			"customCode": "",
-			"relationColor": "#ffeb3b"
+			"relationColor": "#ff9800"
 		},
-		"5c30f7eb-41a0-4875-8911-6798f1e93618": {
+		"6fd8104d-6f77-478d-b00a-b2749ea49ba9": {
 			"c_p": "one",
 			"c_cp": "",
 			"c_cch": "",
@@ -2698,14 +3094,14 @@
 			"desc": "",
 			"type": "identifying",
 			"child": "d7bd2a76-c755-4927-9857-08e74b1d0a96",
-			"id": "5c30f7eb-41a0-4875-8911-6798f1e93618",
-			"name": "fk_topic_topic-chapter-map",
+			"id": "6fd8104d-6f77-478d-b00a-b2749ea49ba9",
+			"name": "fk_TCM_topic",
 			"parent": "c17be34e-081a-4590-becf-6e0ac4ff6b06",
 			"parent_key": "d8c58e9a-e1ad-4ae5-b4d6-b4ad4099e493",
 			"cols": [
 				{
 					"childcol": "f1bef65d-067e-4b32-8081-c124378bb06d",
-					"id": "adb81e46-be6e-44df-8e3e-553153e60594",
+					"id": "64d16ffb-42b2-4bec-a438-ec53ec0cbc7b",
 					"parentcol": "8831cdc7-7d52-4be4-aa52-cdf8f61aa8a2"
 				}
 			],
@@ -2714,9 +3110,9 @@
 			"generate": true,
 			"generateCustomCode": true,
 			"customCode": "",
-			"relationColor": "#ffeb3b"
+			"relationColor": "#ff9800"
 		},
-		"6ad7754e-5bcf-49f6-9562-0d63bfb84818": {
+		"cab20cf1-56be-4126-8426-b6a5909b1852": {
 			"c_p": "one",
 			"c_cp": "",
 			"c_cch": "",
@@ -2726,19 +3122,19 @@
 			"desc": "",
 			"type": "identifying",
 			"child": "d7bd2a76-c755-4927-9857-08e74b1d0a96",
-			"id": "6ad7754e-5bcf-49f6-9562-0d63bfb84818",
-			"name": "fk_chapter_topic-chapter-map",
+			"id": "cab20cf1-56be-4126-8426-b6a5909b1852",
+			"name": "fk_TCM_chapter",
 			"parent": "6dbd3fc8-8082-48e9-981c-75c0d80f2d12",
 			"parent_key": "250cd6d7-134b-4527-8d9d-f034a006918f",
 			"cols": [
 				{
 					"childcol": "f023e370-d378-436b-8dcf-5879b0695f34",
-					"id": "df6c7bce-e97b-4fc7-b598-f63ce641dabb",
+					"id": "14f534cd-665b-4a21-ba13-398f138ccbce",
 					"parentcol": "77313c5e-5e7c-4aeb-acca-9880b0820b40"
 				},
 				{
 					"childcol": "1dd7e285-a948-4c90-a589-dddf6887a734",
-					"id": "0683cbb9-887a-4713-8655-91b0efaa808f",
+					"id": "4909502a-eeee-4eb0-9773-115fd6275930",
 					"parentcol": "2e7f2f92-0c2b-41a3-9467-a9e16cd28cad"
 				}
 			],
@@ -2747,9 +3143,9 @@
 			"generate": true,
 			"generateCustomCode": true,
 			"customCode": "",
-			"relationColor": "#ffeb3b"
+			"relationColor": "#ff9800"
 		},
-		"d7910001-16e3-4d7f-8e69-47d701577a6c": {
+		"9215c6d7-cf32-4274-88d4-04f178fb2655": {
 			"c_p": "one",
 			"c_cp": "",
 			"c_cch": "",
@@ -2759,25 +3155,25 @@
 			"desc": "",
 			"type": "identifying",
 			"child": "58d2c04d-6f53-4432-b9ae-3a30949d646f",
-			"id": "d7910001-16e3-4d7f-8e69-47d701577a6c",
-			"name": "fk_TCM_TCPM",
+			"id": "9215c6d7-cf32-4274-88d4-04f178fb2655",
+			"name": "fk_TCPM_TCM",
 			"parent": "d7bd2a76-c755-4927-9857-08e74b1d0a96",
 			"parent_key": "d80863ed-8a71-4980-b3cc-e5d64aa5f394",
 			"cols": [
 				{
 					"childcol": "db8fd724-aa82-4369-aa86-8f3331f8a50f",
-					"id": "41aebabd-7a87-45ae-be13-4428bc9e2305",
+					"id": "9ff3ec27-1d18-41ba-94fb-fd6a0d4bd1dd",
 					"parentcol": "5a5abaf0-09da-4deb-b1ec-cbc73d199078"
 				}
 			],
-			"ri_pd": "Restrict",
+			"ri_pd": "Cascade",
 			"ri_pu": "Cascade",
 			"generate": true,
 			"generateCustomCode": true,
 			"customCode": "",
-			"relationColor": "#ffeb3b"
+			"relationColor": "#4caf50"
 		},
-		"bbabede8-0ecf-4b16-976a-9f701c5e50a8": {
+		"51ce49de-71ba-4353-9b9a-fa48807dcb72": {
 			"c_p": "one",
 			"c_cp": "",
 			"c_cch": "",
@@ -2787,25 +3183,25 @@
 			"desc": "",
 			"type": "identifying",
 			"child": "58d2c04d-6f53-4432-b9ae-3a30949d646f",
-			"id": "bbabede8-0ecf-4b16-976a-9f701c5e50a8",
-			"name": "fk_problem_TCPM",
+			"id": "51ce49de-71ba-4353-9b9a-fa48807dcb72",
+			"name": "fk_TCPM_problem",
 			"parent": "03cce6fc-31fa-4e39-a437-0e6e33eafd0e",
 			"parent_key": "14f259b6-49ed-4f11-8c8d-64f350c1ffeb",
 			"cols": [
 				{
 					"childcol": "6ffcdc2e-434d-4663-b799-06623d2ded5f",
-					"id": "769ee586-da96-4b65-9a04-a375257558ec",
+					"id": "f097f5d3-1fb7-4ee7-bb33-118c0080c5aa",
 					"parentcol": "5c9a58f3-34c5-41f6-970a-14a01fcfcbf8"
 				}
 			],
-			"ri_pd": "Restrict",
+			"ri_pd": "No action",
 			"ri_pu": "Cascade",
 			"generate": true,
 			"generateCustomCode": true,
 			"customCode": "",
-			"relationColor": "#ffeb3b"
+			"relationColor": "#ff9800"
 		},
-		"ae0d1bbb-da7a-4024-a241-dc98fd633654": {
+		"e8fcea1d-98c1-43de-a544-819d0b10aa33": {
 			"c_p": "one",
 			"c_cp": "",
 			"c_cch": "",
@@ -2815,14 +3211,14 @@
 			"desc": "",
 			"type": "identifying",
 			"child": "c17be34e-081a-4590-becf-6e0ac4ff6b06",
-			"id": "ae0d1bbb-da7a-4024-a241-dc98fd633654",
-			"name": "fk_syllabus_topic",
+			"id": "e8fcea1d-98c1-43de-a544-819d0b10aa33",
+			"name": "fk_topic_syllabus",
 			"parent": "af87fb32-ca82-4d55-975a-a59d21bb572c",
 			"parent_key": "e9c28f90-a6f5-45b0-91fa-36580ccb169e",
 			"cols": [
 				{
 					"childcol": "0c488a8b-de58-40c9-b799-861219027d34",
-					"id": "89af7dc4-8d97-4ae8-a59a-3dc402465b96",
+					"id": "c5e3d1c3-67bf-49ac-9797-7e7a669897c8",
 					"parentcol": "1ca9641b-ccdb-47f8-8d0b-10440a10501a"
 				}
 			],
@@ -2831,7 +3227,63 @@
 			"generate": true,
 			"generateCustomCode": true,
 			"customCode": "",
-			"relationColor": "#ffeb3b"
+			"relationColor": "#ff9800"
+		},
+		"ebb61ce9-c70e-4c24-b4b1-04c7f5e4f63d": {
+			"c_p": "one",
+			"c_cp": "",
+			"c_cch": "",
+			"c_ch": "many",
+			"c_mch": "true",
+			"c_mp": "true",
+			"desc": "",
+			"type": "identifying",
+			"child": "db1371cf-7f8f-409e-be95-7536efcac9cb",
+			"id": "ebb61ce9-c70e-4c24-b4b1-04c7f5e4f63d",
+			"name": "fk_TTA_track",
+			"parent": "e6087dae-fbd3-4e9d-8764-46a7e4bb5b48",
+			"parent_key": "9741e916-8a05-4cc4-906d-de153485fdbb",
+			"cols": [
+				{
+					"childcol": "68af6359-9f96-447b-9553-7785e4c68103",
+					"id": "e6a62292-a22c-4928-808d-75b8c810d2d1",
+					"parentcol": "6ee7ccf6-85f3-46f4-82c3-90047e4f4192"
+				}
+			],
+			"ri_pd": "No action",
+			"ri_pu": "Cascade",
+			"generate": true,
+			"generateCustomCode": true,
+			"customCode": "",
+			"relationColor": "#ff9800"
+		},
+		"b55efe8f-b570-4f30-a879-e6ab22102f34": {
+			"c_p": "one",
+			"c_cp": "",
+			"c_cch": "",
+			"c_ch": "one",
+			"c_mch": "true",
+			"c_mp": "true",
+			"desc": "",
+			"type": "identifying",
+			"child": "db1371cf-7f8f-409e-be95-7536efcac9cb",
+			"id": "b55efe8f-b570-4f30-a879-e6ab22102f34",
+			"name": "fk_TTA_topic",
+			"parent": "c17be34e-081a-4590-becf-6e0ac4ff6b06",
+			"parent_key": "d8c58e9a-e1ad-4ae5-b4d6-b4ad4099e493",
+			"cols": [
+				{
+					"childcol": "ec8c1bf8-9a4d-47d5-8038-ad7a91733fec",
+					"id": "b28484e6-b7b5-452b-83e0-c20e9652764e",
+					"parentcol": "8831cdc7-7d52-4be4-aa52-cdf8f61aa8a2"
+				}
+			],
+			"ri_pd": "No action",
+			"ri_pu": "Cascade",
+			"generate": true,
+			"generateCustomCode": true,
+			"customCode": "",
+			"relationColor": "#ff9800"
 		},
 		"c9889e60-3f92-49f6-a274-ca9d023bf7c9": {
 			"c_p": "one",
@@ -2948,7 +3400,7 @@
 			"includeWarnings": "yes",
 			"includeCreationSql": "no"
 		},
-		"lastSaved": 1738481960722,
+		"lastSaved": 1738831323064,
 		"connectionId": "7af83ebc-4655-4802-a6d0-2c6890f3e1ce",
 		"modelHTMLReportDir": "/Users/sandeep/temp"
 	},
@@ -3132,6 +3584,30 @@
 					"backgroundOpacity": "10",
 					"collapsed": false
 				},
+				"db1371cf-7f8f-409e-be95-7536efcac9cb": {
+					"x": 454,
+					"y": 368,
+					"gHeight": -1,
+					"gWidth": -1,
+					"background": "#03a9f4",
+					"color": "#ffffff",
+					"referencedItemId": "db1371cf-7f8f-409e-be95-7536efcac9cb",
+					"resized": false,
+					"autoExpand": true,
+					"backgroundOpacity": "10"
+				},
+				"e6087dae-fbd3-4e9d-8764-46a7e4bb5b48": {
+					"x": 135,
+					"y": 257,
+					"gHeight": -1,
+					"gWidth": -1,
+					"background": "#03a9f4",
+					"color": "#ffffff",
+					"referencedItemId": "e6087dae-fbd3-4e9d-8764-46a7e4bb5b48",
+					"resized": false,
+					"autoExpand": true,
+					"backgroundOpacity": "10"
+				},
 				"bb382f8e-1823-4fd6-95ea-6e4cff93233a": {
 					"x": 479,
 					"y": 343,
@@ -3209,7 +3685,7 @@
 			"id": "a645338f-6646-4afa-9f22-57449311fbfb",
 			"keysgraphics": false,
 			"linegraphics": "detailed",
-			"zoom": 0.9,
+			"zoom": 0.8,
 			"background": "#222222",
 			"lineColor": "transparent",
 			"isOpen": true,
@@ -3217,23 +3693,10 @@
 			"diagramItems": {
 				"c17be34e-081a-4590-becf-6e0ac4ff6b06": {
 					"referencedItemId": "c17be34e-081a-4590-becf-6e0ac4ff6b06",
-					"x": 777,
+					"x": 776,
 					"y": 55,
 					"gHeight": 99,
 					"gWidth": 252,
-					"color": "#ffffff",
-					"background": "#009688",
-					"resized": false,
-					"autoExpand": true,
-					"backgroundOpacity": "10",
-					"collapsed": false
-				},
-				"74e3d227-cba7-4b22-aa34-fc123abb195a": {
-					"referencedItemId": "74e3d227-cba7-4b22-aa34-fc123abb195a",
-					"x": 428,
-					"y": 374,
-					"gHeight": 153,
-					"gWidth": 272,
 					"color": "#ffffff",
 					"background": "#03a9f4",
 					"resized": false,
@@ -3245,10 +3708,10 @@
 					"referencedItemId": "af87fb32-ca82-4d55-975a-a59d21bb572c",
 					"x": 428,
 					"y": 55,
-					"gHeight": 63,
+					"gHeight": 81,
 					"gWidth": 252,
 					"color": "#ffffff",
-					"background": "#009688",
+					"background": "#03a9f4",
 					"resized": false,
 					"autoExpand": true,
 					"backgroundOpacity": "10",
@@ -3287,7 +3750,7 @@
 					"gHeight": 63,
 					"gWidth": 241,
 					"color": "#ffffff",
-					"background": "#009688",
+					"background": "#03a9f4",
 					"resized": false,
 					"autoExpand": true,
 					"backgroundOpacity": "10",
@@ -3308,8 +3771,8 @@
 				},
 				"d7bd2a76-c755-4927-9857-08e74b1d0a96": {
 					"referencedItemId": "d7bd2a76-c755-4927-9857-08e74b1d0a96",
-					"x": 1180,
-					"y": 204,
+					"x": 1176,
+					"y": 578,
 					"gHeight": 135,
 					"gWidth": 292,
 					"color": "#ffffff",
@@ -3326,7 +3789,7 @@
 					"gHeight": 45,
 					"gWidth": 247,
 					"color": "#ffffff",
-					"background": "#009688",
+					"background": "#03a9f4",
 					"resized": false,
 					"autoExpand": true,
 					"backgroundOpacity": "10",
@@ -3334,10 +3797,49 @@
 				},
 				"58d2c04d-6f53-4432-b9ae-3a30949d646f": {
 					"referencedItemId": "58d2c04d-6f53-4432-b9ae-3a30949d646f",
-					"x": 1177,
-					"y": 567,
-					"gHeight": 81,
-					"gWidth": 241,
+					"x": 776,
+					"y": 577,
+					"gHeight": 83,
+					"gWidth": 254,
+					"color": "#ffffff",
+					"background": "#03a9f4",
+					"resized": true,
+					"autoExpand": true,
+					"backgroundOpacity": "10",
+					"collapsed": false
+				},
+				"e6087dae-fbd3-4e9d-8764-46a7e4bb5b48": {
+					"referencedItemId": "e6087dae-fbd3-4e9d-8764-46a7e4bb5b48",
+					"x": 1184,
+					"y": 59,
+					"gHeight": 89,
+					"gWidth": 286,
+					"color": "#ffffff",
+					"background": "#03a9f4",
+					"resized": true,
+					"autoExpand": true,
+					"backgroundOpacity": "10",
+					"collapsed": false
+				},
+				"db1371cf-7f8f-409e-be95-7536efcac9cb": {
+					"referencedItemId": "db1371cf-7f8f-409e-be95-7536efcac9cb",
+					"x": 1185,
+					"y": 215,
+					"gHeight": 196,
+					"gWidth": 280,
+					"color": "#ffffff",
+					"background": "#03a9f4",
+					"resized": true,
+					"autoExpand": true,
+					"backgroundOpacity": "10",
+					"collapsed": false
+				},
+				"74e3d227-cba7-4b22-aa34-fc123abb195a": {
+					"referencedItemId": "74e3d227-cba7-4b22-aa34-fc123abb195a",
+					"x": 427,
+					"y": 337,
+					"gHeight": 153,
+					"gWidth": 272,
 					"color": "#ffffff",
 					"background": "#03a9f4",
 					"resized": false,
@@ -3369,7 +3871,7 @@
 			"showColumns": true,
 			"showColumnDataTypes": true,
 			"showSampleData": false,
-			"showTableIndexes": true,
+			"showTableIndexes": false,
 			"showTableDescriptions": true,
 			"showRelations": true,
 			"backgroundImage": "na",
@@ -3511,23 +4013,27 @@
 		"d7bd2a76-c755-4927-9857-08e74b1d0a96",
 		"58d2c04d-6f53-4432-b9ae-3a30949d646f",
 		"c17be34e-081a-4590-becf-6e0ac4ff6b06",
+		"db1371cf-7f8f-409e-be95-7536efcac9cb",
+		"e6087dae-fbd3-4e9d-8764-46a7e4bb5b48",
 		"bb382f8e-1823-4fd6-95ea-6e4cff93233a",
 		"f26a0d5f-a5b3-46a7-936c-e288c96716da",
 		"07ecb06c-b86e-48dd-a494-bae034e854d7",
 		"c9889e60-3f92-49f6-a274-ca9d023bf7c9",
 		"10898ae7-34a4-4697-ba4c-96869007b8b3",
-		"d7910001-16e3-4d7f-8e69-47d701577a6c",
-		"1bb56b3a-7199-4f78-a9ab-24b76dbbe6b9",
-		"3d4f22bd-2463-437b-a119-42bc7bd20a59",
-		"f5ff06ae-2405-436b-aa5d-a857e781acd4",
-		"6ad7754e-5bcf-49f6-9562-0d63bfb84818",
-		"65e31e3f-1d61-4cbe-97c1-60935d56bd65",
-		"bbabede8-0ecf-4b16-976a-9f701c5e50a8",
-		"2a56f867-73cf-4d44-8558-79be5b30b9f4",
-		"c1a1164e-7478-40b2-899f-31f750116f01",
-		"ebf45113-0ab2-40eb-ab5c-1c4dff5f01f8",
-		"ae0d1bbb-da7a-4024-a241-dc98fd633654",
-		"5c30f7eb-41a0-4875-8911-6798f1e93618"
+		"425ec97c-46a8-4632-a8d8-9a69158dbb38",
+		"cb070c98-64fa-485d-9592-0cfc62f79320",
+		"cab20cf1-56be-4126-8426-b6a5909b1852",
+		"6fd8104d-6f77-478d-b00a-b2749ea49ba9",
+		"9215c6d7-cf32-4274-88d4-04f178fb2655",
+		"51ce49de-71ba-4353-9b9a-fa48807dcb72",
+		"b55efe8f-b570-4f30-a879-e6ab22102f34",
+		"ebb61ce9-c70e-4c24-b4b1-04c7f5e4f63d",
+		"0d399d9a-be95-4c1a-a5d8-2597aeb0b36b",
+		"b9944571-2183-4a3f-a2a2-5165f8611508",
+		"517bde49-7772-4a6a-a20f-cdd14875cc76",
+		"a1e923b9-f3e4-4e85-b746-91a2d848c9d2",
+		"24bfd54f-313e-434c-b881-38ff6ba023e6",
+		"e8fcea1d-98c1-43de-a544-819d0b10aa33"
 	],
 	"collapsedTreeItems": [],
 	"reverseStats": {
@@ -3588,7 +4094,7 @@
 					"includeWarnings": "yes",
 					"includeCreationSql": "no"
 				},
-				"lastSaved": 1738481960722,
+				"lastSaved": 1738831323064,
 				"connectionId": "7af83ebc-4655-4802-a6d0-2c6890f3e1ce",
 				"modelHTMLReportDir": "/Users/sandeep/temp",
 				"filePath": "/Users/sandeep/projects/sconsole/SConsoleNxt/doc/sconsole.dbmodel.dmm"
@@ -3601,12 +4107,12 @@
 					"desc": "Metadata of individual books",
 					"embeddable": false,
 					"id": "74e3d227-cba7-4b22-aa34-fc123abb195a",
-					"initautoinc": "27",
+					"initautoinc": "30",
 					"name": "book_master",
 					"relations": [
-						"2a56f867-73cf-4d44-8558-79be5b30b9f4",
-						"1bb56b3a-7199-4f78-a9ab-24b76dbbe6b9",
-						"3d4f22bd-2463-437b-a119-42bc7bd20a59"
+						"0d399d9a-be95-4c1a-a5d8-2597aeb0b36b",
+						"b9944571-2183-4a3f-a2a2-5165f8611508",
+						"425ec97c-46a8-4632-a8d8-9a69158dbb38"
 					],
 					"rowformat": "Dynamic",
 					"tabletype": "InnoDB",
@@ -3759,7 +4265,27 @@
 							"binary": false
 						}
 					],
-					"indexes": [],
+					"indexes": [
+						{
+							"cols": [
+								{
+									"colid": "b1870f45-6e7d-4d51-974f-843892da2190",
+									"id": "a2132eb7-7bb6-45fc-8a5d-ade56b2a970c",
+									"mysql": {
+										"expression": "",
+										"desc": false
+									}
+								}
+							],
+							"fulltext": false,
+							"id": "e85deed4-0b49-47f4-8fab-248291665398",
+							"name": "fk_book_subject_idx",
+							"unique": false,
+							"algorithm": "na",
+							"lockoption": "na",
+							"using": "BTREE"
+						}
+					],
 					"keys": [
 						{
 							"cols": [
@@ -3771,25 +4297,6 @@
 							"id": "8d9deccf-57c3-4e91-b4c4-c36318f8b186",
 							"isPk": true,
 							"name": "PRIMARY"
-						},
-						{
-							"cols": [
-								{
-									"colid": "b1870f45-6e7d-4d51-974f-843892da2190",
-									"id": "33f780d0-d660-4069-917d-e60800dacb6a"
-								},
-								{
-									"colid": "8eebec49-039c-4982-80d1-0f3f7e3ccf1c",
-									"id": "98cb02ce-7eec-4d56-a51d-cd160d4dae0a"
-								},
-								{
-									"colid": "fce6673d-8c22-41db-bbb6-b3ba7504d1a5",
-									"id": "80f84e31-abe0-4ba6-9113-d677138110cd"
-								}
-							],
-							"id": "e86775dc-0733-4312-beff-cb7d90b4adb6",
-							"isPk": false,
-							"name": "UNIQUE"
 						}
 					],
 					"lines": [],
@@ -3811,9 +4318,9 @@
 					"initautoinc": "",
 					"name": "chapter_master",
 					"relations": [
-						"1bb56b3a-7199-4f78-a9ab-24b76dbbe6b9",
-						"f5ff06ae-2405-436b-aa5d-a857e781acd4",
-						"6ad7754e-5bcf-49f6-9562-0d63bfb84818"
+						"b9944571-2183-4a3f-a2a2-5165f8611508",
+						"a1e923b9-f3e4-4e85-b746-91a2d848c9d2",
+						"cab20cf1-56be-4126-8426-b6a5909b1852"
 					],
 					"rowformat": "Dynamic",
 					"tabletype": "InnoDB",
@@ -3903,16 +4410,16 @@
 							"cols": [
 								{
 									"colid": "77313c5e-5e7c-4aeb-acca-9880b0820b40",
-									"id": "4d5c253e-ffa2-458d-94cd-22fc740e0266"
+									"id": "f990f08e-6b23-436a-b6e4-f326f2c0c0fa"
 								},
 								{
 									"colid": "2e7f2f92-0c2b-41a3-9467-a9e16cd28cad",
-									"id": "562c003d-7f11-4569-9ab8-ff171a6850ca"
+									"id": "1cdd1b75-59f3-497b-a844-55ff095d1664"
 								}
 							],
-							"id": "9fd65c8e-53f5-4d4b-8d3d-4253b426a977",
+							"id": "468f2efb-6f67-4771-a276-275c2b7096ed",
 							"isPk": false,
-							"name": "UNIQUE"
+							"name": "uk_chapter"
 						}
 					],
 					"lines": [],
@@ -4073,12 +4580,12 @@
 					"desc": "Problems in a chapter",
 					"embeddable": false,
 					"id": "03cce6fc-31fa-4e39-a437-0e6e33eafd0e",
-					"initautoinc": "39041",
+					"initautoinc": "45397",
 					"name": "problem_master",
 					"relations": [
-						"65e31e3f-1d61-4cbe-97c1-60935d56bd65",
-						"f5ff06ae-2405-436b-aa5d-a857e781acd4",
-						"bbabede8-0ecf-4b16-976a-9f701c5e50a8"
+						"517bde49-7772-4a6a-a20f-cdd14875cc76",
+						"a1e923b9-f3e4-4e85-b746-91a2d848c9d2",
+						"51ce49de-71ba-4353-9b9a-fa48807dcb72"
 					],
 					"rowformat": "Dynamic",
 					"tabletype": "InnoDB",
@@ -4219,8 +4726,8 @@
 							"defaultvalue": "",
 							"enum": "",
 							"fk": false,
-							"id": "e7b48e66-ed10-484e-9f73-188de06bbfc8",
-							"name": "problem_id",
+							"id": "f5afd9d4-2f80-4161-9066-eb1a9f0c43f2",
+							"name": "problem_key",
 							"nn": true,
 							"param": "64",
 							"pk": false,
@@ -4264,7 +4771,7 @@
 					"initautoinc": "",
 					"name": "problem_type_master",
 					"relations": [
-						"65e31e3f-1d61-4cbe-97c1-60935d56bd65"
+						"517bde49-7772-4a6a-a20f-cdd14875cc76"
 					],
 					"rowformat": "Dynamic",
 					"tabletype": "InnoDB",
@@ -4860,8 +5367,8 @@
 					"initautoinc": "",
 					"name": "subject_master",
 					"relations": [
-						"2a56f867-73cf-4d44-8558-79be5b30b9f4",
-						"c1a1164e-7478-40b2-899f-31f750116f01"
+						"0d399d9a-be95-4c1a-a5d8-2597aeb0b36b",
+						"24bfd54f-313e-434c-b881-38ff6ba023e6"
 					],
 					"rowformat": "Dynamic",
 					"tabletype": "InnoDB",
@@ -4918,11 +5425,11 @@
 					"desc": "Map of books applicable for a syllabus",
 					"embeddable": false,
 					"id": "0b713a2b-d568-40a1-bac1-552360d56264",
-					"initautoinc": "27",
+					"initautoinc": "30",
 					"name": "syllabus_book_map",
 					"relations": [
-						"ebf45113-0ab2-40eb-ab5c-1c4dff5f01f8",
-						"3d4f22bd-2463-437b-a119-42bc7bd20a59"
+						"cb070c98-64fa-485d-9592-0cfc62f79320",
+						"425ec97c-46a8-4632-a8d8-9a69158dbb38"
 					],
 					"rowformat": "Dynamic",
 					"tabletype": "InnoDB",
@@ -5008,12 +5515,12 @@
 							"cols": [
 								{
 									"colid": "4d8b2126-5245-4950-ba03-9f0dd95a8fab",
-									"id": "78195acc-d308-4e76-9881-71419ed1b44b"
+									"id": "0b20955c-30ff-4b12-ab37-69897ecb8862"
 								}
 							],
-							"id": "895de8ab-5db1-4bb2-b95a-82b60a1988fc",
+							"id": "d8e7562b-9ee1-4e8f-b43e-6f498d363d2b",
 							"isPk": false,
-							"name": "uk_sbm_book-id"
+							"name": "uk_SBM_book"
 						}
 					],
 					"lines": [],
@@ -5035,9 +5542,9 @@
 					"initautoinc": "",
 					"name": "syllabus_master",
 					"relations": [
-						"ebf45113-0ab2-40eb-ab5c-1c4dff5f01f8",
-						"c1a1164e-7478-40b2-899f-31f750116f01",
-						"ae0d1bbb-da7a-4024-a241-dc98fd633654"
+						"cb070c98-64fa-485d-9592-0cfc62f79320",
+						"24bfd54f-313e-434c-b881-38ff6ba023e6",
+						"e8fcea1d-98c1-43de-a544-819d0b10aa33"
 					],
 					"rowformat": "Dynamic",
 					"tabletype": "InnoDB",
@@ -5115,12 +5622,12 @@
 					"desc": "Map of chapters applicable for a syllabus topic",
 					"embeddable": false,
 					"id": "d7bd2a76-c755-4927-9857-08e74b1d0a96",
-					"initautoinc": "191",
+					"initautoinc": "162",
 					"name": "topic_chapter_map",
 					"relations": [
-						"5c30f7eb-41a0-4875-8911-6798f1e93618",
-						"6ad7754e-5bcf-49f6-9562-0d63bfb84818",
-						"d7910001-16e3-4d7f-8e69-47d701577a6c"
+						"6fd8104d-6f77-478d-b00a-b2749ea49ba9",
+						"cab20cf1-56be-4126-8426-b6a5909b1852",
+						"9215c6d7-cf32-4274-88d4-04f178fb2655"
 					],
 					"rowformat": "Dynamic",
 					"tabletype": "InnoDB",
@@ -5252,7 +5759,27 @@
 							"binary": false
 						}
 					],
-					"indexes": [],
+					"indexes": [
+						{
+							"cols": [
+								{
+									"colid": "f1bef65d-067e-4b32-8081-c124378bb06d",
+									"id": "65194496-7500-48e1-8357-726af1b58746",
+									"mysql": {
+										"expression": "",
+										"desc": false
+									}
+								}
+							],
+							"fulltext": false,
+							"id": "94ff1fde-5bd5-4613-91d0-7f3ecd9dc624",
+							"name": "fk_topic_topic-chapter-map",
+							"unique": false,
+							"algorithm": "na",
+							"lockoption": "na",
+							"using": "BTREE"
+						}
+					],
 					"keys": [
 						{
 							"cols": [
@@ -5269,20 +5796,20 @@
 							"cols": [
 								{
 									"colid": "f1bef65d-067e-4b32-8081-c124378bb06d",
-									"id": "0e3c699f-e3ac-4645-bc4e-cf1f182f25b6"
+									"id": "a448aa20-a1ee-4e64-a204-ff52eb39a676"
 								},
 								{
 									"colid": "f023e370-d378-436b-8dcf-5879b0695f34",
-									"id": "7b6e9274-c4f2-4dec-8045-4c3bf6276b79"
+									"id": "0fbfcd35-f29f-4041-89ad-977cb9194573"
 								},
 								{
 									"colid": "1dd7e285-a948-4c90-a589-dddf6887a734",
-									"id": "f185e3ee-2cb1-461b-8e76-5d66053a442b"
+									"id": "607b917d-f8e1-42f7-b57b-26b298a79888"
 								}
 							],
-							"id": "2e62cf10-81f9-4c4f-acd6-b6b0a162191a",
+							"id": "60f84ee3-af52-45ff-94fd-5dc0b1ea96fc",
 							"isPk": false,
-							"name": "uk_topic-chapter-map"
+							"name": "uk_TCM"
 						}
 					],
 					"lines": [],
@@ -5301,11 +5828,11 @@
 					"desc": "List of all problems from a chapter selected for a topic.",
 					"embeddable": false,
 					"id": "58d2c04d-6f53-4432-b9ae-3a30949d646f",
-					"initautoinc": "1",
+					"initautoinc": "32697",
 					"name": "topic_chapter_problem_map",
 					"relations": [
-						"d7910001-16e3-4d7f-8e69-47d701577a6c",
-						"bbabede8-0ecf-4b16-976a-9f701c5e50a8"
+						"9215c6d7-cf32-4274-88d4-04f178fb2655",
+						"51ce49de-71ba-4353-9b9a-fa48807dcb72"
 					],
 					"rowformat": "Dynamic",
 					"tabletype": "InnoDB",
@@ -5362,8 +5889,8 @@
 							"defaultvalue": "",
 							"enum": "",
 							"fk": true,
-							"id": "296a092f-65ee-4fd4-ada0-77aacd2b70bb",
-							"name": "problem_master_id",
+							"id": "6ffcdc2e-434d-4663-b799-06623d2ded5f",
+							"name": "problem_id",
 							"nn": true,
 							"param": "",
 							"pk": false,
@@ -5390,13 +5917,13 @@
 						{
 							"cols": [
 								{
-									"colid": "296a092f-65ee-4fd4-ada0-77aacd2b70bb",
-									"id": "d5fb8b71-89f2-4a0a-ad09-0f7b20635065"
+									"colid": "6ffcdc2e-434d-4663-b799-06623d2ded5f",
+									"id": "52f372eb-a136-45d7-ad6a-4c51734acc93"
 								}
 							],
-							"id": "c32cd0c8-7fd0-47f5-9f33-692615830a89",
+							"id": "d8e0e57e-c22b-4c2d-bc37-6a0f9423688a",
 							"isPk": false,
-							"name": "uk_TCM_PM"
+							"name": "uk_TCPM"
 						}
 					],
 					"lines": [],
@@ -5415,11 +5942,12 @@
 					"desc": "First level topics for a syllabus",
 					"embeddable": false,
 					"id": "c17be34e-081a-4590-becf-6e0ac4ff6b06",
-					"initautoinc": "124",
+					"initautoinc": "126",
 					"name": "topic_master",
 					"relations": [
-						"5c30f7eb-41a0-4875-8911-6798f1e93618",
-						"ae0d1bbb-da7a-4024-a241-dc98fd633654"
+						"6fd8104d-6f77-478d-b00a-b2749ea49ba9",
+						"e8fcea1d-98c1-43de-a544-819d0b10aa33",
+						"b55efe8f-b570-4f30-a879-e6ab22102f34"
 					],
 					"rowformat": "Dynamic",
 					"tabletype": "InnoDB",
@@ -5526,6 +6054,359 @@
 					"lines": [],
 					"generate": true,
 					"visible": false,
+					"generateCustomCode": true,
+					"estimatedSize": "",
+					"customCode": "",
+					"ifnotexists": false,
+					"temporary": false
+				},
+				"db1371cf-7f8f-409e-be95-7536efcac9cb": {
+					"collation": "utf8mb4_general_ci",
+					"charset": "utf8mb4",
+					"database": "sconsolenxt",
+					"desc": "Assignment information of topics to specific tracks",
+					"embeddable": false,
+					"id": "db1371cf-7f8f-409e-be95-7536efcac9cb",
+					"initautoinc": "",
+					"name": "topic_track_assignment",
+					"relations": [
+						"ebb61ce9-c70e-4c24-b4b1-04c7f5e4f63d",
+						"b55efe8f-b570-4f30-a879-e6ab22102f34"
+					],
+					"rowformat": "Dynamic",
+					"tabletype": "InnoDB",
+					"cols": [
+						{
+							"after": "",
+							"autoinc": false,
+							"charset": "",
+							"collation": "",
+							"comment": "",
+							"datatype": "INT",
+							"defaultvalue": "",
+							"enum": "",
+							"fk": false,
+							"id": "67b9fcc9-3e75-44d9-84f8-9d2b9ddc84bb",
+							"name": "id",
+							"nn": true,
+							"param": "",
+							"pk": true,
+							"unsigned": false,
+							"zerofill": false,
+							"estimatedSize": "",
+							"data": "",
+							"binary": false
+						},
+						{
+							"after": "",
+							"autoinc": false,
+							"charset": "",
+							"collation": "",
+							"comment": "",
+							"datatype": "INT",
+							"defaultvalue": "",
+							"enum": "",
+							"fk": true,
+							"id": "68af6359-9f96-447b-9553-7785e4c68103",
+							"name": "track_id",
+							"nn": true,
+							"param": "",
+							"pk": false,
+							"unsigned": false,
+							"zerofill": false,
+							"estimatedSize": "",
+							"data": "",
+							"binary": false
+						},
+						{
+							"after": "",
+							"autoinc": false,
+							"charset": "",
+							"collation": "",
+							"comment": "",
+							"datatype": "INT",
+							"defaultvalue": "",
+							"enum": "",
+							"fk": false,
+							"id": "43c276d1-7fa9-4ed7-bedf-8faec8879376",
+							"name": "sequence",
+							"nn": true,
+							"param": "",
+							"pk": false,
+							"unsigned": false,
+							"zerofill": false,
+							"estimatedSize": "",
+							"data": "",
+							"binary": false
+						},
+						{
+							"after": "",
+							"autoinc": false,
+							"charset": "",
+							"collation": "",
+							"comment": "",
+							"datatype": "INT",
+							"defaultvalue": "",
+							"enum": "",
+							"fk": true,
+							"id": "ec8c1bf8-9a4d-47d5-8038-ad7a91733fec",
+							"name": "topic_id",
+							"nn": true,
+							"param": "",
+							"pk": false,
+							"unsigned": false,
+							"zerofill": false,
+							"estimatedSize": "",
+							"data": "",
+							"binary": false
+						},
+						{
+							"after": "",
+							"autoinc": false,
+							"charset": "",
+							"collation": "",
+							"comment": "",
+							"datatype": "INT",
+							"defaultvalue": "0",
+							"enum": "",
+							"fk": false,
+							"id": "ec210a7d-caea-486d-96b5-0a907a81cb30",
+							"name": "buffer_left",
+							"nn": true,
+							"param": "",
+							"pk": false,
+							"unsigned": false,
+							"zerofill": false,
+							"estimatedSize": "",
+							"data": "",
+							"binary": false
+						},
+						{
+							"after": "",
+							"autoinc": false,
+							"charset": "",
+							"collation": "",
+							"comment": "",
+							"datatype": "INT",
+							"defaultvalue": "3",
+							"enum": "",
+							"fk": false,
+							"id": "82c338b8-8b01-4f6b-aec6-4b3d60246470",
+							"name": "buffer_right",
+							"nn": true,
+							"param": "",
+							"pk": false,
+							"unsigned": false,
+							"zerofill": false,
+							"estimatedSize": "",
+							"data": "",
+							"binary": false
+						},
+						{
+							"after": "",
+							"autoinc": false,
+							"charset": "",
+							"collation": "",
+							"comment": "",
+							"datatype": "INT",
+							"defaultvalue": "3",
+							"enum": "",
+							"fk": false,
+							"id": "520ed12c-30e4-432a-baa5-5a9b1850962d",
+							"name": "theory_margin",
+							"nn": true,
+							"param": "",
+							"pk": false,
+							"unsigned": false,
+							"zerofill": false,
+							"estimatedSize": "",
+							"data": "",
+							"binary": false
+						},
+						{
+							"after": "",
+							"autoinc": false,
+							"charset": "",
+							"collation": "",
+							"comment": "",
+							"datatype": "DATE",
+							"defaultvalue": "",
+							"enum": "",
+							"fk": false,
+							"id": "f271b054-a977-44f6-bd4e-095b5c36699c",
+							"name": "start_date",
+							"nn": true,
+							"param": "",
+							"pk": false,
+							"unsigned": false,
+							"zerofill": false,
+							"estimatedSize": "",
+							"data": "",
+							"binary": false
+						},
+						{
+							"after": "",
+							"autoinc": false,
+							"charset": "",
+							"collation": "",
+							"comment": "",
+							"datatype": "DATE",
+							"defaultvalue": "",
+							"enum": "",
+							"fk": false,
+							"id": "6165ae32-1472-443d-8033-4da1b639d4b1",
+							"name": "end_date",
+							"nn": true,
+							"param": "",
+							"pk": false,
+							"unsigned": false,
+							"zerofill": false,
+							"estimatedSize": "",
+							"data": "",
+							"binary": false
+						}
+					],
+					"indexes": [],
+					"keys": [
+						{
+							"cols": [
+								{
+									"colid": "67b9fcc9-3e75-44d9-84f8-9d2b9ddc84bb",
+									"id": "2f426355-ae00-416d-a0cb-abd63550e9e6"
+								}
+							],
+							"id": "1d140b36-315e-446e-867c-e9081f4de6bc",
+							"isPk": true,
+							"name": "PRIMARY"
+						},
+						{
+							"cols": [
+								{
+									"colid": "ec8c1bf8-9a4d-47d5-8038-ad7a91733fec",
+									"id": "b0d1f2ee-b704-4ad2-b584-3c0cebf548d2"
+								}
+							],
+							"id": "83f61d4f-c117-4dcc-b883-a5951cc4cf91",
+							"isPk": false,
+							"name": "UNIQUE"
+						}
+					],
+					"lines": [],
+					"generate": true,
+					"visible": true,
+					"generateCustomCode": true,
+					"estimatedSize": "",
+					"customCode": "",
+					"ifnotexists": false,
+					"temporary": false
+				},
+				"e6087dae-fbd3-4e9d-8764-46a7e4bb5b48": {
+					"collation": "utf8mb4_general_ci",
+					"charset": "utf8mb4",
+					"database": "sconsolenxt",
+					"desc": "Master data of study tracks and their properties",
+					"embeddable": false,
+					"id": "e6087dae-fbd3-4e9d-8764-46a7e4bb5b48",
+					"initautoinc": "1",
+					"name": "track_master",
+					"relations": [
+						"ebb61ce9-c70e-4c24-b4b1-04c7f5e4f63d"
+					],
+					"rowformat": "Dynamic",
+					"tabletype": "InnoDB",
+					"cols": [
+						{
+							"after": "",
+							"autoinc": true,
+							"charset": "",
+							"collation": "",
+							"comment": "",
+							"datatype": "INT",
+							"defaultvalue": "",
+							"enum": "",
+							"fk": false,
+							"id": "6ee7ccf6-85f3-46f4-82c3-90047e4f4192",
+							"name": "id",
+							"nn": true,
+							"param": "",
+							"pk": true,
+							"unsigned": false,
+							"zerofill": false,
+							"estimatedSize": "",
+							"data": "",
+							"binary": false
+						},
+						{
+							"after": "",
+							"autoinc": false,
+							"charset": "",
+							"collation": "",
+							"comment": "",
+							"datatype": "VARCHAR",
+							"defaultvalue": "",
+							"enum": "",
+							"fk": false,
+							"id": "38fcf635-fd1c-4e39-8994-25ba2bcbec0c",
+							"name": "track_name",
+							"nn": true,
+							"param": "64",
+							"pk": false,
+							"unsigned": false,
+							"zerofill": false,
+							"estimatedSize": "",
+							"data": "",
+							"binary": false
+						},
+						{
+							"after": "",
+							"autoinc": false,
+							"charset": "",
+							"collation": "",
+							"comment": "",
+							"datatype": "VARCHAR",
+							"defaultvalue": "",
+							"enum": "",
+							"fk": false,
+							"id": "f443bff5-8130-413d-8374-6823da5d83e2",
+							"name": "color",
+							"nn": false,
+							"param": "8",
+							"pk": false,
+							"unsigned": false,
+							"zerofill": false,
+							"estimatedSize": "",
+							"data": "",
+							"binary": false
+						}
+					],
+					"indexes": [],
+					"keys": [
+						{
+							"cols": [
+								{
+									"colid": "6ee7ccf6-85f3-46f4-82c3-90047e4f4192",
+									"id": "349d1434-6b0c-4308-9cc0-12bfecb206aa"
+								}
+							],
+							"id": "9741e916-8a05-4cc4-906d-de153485fdbb",
+							"isPk": true,
+							"name": "PRIMARY"
+						},
+						{
+							"cols": [
+								{
+									"colid": "38fcf635-fd1c-4e39-8994-25ba2bcbec0c",
+									"id": "c66628a7-14a6-4d75-8b74-f2d9f78a89d6"
+								}
+							],
+							"id": "47cebfcd-6c38-4370-92d1-0fa99bb7b621",
+							"isPk": false,
+							"name": "UNIQUE"
+						}
+					],
+					"lines": [],
+					"generate": true,
+					"visible": true,
 					"generateCustomCode": true,
 					"estimatedSize": "",
 					"customCode": "",
@@ -6081,7 +6962,7 @@
 				}
 			},
 			"relations": {
-				"2a56f867-73cf-4d44-8558-79be5b30b9f4": {
+				"0d399d9a-be95-4c1a-a5d8-2597aeb0b36b": {
 					"c_p": "one",
 					"c_cp": "",
 					"c_cch": "",
@@ -6091,14 +6972,14 @@
 					"desc": "",
 					"type": "identifying",
 					"child": "74e3d227-cba7-4b22-aa34-fc123abb195a",
-					"id": "2a56f867-73cf-4d44-8558-79be5b30b9f4",
-					"name": "fk_subject_book",
+					"id": "0d399d9a-be95-4c1a-a5d8-2597aeb0b36b",
+					"name": "fk_book_subject",
 					"parent": "cf501777-e1e3-4947-88ab-87af891ac817",
 					"parent_key": "069f12f6-4a9a-4173-9cca-eb23f40c7c18",
 					"cols": [
 						{
 							"childcol": "b1870f45-6e7d-4d51-974f-843892da2190",
-							"id": "45a70343-a681-446e-b8bc-6ce824657163",
+							"id": "52b037fc-3c56-47b7-b113-c83331e3f52c",
 							"parentcol": "b5ae4c42-ff8f-4c93-ba43-3e50349701b4"
 						}
 					],
@@ -6107,9 +6988,9 @@
 					"generate": true,
 					"generateCustomCode": true,
 					"customCode": "",
-					"relationColor": "#ffeb3b"
+					"relationColor": "#ff9800"
 				},
-				"1bb56b3a-7199-4f78-a9ab-24b76dbbe6b9": {
+				"b9944571-2183-4a3f-a2a2-5165f8611508": {
 					"c_p": "one",
 					"c_cp": "",
 					"c_cch": "",
@@ -6119,14 +7000,14 @@
 					"desc": "",
 					"type": "identifying",
 					"child": "6dbd3fc8-8082-48e9-981c-75c0d80f2d12",
-					"id": "1bb56b3a-7199-4f78-a9ab-24b76dbbe6b9",
-					"name": "fk_book_chapter",
+					"id": "b9944571-2183-4a3f-a2a2-5165f8611508",
+					"name": "fk_chapter_book",
 					"parent": "74e3d227-cba7-4b22-aa34-fc123abb195a",
 					"parent_key": "8d9deccf-57c3-4e91-b4c4-c36318f8b186",
 					"cols": [
 						{
 							"childcol": "77313c5e-5e7c-4aeb-acca-9880b0820b40",
-							"id": "b1342e90-afe9-4b33-a777-d3eb24c97bf9",
+							"id": "3fbf0f31-d953-4489-a0d1-622cfdc0979d",
 							"parentcol": "dba5b3d9-62ec-4761-b34e-e2466600a962"
 						}
 					],
@@ -6135,9 +7016,9 @@
 					"generate": true,
 					"generateCustomCode": true,
 					"customCode": "",
-					"relationColor": "#ffeb3b"
+					"relationColor": "#ff9800"
 				},
-				"65e31e3f-1d61-4cbe-97c1-60935d56bd65": {
+				"517bde49-7772-4a6a-a20f-cdd14875cc76": {
 					"c_p": "one",
 					"c_cp": "",
 					"c_cch": "",
@@ -6147,14 +7028,14 @@
 					"desc": "",
 					"type": "identifying",
 					"child": "03cce6fc-31fa-4e39-a437-0e6e33eafd0e",
-					"id": "65e31e3f-1d61-4cbe-97c1-60935d56bd65",
-					"name": "fk_problem-type_problem",
+					"id": "517bde49-7772-4a6a-a20f-cdd14875cc76",
+					"name": "fk_problem_PT",
 					"parent": "aa118985-ca82-4c98-bbdf-c6654aa4f75a",
 					"parent_key": "e9d6f91b-804c-43ea-b38d-efacbb904773",
 					"cols": [
 						{
 							"childcol": "4c644588-a69b-421a-869e-0aa2e476e7de",
-							"id": "e06ca216-2021-4f4f-b0a2-7fdb6e86c801",
+							"id": "6b04f193-c9f3-4bed-a536-1e6ab8b91281",
 							"parentcol": "a2b81a36-721e-4bad-a247-ed961d359406"
 						}
 					],
@@ -6163,9 +7044,9 @@
 					"generate": true,
 					"generateCustomCode": true,
 					"customCode": "",
-					"relationColor": "#ffeb3b"
+					"relationColor": "#ff9800"
 				},
-				"f5ff06ae-2405-436b-aa5d-a857e781acd4": {
+				"a1e923b9-f3e4-4e85-b746-91a2d848c9d2": {
 					"c_p": "one",
 					"c_cp": "",
 					"c_cch": "",
@@ -6175,19 +7056,19 @@
 					"desc": "",
 					"type": "identifying",
 					"child": "03cce6fc-31fa-4e39-a437-0e6e33eafd0e",
-					"id": "f5ff06ae-2405-436b-aa5d-a857e781acd4",
-					"name": "fk_chapter_problem",
+					"id": "a1e923b9-f3e4-4e85-b746-91a2d848c9d2",
+					"name": "fk_problem_chapter",
 					"parent": "6dbd3fc8-8082-48e9-981c-75c0d80f2d12",
 					"parent_key": "250cd6d7-134b-4527-8d9d-f034a006918f",
 					"cols": [
 						{
 							"childcol": "1a5afc29-da99-461d-9a62-f8f61bde5ac9",
-							"id": "31d57a3e-84a2-4df5-ac05-3b9c58bd8b8c",
+							"id": "683c5d66-c4c1-4cf9-a20c-0059b37678e0",
 							"parentcol": "77313c5e-5e7c-4aeb-acca-9880b0820b40"
 						},
 						{
 							"childcol": "31a7755e-baa8-4f87-b849-b3848bc1f0ef",
-							"id": "770f86fd-96c1-4333-918b-db42bd1c1469",
+							"id": "ea220614-1b99-4689-881b-e063fff373ff",
 							"parentcol": "2e7f2f92-0c2b-41a3-9467-a9e16cd28cad"
 						}
 					],
@@ -6196,9 +7077,9 @@
 					"generate": true,
 					"generateCustomCode": true,
 					"customCode": "",
-					"relationColor": "#ffeb3b"
+					"relationColor": "#ff9800"
 				},
-				"ebf45113-0ab2-40eb-ab5c-1c4dff5f01f8": {
+				"cb070c98-64fa-485d-9592-0cfc62f79320": {
 					"c_p": "one",
 					"c_cp": "",
 					"c_cch": "",
@@ -6208,14 +7089,14 @@
 					"desc": "",
 					"type": "identifying",
 					"child": "0b713a2b-d568-40a1-bac1-552360d56264",
-					"id": "ebf45113-0ab2-40eb-ab5c-1c4dff5f01f8",
-					"name": "fk_syllabus_syllabus-book-map",
+					"id": "cb070c98-64fa-485d-9592-0cfc62f79320",
+					"name": "fk_SBM_syllabus",
 					"parent": "af87fb32-ca82-4d55-975a-a59d21bb572c",
 					"parent_key": "e9c28f90-a6f5-45b0-91fa-36580ccb169e",
 					"cols": [
 						{
 							"childcol": "5ee077c4-e270-42e9-8388-f02fe1e7221e",
-							"id": "ffc2016e-c282-4318-b865-f29f3d3c7326",
+							"id": "cf1e32b2-50c5-46d4-ba10-0227ba94dd14",
 							"parentcol": "1ca9641b-ccdb-47f8-8d0b-10440a10501a"
 						}
 					],
@@ -6224,9 +7105,9 @@
 					"generate": true,
 					"generateCustomCode": true,
 					"customCode": "",
-					"relationColor": "#ffeb3b"
+					"relationColor": "#ff9800"
 				},
-				"3d4f22bd-2463-437b-a119-42bc7bd20a59": {
+				"425ec97c-46a8-4632-a8d8-9a69158dbb38": {
 					"c_p": "one",
 					"c_cp": "",
 					"c_cch": "",
@@ -6236,14 +7117,14 @@
 					"desc": "",
 					"type": "identifying",
 					"child": "0b713a2b-d568-40a1-bac1-552360d56264",
-					"id": "3d4f22bd-2463-437b-a119-42bc7bd20a59",
-					"name": "fk_book_syllabus-book-map",
+					"id": "425ec97c-46a8-4632-a8d8-9a69158dbb38",
+					"name": "fk_SBM_book",
 					"parent": "74e3d227-cba7-4b22-aa34-fc123abb195a",
 					"parent_key": "8d9deccf-57c3-4e91-b4c4-c36318f8b186",
 					"cols": [
 						{
 							"childcol": "4d8b2126-5245-4950-ba03-9f0dd95a8fab",
-							"id": "8ab91d87-53e3-48cd-bb77-93debe7eec55",
+							"id": "54a159f0-bf31-4ca1-8839-416abf00d819",
 							"parentcol": "dba5b3d9-62ec-4761-b34e-e2466600a962"
 						}
 					],
@@ -6252,9 +7133,9 @@
 					"generate": true,
 					"generateCustomCode": true,
 					"customCode": "",
-					"relationColor": "#ffeb3b"
+					"relationColor": "#ff9800"
 				},
-				"c1a1164e-7478-40b2-899f-31f750116f01": {
+				"24bfd54f-313e-434c-b881-38ff6ba023e6": {
 					"c_p": "one",
 					"c_cp": "",
 					"c_cch": "",
@@ -6264,14 +7145,14 @@
 					"desc": "",
 					"type": "identifying",
 					"child": "af87fb32-ca82-4d55-975a-a59d21bb572c",
-					"id": "c1a1164e-7478-40b2-899f-31f750116f01",
-					"name": "fk_subject_syllabus",
+					"id": "24bfd54f-313e-434c-b881-38ff6ba023e6",
+					"name": "fk_syllabus_subject",
 					"parent": "cf501777-e1e3-4947-88ab-87af891ac817",
 					"parent_key": "069f12f6-4a9a-4173-9cca-eb23f40c7c18",
 					"cols": [
 						{
 							"childcol": "c1b5bc2c-591c-4c94-9ca4-4b9d568a0847",
-							"id": "a70ce039-d04d-4518-a2e9-6f53bac7d353",
+							"id": "d2fd5cd3-e81c-451e-89a4-098c220fd9f1",
 							"parentcol": "b5ae4c42-ff8f-4c93-ba43-3e50349701b4"
 						}
 					],
@@ -6280,9 +7161,9 @@
 					"generate": true,
 					"generateCustomCode": true,
 					"customCode": "",
-					"relationColor": "#ffeb3b"
+					"relationColor": "#ff9800"
 				},
-				"5c30f7eb-41a0-4875-8911-6798f1e93618": {
+				"6fd8104d-6f77-478d-b00a-b2749ea49ba9": {
 					"c_p": "one",
 					"c_cp": "",
 					"c_cch": "",
@@ -6292,14 +7173,14 @@
 					"desc": "",
 					"type": "identifying",
 					"child": "d7bd2a76-c755-4927-9857-08e74b1d0a96",
-					"id": "5c30f7eb-41a0-4875-8911-6798f1e93618",
-					"name": "fk_topic_topic-chapter-map",
+					"id": "6fd8104d-6f77-478d-b00a-b2749ea49ba9",
+					"name": "fk_TCM_topic",
 					"parent": "c17be34e-081a-4590-becf-6e0ac4ff6b06",
 					"parent_key": "d8c58e9a-e1ad-4ae5-b4d6-b4ad4099e493",
 					"cols": [
 						{
 							"childcol": "f1bef65d-067e-4b32-8081-c124378bb06d",
-							"id": "adb81e46-be6e-44df-8e3e-553153e60594",
+							"id": "64d16ffb-42b2-4bec-a438-ec53ec0cbc7b",
 							"parentcol": "8831cdc7-7d52-4be4-aa52-cdf8f61aa8a2"
 						}
 					],
@@ -6308,9 +7189,9 @@
 					"generate": true,
 					"generateCustomCode": true,
 					"customCode": "",
-					"relationColor": "#ffeb3b"
+					"relationColor": "#ff9800"
 				},
-				"6ad7754e-5bcf-49f6-9562-0d63bfb84818": {
+				"cab20cf1-56be-4126-8426-b6a5909b1852": {
 					"c_p": "one",
 					"c_cp": "",
 					"c_cch": "",
@@ -6320,19 +7201,19 @@
 					"desc": "",
 					"type": "identifying",
 					"child": "d7bd2a76-c755-4927-9857-08e74b1d0a96",
-					"id": "6ad7754e-5bcf-49f6-9562-0d63bfb84818",
-					"name": "fk_chapter_topic-chapter-map",
+					"id": "cab20cf1-56be-4126-8426-b6a5909b1852",
+					"name": "fk_TCM_chapter",
 					"parent": "6dbd3fc8-8082-48e9-981c-75c0d80f2d12",
 					"parent_key": "250cd6d7-134b-4527-8d9d-f034a006918f",
 					"cols": [
 						{
 							"childcol": "f023e370-d378-436b-8dcf-5879b0695f34",
-							"id": "df6c7bce-e97b-4fc7-b598-f63ce641dabb",
+							"id": "14f534cd-665b-4a21-ba13-398f138ccbce",
 							"parentcol": "77313c5e-5e7c-4aeb-acca-9880b0820b40"
 						},
 						{
 							"childcol": "1dd7e285-a948-4c90-a589-dddf6887a734",
-							"id": "0683cbb9-887a-4713-8655-91b0efaa808f",
+							"id": "4909502a-eeee-4eb0-9773-115fd6275930",
 							"parentcol": "2e7f2f92-0c2b-41a3-9467-a9e16cd28cad"
 						}
 					],
@@ -6341,9 +7222,9 @@
 					"generate": true,
 					"generateCustomCode": true,
 					"customCode": "",
-					"relationColor": "#ffeb3b"
+					"relationColor": "#ff9800"
 				},
-				"d7910001-16e3-4d7f-8e69-47d701577a6c": {
+				"9215c6d7-cf32-4274-88d4-04f178fb2655": {
 					"c_p": "one",
 					"c_cp": "",
 					"c_cch": "",
@@ -6353,25 +7234,25 @@
 					"desc": "",
 					"type": "identifying",
 					"child": "58d2c04d-6f53-4432-b9ae-3a30949d646f",
-					"id": "d7910001-16e3-4d7f-8e69-47d701577a6c",
-					"name": "fk_TCM_TCPM",
+					"id": "9215c6d7-cf32-4274-88d4-04f178fb2655",
+					"name": "fk_TCPM_TCM",
 					"parent": "d7bd2a76-c755-4927-9857-08e74b1d0a96",
 					"parent_key": "d80863ed-8a71-4980-b3cc-e5d64aa5f394",
 					"cols": [
 						{
 							"childcol": "db8fd724-aa82-4369-aa86-8f3331f8a50f",
-							"id": "41aebabd-7a87-45ae-be13-4428bc9e2305",
+							"id": "9ff3ec27-1d18-41ba-94fb-fd6a0d4bd1dd",
 							"parentcol": "5a5abaf0-09da-4deb-b1ec-cbc73d199078"
 						}
 					],
-					"ri_pd": "Restrict",
+					"ri_pd": "Cascade",
 					"ri_pu": "Cascade",
 					"generate": true,
 					"generateCustomCode": true,
 					"customCode": "",
-					"relationColor": "#ffeb3b"
+					"relationColor": "#4caf50"
 				},
-				"bbabede8-0ecf-4b16-976a-9f701c5e50a8": {
+				"51ce49de-71ba-4353-9b9a-fa48807dcb72": {
 					"c_p": "one",
 					"c_cp": "",
 					"c_cch": "",
@@ -6381,25 +7262,25 @@
 					"desc": "",
 					"type": "identifying",
 					"child": "58d2c04d-6f53-4432-b9ae-3a30949d646f",
-					"id": "bbabede8-0ecf-4b16-976a-9f701c5e50a8",
-					"name": "fk_problem_TCPM",
+					"id": "51ce49de-71ba-4353-9b9a-fa48807dcb72",
+					"name": "fk_TCPM_problem",
 					"parent": "03cce6fc-31fa-4e39-a437-0e6e33eafd0e",
 					"parent_key": "14f259b6-49ed-4f11-8c8d-64f350c1ffeb",
 					"cols": [
 						{
-							"childcol": "296a092f-65ee-4fd4-ada0-77aacd2b70bb",
-							"id": "9a27cfc0-d601-470a-85ef-34b3280caced",
+							"childcol": "6ffcdc2e-434d-4663-b799-06623d2ded5f",
+							"id": "f097f5d3-1fb7-4ee7-bb33-118c0080c5aa",
 							"parentcol": "5c9a58f3-34c5-41f6-970a-14a01fcfcbf8"
 						}
 					],
-					"ri_pd": "Restrict",
+					"ri_pd": "No action",
 					"ri_pu": "Cascade",
 					"generate": true,
 					"generateCustomCode": true,
 					"customCode": "",
-					"relationColor": "#ffeb3b"
+					"relationColor": "#ff9800"
 				},
-				"ae0d1bbb-da7a-4024-a241-dc98fd633654": {
+				"e8fcea1d-98c1-43de-a544-819d0b10aa33": {
 					"c_p": "one",
 					"c_cp": "",
 					"c_cch": "",
@@ -6409,14 +7290,14 @@
 					"desc": "",
 					"type": "identifying",
 					"child": "c17be34e-081a-4590-becf-6e0ac4ff6b06",
-					"id": "ae0d1bbb-da7a-4024-a241-dc98fd633654",
-					"name": "fk_syllabus_topic",
+					"id": "e8fcea1d-98c1-43de-a544-819d0b10aa33",
+					"name": "fk_topic_syllabus",
 					"parent": "af87fb32-ca82-4d55-975a-a59d21bb572c",
 					"parent_key": "e9c28f90-a6f5-45b0-91fa-36580ccb169e",
 					"cols": [
 						{
 							"childcol": "0c488a8b-de58-40c9-b799-861219027d34",
-							"id": "89af7dc4-8d97-4ae8-a59a-3dc402465b96",
+							"id": "c5e3d1c3-67bf-49ac-9797-7e7a669897c8",
 							"parentcol": "1ca9641b-ccdb-47f8-8d0b-10440a10501a"
 						}
 					],
@@ -6425,7 +7306,63 @@
 					"generate": true,
 					"generateCustomCode": true,
 					"customCode": "",
-					"relationColor": "#ffeb3b"
+					"relationColor": "#ff9800"
+				},
+				"ebb61ce9-c70e-4c24-b4b1-04c7f5e4f63d": {
+					"c_p": "one",
+					"c_cp": "",
+					"c_cch": "",
+					"c_ch": "many",
+					"c_mch": "true",
+					"c_mp": "true",
+					"desc": "",
+					"type": "identifying",
+					"child": "db1371cf-7f8f-409e-be95-7536efcac9cb",
+					"id": "ebb61ce9-c70e-4c24-b4b1-04c7f5e4f63d",
+					"name": "fk_TTA_track",
+					"parent": "e6087dae-fbd3-4e9d-8764-46a7e4bb5b48",
+					"parent_key": "9741e916-8a05-4cc4-906d-de153485fdbb",
+					"cols": [
+						{
+							"childcol": "68af6359-9f96-447b-9553-7785e4c68103",
+							"id": "e6a62292-a22c-4928-808d-75b8c810d2d1",
+							"parentcol": "6ee7ccf6-85f3-46f4-82c3-90047e4f4192"
+						}
+					],
+					"ri_pd": "No action",
+					"ri_pu": "Cascade",
+					"generate": true,
+					"generateCustomCode": true,
+					"customCode": "",
+					"relationColor": "#ff9800"
+				},
+				"b55efe8f-b570-4f30-a879-e6ab22102f34": {
+					"c_p": "one",
+					"c_cp": "",
+					"c_cch": "",
+					"c_ch": "one",
+					"c_mch": "true",
+					"c_mp": "true",
+					"desc": "",
+					"type": "identifying",
+					"child": "db1371cf-7f8f-409e-be95-7536efcac9cb",
+					"id": "b55efe8f-b570-4f30-a879-e6ab22102f34",
+					"name": "fk_TTA_topic",
+					"parent": "c17be34e-081a-4590-becf-6e0ac4ff6b06",
+					"parent_key": "d8c58e9a-e1ad-4ae5-b4d6-b4ad4099e493",
+					"cols": [
+						{
+							"childcol": "ec8c1bf8-9a4d-47d5-8038-ad7a91733fec",
+							"id": "b28484e6-b7b5-452b-83e0-c20e9652764e",
+							"parentcol": "8831cdc7-7d52-4be4-aa52-cdf8f61aa8a2"
+						}
+					],
+					"ri_pd": "No action",
+					"ri_pu": "Cascade",
+					"generate": true,
+					"generateCustomCode": true,
+					"customCode": "",
+					"relationColor": "#ff9800"
 				},
 				"c9889e60-3f92-49f6-a274-ca9d023bf7c9": {
 					"c_p": "one",
@@ -6543,7 +7480,7 @@
 					"includeWarnings": "yes",
 					"includeCreationSql": "no"
 				},
-				"lastSaved": 1738481960722,
+				"lastSaved": 1738831323064,
 				"connectionId": "7af83ebc-4655-4802-a6d0-2c6890f3e1ce",
 				"modelHTMLReportDir": "/Users/sandeep/temp",
 				"filePath": "/Users/sandeep/projects/sconsole/SConsoleNxt/doc/sconsole.dbmodel.dmm"
@@ -6556,12 +7493,12 @@
 					"desc": "Metadata of individual books",
 					"embeddable": false,
 					"id": "74e3d227-cba7-4b22-aa34-fc123abb195a",
-					"initautoinc": "27",
+					"initautoinc": "30",
 					"name": "book_master",
 					"relations": [
-						"2a56f867-73cf-4d44-8558-79be5b30b9f4",
-						"1bb56b3a-7199-4f78-a9ab-24b76dbbe6b9",
-						"3d4f22bd-2463-437b-a119-42bc7bd20a59"
+						"0d399d9a-be95-4c1a-a5d8-2597aeb0b36b",
+						"b9944571-2183-4a3f-a2a2-5165f8611508",
+						"425ec97c-46a8-4632-a8d8-9a69158dbb38"
 					],
 					"rowformat": "Dynamic",
 					"tabletype": "InnoDB",
@@ -6714,7 +7651,27 @@
 							"binary": false
 						}
 					],
-					"indexes": [],
+					"indexes": [
+						{
+							"cols": [
+								{
+									"colid": "b1870f45-6e7d-4d51-974f-843892da2190",
+									"id": "a2132eb7-7bb6-45fc-8a5d-ade56b2a970c",
+									"mysql": {
+										"expression": "",
+										"desc": false
+									}
+								}
+							],
+							"fulltext": false,
+							"id": "e85deed4-0b49-47f4-8fab-248291665398",
+							"name": "fk_book_subject_idx",
+							"unique": false,
+							"algorithm": "na",
+							"lockoption": "na",
+							"using": "BTREE"
+						}
+					],
 					"keys": [
 						{
 							"cols": [
@@ -6726,25 +7683,6 @@
 							"id": "8d9deccf-57c3-4e91-b4c4-c36318f8b186",
 							"isPk": true,
 							"name": "PRIMARY"
-						},
-						{
-							"cols": [
-								{
-									"colid": "b1870f45-6e7d-4d51-974f-843892da2190",
-									"id": "33f780d0-d660-4069-917d-e60800dacb6a"
-								},
-								{
-									"colid": "8eebec49-039c-4982-80d1-0f3f7e3ccf1c",
-									"id": "98cb02ce-7eec-4d56-a51d-cd160d4dae0a"
-								},
-								{
-									"colid": "fce6673d-8c22-41db-bbb6-b3ba7504d1a5",
-									"id": "80f84e31-abe0-4ba6-9113-d677138110cd"
-								}
-							],
-							"id": "e86775dc-0733-4312-beff-cb7d90b4adb6",
-							"isPk": false,
-							"name": "UNIQUE"
 						}
 					],
 					"lines": [],
@@ -6766,9 +7704,9 @@
 					"initautoinc": "",
 					"name": "chapter_master",
 					"relations": [
-						"1bb56b3a-7199-4f78-a9ab-24b76dbbe6b9",
-						"f5ff06ae-2405-436b-aa5d-a857e781acd4",
-						"6ad7754e-5bcf-49f6-9562-0d63bfb84818"
+						"b9944571-2183-4a3f-a2a2-5165f8611508",
+						"a1e923b9-f3e4-4e85-b746-91a2d848c9d2",
+						"cab20cf1-56be-4126-8426-b6a5909b1852"
 					],
 					"rowformat": "Dynamic",
 					"tabletype": "InnoDB",
@@ -6858,16 +7796,16 @@
 							"cols": [
 								{
 									"colid": "77313c5e-5e7c-4aeb-acca-9880b0820b40",
-									"id": "4d5c253e-ffa2-458d-94cd-22fc740e0266"
+									"id": "f990f08e-6b23-436a-b6e4-f326f2c0c0fa"
 								},
 								{
 									"colid": "2e7f2f92-0c2b-41a3-9467-a9e16cd28cad",
-									"id": "562c003d-7f11-4569-9ab8-ff171a6850ca"
+									"id": "1cdd1b75-59f3-497b-a844-55ff095d1664"
 								}
 							],
-							"id": "9fd65c8e-53f5-4d4b-8d3d-4253b426a977",
+							"id": "468f2efb-6f67-4771-a276-275c2b7096ed",
 							"isPk": false,
-							"name": "UNIQUE"
+							"name": "uk_chapter"
 						}
 					],
 					"lines": [],
@@ -7028,12 +7966,12 @@
 					"desc": "Problems in a chapter",
 					"embeddable": false,
 					"id": "03cce6fc-31fa-4e39-a437-0e6e33eafd0e",
-					"initautoinc": "39041",
+					"initautoinc": "45397",
 					"name": "problem_master",
 					"relations": [
-						"65e31e3f-1d61-4cbe-97c1-60935d56bd65",
-						"f5ff06ae-2405-436b-aa5d-a857e781acd4",
-						"bbabede8-0ecf-4b16-976a-9f701c5e50a8"
+						"517bde49-7772-4a6a-a20f-cdd14875cc76",
+						"a1e923b9-f3e4-4e85-b746-91a2d848c9d2",
+						"51ce49de-71ba-4353-9b9a-fa48807dcb72"
 					],
 					"rowformat": "Dynamic",
 					"tabletype": "InnoDB",
@@ -7174,8 +8112,8 @@
 							"defaultvalue": "",
 							"enum": "",
 							"fk": false,
-							"id": "e7b48e66-ed10-484e-9f73-188de06bbfc8",
-							"name": "problem_id",
+							"id": "f5afd9d4-2f80-4161-9066-eb1a9f0c43f2",
+							"name": "problem_key",
 							"nn": true,
 							"param": "64",
 							"pk": false,
@@ -7219,7 +8157,7 @@
 					"initautoinc": "",
 					"name": "problem_type_master",
 					"relations": [
-						"65e31e3f-1d61-4cbe-97c1-60935d56bd65"
+						"517bde49-7772-4a6a-a20f-cdd14875cc76"
 					],
 					"rowformat": "Dynamic",
 					"tabletype": "InnoDB",
@@ -7815,8 +8753,8 @@
 					"initautoinc": "",
 					"name": "subject_master",
 					"relations": [
-						"2a56f867-73cf-4d44-8558-79be5b30b9f4",
-						"c1a1164e-7478-40b2-899f-31f750116f01"
+						"0d399d9a-be95-4c1a-a5d8-2597aeb0b36b",
+						"24bfd54f-313e-434c-b881-38ff6ba023e6"
 					],
 					"rowformat": "Dynamic",
 					"tabletype": "InnoDB",
@@ -7873,11 +8811,11 @@
 					"desc": "Map of books applicable for a syllabus",
 					"embeddable": false,
 					"id": "0b713a2b-d568-40a1-bac1-552360d56264",
-					"initautoinc": "27",
+					"initautoinc": "30",
 					"name": "syllabus_book_map",
 					"relations": [
-						"ebf45113-0ab2-40eb-ab5c-1c4dff5f01f8",
-						"3d4f22bd-2463-437b-a119-42bc7bd20a59"
+						"cb070c98-64fa-485d-9592-0cfc62f79320",
+						"425ec97c-46a8-4632-a8d8-9a69158dbb38"
 					],
 					"rowformat": "Dynamic",
 					"tabletype": "InnoDB",
@@ -7963,12 +8901,12 @@
 							"cols": [
 								{
 									"colid": "4d8b2126-5245-4950-ba03-9f0dd95a8fab",
-									"id": "78195acc-d308-4e76-9881-71419ed1b44b"
+									"id": "0b20955c-30ff-4b12-ab37-69897ecb8862"
 								}
 							],
-							"id": "895de8ab-5db1-4bb2-b95a-82b60a1988fc",
+							"id": "d8e7562b-9ee1-4e8f-b43e-6f498d363d2b",
 							"isPk": false,
-							"name": "uk_sbm_book-id"
+							"name": "uk_SBM_book"
 						}
 					],
 					"lines": [],
@@ -7990,9 +8928,9 @@
 					"initautoinc": "",
 					"name": "syllabus_master",
 					"relations": [
-						"ebf45113-0ab2-40eb-ab5c-1c4dff5f01f8",
-						"c1a1164e-7478-40b2-899f-31f750116f01",
-						"ae0d1bbb-da7a-4024-a241-dc98fd633654"
+						"cb070c98-64fa-485d-9592-0cfc62f79320",
+						"24bfd54f-313e-434c-b881-38ff6ba023e6",
+						"e8fcea1d-98c1-43de-a544-819d0b10aa33"
 					],
 					"rowformat": "Dynamic",
 					"tabletype": "InnoDB",
@@ -8038,6 +8976,27 @@
 							"estimatedSize": "",
 							"data": "",
 							"binary": false
+						},
+						{
+							"after": "",
+							"autoinc": false,
+							"charset": "",
+							"collation": "",
+							"comment": "",
+							"datatype": "VARCHAR",
+							"defaultvalue": "'000000'",
+							"enum": "",
+							"fk": false,
+							"id": "be4bca49-0a65-4dc7-88d1-ab2da045c439",
+							"name": "color",
+							"nn": true,
+							"param": "8",
+							"pk": false,
+							"unsigned": false,
+							"zerofill": false,
+							"estimatedSize": "",
+							"data": "",
+							"binary": false
 						}
 					],
 					"indexes": [],
@@ -8070,12 +9029,12 @@
 					"desc": "Map of chapters applicable for a syllabus topic",
 					"embeddable": false,
 					"id": "d7bd2a76-c755-4927-9857-08e74b1d0a96",
-					"initautoinc": "191",
+					"initautoinc": "162",
 					"name": "topic_chapter_map",
 					"relations": [
-						"5c30f7eb-41a0-4875-8911-6798f1e93618",
-						"6ad7754e-5bcf-49f6-9562-0d63bfb84818",
-						"d7910001-16e3-4d7f-8e69-47d701577a6c"
+						"6fd8104d-6f77-478d-b00a-b2749ea49ba9",
+						"cab20cf1-56be-4126-8426-b6a5909b1852",
+						"9215c6d7-cf32-4274-88d4-04f178fb2655"
 					],
 					"rowformat": "Dynamic",
 					"tabletype": "InnoDB",
@@ -8207,7 +9166,27 @@
 							"binary": false
 						}
 					],
-					"indexes": [],
+					"indexes": [
+						{
+							"cols": [
+								{
+									"colid": "f1bef65d-067e-4b32-8081-c124378bb06d",
+									"id": "65194496-7500-48e1-8357-726af1b58746",
+									"mysql": {
+										"expression": "",
+										"desc": false
+									}
+								}
+							],
+							"fulltext": false,
+							"id": "94ff1fde-5bd5-4613-91d0-7f3ecd9dc624",
+							"name": "fk_topic_topic-chapter-map",
+							"unique": false,
+							"algorithm": "na",
+							"lockoption": "na",
+							"using": "BTREE"
+						}
+					],
 					"keys": [
 						{
 							"cols": [
@@ -8224,20 +9203,20 @@
 							"cols": [
 								{
 									"colid": "f1bef65d-067e-4b32-8081-c124378bb06d",
-									"id": "0e3c699f-e3ac-4645-bc4e-cf1f182f25b6"
+									"id": "a448aa20-a1ee-4e64-a204-ff52eb39a676"
 								},
 								{
 									"colid": "f023e370-d378-436b-8dcf-5879b0695f34",
-									"id": "7b6e9274-c4f2-4dec-8045-4c3bf6276b79"
+									"id": "0fbfcd35-f29f-4041-89ad-977cb9194573"
 								},
 								{
 									"colid": "1dd7e285-a948-4c90-a589-dddf6887a734",
-									"id": "f185e3ee-2cb1-461b-8e76-5d66053a442b"
+									"id": "607b917d-f8e1-42f7-b57b-26b298a79888"
 								}
 							],
-							"id": "2e62cf10-81f9-4c4f-acd6-b6b0a162191a",
+							"id": "60f84ee3-af52-45ff-94fd-5dc0b1ea96fc",
 							"isPk": false,
-							"name": "uk_topic-chapter-map"
+							"name": "uk_TCM"
 						}
 					],
 					"lines": [],
@@ -8256,11 +9235,11 @@
 					"desc": "List of all problems from a chapter selected for a topic.",
 					"embeddable": false,
 					"id": "58d2c04d-6f53-4432-b9ae-3a30949d646f",
-					"initautoinc": "1",
+					"initautoinc": "32697",
 					"name": "topic_chapter_problem_map",
 					"relations": [
-						"d7910001-16e3-4d7f-8e69-47d701577a6c",
-						"bbabede8-0ecf-4b16-976a-9f701c5e50a8"
+						"9215c6d7-cf32-4274-88d4-04f178fb2655",
+						"51ce49de-71ba-4353-9b9a-fa48807dcb72"
 					],
 					"rowformat": "Dynamic",
 					"tabletype": "InnoDB",
@@ -8346,12 +9325,12 @@
 							"cols": [
 								{
 									"colid": "6ffcdc2e-434d-4663-b799-06623d2ded5f",
-									"id": "076ba689-45cd-4ca3-a305-3585661de55c"
+									"id": "52f372eb-a136-45d7-ad6a-4c51734acc93"
 								}
 							],
-							"id": "c32cd0c8-7fd0-47f5-9f33-692615830a89",
+							"id": "d8e0e57e-c22b-4c2d-bc37-6a0f9423688a",
 							"isPk": false,
-							"name": "uk_TCM_PM"
+							"name": "uk_TCPM"
 						}
 					],
 					"lines": [],
@@ -8370,11 +9349,12 @@
 					"desc": "First level topics for a syllabus",
 					"embeddable": false,
 					"id": "c17be34e-081a-4590-becf-6e0ac4ff6b06",
-					"initautoinc": "124",
+					"initautoinc": "126",
 					"name": "topic_master",
 					"relations": [
-						"5c30f7eb-41a0-4875-8911-6798f1e93618",
-						"ae0d1bbb-da7a-4024-a241-dc98fd633654"
+						"6fd8104d-6f77-478d-b00a-b2749ea49ba9",
+						"e8fcea1d-98c1-43de-a544-819d0b10aa33",
+						"b55efe8f-b570-4f30-a879-e6ab22102f34"
 					],
 					"rowformat": "Dynamic",
 					"tabletype": "InnoDB",
@@ -8481,6 +9461,359 @@
 					"lines": [],
 					"generate": true,
 					"visible": false,
+					"generateCustomCode": true,
+					"estimatedSize": "",
+					"customCode": "",
+					"ifnotexists": false,
+					"temporary": false
+				},
+				"db1371cf-7f8f-409e-be95-7536efcac9cb": {
+					"collation": "utf8mb4_general_ci",
+					"charset": "utf8mb4",
+					"database": "sconsolenxt",
+					"desc": "Assignment information of topics to specific tracks",
+					"embeddable": false,
+					"id": "db1371cf-7f8f-409e-be95-7536efcac9cb",
+					"initautoinc": "",
+					"name": "topic_track_assignment",
+					"relations": [
+						"ebb61ce9-c70e-4c24-b4b1-04c7f5e4f63d",
+						"b55efe8f-b570-4f30-a879-e6ab22102f34"
+					],
+					"rowformat": "Dynamic",
+					"tabletype": "InnoDB",
+					"cols": [
+						{
+							"after": "",
+							"autoinc": false,
+							"charset": "",
+							"collation": "",
+							"comment": "",
+							"datatype": "INT",
+							"defaultvalue": "",
+							"enum": "",
+							"fk": false,
+							"id": "67b9fcc9-3e75-44d9-84f8-9d2b9ddc84bb",
+							"name": "id",
+							"nn": true,
+							"param": "",
+							"pk": true,
+							"unsigned": false,
+							"zerofill": false,
+							"estimatedSize": "",
+							"data": "",
+							"binary": false
+						},
+						{
+							"after": "",
+							"autoinc": false,
+							"charset": "",
+							"collation": "",
+							"comment": "",
+							"datatype": "INT",
+							"defaultvalue": "",
+							"enum": "",
+							"fk": true,
+							"id": "68af6359-9f96-447b-9553-7785e4c68103",
+							"name": "track_id",
+							"nn": true,
+							"param": "",
+							"pk": false,
+							"unsigned": false,
+							"zerofill": false,
+							"estimatedSize": "",
+							"data": "",
+							"binary": false
+						},
+						{
+							"after": "",
+							"autoinc": false,
+							"charset": "",
+							"collation": "",
+							"comment": "",
+							"datatype": "INT",
+							"defaultvalue": "",
+							"enum": "",
+							"fk": false,
+							"id": "43c276d1-7fa9-4ed7-bedf-8faec8879376",
+							"name": "sequence",
+							"nn": true,
+							"param": "",
+							"pk": false,
+							"unsigned": false,
+							"zerofill": false,
+							"estimatedSize": "",
+							"data": "",
+							"binary": false
+						},
+						{
+							"after": "",
+							"autoinc": false,
+							"charset": "",
+							"collation": "",
+							"comment": "",
+							"datatype": "INT",
+							"defaultvalue": "",
+							"enum": "",
+							"fk": true,
+							"id": "ec8c1bf8-9a4d-47d5-8038-ad7a91733fec",
+							"name": "topic_id",
+							"nn": true,
+							"param": "",
+							"pk": false,
+							"unsigned": false,
+							"zerofill": false,
+							"estimatedSize": "",
+							"data": "",
+							"binary": false
+						},
+						{
+							"after": "",
+							"autoinc": false,
+							"charset": "",
+							"collation": "",
+							"comment": "",
+							"datatype": "INT",
+							"defaultvalue": "0",
+							"enum": "",
+							"fk": false,
+							"id": "ec210a7d-caea-486d-96b5-0a907a81cb30",
+							"name": "buffer_left",
+							"nn": true,
+							"param": "",
+							"pk": false,
+							"unsigned": false,
+							"zerofill": false,
+							"estimatedSize": "",
+							"data": "",
+							"binary": false
+						},
+						{
+							"after": "",
+							"autoinc": false,
+							"charset": "",
+							"collation": "",
+							"comment": "",
+							"datatype": "INT",
+							"defaultvalue": "3",
+							"enum": "",
+							"fk": false,
+							"id": "82c338b8-8b01-4f6b-aec6-4b3d60246470",
+							"name": "buffer_right",
+							"nn": true,
+							"param": "",
+							"pk": false,
+							"unsigned": false,
+							"zerofill": false,
+							"estimatedSize": "",
+							"data": "",
+							"binary": false
+						},
+						{
+							"after": "",
+							"autoinc": false,
+							"charset": "",
+							"collation": "",
+							"comment": "",
+							"datatype": "INT",
+							"defaultvalue": "3",
+							"enum": "",
+							"fk": false,
+							"id": "520ed12c-30e4-432a-baa5-5a9b1850962d",
+							"name": "theory_margin",
+							"nn": true,
+							"param": "",
+							"pk": false,
+							"unsigned": false,
+							"zerofill": false,
+							"estimatedSize": "",
+							"data": "",
+							"binary": false
+						},
+						{
+							"after": "",
+							"autoinc": false,
+							"charset": "",
+							"collation": "",
+							"comment": "",
+							"datatype": "DATE",
+							"defaultvalue": "",
+							"enum": "",
+							"fk": false,
+							"id": "f271b054-a977-44f6-bd4e-095b5c36699c",
+							"name": "start_date",
+							"nn": true,
+							"param": "",
+							"pk": false,
+							"unsigned": false,
+							"zerofill": false,
+							"estimatedSize": "",
+							"data": "",
+							"binary": false
+						},
+						{
+							"after": "",
+							"autoinc": false,
+							"charset": "",
+							"collation": "",
+							"comment": "",
+							"datatype": "DATE",
+							"defaultvalue": "",
+							"enum": "",
+							"fk": false,
+							"id": "6165ae32-1472-443d-8033-4da1b639d4b1",
+							"name": "end_date",
+							"nn": true,
+							"param": "",
+							"pk": false,
+							"unsigned": false,
+							"zerofill": false,
+							"estimatedSize": "",
+							"data": "",
+							"binary": false
+						}
+					],
+					"indexes": [],
+					"keys": [
+						{
+							"cols": [
+								{
+									"colid": "67b9fcc9-3e75-44d9-84f8-9d2b9ddc84bb",
+									"id": "2f426355-ae00-416d-a0cb-abd63550e9e6"
+								}
+							],
+							"id": "1d140b36-315e-446e-867c-e9081f4de6bc",
+							"isPk": true,
+							"name": "PRIMARY"
+						},
+						{
+							"cols": [
+								{
+									"colid": "ec8c1bf8-9a4d-47d5-8038-ad7a91733fec",
+									"id": "b0d1f2ee-b704-4ad2-b584-3c0cebf548d2"
+								}
+							],
+							"id": "83f61d4f-c117-4dcc-b883-a5951cc4cf91",
+							"isPk": false,
+							"name": "UNIQUE"
+						}
+					],
+					"lines": [],
+					"generate": true,
+					"visible": true,
+					"generateCustomCode": true,
+					"estimatedSize": "",
+					"customCode": "",
+					"ifnotexists": false,
+					"temporary": false
+				},
+				"e6087dae-fbd3-4e9d-8764-46a7e4bb5b48": {
+					"collation": "utf8mb4_general_ci",
+					"charset": "utf8mb4",
+					"database": "sconsolenxt",
+					"desc": "Master data of study tracks and their properties",
+					"embeddable": false,
+					"id": "e6087dae-fbd3-4e9d-8764-46a7e4bb5b48",
+					"initautoinc": "7",
+					"name": "track_master",
+					"relations": [
+						"ebb61ce9-c70e-4c24-b4b1-04c7f5e4f63d"
+					],
+					"rowformat": "Dynamic",
+					"tabletype": "InnoDB",
+					"cols": [
+						{
+							"after": "",
+							"autoinc": true,
+							"charset": "",
+							"collation": "",
+							"comment": "",
+							"datatype": "INT",
+							"defaultvalue": "",
+							"enum": "",
+							"fk": false,
+							"id": "6ee7ccf6-85f3-46f4-82c3-90047e4f4192",
+							"name": "id",
+							"nn": true,
+							"param": "",
+							"pk": true,
+							"unsigned": false,
+							"zerofill": false,
+							"estimatedSize": "",
+							"data": "",
+							"binary": false
+						},
+						{
+							"after": "",
+							"autoinc": false,
+							"charset": "",
+							"collation": "",
+							"comment": "",
+							"datatype": "VARCHAR",
+							"defaultvalue": "",
+							"enum": "",
+							"fk": false,
+							"id": "38fcf635-fd1c-4e39-8994-25ba2bcbec0c",
+							"name": "track_name",
+							"nn": true,
+							"param": "64",
+							"pk": false,
+							"unsigned": false,
+							"zerofill": false,
+							"estimatedSize": "",
+							"data": "",
+							"binary": false
+						},
+						{
+							"after": "",
+							"autoinc": false,
+							"charset": "",
+							"collation": "",
+							"comment": "",
+							"datatype": "VARCHAR",
+							"defaultvalue": "",
+							"enum": "",
+							"fk": false,
+							"id": "f443bff5-8130-413d-8374-6823da5d83e2",
+							"name": "color",
+							"nn": false,
+							"param": "8",
+							"pk": false,
+							"unsigned": false,
+							"zerofill": false,
+							"estimatedSize": "",
+							"data": "",
+							"binary": false
+						}
+					],
+					"indexes": [],
+					"keys": [
+						{
+							"cols": [
+								{
+									"colid": "6ee7ccf6-85f3-46f4-82c3-90047e4f4192",
+									"id": "349d1434-6b0c-4308-9cc0-12bfecb206aa"
+								}
+							],
+							"id": "9741e916-8a05-4cc4-906d-de153485fdbb",
+							"isPk": true,
+							"name": "PRIMARY"
+						},
+						{
+							"cols": [
+								{
+									"colid": "38fcf635-fd1c-4e39-8994-25ba2bcbec0c",
+									"id": "c66628a7-14a6-4d75-8b74-f2d9f78a89d6"
+								}
+							],
+							"id": "47cebfcd-6c38-4370-92d1-0fa99bb7b621",
+							"isPk": false,
+							"name": "UNIQUE"
+						}
+					],
+					"lines": [],
+					"generate": true,
+					"visible": true,
 					"generateCustomCode": true,
 					"estimatedSize": "",
 					"customCode": "",
@@ -9036,7 +10369,7 @@
 				}
 			},
 			"relations": {
-				"2a56f867-73cf-4d44-8558-79be5b30b9f4": {
+				"0d399d9a-be95-4c1a-a5d8-2597aeb0b36b": {
 					"c_p": "one",
 					"c_cp": "",
 					"c_cch": "",
@@ -9046,14 +10379,14 @@
 					"desc": "",
 					"type": "identifying",
 					"child": "74e3d227-cba7-4b22-aa34-fc123abb195a",
-					"id": "2a56f867-73cf-4d44-8558-79be5b30b9f4",
-					"name": "fk_subject_book",
+					"id": "0d399d9a-be95-4c1a-a5d8-2597aeb0b36b",
+					"name": "fk_book_subject",
 					"parent": "cf501777-e1e3-4947-88ab-87af891ac817",
 					"parent_key": "069f12f6-4a9a-4173-9cca-eb23f40c7c18",
 					"cols": [
 						{
 							"childcol": "b1870f45-6e7d-4d51-974f-843892da2190",
-							"id": "45a70343-a681-446e-b8bc-6ce824657163",
+							"id": "52b037fc-3c56-47b7-b113-c83331e3f52c",
 							"parentcol": "b5ae4c42-ff8f-4c93-ba43-3e50349701b4"
 						}
 					],
@@ -9062,9 +10395,9 @@
 					"generate": true,
 					"generateCustomCode": true,
 					"customCode": "",
-					"relationColor": "#ffeb3b"
+					"relationColor": "#ff9800"
 				},
-				"1bb56b3a-7199-4f78-a9ab-24b76dbbe6b9": {
+				"b9944571-2183-4a3f-a2a2-5165f8611508": {
 					"c_p": "one",
 					"c_cp": "",
 					"c_cch": "",
@@ -9074,14 +10407,14 @@
 					"desc": "",
 					"type": "identifying",
 					"child": "6dbd3fc8-8082-48e9-981c-75c0d80f2d12",
-					"id": "1bb56b3a-7199-4f78-a9ab-24b76dbbe6b9",
-					"name": "fk_book_chapter",
+					"id": "b9944571-2183-4a3f-a2a2-5165f8611508",
+					"name": "fk_chapter_book",
 					"parent": "74e3d227-cba7-4b22-aa34-fc123abb195a",
 					"parent_key": "8d9deccf-57c3-4e91-b4c4-c36318f8b186",
 					"cols": [
 						{
 							"childcol": "77313c5e-5e7c-4aeb-acca-9880b0820b40",
-							"id": "b1342e90-afe9-4b33-a777-d3eb24c97bf9",
+							"id": "3fbf0f31-d953-4489-a0d1-622cfdc0979d",
 							"parentcol": "dba5b3d9-62ec-4761-b34e-e2466600a962"
 						}
 					],
@@ -9090,9 +10423,9 @@
 					"generate": true,
 					"generateCustomCode": true,
 					"customCode": "",
-					"relationColor": "#ffeb3b"
+					"relationColor": "#ff9800"
 				},
-				"65e31e3f-1d61-4cbe-97c1-60935d56bd65": {
+				"517bde49-7772-4a6a-a20f-cdd14875cc76": {
 					"c_p": "one",
 					"c_cp": "",
 					"c_cch": "",
@@ -9102,14 +10435,14 @@
 					"desc": "",
 					"type": "identifying",
 					"child": "03cce6fc-31fa-4e39-a437-0e6e33eafd0e",
-					"id": "65e31e3f-1d61-4cbe-97c1-60935d56bd65",
-					"name": "fk_problem-type_problem",
+					"id": "517bde49-7772-4a6a-a20f-cdd14875cc76",
+					"name": "fk_problem_PT",
 					"parent": "aa118985-ca82-4c98-bbdf-c6654aa4f75a",
 					"parent_key": "e9d6f91b-804c-43ea-b38d-efacbb904773",
 					"cols": [
 						{
 							"childcol": "4c644588-a69b-421a-869e-0aa2e476e7de",
-							"id": "e06ca216-2021-4f4f-b0a2-7fdb6e86c801",
+							"id": "6b04f193-c9f3-4bed-a536-1e6ab8b91281",
 							"parentcol": "a2b81a36-721e-4bad-a247-ed961d359406"
 						}
 					],
@@ -9118,9 +10451,9 @@
 					"generate": true,
 					"generateCustomCode": true,
 					"customCode": "",
-					"relationColor": "#ffeb3b"
+					"relationColor": "#ff9800"
 				},
-				"f5ff06ae-2405-436b-aa5d-a857e781acd4": {
+				"a1e923b9-f3e4-4e85-b746-91a2d848c9d2": {
 					"c_p": "one",
 					"c_cp": "",
 					"c_cch": "",
@@ -9130,19 +10463,19 @@
 					"desc": "",
 					"type": "identifying",
 					"child": "03cce6fc-31fa-4e39-a437-0e6e33eafd0e",
-					"id": "f5ff06ae-2405-436b-aa5d-a857e781acd4",
-					"name": "fk_chapter_problem",
+					"id": "a1e923b9-f3e4-4e85-b746-91a2d848c9d2",
+					"name": "fk_problem_chapter",
 					"parent": "6dbd3fc8-8082-48e9-981c-75c0d80f2d12",
 					"parent_key": "250cd6d7-134b-4527-8d9d-f034a006918f",
 					"cols": [
 						{
 							"childcol": "1a5afc29-da99-461d-9a62-f8f61bde5ac9",
-							"id": "31d57a3e-84a2-4df5-ac05-3b9c58bd8b8c",
+							"id": "683c5d66-c4c1-4cf9-a20c-0059b37678e0",
 							"parentcol": "77313c5e-5e7c-4aeb-acca-9880b0820b40"
 						},
 						{
 							"childcol": "31a7755e-baa8-4f87-b849-b3848bc1f0ef",
-							"id": "770f86fd-96c1-4333-918b-db42bd1c1469",
+							"id": "ea220614-1b99-4689-881b-e063fff373ff",
 							"parentcol": "2e7f2f92-0c2b-41a3-9467-a9e16cd28cad"
 						}
 					],
@@ -9151,9 +10484,9 @@
 					"generate": true,
 					"generateCustomCode": true,
 					"customCode": "",
-					"relationColor": "#ffeb3b"
+					"relationColor": "#ff9800"
 				},
-				"ebf45113-0ab2-40eb-ab5c-1c4dff5f01f8": {
+				"cb070c98-64fa-485d-9592-0cfc62f79320": {
 					"c_p": "one",
 					"c_cp": "",
 					"c_cch": "",
@@ -9163,14 +10496,14 @@
 					"desc": "",
 					"type": "identifying",
 					"child": "0b713a2b-d568-40a1-bac1-552360d56264",
-					"id": "ebf45113-0ab2-40eb-ab5c-1c4dff5f01f8",
-					"name": "fk_syllabus_syllabus-book-map",
+					"id": "cb070c98-64fa-485d-9592-0cfc62f79320",
+					"name": "fk_SBM_syllabus",
 					"parent": "af87fb32-ca82-4d55-975a-a59d21bb572c",
 					"parent_key": "e9c28f90-a6f5-45b0-91fa-36580ccb169e",
 					"cols": [
 						{
 							"childcol": "5ee077c4-e270-42e9-8388-f02fe1e7221e",
-							"id": "ffc2016e-c282-4318-b865-f29f3d3c7326",
+							"id": "cf1e32b2-50c5-46d4-ba10-0227ba94dd14",
 							"parentcol": "1ca9641b-ccdb-47f8-8d0b-10440a10501a"
 						}
 					],
@@ -9179,9 +10512,9 @@
 					"generate": true,
 					"generateCustomCode": true,
 					"customCode": "",
-					"relationColor": "#ffeb3b"
+					"relationColor": "#ff9800"
 				},
-				"3d4f22bd-2463-437b-a119-42bc7bd20a59": {
+				"425ec97c-46a8-4632-a8d8-9a69158dbb38": {
 					"c_p": "one",
 					"c_cp": "",
 					"c_cch": "",
@@ -9191,14 +10524,14 @@
 					"desc": "",
 					"type": "identifying",
 					"child": "0b713a2b-d568-40a1-bac1-552360d56264",
-					"id": "3d4f22bd-2463-437b-a119-42bc7bd20a59",
-					"name": "fk_book_syllabus-book-map",
+					"id": "425ec97c-46a8-4632-a8d8-9a69158dbb38",
+					"name": "fk_SBM_book",
 					"parent": "74e3d227-cba7-4b22-aa34-fc123abb195a",
 					"parent_key": "8d9deccf-57c3-4e91-b4c4-c36318f8b186",
 					"cols": [
 						{
 							"childcol": "4d8b2126-5245-4950-ba03-9f0dd95a8fab",
-							"id": "8ab91d87-53e3-48cd-bb77-93debe7eec55",
+							"id": "54a159f0-bf31-4ca1-8839-416abf00d819",
 							"parentcol": "dba5b3d9-62ec-4761-b34e-e2466600a962"
 						}
 					],
@@ -9207,9 +10540,9 @@
 					"generate": true,
 					"generateCustomCode": true,
 					"customCode": "",
-					"relationColor": "#ffeb3b"
+					"relationColor": "#ff9800"
 				},
-				"c1a1164e-7478-40b2-899f-31f750116f01": {
+				"24bfd54f-313e-434c-b881-38ff6ba023e6": {
 					"c_p": "one",
 					"c_cp": "",
 					"c_cch": "",
@@ -9219,14 +10552,14 @@
 					"desc": "",
 					"type": "identifying",
 					"child": "af87fb32-ca82-4d55-975a-a59d21bb572c",
-					"id": "c1a1164e-7478-40b2-899f-31f750116f01",
-					"name": "fk_subject_syllabus",
+					"id": "24bfd54f-313e-434c-b881-38ff6ba023e6",
+					"name": "fk_syllabus_subject",
 					"parent": "cf501777-e1e3-4947-88ab-87af891ac817",
 					"parent_key": "069f12f6-4a9a-4173-9cca-eb23f40c7c18",
 					"cols": [
 						{
 							"childcol": "c1b5bc2c-591c-4c94-9ca4-4b9d568a0847",
-							"id": "a70ce039-d04d-4518-a2e9-6f53bac7d353",
+							"id": "d2fd5cd3-e81c-451e-89a4-098c220fd9f1",
 							"parentcol": "b5ae4c42-ff8f-4c93-ba43-3e50349701b4"
 						}
 					],
@@ -9235,9 +10568,9 @@
 					"generate": true,
 					"generateCustomCode": true,
 					"customCode": "",
-					"relationColor": "#ffeb3b"
+					"relationColor": "#ff9800"
 				},
-				"5c30f7eb-41a0-4875-8911-6798f1e93618": {
+				"6fd8104d-6f77-478d-b00a-b2749ea49ba9": {
 					"c_p": "one",
 					"c_cp": "",
 					"c_cch": "",
@@ -9247,14 +10580,14 @@
 					"desc": "",
 					"type": "identifying",
 					"child": "d7bd2a76-c755-4927-9857-08e74b1d0a96",
-					"id": "5c30f7eb-41a0-4875-8911-6798f1e93618",
-					"name": "fk_topic_topic-chapter-map",
+					"id": "6fd8104d-6f77-478d-b00a-b2749ea49ba9",
+					"name": "fk_TCM_topic",
 					"parent": "c17be34e-081a-4590-becf-6e0ac4ff6b06",
 					"parent_key": "d8c58e9a-e1ad-4ae5-b4d6-b4ad4099e493",
 					"cols": [
 						{
 							"childcol": "f1bef65d-067e-4b32-8081-c124378bb06d",
-							"id": "adb81e46-be6e-44df-8e3e-553153e60594",
+							"id": "64d16ffb-42b2-4bec-a438-ec53ec0cbc7b",
 							"parentcol": "8831cdc7-7d52-4be4-aa52-cdf8f61aa8a2"
 						}
 					],
@@ -9263,9 +10596,9 @@
 					"generate": true,
 					"generateCustomCode": true,
 					"customCode": "",
-					"relationColor": "#ffeb3b"
+					"relationColor": "#ff9800"
 				},
-				"6ad7754e-5bcf-49f6-9562-0d63bfb84818": {
+				"cab20cf1-56be-4126-8426-b6a5909b1852": {
 					"c_p": "one",
 					"c_cp": "",
 					"c_cch": "",
@@ -9275,19 +10608,19 @@
 					"desc": "",
 					"type": "identifying",
 					"child": "d7bd2a76-c755-4927-9857-08e74b1d0a96",
-					"id": "6ad7754e-5bcf-49f6-9562-0d63bfb84818",
-					"name": "fk_chapter_topic-chapter-map",
+					"id": "cab20cf1-56be-4126-8426-b6a5909b1852",
+					"name": "fk_TCM_chapter",
 					"parent": "6dbd3fc8-8082-48e9-981c-75c0d80f2d12",
 					"parent_key": "250cd6d7-134b-4527-8d9d-f034a006918f",
 					"cols": [
 						{
 							"childcol": "f023e370-d378-436b-8dcf-5879b0695f34",
-							"id": "df6c7bce-e97b-4fc7-b598-f63ce641dabb",
+							"id": "14f534cd-665b-4a21-ba13-398f138ccbce",
 							"parentcol": "77313c5e-5e7c-4aeb-acca-9880b0820b40"
 						},
 						{
 							"childcol": "1dd7e285-a948-4c90-a589-dddf6887a734",
-							"id": "0683cbb9-887a-4713-8655-91b0efaa808f",
+							"id": "4909502a-eeee-4eb0-9773-115fd6275930",
 							"parentcol": "2e7f2f92-0c2b-41a3-9467-a9e16cd28cad"
 						}
 					],
@@ -9296,9 +10629,9 @@
 					"generate": true,
 					"generateCustomCode": true,
 					"customCode": "",
-					"relationColor": "#ffeb3b"
+					"relationColor": "#ff9800"
 				},
-				"d7910001-16e3-4d7f-8e69-47d701577a6c": {
+				"9215c6d7-cf32-4274-88d4-04f178fb2655": {
 					"c_p": "one",
 					"c_cp": "",
 					"c_cch": "",
@@ -9308,25 +10641,25 @@
 					"desc": "",
 					"type": "identifying",
 					"child": "58d2c04d-6f53-4432-b9ae-3a30949d646f",
-					"id": "d7910001-16e3-4d7f-8e69-47d701577a6c",
-					"name": "fk_TCM_TCPM",
+					"id": "9215c6d7-cf32-4274-88d4-04f178fb2655",
+					"name": "fk_TCPM_TCM",
 					"parent": "d7bd2a76-c755-4927-9857-08e74b1d0a96",
 					"parent_key": "d80863ed-8a71-4980-b3cc-e5d64aa5f394",
 					"cols": [
 						{
 							"childcol": "db8fd724-aa82-4369-aa86-8f3331f8a50f",
-							"id": "41aebabd-7a87-45ae-be13-4428bc9e2305",
+							"id": "9ff3ec27-1d18-41ba-94fb-fd6a0d4bd1dd",
 							"parentcol": "5a5abaf0-09da-4deb-b1ec-cbc73d199078"
 						}
 					],
-					"ri_pd": "Restrict",
+					"ri_pd": "Cascade",
 					"ri_pu": "Cascade",
 					"generate": true,
 					"generateCustomCode": true,
 					"customCode": "",
-					"relationColor": "#ffeb3b"
+					"relationColor": "#4caf50"
 				},
-				"bbabede8-0ecf-4b16-976a-9f701c5e50a8": {
+				"51ce49de-71ba-4353-9b9a-fa48807dcb72": {
 					"c_p": "one",
 					"c_cp": "",
 					"c_cch": "",
@@ -9336,25 +10669,25 @@
 					"desc": "",
 					"type": "identifying",
 					"child": "58d2c04d-6f53-4432-b9ae-3a30949d646f",
-					"id": "bbabede8-0ecf-4b16-976a-9f701c5e50a8",
-					"name": "fk_problem_TCPM",
+					"id": "51ce49de-71ba-4353-9b9a-fa48807dcb72",
+					"name": "fk_TCPM_problem",
 					"parent": "03cce6fc-31fa-4e39-a437-0e6e33eafd0e",
 					"parent_key": "14f259b6-49ed-4f11-8c8d-64f350c1ffeb",
 					"cols": [
 						{
 							"childcol": "6ffcdc2e-434d-4663-b799-06623d2ded5f",
-							"id": "769ee586-da96-4b65-9a04-a375257558ec",
+							"id": "f097f5d3-1fb7-4ee7-bb33-118c0080c5aa",
 							"parentcol": "5c9a58f3-34c5-41f6-970a-14a01fcfcbf8"
 						}
 					],
-					"ri_pd": "Restrict",
+					"ri_pd": "No action",
 					"ri_pu": "Cascade",
 					"generate": true,
 					"generateCustomCode": true,
 					"customCode": "",
-					"relationColor": "#ffeb3b"
+					"relationColor": "#ff9800"
 				},
-				"ae0d1bbb-da7a-4024-a241-dc98fd633654": {
+				"e8fcea1d-98c1-43de-a544-819d0b10aa33": {
 					"c_p": "one",
 					"c_cp": "",
 					"c_cch": "",
@@ -9364,14 +10697,14 @@
 					"desc": "",
 					"type": "identifying",
 					"child": "c17be34e-081a-4590-becf-6e0ac4ff6b06",
-					"id": "ae0d1bbb-da7a-4024-a241-dc98fd633654",
-					"name": "fk_syllabus_topic",
+					"id": "e8fcea1d-98c1-43de-a544-819d0b10aa33",
+					"name": "fk_topic_syllabus",
 					"parent": "af87fb32-ca82-4d55-975a-a59d21bb572c",
 					"parent_key": "e9c28f90-a6f5-45b0-91fa-36580ccb169e",
 					"cols": [
 						{
 							"childcol": "0c488a8b-de58-40c9-b799-861219027d34",
-							"id": "89af7dc4-8d97-4ae8-a59a-3dc402465b96",
+							"id": "c5e3d1c3-67bf-49ac-9797-7e7a669897c8",
 							"parentcol": "1ca9641b-ccdb-47f8-8d0b-10440a10501a"
 						}
 					],
@@ -9380,7 +10713,63 @@
 					"generate": true,
 					"generateCustomCode": true,
 					"customCode": "",
-					"relationColor": "#ffeb3b"
+					"relationColor": "#ff9800"
+				},
+				"ebb61ce9-c70e-4c24-b4b1-04c7f5e4f63d": {
+					"c_p": "one",
+					"c_cp": "",
+					"c_cch": "",
+					"c_ch": "many",
+					"c_mch": "true",
+					"c_mp": "true",
+					"desc": "",
+					"type": "identifying",
+					"child": "db1371cf-7f8f-409e-be95-7536efcac9cb",
+					"id": "ebb61ce9-c70e-4c24-b4b1-04c7f5e4f63d",
+					"name": "fk_TTA_track",
+					"parent": "e6087dae-fbd3-4e9d-8764-46a7e4bb5b48",
+					"parent_key": "9741e916-8a05-4cc4-906d-de153485fdbb",
+					"cols": [
+						{
+							"childcol": "68af6359-9f96-447b-9553-7785e4c68103",
+							"id": "e6a62292-a22c-4928-808d-75b8c810d2d1",
+							"parentcol": "6ee7ccf6-85f3-46f4-82c3-90047e4f4192"
+						}
+					],
+					"ri_pd": "No action",
+					"ri_pu": "Cascade",
+					"generate": true,
+					"generateCustomCode": true,
+					"customCode": "",
+					"relationColor": "#ff9800"
+				},
+				"b55efe8f-b570-4f30-a879-e6ab22102f34": {
+					"c_p": "one",
+					"c_cp": "",
+					"c_cch": "",
+					"c_ch": "one",
+					"c_mch": "true",
+					"c_mp": "true",
+					"desc": "",
+					"type": "identifying",
+					"child": "db1371cf-7f8f-409e-be95-7536efcac9cb",
+					"id": "b55efe8f-b570-4f30-a879-e6ab22102f34",
+					"name": "fk_TTA_topic",
+					"parent": "c17be34e-081a-4590-becf-6e0ac4ff6b06",
+					"parent_key": "d8c58e9a-e1ad-4ae5-b4d6-b4ad4099e493",
+					"cols": [
+						{
+							"childcol": "ec8c1bf8-9a4d-47d5-8038-ad7a91733fec",
+							"id": "b28484e6-b7b5-452b-83e0-c20e9652764e",
+							"parentcol": "8831cdc7-7d52-4be4-aa52-cdf8f61aa8a2"
+						}
+					],
+					"ri_pd": "No action",
+					"ri_pu": "Cascade",
+					"generate": true,
+					"generateCustomCode": true,
+					"customCode": "",
+					"relationColor": "#ff9800"
 				},
 				"c9889e60-3f92-49f6-a274-ca9d023bf7c9": {
 					"c_p": "one",

@@ -47,7 +47,7 @@ public class BookProblemSummary {
     
     public BookProblemSummary( Book book ) {
         this.getBook().setId( book.getId() ) ;
-        this.getBook().setSubjectName( book.getSubject().getSubjectName() ) ;
+        this.getBook().setSubjectName( book.getSubjectName() ) ;
         this.getBook().setSeriesName( book.getSeriesName() ) ;
         this.getBook().setBookName( book.getBookName() ) ;
         this.getBook().setAuthor( book.getAuthor() ) ;

@@ -16,11 +16,13 @@ public class Syllabus {
     @Column( name = "syllabus_name", nullable = false, length = 64 )
     private String syllabusName;
     
-    @ManyToOne( fetch = FetchType.EAGER, optional = false )
-    @JoinColumn( name = "subject_name", nullable = false )
-    private Subject subject;
+    @Column( name = "subject_name", nullable = false )
+    private String subjectName;
     
+    @Column( name = "color", nullable = false, length = 8 )
+    private String color;
+
     @OneToMany( mappedBy = "syllabus" )
+    @OrderBy( "id" )
     private Set<Topic> topics = new LinkedHashSet<>();
-    
 }

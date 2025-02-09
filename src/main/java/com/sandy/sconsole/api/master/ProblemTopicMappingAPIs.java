@@ -41,7 +41,7 @@ public class ProblemTopicMappingAPIs {
             ChapterProblemsTopicMappingVO result ;
             
             Chapter chapter = chapterRepo.findById( new ChapterId( bookId, chapterNum ) ).get() ;
-            Syllabus syllabus = syllabusRepo.findBySubject( chapter.getBook().getSubject() ).get( 0 ) ;
+            Syllabus syllabus = syllabusRepo.findBySubjectName( chapter.getBook().getSubjectName() ).get( 0 ) ;
             
             List<Object[]> records = this.problemRepo.getProblemTopicMappings( bookId, chapterNum ) ;
             

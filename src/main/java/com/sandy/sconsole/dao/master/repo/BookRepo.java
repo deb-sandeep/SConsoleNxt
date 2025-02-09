@@ -32,13 +32,13 @@ public interface BookRepo extends CrudRepository<Book, Integer> {
         int getNumProblems() ;
     }
     
-    List<Book> findBySubject_SubjectNameIgnoreCase( String subjectName ) ;
+    List<Book> findBySubjectNameIgnoreCase( String subjectName ) ;
     
     @Query( """
         select b
         from Book b
         where
-            upper(b.subject.subjectName) = upper(?1) and
+            upper(b.subjectName) = upper(?1) and
             upper(b.bookName) = upper(?2) and
             upper(b.author) = upper(?3)
     """ )
@@ -46,7 +46,7 @@ public interface BookRepo extends CrudRepository<Book, Integer> {
     
     @Query( """
         select b.id as id,
-               b.subject.subjectName as subjectName,
+               b.subjectName as subjectName,
                sbm.syllabus.syllabusName as syllabusName,
                b.seriesName as seriesName,
                b.bookName as bookName,
@@ -66,7 +66,7 @@ public interface BookRepo extends CrudRepository<Book, Integer> {
         group by
             b.id, sbm.syllabus.syllabusName
         order by
-            b.subject.subjectName asc,
+            b.subjectName asc,
             b.seriesName asc,
             b.id asc
     """ )

@@ -19,7 +19,7 @@ public class BookVO {
     
     public BookVO( Book book ) {
         this.id = book.getId() ;
-        this.subjectName = book.getSubject().getSubjectName() ;
+        this.subjectName = book.getSubjectName() ;
         this.seriesName = book.getSeriesName() ;
         this.bookName = book.getBookName() ;
         this.author = book.getAuthor() ;

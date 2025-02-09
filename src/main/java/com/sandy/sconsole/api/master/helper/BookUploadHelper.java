@@ -86,11 +86,10 @@ public class BookUploadHelper {
     @Transactional
     public SaveBookMetaRes saveBookMeta( BookMeta meta ) {
         
-        SaveBookMetaRes stats   = new SaveBookMetaRes() ;
-        Subject         subject = subjectRepo.findById( meta.getSubject() ).get() ;
+        SaveBookMetaRes stats = new SaveBookMetaRes() ;
         
         Book book = new Book() ;
-        book.setSubject( subject ) ;
+        book.setSubjectName( meta.getSubject() ) ;
         book.setSeriesName( meta.getSeries() ) ;
         book.setBookName( meta.getName() ) ;
         book.setAuthor( meta.getAuthor() ) ;
@@ -105,7 +104,7 @@ public class BookUploadHelper {
     
     private void addBookSyllabusMapping( Book book ) {
     
-        List<Syllabus> syllabuses = syllabusRepo.findBySubject( book.getSubject() ) ;
+        List<Syllabus> syllabuses = syllabusRepo.findBySubjectName( book.getSubjectName() ) ;
         if( syllabuses != null && syllabuses.size() == 1 ) {
             SyllabusBookMap map = new SyllabusBookMap() ;
             map.setSyllabus( syllabuses.get( 0 ) ) ;

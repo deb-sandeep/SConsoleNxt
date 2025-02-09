@@ -17,9 +17,8 @@ public class Book {
     @Column( name = "id", nullable = false )
     private Integer id;
     
-    @ManyToOne( fetch = FetchType.LAZY, optional = false )
-    @JoinColumn( name = "subject_name", nullable = false )
-    private Subject subject;
+    @Column( name = "subject_name", nullable = false )
+    private String subjectName;
     
     @Column( name = "book_name", nullable = false, length = 128 )
     private String bookName;

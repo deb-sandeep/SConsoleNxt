@@ -28,7 +28,6 @@ public class BookHelper {
     @Autowired SConsoleConfig config ;
     @Autowired BookMetaValidator validator ;
     
-    @Autowired SubjectRepo subjectRepo ;
     @Autowired SyllabusRepo syllabusRepo ;
     @Autowired BookRepo bookRepo ;
     @Autowired ChapterRepo chapterRepo ;
