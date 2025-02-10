@@ -1,5 +1,6 @@
 package com.sandy.sconsole.api.master;
 
+import com.sandy.sconsole.api.master.vo.TopicProblemCountVO;
 import com.sandy.sconsole.api.master.vo.TopicVO;
 import com.sandy.sconsole.core.api.AR;
 import com.sandy.sconsole.dao.master.Topic;
@@ -18,6 +19,7 @@ import java.util.List;
 
 import static com.sandy.sconsole.core.api.AR.success;
 import static com.sandy.sconsole.core.api.AR.systemError;
+import static com.sandy.sconsole.dao.master.repo.TopicRepo.TopicProblemTypeCount ;
 
 @Slf4j
 @RestController
@@ -40,6 +42,7 @@ public class TopicAPIs {
     @GetMapping( "/All" )
     public ResponseEntity<AR<List<TopicVO>>> getTopics(
             @PathParam ( "syllabusName" ) String syllabusName ) {
+        
         try {
             List<TopicVO> voList ;
             if( syllabusName == null ) {
@@ -59,5 +62,27 @@ public class TopicAPIs {
         List<TopicVO> dtos = new ArrayList<>() ;
         topics.forEach( t -> dtos.add( new TopicVO( t ) ) );
         return dtos ;
+    }
+    
+    @GetMapping( "/ProblemTypeCounts" )
+    public ResponseEntity<AR<List<TopicProblemCountVO>>> getProblemCounts() {
+        
+        try {
+            List<TopicProblemCountVO> response = new ArrayList<>() ;
+            TopicProblemCountVO lastVO = null ;
+            for( TopicProblemTypeCount count : topicRepo.getTopicProblemCounts() ) {
+                if( lastVO == null || count.getTopicId() != lastVO.getTopicId() ) {
+                    lastVO = new TopicProblemCountVO( count.getTopicId() ) ;
+                    response.add( lastVO ) ;
+                }
+                if( count.getProblemType() != null ) {
+                    lastVO.addCount( count.getProblemType(), count.getNumProblems() ) ;
+                }
+            }
+            return success( response ) ;
+        }
+        catch( Exception e ) {
+            return systemError( e ) ;
+        }
     }
 }

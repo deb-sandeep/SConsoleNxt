@@ -61,10 +61,13 @@ public class TopicChapterMappingVO {
     
     public void calculateProblemCounts() {
         chapters.forEach( ch -> ch.getProblemTypeCountMap()
-                                  .forEach( ( problemType, count) -> {
-            int newCount = count ;
+                                  .forEach( ( problemType, count ) -> {
+            int newCount = 0 ;
             if( problemTypeCountMap.containsKey( problemType ) ) {
                 newCount += problemTypeCountMap.get( problemType ) + count ;
+            }
+            else {
+                newCount = count ;
             }
             problemTypeCountMap.put( problemType, newCount ) ;
             problemCount += count ;
