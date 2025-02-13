@@ -28,7 +28,7 @@ public class Track {
     @Column( name = "syllabus_name" )
     private String syllabusName;
     
-    @OneToMany( mappedBy = "topicId" )
+    @OneToMany( mappedBy = "trackId", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER )
     @OrderBy( "sequence" )
     private Set<TopicTrackAssignment> assignedTopics = new LinkedHashSet<>();
     

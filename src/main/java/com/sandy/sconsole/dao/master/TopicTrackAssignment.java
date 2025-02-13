@@ -13,6 +13,7 @@ import java.time.LocalDate;
 public class TopicTrackAssignment {
     
     @Id
+    @GeneratedValue( strategy = GenerationType.IDENTITY )
     @Column( name = "id", nullable = false )
     private Integer id ;
     
