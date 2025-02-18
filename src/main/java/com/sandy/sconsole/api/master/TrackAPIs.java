@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -40,6 +41,10 @@ public class TrackAPIs {
                             @RequestBody List<TopicTrackAssignment> schedules ) {
         try {
             ttaRepo.deleteByTrackId( trackId ) ;
+            ttaRepo.deleteByTopicId( schedules.stream()
+                                              .map( TopicTrackAssignment::getTopicId )
+                                              .collect( Collectors.toList() ) ) ;
+            
             schedules.forEach( schedule -> {
                 schedule.setId( null ) ;
                 ttaRepo.save( schedule ) ;
