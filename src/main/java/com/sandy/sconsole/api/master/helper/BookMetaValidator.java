@@ -197,13 +197,20 @@ public class BookMetaValidator {
         
         // 1 - Check if metadata has the right number of fields
         String[] parts = data.split( " " ) ;
-        if( parts.length < 2 || parts.length > 3) {
+        if( parts.length < 2 || parts.length > 3 ) {
             msgs.addError( data, "Invalid problem cluster format" ) ;
             return cluster ;
         }
         
         // 2 - Check if the problem type specified is valid
-        ProblemType type = problemTypeRepo.findById( parts[0].trim() ).orElse( null ) ;
+        String problemTypeStr = parts[0].trim() ;
+        String problemType = problemTypeStr ;
+        if( problemTypeStr.contains( ":" ) ) {
+            String[] problemTypeParts = problemTypeStr.split( ":" ) ;
+            problemType = problemTypeParts[0].trim() ;
+            cluster.setExtraQualifier( problemTypeParts[1].trim() ) ;
+        }
+        ProblemType type = problemTypeRepo.findById( problemType ).orElse( null ) ;
         if( type == null ) {
             msgs.addError( data, "Invalid problem type - " + parts[0] ) ;
             return cluster ;

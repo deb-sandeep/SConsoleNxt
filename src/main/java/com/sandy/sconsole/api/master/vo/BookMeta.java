@@ -85,6 +85,7 @@ public class BookMeta {
     public static class ProblemCluster {
         private String metadata ;
         private String type = null ;
+        private String extraQualifier = null ;
         private String lctSequence = null ;
         private int startIndex ;
         private int endIndex ;

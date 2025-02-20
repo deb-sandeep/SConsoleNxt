@@ -48,7 +48,7 @@ public class BookUploadHelper {
             uploadDir = new File( config.getWorkspacePath(), "uploads" ) ;
             if( !uploadDir.exists() ) {
                 if( !uploadDir.mkdirs() ) {
-                    log.error( "Uploads directory could not be created at " + uploadDir.getAbsolutePath() );
+                    log.error( "Uploads directory could not be created at {}", uploadDir.getAbsolutePath() );
                 }
             }
         }
@@ -154,7 +154,11 @@ public class BookUploadHelper {
                 if( cluster.getLctSequence() != null ) {
                     problemKey += "-" + cluster.getLctSequence() ;
                 }
-                problemKey += "/" + i ;
+                problemKey += "/" ;
+                if( cluster.getExtraQualifier() != null ) {
+                    problemKey += cluster.getExtraQualifier() + "/" ;
+                }
+                problemKey += i ;
                 
                 Problem problem = new Problem() ;
                 problem.setChapter( chapter ) ;
