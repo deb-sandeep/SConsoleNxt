@@ -21,7 +21,10 @@ public class Syllabus {
     
     @Column( name = "color", nullable = false, length = 8 )
     private String color;
-
+    
+    @Column( name = "icon_name", nullable = false, length = 45 )
+    private String iconName;
+    
     @OneToMany( mappedBy = "syllabus" )
     @OrderBy( "id" )
     private Set<Topic> topics = new LinkedHashSet<>();
