@@ -1,7 +1,7 @@
 package com.sandy.sconsole.api.master;
 
 import com.sandy.sconsole.api.master.vo.TopicProblemCountVO;
-import com.sandy.sconsole.api.master.vo.TopicVO;
+import com.sandy.sconsole.dao.master.dto.TopicVO;
 import com.sandy.sconsole.core.api.AR;
 import com.sandy.sconsole.dao.master.Topic;
 import com.sandy.sconsole.dao.master.repo.TopicRepo;
@@ -69,7 +69,7 @@ public class TopicAPIs {
         
         try {
             List<TopicProblemCountVO> response = new ArrayList<>() ;
-            TopicProblemCountVO lastVO = null ;
+            TopicProblemCountVO       lastVO   = null ;
             for( TopicProblemTypeCount count : topicRepo.getTopicProblemCounts() ) {
                 if( lastVO == null || count.getTopicId() != lastVO.getTopicId() ) {
                     lastVO = new TopicProblemCountVO( count.getTopicId() ) ;

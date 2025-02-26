@@ -1,13 +1,15 @@
 package com.sandy.sconsole.api.master.vo;
 
 import com.sandy.sconsole.dao.master.*;
+import com.sandy.sconsole.dao.master.dto.BookDTO;
+import com.sandy.sconsole.dao.master.dto.TopicVO;
 import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
-public class ChapterProblemsTopicMappingVO {
+public class ChapterProblemsTopicMappingDTO {
     
     @Data
     public static class ExerciseProblems {
@@ -27,8 +29,8 @@ public class ChapterProblemsTopicMappingVO {
         private int problemId ;
         private String problemType ;
         private String problemKey ;
-        private int mappingId = -1 ;
-        private TopicVO topic = null ;
+        private int     mappingId = -1 ;
+        private TopicVO topic     = null ;
         
         ProblemTopicMapping( Problem problem, TopicChapterProblemMap tcpm ) {
             this.problemId = problem.getId() ;
@@ -43,12 +45,12 @@ public class ChapterProblemsTopicMappingVO {
     }
     
     private int chapterNum ;
-    private String chapterName ;
-    private BookVO book ;
+    private String                 chapterName ;
+    private BookDTO                book ;
     private List<ExerciseProblems> exercises = new ArrayList<>();
     
-    public ChapterProblemsTopicMappingVO( Chapter chapter, Syllabus syllabus ) {
-        this.book = new BookVO( chapter.getBook() ) ;
+    public ChapterProblemsTopicMappingDTO( Chapter chapter, Syllabus syllabus ) {
+        this.book = new BookDTO( chapter.getBook() ) ;
         this.book.setSyllabusName( syllabus.getSyllabusName() ) ;
         this.chapterNum = chapter.getId().getChapterNum() ;
         this.chapterName = chapter.getChapterName() ;

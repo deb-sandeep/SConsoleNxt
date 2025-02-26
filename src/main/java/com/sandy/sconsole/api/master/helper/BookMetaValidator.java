@@ -1,6 +1,6 @@
 package com.sandy.sconsole.api.master.helper;
 
-import com.sandy.sconsole.api.master.vo.BookMeta;
+import com.sandy.sconsole.api.master.vo.BookMetaVO;
 import com.sandy.sconsole.core.util.StringUtil;
 import com.sandy.sconsole.dao.master.Book;
 import com.sandy.sconsole.dao.master.ProblemType;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-import static com.sandy.sconsole.api.master.vo.BookMeta.*;
+import static com.sandy.sconsole.api.master.vo.BookMetaVO.*;
 
 @Slf4j
 @Component
@@ -23,7 +23,7 @@ public class BookMetaValidator {
     @Autowired BookRepo        bookRepo        = null ;
     @Autowired ProblemTypeRepo problemTypeRepo = null ;
 
-    public void validateBookMeta( BookMeta meta ) {
+    public void validateBookMeta( BookMetaVO meta ) {
         
         // 1 - Perform a structural validation (mandatory fields)
         validateMandatoryFields( meta ) ;
@@ -40,14 +40,14 @@ public class BookMetaValidator {
             if( book == null ) {
                 // 4 - If subject exists, validate the chapter metadata values.
                 //     This recursively validates the problem cluster metadata too.
-                for( BookMeta.ChapterMeta chapterMeta : meta.getChapters() ) {
+                for( BookMetaVO.ChapterMeta chapterMeta : meta.getChapters() ) {
                     validateChapterMetaValues( chapterMeta ) ;
                 }
             }
         }
     }
     
-    private void validateMandatoryFields( BookMeta meta ) {
+    private void validateMandatoryFields( BookMetaVO meta ) {
         
         ValidationMessages msgs = meta.getValidationMessages() ;
         
@@ -71,12 +71,12 @@ public class BookMetaValidator {
             msgs.addError( "shortName", "Attribute is missing" ) ;
         }
         
-        for( BookMeta.ChapterMeta chapter : meta.getChapters() ) {
+        for( BookMetaVO.ChapterMeta chapter : meta.getChapters() ) {
             
             if( chapter.getTitle() == null ) {
                 chapter.getValidationMessages().addError( "title", "Attribute is missing" ) ;
             }
-            for( BookMeta.ExerciseMeta exercise : chapter.getExercises() ) {
+            for( BookMetaVO.ExerciseMeta exercise : chapter.getExercises() ) {
                 
                 if( exercise.getName() == null ) {
                     exercise.getValidationMessages().addError( "name", "Attribute is missing" ) ;
@@ -94,7 +94,7 @@ public class BookMetaValidator {
         return present ;
     }
     
-    private Book validateBookExists( BookMeta meta ) {
+    private Book validateBookExists( BookMetaVO meta ) {
         
         ValidationMessages msgs = meta.getValidationMessages() ;
         String bookId = meta.getSubject() + " > " + meta.getName() + " by " + meta.getAuthor() ;

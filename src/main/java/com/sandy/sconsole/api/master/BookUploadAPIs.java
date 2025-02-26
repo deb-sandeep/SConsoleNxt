@@ -2,7 +2,7 @@ package com.sandy.sconsole.api.master;
 
 import com.sandy.sconsole.api.master.helper.BookHelper;
 import com.sandy.sconsole.api.master.helper.BookUploadHelper;
-import com.sandy.sconsole.api.master.vo.BookMeta;
+import com.sandy.sconsole.api.master.vo.BookMetaVO;
 import com.sandy.sconsole.api.master.vo.reqres.SaveBookMetaReq;
 import com.sandy.sconsole.api.master.vo.reqres.SaveBookMetaRes;
 import com.sandy.sconsole.core.api.AR;
@@ -25,11 +25,11 @@ public class BookUploadAPIs {
     private BookUploadHelper bookHelper = null ;
     
     @PostMapping( "/ValidateMetaFile" )
-    public ResponseEntity<AR<BookMeta>> validateMetaFile(
+    public ResponseEntity<AR<BookMetaVO>> validateMetaFile(
             @RequestParam( "file" ) MultipartFile multipartFile ) {
         try {
-            File savedFile = bookHelper.saveUploadedFile( multipartFile ) ;
-            BookMeta meta = bookHelper.parseAndValidateBookMeta( savedFile ) ;
+            File       savedFile = bookHelper.saveUploadedFile( multipartFile ) ;
+            BookMetaVO meta      = bookHelper.parseAndValidateBookMeta( savedFile ) ;
             
             meta.setServerFileName( savedFile.getName() );
             
@@ -54,7 +54,7 @@ public class BookUploadAPIs {
                 return badRequest( "Uploaded file " + uploadedFileName + " does not exist." ) ;
             }
 
-            BookMeta meta = bookHelper.parseAndValidateBookMeta( savedFile ) ;
+            BookMetaVO meta = bookHelper.parseAndValidateBookMeta( savedFile ) ;
             if( meta.getTotalMsgCount().getNumError() > 0 ) {
                 return functionalError( "Cannot save book meta with errors." ) ;
             }

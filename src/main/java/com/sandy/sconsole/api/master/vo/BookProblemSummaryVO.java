@@ -1,15 +1,16 @@
 package com.sandy.sconsole.api.master.vo;
 
 import com.sandy.sconsole.dao.master.Book;
+import com.sandy.sconsole.dao.master.dto.BookDTO;
 import com.sandy.sconsole.dao.master.repo.BookRepo;
 import lombok.Data;
 
 import java.util.*;
 
 @Data
-public class BookProblemSummary {
+public class BookProblemSummaryVO {
 
-    private BookVO                      book                    = new BookVO() ;
+    private BookDTO                     book                    = new BookDTO() ;
     private List<ChapterProblemSummary> chapterProblemSummaries = new ArrayList<>() ;
 
     @Data
@@ -45,7 +46,7 @@ public class BookProblemSummary {
         }
     }
     
-    public BookProblemSummary( Book book ) {
+    public BookProblemSummaryVO( Book book ) {
         this.getBook().setId( book.getId() ) ;
         this.getBook().setSubjectName( book.getSubjectName() ) ;
         this.getBook().setSeriesName( book.getSeriesName() ) ;

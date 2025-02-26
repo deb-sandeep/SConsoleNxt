@@ -1,10 +1,10 @@
-package com.sandy.sconsole.api.master.vo;
+package com.sandy.sconsole.dao.master.dto;
 
 import com.sandy.sconsole.dao.master.Problem;
 import lombok.Data;
 
 @Data
-public class ProblemVO {
+public class ProblemDTO {
     
     private int id ;
     private Integer exerciseNum ;
@@ -12,7 +12,7 @@ public class ProblemVO {
     private String problemType ;
     private String problemKey ;
     
-    public ProblemVO( Problem p ) {
+    public ProblemDTO( Problem p ) {
         this.id = p.getId() ;
         this.exerciseNum = p.getExerciseNum() ;
         this.exerciseName = p.getExerciseName() ;

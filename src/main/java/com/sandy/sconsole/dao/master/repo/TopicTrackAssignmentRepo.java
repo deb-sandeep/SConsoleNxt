@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface TopicTrackAssignmentRepo extends CrudRepository<TopicTrackAssignment, Integer> {
@@ -20,4 +21,14 @@ public interface TopicTrackAssignmentRepo extends CrudRepository<TopicTrackAssig
         delete from TopicTrackAssignment t where t.topicId in ?1
     """)
     void deleteByTopicId( List<Integer> topicIds ) ;
+    
+    @Query( """
+        select tta
+        from TopicTrackAssignment tta
+        where
+            :date between tta.startDate and tta.endDate
+        order by
+            tta.topicId
+    """)
+    List<TopicTrackAssignment> findActiveAssignments( LocalDate date ) ;
 }

@@ -1,4 +1,4 @@
-package com.sandy.sconsole.api.master.vo;
+package com.sandy.sconsole.dao.master.dto;
 
 import com.sandy.sconsole.dao.master.Topic;
 import lombok.Data;

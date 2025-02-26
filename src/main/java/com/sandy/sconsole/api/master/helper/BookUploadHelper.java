@@ -2,7 +2,7 @@ package com.sandy.sconsole.api.master.helper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.sandy.sconsole.api.master.vo.BookMeta;
+import com.sandy.sconsole.api.master.vo.BookMetaVO;
 import com.sandy.sconsole.api.master.vo.reqres.SaveBookMetaRes;
 import com.sandy.sconsole.core.SConsoleConfig;
 import com.sandy.sconsole.dao.master.*;
@@ -67,14 +67,14 @@ public class BookUploadHelper {
         return new File( getUploadFolder(), fileName ) ;
     }
     
-    public BookMeta parseAndValidateBookMeta( File metaFile )
+    public BookMetaVO parseAndValidateBookMeta( File metaFile )
             throws InvalidMetaFileException {
         
-        BookMeta meta ;
+        BookMetaVO meta ;
         try {
             ObjectMapper mapper = new ObjectMapper( new YAMLFactory() ) ;
             mapper.findAndRegisterModules() ;
-            meta = mapper.readValue( metaFile, BookMeta.class );
+            meta = mapper.readValue( metaFile, BookMetaVO.class );
             validator.validateBookMeta( meta ) ;
         }
         catch( Exception e ) {
@@ -84,7 +84,7 @@ public class BookUploadHelper {
     }
     
     @Transactional
-    public SaveBookMetaRes saveBookMeta( BookMeta meta ) {
+    public SaveBookMetaRes saveBookMeta( BookMetaVO meta ) {
         
         SaveBookMetaRes stats = new SaveBookMetaRes() ;
         
@@ -115,10 +115,10 @@ public class BookUploadHelper {
     }
     
     private void addChaptersToBook( Book book,
-                                    List<BookMeta.ChapterMeta> chMetas,
+                                    List<BookMetaVO.ChapterMeta> chMetas,
                                     SaveBookMetaRes stats ) {
 
-        for( BookMeta.ChapterMeta chMeta : chMetas ) {
+        for( BookMetaVO.ChapterMeta chMeta : chMetas ) {
             
             ChapterId chapterId = new ChapterId( book.getId(), chMeta.getChapterNum() ) ;
             
@@ -131,7 +131,7 @@ public class BookUploadHelper {
             stats.incChaptersCreated() ;
             
             for( int i=0; i<chMeta.getExercises().size(); i++ ) {
-                BookMeta.ExerciseMeta exMeta = chMeta.getExercises().get( i ) ;
+                BookMetaVO.ExerciseMeta exMeta = chMeta.getExercises().get( i ) ;
                 stats.incExercisesCreated() ;
                 addProblemsToChapter( chapter, (i+1), exMeta, stats ) ;
             }
@@ -140,11 +140,11 @@ public class BookUploadHelper {
     
     private void addProblemsToChapter( Chapter chapter,
                                        int exerciseNum,
-                                       BookMeta.ExerciseMeta exMeta,
+                                       BookMetaVO.ExerciseMeta exMeta,
                                        SaveBookMetaRes stats ) {
         
         String exName = exMeta.getName() ;
-        for( BookMeta.ProblemCluster cluster : exMeta.getProblemClusters() ) {
+        for( BookMetaVO.ProblemCluster cluster : exMeta.getProblemClusters() ) {
             
             ProblemType type = problemTypeRepo.findById( cluster.getType() ).get() ;
             

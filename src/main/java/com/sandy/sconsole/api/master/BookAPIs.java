@@ -6,6 +6,7 @@ import com.sandy.sconsole.api.master.helper.TopicMappingHelper;
 import com.sandy.sconsole.api.master.vo.reqres.*;
 import com.sandy.sconsole.core.api.AR;
 import com.sandy.sconsole.dao.master.*;
+import com.sandy.sconsole.dao.master.dto.TopicVO;
 import com.sandy.sconsole.dao.master.repo.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.ConvertUtils;
@@ -48,7 +49,7 @@ public class BookAPIs {
     }
     
     @GetMapping( "{bookId}/ProblemSummary" )
-    public ResponseEntity<AR<BookProblemSummary>> getProblemsSummary(
+    public ResponseEntity<AR<BookProblemSummaryVO>> getProblemsSummary(
             @PathVariable( "bookId" ) int bookId ) {
     
         try {
@@ -70,7 +71,7 @@ public class BookAPIs {
         
         try {
             List<BookTopicMappingVO> btmVOList ;
-            Syllabus syllabus ;
+            Syllabus      syllabus ;
             List<TopicVO> topics = new ArrayList<>() ;
             
             if( bookIds == null || bookIds.length == 0 ) {

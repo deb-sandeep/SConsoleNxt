@@ -1,7 +1,7 @@
 package com.sandy.sconsole.api.master.vo.reqres;
 
 import com.sandy.sconsole.api.master.vo.BookTopicMappingVO;
-import com.sandy.sconsole.api.master.vo.TopicVO;
+import com.sandy.sconsole.dao.master.dto.TopicVO;
 import lombok.Data;
 
 import java.util.LinkedHashMap;
@@ -12,7 +12,7 @@ import java.util.Map;
 public class BookTopicMappingRes {
     
     private String syllabusName ;
-    private Map<Integer, TopicVO> topicMap = new LinkedHashMap<>() ;
+    private Map<Integer, TopicVO>    topicMap = new LinkedHashMap<>() ;
     private List<BookTopicMappingVO> bookTopicMappingList;
     
     public void setTopics( List<TopicVO> topics ) {

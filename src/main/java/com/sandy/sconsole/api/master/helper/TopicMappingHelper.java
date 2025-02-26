@@ -132,8 +132,8 @@ public class TopicMappingHelper {
     
     public List<BookTopicMappingVO> getBookTopicMappings( Integer[] bookIds, Syllabus syllabus ) {
         
-        List<BookTopicMappingVO> btmList = new ArrayList<>() ;
-        Map<Integer, BookTopicMappingVO> btmMap = new LinkedHashMap<>() ;
+        List<BookTopicMappingVO>         btmList = new ArrayList<>() ;
+        Map<Integer, BookTopicMappingVO> btmMap  = new LinkedHashMap<>() ;
         
         List<Object[]> ctms = tcmRepo.getTopicMappingsForBooks( bookIds ) ;
         for( Object[] ctm : ctms ) {
@@ -165,8 +165,8 @@ public class TopicMappingHelper {
     
     private List<TopicChapterMappingVO> createTCMVO( List<TopicChapterMap> tcmList ) {
         
-        List<TopicChapterMappingVO> voList = new ArrayList<>() ;
-        Map<Integer, ChapterMapping> cmMap = new LinkedHashMap<>() ;
+        List<TopicChapterMappingVO>  voList = new ArrayList<>() ;
+        Map<Integer, ChapterMapping> cmMap  = new LinkedHashMap<>() ;
         
         Topic                 lastTopic = null ;
         TopicChapterMappingVO currentVO = null ;

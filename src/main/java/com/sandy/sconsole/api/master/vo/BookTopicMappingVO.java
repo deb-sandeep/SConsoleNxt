@@ -4,6 +4,7 @@ import com.sandy.sconsole.dao.master.Book;
 import com.sandy.sconsole.dao.master.Chapter;
 import com.sandy.sconsole.dao.master.Syllabus;
 import com.sandy.sconsole.dao.master.TopicChapterMap;
+import com.sandy.sconsole.dao.master.dto.BookDTO;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -39,11 +40,11 @@ public class BookTopicMappingVO {
         }
     }
     
-    private BookVO book ;
+    private BookDTO                     book ;
     private List<ChapterTopicMappingVO> chapterTopicMappings = new ArrayList<>() ;
     
     public BookTopicMappingVO( Book book, Syllabus syllabus ) {
-        this.book = new BookVO( book ) ;
+        this.book = new BookDTO( book ) ;
         this.book.setSyllabusName( syllabus.getSyllabusName() ) ;
     }
     

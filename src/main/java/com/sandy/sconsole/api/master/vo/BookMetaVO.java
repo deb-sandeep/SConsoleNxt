@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 @Data
-public class BookMeta {
+public class BookMetaVO {
     
     @Data
     public static class ValidationMsgCount {

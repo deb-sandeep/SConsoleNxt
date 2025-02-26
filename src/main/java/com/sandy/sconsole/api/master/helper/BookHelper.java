@@ -1,6 +1,6 @@
 package com.sandy.sconsole.api.master.helper;
 
-import com.sandy.sconsole.api.master.vo.BookProblemSummary;
+import com.sandy.sconsole.api.master.vo.BookProblemSummaryVO;
 import com.sandy.sconsole.core.SConsoleConfig;
 import com.sandy.sconsole.dao.master.Book;
 import com.sandy.sconsole.dao.master.Problem;
@@ -39,26 +39,26 @@ public class BookHelper {
         return bookRepo.findAllBooks() ;
     }
     
-    public BookProblemSummary getBookProblemsSummary( int bookId ) {
+    public BookProblemSummaryVO getBookProblemsSummary( int bookId ) {
         
         Book book = bookRepo.findById( bookId ).get() ;
         Syllabus syllabus = syllabusBookMapRepo.findByBook( book ) ;
         
-        BookProblemSummary bps = new BookProblemSummary( book ) ;
+        BookProblemSummaryVO bps = new BookProblemSummaryVO( book ) ;
         bps.getBook().setSyllabusName( syllabus.getSyllabusName() ) ;
         
         List<BookRepo.ProblemTypeCount> problemTypeCounts ;
         problemTypeCounts = bookRepo.getProblemSummariesForChapter( bookId ) ;
         
         int lastChNum = -1 ;
-        int lastExNum = -1 ;
-        BookProblemSummary.ChapterProblemSummary cps = null ;
-        BookProblemSummary.ExerciseProblemSummary eps = null ;
+        int                                         lastExNum = -1 ;
+        BookProblemSummaryVO.ChapterProblemSummary  cps       = null ;
+        BookProblemSummaryVO.ExerciseProblemSummary eps       = null ;
         
         for( BookRepo.ProblemTypeCount ptc : problemTypeCounts ) {
             if( ptc.getChapterNum() != lastChNum ) {
-                cps = new BookProblemSummary.ChapterProblemSummary( ptc ) ;
-                eps = new BookProblemSummary.ExerciseProblemSummary( ptc ) ;
+                cps = new BookProblemSummaryVO.ChapterProblemSummary( ptc ) ;
+                eps = new BookProblemSummaryVO.ExerciseProblemSummary( ptc ) ;
                 
                 cps.getExerciseProblemSummaries().add( eps ) ;
                 bps.getChapterProblemSummaries().add( cps ) ;
@@ -67,7 +67,7 @@ public class BookHelper {
                 lastExNum = ptc.getExerciseNum() ;
             }
             else if( ptc.getExerciseNum() != lastExNum ) {
-                eps = new BookProblemSummary.ExerciseProblemSummary( ptc ) ;
+                eps = new BookProblemSummaryVO.ExerciseProblemSummary( ptc ) ;
                 if( cps != null ) {
                     cps.getExerciseProblemSummaries().add( eps ) ;
                 }

@@ -1,10 +1,10 @@
-package com.sandy.sconsole.api.master.vo;
+package com.sandy.sconsole.dao.master.dto;
 
 import com.sandy.sconsole.dao.master.Book;
 import lombok.Data;
 
 @Data
-public class BookVO {
+public class BookDTO {
     
     private int id ;
     private String syllabusName ;
@@ -15,9 +15,9 @@ public class BookVO {
     private String bookShortName ;
     private boolean topicMappingDone ;
     
-    public BookVO(){}
+    public BookDTO(){}
     
-    public BookVO( Book book ) {
+    public BookDTO( Book book ) {
         this.id = book.getId() ;
         this.subjectName = book.getSubjectName() ;
         this.seriesName = book.getSeriesName() ;

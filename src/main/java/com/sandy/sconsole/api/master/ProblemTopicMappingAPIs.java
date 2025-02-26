@@ -1,7 +1,7 @@
 package com.sandy.sconsole.api.master;
 
 import com.sandy.sconsole.api.master.helper.TopicMappingHelper;
-import com.sandy.sconsole.api.master.vo.ChapterProblemsTopicMappingVO;
+import com.sandy.sconsole.api.master.vo.ChapterProblemsTopicMappingDTO;
 import com.sandy.sconsole.core.api.AR;
 import com.sandy.sconsole.dao.master.*;
 import com.sandy.sconsole.dao.master.repo.ChapterRepo;
@@ -33,19 +33,19 @@ public class ProblemTopicMappingAPIs {
     @Autowired private TopicMappingHelper helper ;
     
     @GetMapping( "Book/{bookId}/Chapter/{chapterNum}" )
-    public ResponseEntity<AR<ChapterProblemsTopicMappingVO>> getProblemTopicMappingsForChapter(
+    public ResponseEntity<AR<ChapterProblemsTopicMappingDTO>> getProblemTopicMappingsForChapter(
                                 @PathVariable( "bookId" ) int bookId,
                                 @PathVariable( "chapterNum" ) int chapterNum ) {
     
         try {
-            ChapterProblemsTopicMappingVO result ;
+            ChapterProblemsTopicMappingDTO result ;
             
             Chapter chapter = chapterRepo.findById( new ChapterId( bookId, chapterNum ) ).get() ;
             Syllabus syllabus = syllabusRepo.findBySubjectName( chapter.getBook().getSubjectName() ).get( 0 ) ;
             
             List<Object[]> records = this.problemRepo.getProblemTopicMappings( bookId, chapterNum ) ;
             
-            result = new ChapterProblemsTopicMappingVO( chapter, syllabus ) ;
+            result = new ChapterProblemsTopicMappingDTO( chapter, syllabus ) ;
             
             records.forEach( record -> {
                 Problem p = ( Problem )record[0] ;
