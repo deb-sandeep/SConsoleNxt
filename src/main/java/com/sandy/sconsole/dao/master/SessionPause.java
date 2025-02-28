@@ -25,5 +25,4 @@ public class SessionPause {
     
     @Column( name = "end_time", nullable = false )
     private Instant endTime;
-    
 }

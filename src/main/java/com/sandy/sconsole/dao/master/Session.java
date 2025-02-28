@@ -3,6 +3,7 @@ package com.sandy.sconsole.dao.master;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.time.Instant;
 import java.util.LinkedHashSet;
@@ -40,4 +41,7 @@ public class Session {
     @OneToMany( mappedBy = "session" )
     private Set<com.sandy.sconsole.dao.master.SessionPause> pauses = new LinkedHashSet<>();
     
+    @ColumnDefault( "0" )
+    @Column( name = "effective_duration", nullable = false )
+    private Integer effectiveDuration;
 }
