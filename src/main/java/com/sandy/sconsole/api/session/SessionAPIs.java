@@ -1,22 +1,21 @@
-package com.sandy.sconsole.api.master;
+package com.sandy.sconsole.api.session;
 
-import com.sandy.sconsole.api.master.vo.reqres.ExtendSessionReq;
 import com.sandy.sconsole.core.api.AR;
 import com.sandy.sconsole.dao.master.Session;
 import com.sandy.sconsole.dao.master.SessionPause;
 import com.sandy.sconsole.dao.master.SessionType;
+import com.sandy.sconsole.dao.master.TopicProblem;
 import com.sandy.sconsole.dao.master.dto.SessionDTO;
 import com.sandy.sconsole.dao.master.dto.SessionPauseDTO;
-import com.sandy.sconsole.dao.master.repo.SessionPauseRepo;
-import com.sandy.sconsole.dao.master.repo.SessionRepo;
-import com.sandy.sconsole.dao.master.repo.SessionTypeRepo;
-import com.sandy.sconsole.dao.master.repo.TopicRepo;
+import com.sandy.sconsole.dao.master.repo.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static com.sandy.sconsole.core.api.AR.*;
 
 @Slf4j
 @RestController
@@ -27,14 +26,15 @@ public class SessionAPIs {
     @Autowired private SessionRepo      sessionRepo ;
     @Autowired private SessionPauseRepo sessionPauseRepo ;
     @Autowired private TopicRepo        topicRepo ;
+    @Autowired private TopicProblemRepo tpRepo ;
     
     @GetMapping( "/Types" )
     public ResponseEntity<AR<List<SessionType>>> getAllSessionTypes() {
         try {
-            return AR.success( stRepo.findAll() ) ;
+            return success( stRepo.findAll() ) ;
         }
         catch( Exception e ) {
-            return AR.systemError( e ) ;
+            return systemError( e ) ;
         }
     }
     
@@ -51,10 +51,10 @@ public class SessionAPIs {
             
             Session savedDao = sessionRepo.save( dao ) ;
             
-            return AR.success( savedDao.getId() ) ;
+            return success( savedDao.getId() ) ;
         }
         catch( Exception e ) {
-            return AR.systemError( e ) ;
+            return systemError( e ) ;
         }
     }
     
@@ -66,10 +66,10 @@ public class SessionAPIs {
             dao.setEffectiveDuration( req.getEffectiveDuration() ) ;
             sessionRepo.save( dao ) ;
             
-            return AR.success() ;
+            return success() ;
         }
         catch( Exception e ) {
-            return AR.systemError( e ) ;
+            return systemError( e ) ;
         }
     }
     
@@ -83,10 +83,10 @@ public class SessionAPIs {
             
             SessionPause savedDao = sessionPauseRepo.save( dao ) ;
             
-            return AR.success( savedDao.getId() ) ;
+            return success( savedDao.getId() ) ;
         }
         catch( Exception e ) {
-            return AR.systemError( e ) ;
+            return systemError( e ) ;
         }
     }
     
@@ -96,10 +96,10 @@ public class SessionAPIs {
             SessionPause dao = sessionPauseRepo.findById( req.getId() ).get() ;
             dao.setEndTime( req.getEndTime() ) ;
             sessionPauseRepo.save( dao ) ;
-            return AR.success() ;
+            return success() ;
         }
         catch( Exception e ) {
-            return AR.systemError( e ) ;
+            return systemError( e ) ;
         }
     }
     
@@ -122,14 +122,40 @@ public class SessionAPIs {
                     // TODO: Add extension for problem attempts
                 }
                 
-                return AR.success() ;
+                return success() ;
             }
-            return AR.success( "No active session" ) ;
+            return success( "No active session" ) ;
         }
         catch( Exception e ) {
-            return AR.systemError( e ) ;
+            return systemError( e ) ;
         }
     }
     
-    // TODO: Problem attempt started, ended
+    @GetMapping( "/{sessionId}/ActiveProblems" )
+    public ResponseEntity<AR<List<TopicProblem>>> getActiveProblemsForTopic( @PathVariable( "sessionId" ) int sessionId ) {
+        try {
+            if( sessionRepo.findById( sessionId ).isPresent() ) {
+                Session session = sessionRepo.findById( sessionId ).get() ;
+                return success( tpRepo.findActiveProblemsByTopicId( session.getTopic().getId() )) ;
+            }
+            return functionalError( "No active session" ) ;
+        }
+        catch( Exception e ) {
+            return systemError( e ) ;
+        }
+    }
+
+    @GetMapping( "/{sessionId}/PigeonedProblems" )
+    public ResponseEntity<AR<List<TopicProblem>>> getPigeonedProblemsForTopic( @PathVariable( "sessionId" ) int sessionId ) {
+        try {
+            if( sessionRepo.findById( sessionId ).isPresent() ) {
+                Session session = sessionRepo.findById( sessionId ).get() ;
+                return success( tpRepo.findPigeonedProblemsByTopicId( session.getTopic().getId() )) ;
+            }
+            return functionalError( "No active session" ) ;
+        }
+        catch( Exception e ) {
+            return systemError( e ) ;
+        }
+    }
 }
