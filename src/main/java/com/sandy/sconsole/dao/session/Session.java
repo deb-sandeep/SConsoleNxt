@@ -1,5 +1,6 @@
-package com.sandy.sconsole.dao.master;
+package com.sandy.sconsole.dao.session;
 
+import com.sandy.sconsole.dao.master.Topic;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -39,7 +40,7 @@ public class Session {
     private Set<ProblemAttempt> problemAttempts = new LinkedHashSet<>();
     
     @OneToMany( mappedBy = "session" )
-    private Set<com.sandy.sconsole.dao.master.SessionPause> pauses = new LinkedHashSet<>();
+    private Set<SessionPause> pauses = new LinkedHashSet<>();
     
     @ColumnDefault( "0" )
     @Column( name = "effective_duration", nullable = false )

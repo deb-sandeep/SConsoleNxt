@@ -1,5 +1,6 @@
-package com.sandy.sconsole.dao.master;
+package com.sandy.sconsole.dao.session;
 
+import com.sandy.sconsole.dao.master.Problem;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,6 +13,7 @@ import java.time.Instant;
 @Entity
 @Table( name = "problem_attempt" )
 public class ProblemAttempt {
+    
     @Id
     @GeneratedValue( strategy = GenerationType.IDENTITY )
     @Column( name = "id", nullable = false )
@@ -19,7 +21,7 @@ public class ProblemAttempt {
     
     @ManyToOne( fetch = FetchType.LAZY, optional = false )
     @JoinColumn( name = "session_id", nullable = false )
-    private com.sandy.sconsole.dao.master.Session session;
+    private Session session;
     
     @ManyToOne( fetch = FetchType.LAZY, optional = false )
     @JoinColumn( name = "problem_id", nullable = false )
@@ -34,4 +36,10 @@ public class ProblemAttempt {
     @ColumnDefault( "0" )
     @Column( name = "effective_duration", nullable = false )
     private Integer effectiveDuration;
+    
+    @Column( name = "prev_state", nullable = false )
+    private String prevState ;
+    
+    @Column( name = "target_state", nullable = false )
+    private String targetState ;
 }

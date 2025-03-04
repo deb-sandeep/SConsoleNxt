@@ -1,4 +1,4 @@
-package com.sandy.sconsole.dao.master;
+package com.sandy.sconsole.dao.session;
 
 import jakarta.persistence.*;
 import lombok.Getter;

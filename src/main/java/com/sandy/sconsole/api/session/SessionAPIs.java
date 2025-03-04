@@ -1,13 +1,17 @@
 package com.sandy.sconsole.api.session;
 
 import com.sandy.sconsole.core.api.AR;
-import com.sandy.sconsole.dao.master.Session;
-import com.sandy.sconsole.dao.master.SessionPause;
-import com.sandy.sconsole.dao.master.SessionType;
-import com.sandy.sconsole.dao.master.TopicProblem;
-import com.sandy.sconsole.dao.master.dto.SessionDTO;
-import com.sandy.sconsole.dao.master.dto.SessionPauseDTO;
+import com.sandy.sconsole.dao.master.*;
+import com.sandy.sconsole.dao.session.ProblemAttempt;
+import com.sandy.sconsole.dao.session.Session;
+import com.sandy.sconsole.dao.session.SessionPause;
+import com.sandy.sconsole.dao.session.dto.ProblemAttemptDTO;
+import com.sandy.sconsole.dao.session.dto.SessionDTO;
+import com.sandy.sconsole.dao.session.dto.SessionPauseDTO;
 import com.sandy.sconsole.dao.master.repo.*;
+import com.sandy.sconsole.dao.session.repo.ProblemAttemptRep;
+import com.sandy.sconsole.dao.session.repo.SessionPauseRepo;
+import com.sandy.sconsole.dao.session.repo.SessionRepo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,11 +26,15 @@ import static com.sandy.sconsole.core.api.AR.*;
 @RequestMapping( "/Master/Session" )
 public class SessionAPIs {
     
-    @Autowired private SessionTypeRepo  stRepo ;
-    @Autowired private SessionRepo      sessionRepo ;
-    @Autowired private SessionPauseRepo sessionPauseRepo ;
-    @Autowired private TopicRepo        topicRepo ;
-    @Autowired private TopicProblemRepo tpRepo ;
+    @Autowired private SessionTypeRepo   stRepo ;
+    @Autowired private SessionRepo       sessionRepo ;
+    @Autowired private SessionPauseRepo  sessionPauseRepo ;
+    @Autowired private TopicRepo         topicRepo ;
+    @Autowired private TopicProblemRepo  tpRepo ;
+    @Autowired private ProblemRepo       problemRepo ;
+    @Autowired private ProblemAttemptRep paRepo ;
+    @Autowired
+    private            ProblemAttemptRep problemAttemptRep;
     
     @GetMapping( "/Types" )
     public ResponseEntity<AR<List<SessionType>>> getAllSessionTypes() {
@@ -67,6 +75,25 @@ public class SessionAPIs {
             sessionRepo.save( dao ) ;
             
             return success() ;
+        }
+        catch( Exception e ) {
+            return systemError( e ) ;
+        }
+    }
+    
+    @PostMapping( "/StartProblemAttempt" )
+    public ResponseEntity<AR<Integer>> startProblemAttempt( @RequestBody ProblemAttemptDTO req ) {
+        try {
+            ProblemAttempt pa = new ProblemAttempt() ;
+            pa.setSession( sessionRepo.findById( req.getSessionId() ).get() ) ;
+            pa.setProblem( problemRepo.findById( req.getProblemId() ).get() ) ;
+            pa.setStartTime( req.getStartTime() ) ;
+            pa.setEndTime( req.getEndTime() ) ;
+            pa.setEffectiveDuration( req.getEffectiveDuration() ) ;
+            pa.setPrevState( req.getPrevState() ) ;
+            pa.setTargetState( req.getTargetState() ) ;
+            
+            return success( paRepo.save( pa ).getId() ) ;
         }
         catch( Exception e ) {
             return systemError( e ) ;
@@ -119,9 +146,11 @@ public class SessionAPIs {
                 }
                 
                 if( req.getProblemAttemptId() > 0 ) {
-                    // TODO: Add extension for problem attempts
+                    ProblemAttempt paDao = problemAttemptRep.findById( req.getProblemAttemptId() ).get() ;
+                    paDao.setEndTime( req.getEndTime() ) ;
+                    paDao.setEffectiveDuration( req.getProblemAttemptEffectiveDuration() ) ;
+                    problemAttemptRep.save( paDao ) ;
                 }
-                
                 return success() ;
             }
             return success( "No active session" ) ;

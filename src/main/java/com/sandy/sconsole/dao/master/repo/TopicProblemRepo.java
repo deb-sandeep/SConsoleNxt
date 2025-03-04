@@ -29,7 +29,7 @@ public interface TopicProblemRepo extends JpaRepository<TopicProblem, Integer> {
     select tp
     from TopicProblem tp
     where tp.topicId = :topicId and
-          tp.problemState == 'Pigeon'
+          tp.problemState = 'Pigeon'
     order by tp.problemId
     """)
     List<TopicProblem> findPigeonedProblemsByTopicId( Integer topicId ) ;

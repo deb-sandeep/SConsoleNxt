@@ -1,6 +1,6 @@
-package com.sandy.sconsole.dao.master.dto;
+package com.sandy.sconsole.dao.session.dto;
 
-import com.sandy.sconsole.dao.master.Session;
+import com.sandy.sconsole.dao.session.Session;
 import lombok.Data;
 
 import java.io.Serializable;

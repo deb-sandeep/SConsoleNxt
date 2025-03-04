@@ -14,8 +14,8 @@ SELECT
     p.problem_type AS problem_type,
     p.problem_key AS problem_key,
     ( CASE
-          WHEN po.outcome IS NULL THEN 'Assigned'
-          ELSE po.outcome
+          WHEN ps.state IS NULL THEN 'Assigned'
+          ELSE ps.state
         END ) AS problem_state
 FROM
     (
@@ -41,8 +41,8 @@ FROM
             ON tcm.book_id = c.book_id AND
                tcm.chapter_num = c.chapter_num
             )
-            LEFT JOIN latest_problem_attempt_outcome po
-        ON p.id = po.problem_id
+            LEFT JOIN latest_problem_state ps
+        ON p.id = ps.problem_id
         )
 WHERE
     tcm.topic_id IS NOT NULL
