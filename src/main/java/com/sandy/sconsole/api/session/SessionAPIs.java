@@ -66,21 +66,6 @@ public class SessionAPIs {
         }
     }
     
-    @PostMapping( "/EndSession" )
-    public ResponseEntity<AR<String>> endSession( @RequestBody SessionDTO req ) {
-        try {
-            Session dao = sessionRepo.findById( req.getId() ).get() ;
-            dao.setEndTime( req.getEndTime() ) ;
-            dao.setEffectiveDuration( req.getEffectiveDuration() ) ;
-            sessionRepo.save( dao ) ;
-            
-            return success() ;
-        }
-        catch( Exception e ) {
-            return systemError( e ) ;
-        }
-    }
-    
     @PostMapping( "/StartProblemAttempt" )
     public ResponseEntity<AR<Integer>> startProblemAttempt( @RequestBody ProblemAttemptDTO req ) {
         try {
@@ -100,6 +85,20 @@ public class SessionAPIs {
         }
     }
     
+    @PostMapping( "/EndProblemAttempt" )
+    public ResponseEntity<AR<String>> endProblemAttempt( @RequestBody ProblemAttemptDTO req ) {
+        try {
+            ProblemAttempt pa = paRepo.findById( req.getId() ).get() ;
+            pa.setTargetState( req.getTargetState() ) ;
+            paRepo.save( pa ) ;
+            
+            return success() ;
+        }
+        catch( Exception e ) {
+            return systemError( e ) ;
+        }
+    }
+    
     @PostMapping( "/StartPause" )
     public ResponseEntity<AR<Integer>> createNewPause( @RequestBody SessionPauseDTO req ) {
         try {
@@ -111,19 +110,6 @@ public class SessionAPIs {
             SessionPause savedDao = sessionPauseRepo.save( dao ) ;
             
             return success( savedDao.getId() ) ;
-        }
-        catch( Exception e ) {
-            return systemError( e ) ;
-        }
-    }
-    
-    @PostMapping( "/EndPause" )
-    public ResponseEntity<AR<String>> endPause( @RequestBody SessionPauseDTO req ) {
-        try {
-            SessionPause dao = sessionPauseRepo.findById( req.getId() ).get() ;
-            dao.setEndTime( req.getEndTime() ) ;
-            sessionPauseRepo.save( dao ) ;
-            return success() ;
         }
         catch( Exception e ) {
             return systemError( e ) ;
