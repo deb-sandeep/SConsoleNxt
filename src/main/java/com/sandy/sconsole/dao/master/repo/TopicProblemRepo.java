@@ -21,7 +21,6 @@ public interface TopicProblemRepo extends JpaRepository<TopicProblem, Integer> {
     from TopicProblem tp
     where tp.topicId = :topicId and
           tp.problemState in ( 'Assigned', 'Later', 'Redo' )
-    order by tp.problemState
     """)
     List<TopicProblem> findActiveProblemsByTopicId( Integer topicId ) ;
     

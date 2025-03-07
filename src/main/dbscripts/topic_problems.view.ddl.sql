@@ -26,7 +26,7 @@ FROM
                         (
                             problem_master p
                                 LEFT JOIN topic_chapter_problem_map tcpm
-                            ON p.id = tcpm.problem_id
+                                ON p.id = tcpm.problem_id
                             )
                             LEFT JOIN topic_chapter_map tcm
                         ON tcpm.topic_chapter_map_id = tcm.id
@@ -47,4 +47,4 @@ FROM
 WHERE
     tcm.topic_id IS NOT NULL
 ORDER BY
-    tcm.topic_id , tcm.book_id , tcm.chapter_num , p.id ;
+    tcm.topic_id , tcm.attempt_seq, p.id ;

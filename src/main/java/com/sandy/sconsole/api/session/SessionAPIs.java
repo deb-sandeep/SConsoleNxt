@@ -23,7 +23,7 @@ import static com.sandy.sconsole.core.api.AR.*;
 
 @Slf4j
 @RestController
-@RequestMapping( "/Master/Session" )
+@RequestMapping( "/Session" )
 public class SessionAPIs {
     
     @Autowired private SessionTypeRepo   stRepo ;
@@ -33,8 +33,7 @@ public class SessionAPIs {
     @Autowired private TopicProblemRepo  tpRepo ;
     @Autowired private ProblemRepo       problemRepo ;
     @Autowired private ProblemAttemptRep paRepo ;
-    @Autowired
-    private            ProblemAttemptRep problemAttemptRep;
+    @Autowired private ProblemAttemptRep problemAttemptRep;
     
     @GetMapping( "/Types" )
     public ResponseEntity<AR<List<SessionType>>> getAllSessionTypes() {
