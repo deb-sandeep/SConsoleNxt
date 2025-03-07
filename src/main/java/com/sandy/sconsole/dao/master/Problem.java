@@ -3,6 +3,7 @@ package com.sandy.sconsole.dao.master;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -34,4 +35,7 @@ public class Problem {
     @Column( name = "problem_key", nullable = false, length = 64 )
     private String problemKey;
     
+    @ColumnDefault( "0" )
+    @Column( name = "difficulty_level", nullable = false )
+    private Integer difficultyLevel;
 }

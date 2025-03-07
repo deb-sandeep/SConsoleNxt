@@ -11,6 +11,7 @@ public class ProblemDTO {
     private String exerciseName ;
     private String problemType ;
     private String problemKey ;
+    private int difficultyLevel ;
     
     public ProblemDTO( Problem p ) {
         this.id = p.getId() ;
@@ -18,5 +19,6 @@ public class ProblemDTO {
         this.exerciseName = p.getExerciseName() ;
         this.problemType = p.getProblemType().getProblemType() ;
         this.problemKey = p.getProblemKey() ;
+        this.difficultyLevel = p.getDifficultyLevel() ;
     }
 }

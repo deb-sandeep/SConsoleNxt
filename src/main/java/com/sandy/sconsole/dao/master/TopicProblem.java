@@ -57,4 +57,7 @@ public class TopicProblem {
     
     @Column( name = "problem_state", length = 32 )
     private String problemState;
+    
+    @Column( name = "difficulty_level", nullable = false )
+    private Integer difficultyLevel;
 }
