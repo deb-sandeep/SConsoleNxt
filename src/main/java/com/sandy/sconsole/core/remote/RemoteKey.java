@@ -1,5 +1,7 @@
 package com.sandy.sconsole.core.remote;
 
+import lombok.Getter;
+
 public enum RemoteKey {
 
     FN_A      ( KeyType.FUNCTION, "Fn A" ),
@@ -7,6 +9,7 @@ public enum RemoteKey {
     FN_C      ( KeyType.FUNCTION, "Fn C" ),
     FN_D      ( KeyType.FUNCTION, "Fn D" ),
     FN_E      ( KeyType.FUNCTION, "Fn E" ),
+    FN_F      ( KeyType.FUNCTION, "Fn F" ),
 
     VK_1      ( KeyType.NUMERIC, '1', "1" ),
     VK_2      ( KeyType.NUMERIC, '2', "2" ),
@@ -37,14 +40,11 @@ public enum RemoteKey {
         CONTROL,
         MOVEMENT
     }
-
+    
     private final KeyType keyType ;
-    private final char keyChar ;
-    private final String displayText ;
-
-    RemoteKey( KeyType type ) {
-        this( type, ( char )-1, "" ) ;
-    }
+    private final String  displayText ;
+    
+    @Getter private final char    keyChar ;
 
     RemoteKey( KeyType type, String displayText ) {
         this( type, (char)-1, displayText ) ;
@@ -73,12 +73,8 @@ public enum RemoteKey {
     public boolean isMovementKey() {
         return this.keyType == KeyType.MOVEMENT ;
     }
-
-    public char getKeyChar() {
-        return this.keyChar ;
-    }
-
+    
     public String getDisplayText() {
-        return displayText.equals( "" ) ? toString() : displayText ;
+        return displayText.isEmpty() ? toString() : displayText ;
     }
 }

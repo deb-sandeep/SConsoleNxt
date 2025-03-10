@@ -89,7 +89,7 @@ public class SConsoleFrame extends JFrame {
         contentPane.repaint() ;
     }
 
-    public void handleRemoteKeyEvent( RemoteKeyEvent event ) {
+    public void routeRemoteKeyToCurrentScreen( RemoteKeyEvent event ) {
         if( this.currentScreen != null ) {
             if( this.currentScreen.getKeySet().isKeyEnabled( event.getKey() ) ) {
                 this.currentScreen.processKeyEvent( event ) ;

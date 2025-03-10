@@ -13,7 +13,7 @@ public class ScreenManager {
 
     private final Map<String, Screen> screenMap = new HashMap<>() ;
     private Screen defaultScreen = null ;
-    private Screen dockScreen = null ;
+    private Screen dockScreen    = null ;
 
     public Screen getScreen( String name ) {
         return screenMap.get( name ) ;
@@ -32,9 +32,5 @@ public class ScreenManager {
 
     public Screen getDefaultScreen() {
         return defaultScreen == null ? dockScreen : defaultScreen;
-    }
-
-    public Screen getDockScreen() {
-        return dockScreen ;
     }
 }

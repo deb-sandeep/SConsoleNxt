@@ -13,10 +13,12 @@ import java.util.Map;
 
 public abstract class Screen extends AbstractScreenPanel implements KeyProcessor {
 
-    @Getter @Setter private String name ;
     @Getter private Screen parentScreen ;
+    
+    @Getter @Setter private String name ;
     @Getter @Setter private String icon ;
     @Getter @Setter private boolean showOnStartup ;
+    
     @Getter private final KeySet keySet = new KeySet( false ) ;
 
     private final Map<String, Screen> children = new HashMap<>() ;
@@ -42,11 +44,11 @@ public abstract class Screen extends AbstractScreenPanel implements KeyProcessor
     public void setParentScreen( Screen screen ) {
         this.parentScreen = screen ;
         if( this.parentScreen != null ) {
-            this.parentScreen.registerChildScreen( this ) ;
+            this.parentScreen.addChildScreen( this ) ;
         }
     }
 
-    public void registerChildScreen( Screen screen ) {
+    public void addChildScreen( Screen screen ) {
         children.put( screen.getName(), screen ) ;
     }
 

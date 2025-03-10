@@ -24,34 +24,36 @@ public class RemoteKeyDispatch
     public boolean isInvocable() { return true ; }
 
     public void initialize( SConsole app ) throws Exception {
+        this.sconsole = app ;
         eventDispatchThread = new Thread( this ) ;
     }
 
-    public void destroy( SConsole app ) throws Exception {
+    public void destroy( SConsole app ) {
         log.debug( "Finalizing RemoteKey Dispatch." ) ;
         if( eventDispatchThread != null ) {
             this.keepRunning = false ;
             eventDispatchThread.interrupt() ;
         }
+        this.keyEvents.clear();
+        this.sconsole = null;
     }
 
-    public void addKeyEvent( RemoteKeyEvent keyEvent ) {
+    public void dispatch( RemoteKeyEvent keyEvent ) {
         keyEvents.add( keyEvent ) ;
     }
 
     @Override
     public void run() {
-        RemoteKeyEvent event ;
         try {
             while( keepRunning ) {
-                event = keyEvents.take() ;
+                final RemoteKeyEvent event = keyEvents.take() ;
                 log.debug( "Dispatching remote key {}", event ) ;
                 if( !keepRunning ) {
                     break ;
                 }
                 else {
                     try {
-                        sconsole.getFrame().handleRemoteKeyEvent( event ) ;
+                        sconsole.getFrame().routeRemoteKeyToCurrentScreen( event ) ;
                     }
                     catch( Exception e ) {
                         log.error( "RemoteKey dispatch generated an exception.", e ) ;
