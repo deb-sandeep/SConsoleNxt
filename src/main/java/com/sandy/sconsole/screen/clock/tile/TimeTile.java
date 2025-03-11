@@ -1,6 +1,6 @@
 package com.sandy.sconsole.screen.clock.tile;
 
-import com.sandy.sconsole.core.ui.screen.util.StringTile;
+import com.sandy.sconsole.core.ui.screen.tiles.StringTile;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
 
 import java.text.SimpleDateFormat;

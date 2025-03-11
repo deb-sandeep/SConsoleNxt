@@ -1,7 +1,6 @@
 package com.sandy.sconsole.core.ui;
 
 import com.sandy.sconsole.core.SConsoleConfig;
-import com.sandy.sconsole.core.remote.RemoteKeyEvent;
 import com.sandy.sconsole.core.ui.screen.Screen;
 import com.sandy.sconsole.core.ui.screen.ScreenManager;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
@@ -29,7 +28,6 @@ public class SConsoleFrame extends JFrame {
         this.screenManager = screenManager ;
 
         setUpUI( theme ) ;
-        setScreen( screenManager.getDefaultScreen() ) ;
         
         if( config.isShowSwingApp() ) {
             makeFrameVisible() ;
@@ -72,7 +70,7 @@ public class SConsoleFrame extends JFrame {
         this.setBounds( 0,0, 1920, 1080 ) ;
     }
     
-    void setScreen( Screen screen ) {
+    void setActiveScreen( Screen screen ) {
 
         if( screen == null ) return ;
 
@@ -89,14 +87,6 @@ public class SConsoleFrame extends JFrame {
         contentPane.repaint() ;
     }
 
-    public void routeRemoteKeyToCurrentScreen( RemoteKeyEvent event ) {
-        if( this.currentScreen != null ) {
-            if( this.currentScreen.getKeySet().isKeyEnabled( event.getKey() ) ) {
-                this.currentScreen.processKeyEvent( event ) ;
-            }
-        }
-    }
-
     public void changeScreen( String nextScreenName ) {
 
         log.debug( "Changing screen to '{}'", nextScreenName ) ;
@@ -111,7 +101,7 @@ public class SConsoleFrame extends JFrame {
             log.info( "  Screen '{}' not registered.", nextScreenName ) ;
         }
         else {
-            SwingUtilities.invokeLater( ()->setScreen( nextScreen ) ) ;
+            SwingUtilities.invokeLater( ()-> setActiveScreen( nextScreen ) ) ;
         }
     }
 }

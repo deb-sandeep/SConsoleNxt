@@ -1,4 +1,4 @@
-package com.sandy.sconsole.core.ui.screen.util;
+package com.sandy.sconsole.core.ui.screen.tiles;
 
 import com.sandy.sconsole.core.ui.screen.Tile;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
@@ -32,7 +32,7 @@ public class StringTile extends Tile {
     }
 
     private void setUpUI( UITheme theme, int fontStyle, int fontSize, int hAlign, int vAlign ) {
-        textLabel = super.getTemplateLabel() ;
+        textLabel = super.createEmptyLabel() ;
         textLabel.setFont( theme.getLabelFont( fontStyle, fontSize ) ) ;
         textLabel.setHorizontalAlignment( hAlign ) ;
         textLabel.setVerticalAlignment( vAlign ) ;

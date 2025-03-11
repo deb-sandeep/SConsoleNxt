@@ -2,7 +2,7 @@ package com.sandy.sconsole.screen.refresher.slide;
 
 import com.sandy.sconsole.core.SConsoleConfig;
 import com.sandy.sconsole.core.nvpconfig.annotation.NVPConfig;
-import com.sandy.sconsole.core.ui.screen.util.ImageTile;
+import com.sandy.sconsole.core.ui.screen.tiles.ImageTile;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
 import com.sandy.sconsole.daemon.refresher.RefresherSlideManager;
 import com.sandy.sconsole.dao.slide.SlideVO;
