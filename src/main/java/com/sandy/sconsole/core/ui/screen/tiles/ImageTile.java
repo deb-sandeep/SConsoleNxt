@@ -1,7 +1,6 @@
 package com.sandy.sconsole.core.ui.screen.tiles;
 
 import com.sandy.sconsole.core.ui.screen.Tile;
-import com.sandy.sconsole.core.ui.uiutil.UITheme;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
@@ -13,8 +12,8 @@ public class ImageTile extends Tile {
 
     private JLabel imgLabel = null ;
 
-    public ImageTile( UITheme theme ) {
-        super( theme, false ) ;
+    public ImageTile() {
+        super( false ) ;
         setUpUI() ;
     }
 

@@ -1,7 +1,6 @@
 package com.sandy.sconsole.core.ui.screen.tiles;
 
 import com.sandy.sconsole.core.ui.screen.Tile;
-import com.sandy.sconsole.core.ui.uiutil.UITheme;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,24 +13,24 @@ public class StringTile extends Tile {
 
     private JLabel textLabel = null ;
 
-    public StringTile( UITheme theme, int fontSize ) {
-        this( theme, Font.PLAIN, fontSize, JLabel.CENTER, JLabel.CENTER, false ) ;
+    public StringTile( int fontSize ) {
+        this( Font.PLAIN, fontSize, JLabel.CENTER, JLabel.CENTER, false ) ;
     }
 
-    public StringTile( UITheme theme, int fontSize, int hAlign ) {
-        this( theme, Font.PLAIN, fontSize, hAlign, JLabel.CENTER, false ) ;
+    public StringTile( int fontSize, int hAlign ) {
+        this( Font.PLAIN, fontSize, hAlign, JLabel.CENTER, false ) ;
     }
 
-    public StringTile( UITheme theme, int fontSize, int hAlign, int vAlign ) {
-        this( theme, Font.PLAIN, fontSize, hAlign, vAlign, false ) ;
+    public StringTile( int fontSize, int hAlign, int vAlign ) {
+        this( Font.PLAIN, fontSize, hAlign, vAlign, false ) ;
     }
 
-    public StringTile( UITheme theme, int fontStyle, int fontSize, int hAlign, int vAlign, boolean isBordered ) {
-        super( theme, isBordered ) ;
-        setUpUI( theme, fontStyle, fontSize, hAlign, vAlign ) ;
+    public StringTile( int fontStyle, int fontSize, int hAlign, int vAlign, boolean isBordered ) {
+        super( isBordered ) ;
+        setUpUI( fontStyle, fontSize, hAlign, vAlign ) ;
     }
 
-    private void setUpUI( UITheme theme, int fontStyle, int fontSize, int hAlign, int vAlign ) {
+    private void setUpUI( int fontStyle, int fontSize, int hAlign, int vAlign ) {
         textLabel = super.createEmptyLabel() ;
         textLabel.setFont( theme.getLabelFont( fontStyle, fontSize ) ) ;
         textLabel.setHorizontalAlignment( hAlign ) ;

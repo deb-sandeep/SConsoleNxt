@@ -7,7 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 public final class StringUtil {
 
     public static boolean isEmptyOrNull( final String str ) {
-        return ( str == null || "".equals( str.trim() ) ) ;
+        return ( str == null || str.trim().isEmpty() ) ;
     }
 
     public static boolean isNotEmptyOrNull( final String str ) {

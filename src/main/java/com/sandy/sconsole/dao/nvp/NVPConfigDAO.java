@@ -5,12 +5,14 @@ import com.sandy.sconsole.core.nvpconfig.NVPManager;
 import com.sandy.sconsole.core.util.StringUtil;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+@Slf4j
 @Data
 @Entity
 @EntityListeners( NVPManager.NVPPersistCallback.class )
@@ -64,7 +66,7 @@ public class NVPConfigDAO {
             return SDF.parse( value ) ;
         }
         catch( ParseException e ) {
-            e.printStackTrace() ;
+            log.error( "Error parsing configuration date.", e ) ;
         }
         return null ;
     }
@@ -102,4 +104,3 @@ public class NVPConfigDAO {
                 "]";
     }
 }
-

@@ -6,7 +6,9 @@ import com.sandy.sconsole.core.nvpconfig.annotation.internal.NVPConfigTargetClus
 import com.sandy.sconsole.core.util.StringUtil;
 import com.sandy.sconsole.dao.nvp.NVPConfigDAORepo;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
@@ -16,12 +18,16 @@ import java.util.*;
 
 @Slf4j
 @Component
-public class NVPConfigAnnotationProcessor {
+public class NVPConfigAnnotationProcessor implements ApplicationContextAware {
 
-    private final ApplicationContext appCtx ;
+    private ApplicationContext appCtx ;
 
-    public NVPConfigAnnotationProcessor( ApplicationContext appCtx ) {
-        this.appCtx = appCtx ;
+    public NVPConfigAnnotationProcessor() {}
+    
+    @Override
+    public void setApplicationContext( ApplicationContext applicationContext )
+            throws BeansException {
+        this.appCtx = applicationContext ;
     }
 
     public void processNVPConfigAnnotations( String... basePackages ) {

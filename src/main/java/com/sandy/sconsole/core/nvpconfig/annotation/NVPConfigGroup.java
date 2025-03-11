@@ -9,5 +9,5 @@ import java.lang.annotation.Target;
 @Target( ElementType.TYPE )
 public @interface NVPConfigGroup {
 
-    public String groupName() default "" ;
+    String groupName() default "" ;
 }

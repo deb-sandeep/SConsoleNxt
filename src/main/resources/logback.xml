@@ -45,7 +45,6 @@
     <logger name="_org.springframework" level="WARN"></logger>
     <logger name="org.apache"           level="WARN"></logger>
     <logger name="org.hibernate"        level="WARN"></logger>
-    <logger name="org.eclipse.jgit"     level="WARN"></logger>
     <logger name="org.jboss"            level="WARN"></logger>
     <logger name="com.zaxxer"           level="WARN"></logger>
     <logger name="SQL dialect"          level="WARN"></logger>

@@ -10,9 +10,10 @@ import lombok.Setter;
 public abstract class Screen extends AbstractPanel {
 
     private String name ;
-    private String icon ;
     
-    protected Screen() {}
+    protected Screen( String name ) {
+        this.name = name ;
+    }
 
     /**
      * This method needs to be called on the screen post creation to delegate
@@ -21,7 +22,7 @@ public abstract class Screen extends AbstractPanel {
      * <code>super.initialize()</code> before the subclasses start their
      * own processing.
      */
-    public abstract void initialize( UITheme theme ) ;
+    public abstract void initialize() ;
 
     protected void setUpBaseUI( UITheme theme ) {
         super.setBackground( theme.getBackgroundColor() ) ;
@@ -33,8 +34,4 @@ public abstract class Screen extends AbstractPanel {
 
     /** This method is called before a screen is removed from display. */
     public void beforeDeactivation() {}
-
-    public String toString() {
-        return this.name ;
-    }
 }

@@ -1,5 +1,6 @@
 package com.sandy.sconsole.core.ui.screen;
 
+import com.sandy.sconsole.SConsole;
 import com.sandy.sconsole.core.ui.screen.util.AbstractPanel;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
 
@@ -10,20 +11,20 @@ public abstract class Tile extends AbstractPanel {
 
     protected UITheme theme ;
     
-    protected Tile( UITheme theme ) {
-        this( theme, false ) ;
+    protected Tile() {
+        this( false ) ;
     }
 
-    protected Tile( UITheme theme, boolean isBordered ) {
-        this( theme, false, -1, -1 ) ;
+    protected Tile( boolean isBordered ) {
+        this( false, -1, -1 ) ;
     }
     
-    protected Tile( UITheme theme, boolean isBordered, int numRows, int numCols ) {
-        this.theme = theme ;
-        setUpUI( theme, isBordered, numRows, numCols ) ;
+    protected Tile( boolean isBordered, int numRows, int numCols ) {
+        setUpUI( isBordered, numRows, numCols ) ;
     }
 
-    private void setUpUI( UITheme theme, boolean isBordered, int numRows, int numCols ) {
+    private void setUpUI( boolean isBordered, int numRows, int numCols ) {
+        this.theme = SConsole.getApp().getUiTheme() ;
         super.setBackground( theme.getBackgroundColor() ) ;
         if( numRows > 0 && numCols > 0 ) {
             super.setTableLayout( numRows, numCols ) ;

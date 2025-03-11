@@ -7,6 +7,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.jfree.data.time.Day;
 import org.slf4j.MDC;
+import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
 import java.util.*;
@@ -15,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 import static com.sandy.sconsole.core.log.LogIndenter.THREAD_NAME_KEY;
 
 @Slf4j
+@Component
 public class SConsoleClock {
 
     public static class CurrentTimeProvider {

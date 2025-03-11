@@ -27,7 +27,8 @@ public class NVPManager {
         }
     }
     
-    private NVPConfigDAORepo nvpRepo ;
+    private @Autowired NVPConfigDAORepo nvpRepo ;
+    private @Autowired NVPConfigAnnotationProcessor annotationProcessor ;
 
     // Config group --[*]-> Config name --[*]-> Change listeners
     private final Map<String, Map<String, Set<NVPConfigChangeListener>>> listeners = new HashMap<>() ;
@@ -76,9 +77,6 @@ public class NVPManager {
      * does not trigger persistence.
      */
     public void persistNVPConfigState( Object obj ) throws IllegalAccessException {
-
-        NVPConfigAnnotationProcessor annotationProcessor =
-                     new NVPConfigAnnotationProcessor( SConsole.getAppCtx() ) ;
         annotationProcessor.persistNVPConfigState( obj ) ;
     }
 
@@ -87,9 +85,6 @@ public class NVPManager {
      * they will be populated.
      */
     public void loadNVPConfigState( Object obj ) throws Exception {
-
-        NVPConfigAnnotationProcessor annotationProcessor =
-                new NVPConfigAnnotationProcessor( SConsole.getAppCtx() ) ;
         annotationProcessor.loadNVPConfigState( obj ) ;
     }
     

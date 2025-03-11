@@ -1,18 +1,17 @@
 package com.sandy.sconsole;
 
 import com.sandy.sconsole.core.SConsoleConfig;
-import com.sandy.sconsole.core.behavior.ComponentFinalizer;
-import com.sandy.sconsole.core.behavior.ComponentInitializer;
-import com.sandy.sconsole.core.bus.EventBus;
 import com.sandy.sconsole.core.clock.SConsoleClock;
 import com.sandy.sconsole.core.nvpconfig.annotation.NVPConfigAnnotationProcessor;
-import com.sandy.sconsole.core.ui.SConsoleFrame;
-import com.sandy.sconsole.core.ui.screen.ScreenManager;
-import com.sandy.sconsole.core.ui.uiutil.DefaultUITheme;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
+import com.sandy.sconsole.ui.SConsoleFrame;
+import com.sandy.sconsole.ui.screen.ScreenManager;
+import com.sandy.sconsole.dao.quote.QuoteManager;
+import com.sandy.sconsole.ui.screen.clock.ClockScreen;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
@@ -23,17 +22,11 @@ import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.swing.*;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @SpringBootApplication
 public class SConsole
         implements ApplicationContextAware, WebMvcConfigurer {
-
-    private static final EventBus GLOBAL_EVENT_BUS = new EventBus() ;
 
     private static ConfigurableApplicationContext APP_CTX = null ;
     private static SConsole APP = null;
@@ -46,20 +39,19 @@ public class SConsole
         return APP_CTX ;
     }
 
-    public static EventBus getBus() {
-        return GLOBAL_EVENT_BUS ;
-    }
-
     // ---------------- Instance methods start ---------------------------------
     
-    @Getter
-    private final SConsoleClock clock = new SConsoleClock() ;
+    @Autowired private SConsoleClock  clock ;
+    @Autowired private SConsoleFrame  frame ;
+    @Autowired private QuoteManager   quoteManager ;
+    @Autowired private NVPConfigAnnotationProcessor nvpAnnotationProcessor ;
+    @Autowired private ScreenManager screenManager ;
     
-    private UITheme        uiTheme = null ;
-    @Getter
-    private SConsoleFrame  frame   = null ;
-    private SConsoleConfig cfg     = null ;
-
+    @Autowired @Getter private SConsoleConfig config ;
+    @Autowired @Getter private UITheme uiTheme ;
+    
+    @Autowired private ClockScreen clockScreen ;
+    
     public SConsole() {
         APP = this;
     }
@@ -70,96 +62,33 @@ public class SConsole
         APP_CTX = ( ConfigurableApplicationContext )applicationContext;
     }
 
-    public void initialize() throws Exception {
+    public void initialize() {
 
         log.debug( "## Initializing SConsole app. >" ) ;
 
         log.debug( "- Initializing Clock" ) ;
         this.clock.initialize() ;
 
-        log.debug( "- Initializing Theme" ) ;
-        this.uiTheme = new DefaultUITheme() ;
-
         log.debug( "- Initializing NVPConfig injector." ) ;
-        NVPConfigAnnotationProcessor nvpConfigAnnotationProcessor =
-                                  new NVPConfigAnnotationProcessor( getCtx() ) ;
-        nvpConfigAnnotationProcessor.processNVPConfigAnnotations() ;
+        nvpAnnotationProcessor.processNVPConfigAnnotations() ;
 
-        log.debug( "- Invoking system initializers." ) ;
-        discoverAndInvokeInitializers() ;
+        log.debug( "- Initializing QuoteManager." ) ;
+        quoteManager.initialize( this ) ;
+        
+        log.debug( "- Initializing ScreenManager." ) ;
+        initializeScreenManager() ;
 
         log.debug( "- Initializing SConsoleFrame" ) ;
-        SwingUtilities.invokeLater( () ->
-                this.frame = new SConsoleFrame( uiTheme,
-                                                getConfig(),
-                                                getAppCtx().getBean( ScreenManager.class ) ) ) ;
+        SwingUtilities.invokeLater( () -> this.frame.initialize() ) ;
 
         log.debug( "<< ## SConsole initialization complete" ) ;
     }
-
-    public UITheme getTheme() { return this.uiTheme ; }
     
-    public ApplicationContext getCtx() { return SConsole.APP_CTX ; }
-
-    public SConsoleConfig getConfig() {
-        if( cfg == null ) {
-            if( APP_CTX != null ) {
-                cfg = ( SConsoleConfig )APP_CTX.getBean("config");
-            }
-            else {
-                cfg = new SConsoleConfig() ;
-            }
-        }
-        return cfg ;
+    private void initializeScreenManager() {
+        screenManager.registerScreen( clockScreen ) ;
     }
-
-    private void discoverAndInvokeInitializers() throws Exception {
-
-        final List<ComponentInitializer> initializers = new ArrayList<>(
-                APP_CTX.getBeansOfType( ComponentInitializer.class )
-                        .values()
-        ) ;
-
-        initializers.sort(
-            Comparator.comparingInt(
-                ComponentInitializer::getInitializationSequencePreference
-            )
-        ) ;
-
-        for( ComponentInitializer si : initializers ) {
-            log.debug( "-> Initializing {} [{}]",
-                                    si.getClass().getSimpleName(),
-                                    si.getInitializationSequencePreference() ) ;
-            if( si.isInvocable() ) {
-                si.initialize( this );
-            }
-            else {
-                log.debug( "System initializer is not invocable." );
-            }
-        }
-    }
-
-    private void discoverAndInvokeFinalizers() {
-
-        log.debug( "Gracefully shutting down SConsole." ) ;
-
-        final Map<String, ComponentFinalizer> beans =
-                APP_CTX.getBeansOfType( ComponentFinalizer.class ) ;
-
-        for( ComponentFinalizer si : beans.values() ) {
-            log.debug( "Found system finalizer {}", si.getClass().getName() ) ;
-            if( si.isInvocable() ) {
-                try {
-                    si.destroy( this );
-                }
-                catch( Exception e ) {
-                    log.error( "Error while invoking finalizer.", e );
-                }
-            }
-            else {
-                log.debug( "System finalizer is not invocable." );
-            }
-        }
+    
+    private void invokeFinalizers() {
     }
 
     // --------------------- Main method ---------------------------------------
@@ -172,7 +101,7 @@ public class SConsole
         SpringApplication.run( SConsole.class, args )
                          .addApplicationListener(
                                  ( ApplicationListener<ContextClosedEvent> )event ->
-                                         getApp().discoverAndInvokeFinalizers()
+                                         getApp().invokeFinalizers()
                          ) ;
 
         log.debug( "Starting SConsole.." ) ;
@@ -182,6 +111,7 @@ public class SConsole
         }
         catch( Exception e ) {
             log.error( "Exception while initializing SConsole.", e ) ;
+            System.exit( -1 ) ;
         }
     }
 }
