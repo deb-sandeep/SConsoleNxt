@@ -1,4 +1,4 @@
-package com.sandy.sconsole.core.ui.screen.util;
+package com.sandy.sconsole.core.ui.screen.tiles;
 
 import com.sandy.sconsole.core.ui.screen.Tile;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
@@ -19,7 +19,8 @@ public class ImageTile extends Tile {
     }
 
     private void setUpUI() {
-        imgLabel = super.getTemplateLabel() ;
+        imgLabel = super.createEmptyLabel() ;
+        
         super.setLayout( new BorderLayout() ) ;
         super.add( imgLabel, BorderLayout.CENTER ) ;
     }

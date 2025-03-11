@@ -24,22 +24,24 @@ import java.util.concurrent.TimeUnit;
 
 import static com.sandy.sconsole.core.log.LogIndenter.THREAD_NAME_KEY;
 
+/**
+ * DECOMMISSIONED
+ * <p>
+ * The Refresher screen feature has been decommissioned for JEE study. I
+ * experimented with this for the last two years and realized that the
+ * screens become white noise and get into blind spot immediately thus
+ * negating any value add.
+ */
 @Slf4j
 @Component
 public class RefreshersSyncDaemon extends DaemonBase
     implements ComponentInitializer {
 
-    @Autowired
-    private SlideRepo slideRepo ;
+    @Autowired private SlideRepo slideRepo ;
+    @Autowired private NVPManager nvpManager ;
+    @Autowired private SConsoleConfig appCfg ;
 
-    @Autowired
-    private NVPManager nvpManager ;
-
-    @Autowired
-    private SConsoleConfig appCfg ;
-
-    @Autowired
-    private RefresherSlideManager slideManager ;
+    @Autowired private RefresherSlideManager slideManager ;
 
     @NVPConfig private int     startDelaySec = 5 ;
     @NVPConfig private int     runDelayMin = 30 ;
@@ -157,7 +159,7 @@ public class RefreshersSyncDaemon extends DaemonBase
                     }
                     case RENAME -> {
                         Slide oldSlide = slideRepo.findByPath( change.getOldPath() ) ;
-                        Slide newSlide = null ;
+                        Slide newSlide ;
 
                         if( oldSlide != null ) {
                             slideManager.delete( oldSlide.getVO() ) ;

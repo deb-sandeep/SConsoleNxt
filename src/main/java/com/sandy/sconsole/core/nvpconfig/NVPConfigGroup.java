@@ -2,6 +2,7 @@ package com.sandy.sconsole.core.nvpconfig;
 
 import com.sandy.sconsole.dao.nvp.NVPConfigDAO;
 import com.sandy.sconsole.dao.nvp.NVPConfigDAORepo;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.validator.GenericValidator;
 
@@ -20,7 +21,8 @@ public class NVPConfigGroup {
 
     private final Map<String, NVPConfig> childCfgs = new HashMap<>() ;
     private final NVPConfigDAORepo nvpRepo ;
-    private final String groupName ;
+    
+    @Getter private final String groupName ;
 
     public NVPConfigGroup( String groupName, NVPConfigDAORepo nvpRepo ) {
         this.groupName = groupName ;
@@ -29,10 +31,6 @@ public class NVPConfigGroup {
     
     void addNVPConfig( NVPConfig cfg ) {
         this.childCfgs.put( cfg.getConfigName(), cfg ) ;
-    }
-    
-    public String getGroupName() {
-        return this.groupName ;
     }
     
     private NVPConfig getNVPConfig( String cfgKey, String defaultValue ) {

@@ -10,6 +10,7 @@ import com.sandy.sconsole.core.ui.SConsoleFrame;
 import com.sandy.sconsole.core.ui.screen.ScreenManager;
 import com.sandy.sconsole.core.ui.uiutil.DefaultUITheme;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.boot.SpringApplication;
@@ -50,12 +51,14 @@ public class SConsole
     }
 
     // ---------------- Instance methods start ---------------------------------
-
+    
+    @Getter
     private final SConsoleClock clock = new SConsoleClock() ;
-
-    private UITheme uiTheme = null ;
-    private SConsoleFrame frame = null ;
-    private SConsoleConfig cfg = null ;
+    
+    private UITheme        uiTheme = null ;
+    @Getter
+    private SConsoleFrame  frame   = null ;
+    private SConsoleConfig cfg     = null ;
 
     public SConsole() {
         APP = this;
@@ -86,20 +89,16 @@ public class SConsole
         discoverAndInvokeInitializers() ;
 
         log.debug( "- Initializing SConsoleFrame" ) ;
-        SwingUtilities.invokeLater( ()->{
-            this.frame = new SConsoleFrame( uiTheme, getConfig(),
-                    getAppCtx().getBean( ScreenManager.class ) ) ;
-        } ) ;
+        SwingUtilities.invokeLater( () ->
+                this.frame = new SConsoleFrame( uiTheme,
+                                                getConfig(),
+                                                getAppCtx().getBean( ScreenManager.class ) ) ) ;
 
         log.debug( "<< ## SConsole initialization complete" ) ;
     }
 
     public UITheme getTheme() { return this.uiTheme ; }
-
-    public SConsoleFrame getFrame() { return this.frame; }
-
-    public SConsoleClock getClock() { return this.clock; }
-
+    
     public ApplicationContext getCtx() { return SConsole.APP_CTX ; }
 
     public SConsoleConfig getConfig() {
@@ -148,7 +147,7 @@ public class SConsole
                 APP_CTX.getBeansOfType( ComponentFinalizer.class ) ;
 
         for( ComponentFinalizer si : beans.values() ) {
-            log.debug( "Found system finalzier {}", si.getClass().getName() ) ;
+            log.debug( "Found system finalizer {}", si.getClass().getName() ) ;
             if( si.isInvocable() ) {
                 try {
                     si.destroy( this );
@@ -167,16 +166,14 @@ public class SConsole
 
     public static void main( String[] args ) {
 
-        log.debug( "Starting Spring Booot..." ) ;
+        log.debug( "Starting Spring Boot..." ) ;
 
         System.setProperty( "java.awt.headless", "false" ) ;
         SpringApplication.run( SConsole.class, args )
                          .addApplicationListener(
-                                 new ApplicationListener<ContextClosedEvent>() {
-            public void onApplicationEvent( ContextClosedEvent event ) {
-                getApp().discoverAndInvokeFinalizers() ;
-            }
-        } ) ;
+                                 ( ApplicationListener<ContextClosedEvent> )event ->
+                                         getApp().discoverAndInvokeFinalizers()
+                         ) ;
 
         log.debug( "Starting SConsole.." ) ;
         SConsole app = SConsole.getAppCtx().getBean( SConsole.class ) ;

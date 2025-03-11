@@ -4,7 +4,6 @@ import com.sandy.sconsole.core.SConsoleConfig;
 import com.sandy.sconsole.core.clock.ClockTickListener;
 import com.sandy.sconsole.core.nvpconfig.annotation.NVPConfigAnnotationProcessor;
 import com.sandy.sconsole.core.ui.screen.Screen;
-import com.sandy.sconsole.core.ui.screen.util.StarTile;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
 import com.sandy.sconsole.daemon.refresher.RefresherSlideManager;
 import com.sandy.sconsole.screen.clock.tile.DateTile;
@@ -37,7 +36,6 @@ public class RefresherScreen extends Screen implements ClockTickListener {
 
     private TimeTile timeTile ;
     private DateTile dateTile ;
-    private StarTile starTile ;
 
     private final List<AbstractRefresherPanel> refresherPanelList = new ArrayList<>() ;
 
@@ -68,7 +66,6 @@ public class RefresherScreen extends Screen implements ClockTickListener {
 
         dateTile = new DateTile( "dd MMM, EE", theme, 50 ) ;
         timeTile = new TimeTile( theme, 70 ) ;
-        starTile = new StarTile( theme ) ;
 
         dateTile.setBorder( new EmptyBorder( 0, 50,0,0 ) );
         dateTile.setHorizontalAlignment( JLabel.LEFT ) ;
@@ -77,7 +74,6 @@ public class RefresherScreen extends Screen implements ClockTickListener {
         // Date, Time and Star rating of the currently displayed refresher.
         super.addTile( dateTile, 0,  0, 5,  1 ) ;
         super.addTile( timeTile, 6,  0, 9,  1 ) ;
-        super.addTile( starTile, 10, 0, 15, 1 ) ;
     }
 
     @Override

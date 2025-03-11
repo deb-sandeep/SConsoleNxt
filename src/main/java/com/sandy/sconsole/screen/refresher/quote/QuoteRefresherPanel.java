@@ -1,6 +1,6 @@
 package com.sandy.sconsole.screen.refresher.quote;
 
-import com.sandy.sconsole.core.ui.screen.util.StringTile;
+import com.sandy.sconsole.core.ui.screen.tiles.StringTile;
 import com.sandy.sconsole.core.ui.uiutil.SwingUtils;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
 import com.sandy.sconsole.dao.quote.Quote;

@@ -1,4 +1,4 @@
-package com.sandy.sconsole.core.ui.screen.util;
+package com.sandy.sconsole.core.ui.screen.tiles;
 
 import com.sandy.sconsole.core.ui.screen.Tile;
 import com.sandy.sconsole.core.ui.uiutil.DefaultUITheme;
