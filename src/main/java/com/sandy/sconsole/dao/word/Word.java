@@ -1,7 +1,7 @@
 package com.sandy.sconsole.dao.word;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Timestamp;
@@ -9,7 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-@Data
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
 @Entity
 @Table(name = "word_master")
 public class Word {
@@ -25,12 +28,8 @@ public class Word {
 
     private boolean   hidden          = false;
     private boolean   starred         = false;
-    private boolean   wordnikEnriched = false ;
-    private float     rating          = 0;
     private int       numShows        = 0;
     private Timestamp lastDisplayTime = null;
-
-    private int numWordnikTries = 0 ;
 
     @OneToMany( cascade = CascadeType.ALL,
                 mappedBy="word",

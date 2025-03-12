@@ -31,32 +31,32 @@ public class NVPManager {
     private @Autowired NVPConfigAnnotationProcessor annotationProcessor ;
 
     // Config group --[*]-> Config name --[*]-> Change listeners
-    private final Map<String, Map<String, Set<NVPConfigChangeListener>>> listeners = new HashMap<>() ;
+    private final Map<String, Map<String, Set<NVPCfgChangeListener>>> listeners = new HashMap<>() ;
 
     @Autowired
     public void setNVPConfigDAORepo( NVPConfigDAORepo nvpRepo ) {
         this.nvpRepo = nvpRepo ;
     }
     
-    public NVPConfigGroup getConfigGroup( String groupName ) {
+    public NVPCfgGroup getConfigGroup( String groupName ) {
         
-        NVPConfigGroup group = new NVPConfigGroup( groupName, nvpRepo ) ;
+        NVPCfgGroup group = new NVPCfgGroup( groupName, nvpRepo ) ;
         nvpRepo.findByGroupName( groupName )
-                .forEach( nvp -> group.addNVPConfig( new NVPConfig( nvp, nvpRepo ) ) ) ;
+                .forEach( nvp -> group.addNVPConfig( new NVPCfg( nvp, nvpRepo ) ) ) ;
         return group ;
     }
 
-    public NVPConfig getConfig( String groupName, String keyName ) {
+    public NVPCfg getConfig( String groupName, String keyName ) {
 
         NVPConfigDAO nvpDAO = nvpRepo.findByGroupNameAndConfigName( groupName, keyName ) ;
         if( nvpDAO != null ) {
-            return new NVPConfig( nvpDAO, nvpRepo ) ;
+            return new NVPCfg( nvpDAO, nvpRepo ) ;
         }
         return null ;
     }
     
-    public NVPConfig getConfig( String groupName, String keyName,
-                                String defaultValue ) {
+    public NVPCfg getConfig( String groupName, String keyName,
+                             String defaultValue ) {
 
         NVPConfigDAO nvpDAO = nvpRepo.findByGroupNameAndConfigName( groupName, keyName ) ;
         if( nvpDAO == null ) {
@@ -64,7 +64,7 @@ public class NVPManager {
             nvpDAO.setGroupName( groupName ) ;
             nvpDAO = nvpRepo.save( nvpDAO ) ;
         }
-        return new NVPConfig( nvpDAO, nvpRepo ) ;
+        return new NVPCfg( nvpDAO, nvpRepo ) ;
     }
 
     /**
@@ -88,7 +88,7 @@ public class NVPManager {
         annotationProcessor.loadNVPConfigState( obj ) ;
     }
     
-    public void addConfigChangeListener( NVPConfigChangeListener listener,
+    public void addConfigChangeListener( NVPCfgChangeListener listener,
                                          String groupName, 
                                          String... cfgKeys ) {
         
@@ -105,10 +105,10 @@ public class NVPManager {
     }
     
     private void addListener( String groupName, String cfgName,
-                              NVPConfigChangeListener listener ) {
+                              NVPCfgChangeListener listener ) {
         
-        Map<String, Set<NVPConfigChangeListener>> keyListenerMap ;
-        Set<NVPConfigChangeListener> listenerSet ;
+        Map<String, Set<NVPCfgChangeListener>> keyListenerMap ;
+        Set<NVPCfgChangeListener>              listenerSet ;
 
         keyListenerMap = listeners.computeIfAbsent( groupName, k -> new HashMap<>() );
         listenerSet = keyListenerMap.computeIfAbsent( cfgName, k -> new HashSet<>() );
@@ -116,7 +116,7 @@ public class NVPManager {
         listenerSet.add( listener ) ;
     }
     
-    public void removeConfigChangeListener( NVPConfigChangeListener listener ) {
+    public void removeConfigChangeListener( NVPCfgChangeListener listener ) {
         
         listeners.values().forEach( keyListenerMap ->
                 keyListenerMap.values().forEach( listenerSet ->
@@ -131,8 +131,8 @@ public class NVPManager {
     
     private void notifyConfigChangeListeners( NVPConfigDAO nvpConfigDAO ) {
         
-        Set<NVPConfigChangeListener> listeners = getListeners( nvpConfigDAO ) ;
-        NVPConfig cfg = new NVPConfig( nvpConfigDAO, nvpRepo );
+        Set<NVPCfgChangeListener> listeners = getListeners( nvpConfigDAO ) ;
+        NVPCfg                    cfg       = new NVPCfg( nvpConfigDAO, nvpRepo );
         listeners.forEach( listener -> {
             try {
                 listener.nvpConfigChanged( cfg ) ;
@@ -153,12 +153,12 @@ public class NVPManager {
      *      are explicitly registered for listening to this config, and any
      *      listeners who are registered at group level. Guaranteed to be not null.
      */
-    private Set<NVPConfigChangeListener> getListeners( NVPConfigDAO nvpConfigDAO ) {
+    private Set<NVPCfgChangeListener> getListeners( NVPConfigDAO nvpConfigDAO ) {
         
-        Map<String, Set<NVPConfigChangeListener>> keyListenerMap ;
-        Set<NVPConfigChangeListener> listenerSet = new HashSet<>() ;
-        Set<NVPConfigChangeListener> groupListeners ;
-        Set<NVPConfigChangeListener> configListeners ;
+        Map<String, Set<NVPCfgChangeListener>> keyListenerMap ;
+        Set<NVPCfgChangeListener>              listenerSet = new HashSet<>() ;
+        Set<NVPCfgChangeListener>              groupListeners ;
+        Set<NVPCfgChangeListener>              configListeners ;
 
         keyListenerMap = listeners.get( nvpConfigDAO.getGroupName() ) ;
         if( keyListenerMap != null ) {

@@ -2,7 +2,7 @@ package com.sandy.sconsole.core.nvpconfig.annotation;
 
 import com.sandy.sconsole.core.nvpconfig.NVPManager;
 import com.sandy.sconsole.core.nvpconfig.annotation.internal.NVPConfigTarget;
-import com.sandy.sconsole.core.nvpconfig.annotation.internal.NVPConfigTargetCluster;
+import com.sandy.sconsole.core.nvpconfig.annotation.internal.NVPCfgTargetCluster;
 import com.sandy.sconsole.core.util.StringUtil;
 import com.sandy.sconsole.dao.nvp.NVPConfigDAORepo;
 import lombok.extern.slf4j.Slf4j;
@@ -98,8 +98,8 @@ public class NVPConfigAnnotationProcessor implements ApplicationContextAware {
      */
     public void processNVPConfigConsumer( Object bean ) {
 
-        Map<String, NVPConfigTargetCluster> clusters = new HashMap<>() ;
-        List<NVPConfigTarget> targets = extractNVPConfigTargets( bean ) ;
+        Map<String, NVPCfgTargetCluster> clusters = new HashMap<>() ;
+        List<NVPConfigTarget>            targets  = extractNVPConfigTargets( bean ) ;
 
         if( targets.isEmpty() ) {
             log.debug( "- Bean does not have any NVPConfig targets." ) ;
@@ -107,11 +107,11 @@ public class NVPConfigAnnotationProcessor implements ApplicationContextAware {
         }
 
         targets.forEach( t -> {
-            NVPConfigTargetCluster tgtCluster ;
-            String cfgFQN = t.getFQN() ;
+            NVPCfgTargetCluster tgtCluster ;
+            String              cfgFQN = t.getFQN() ;
 
             tgtCluster = clusters.computeIfAbsent( cfgFQN, k ->
-                    new NVPConfigTargetCluster( t.getConfigGroupName(),
+                    new NVPCfgTargetCluster( t.getConfigGroupName(),
                                                 t.getConfigName() )
             ) ;
             tgtCluster.add( t ) ;

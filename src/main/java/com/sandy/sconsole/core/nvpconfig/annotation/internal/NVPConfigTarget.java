@@ -1,5 +1,6 @@
 package com.sandy.sconsole.core.nvpconfig.annotation.internal;
 
+import com.sandy.sconsole.core.nvpconfig.NVPCfg;
 import com.sandy.sconsole.core.nvpconfig.annotation.NVPConfig;
 import com.sandy.sconsole.dao.nvp.NVPConfigDAO;
 import com.sandy.sconsole.dao.nvp.NVPConfigDAORepo;
@@ -52,8 +53,8 @@ public class NVPConfigTarget {
         String groupName = nvpConfig.groupName() ;
         String cfgName = nvpConfig.configName() ;
 
-        this.configName = cfgName.equals( "" ) ? field.getName() : cfgName ;
-        this.configGroupName = groupName.equals( "" ) ? defaultCfgGroup : groupName ;
+        this.configName = cfgName.isEmpty() ? field.getName() : cfgName ;
+        this.configGroupName = groupName.isEmpty() ? defaultCfgGroup : groupName ;
         this.updateOnChange = nvpConfig.updateOnChange() ;
     }
 
@@ -66,7 +67,7 @@ public class NVPConfigTarget {
                 bean.getClass().getName() + "::" + field.getName() ;
     }
 
-    public void updateTarget( com.sandy.sconsole.core.nvpconfig.NVPConfig cfg,
+    public void updateTarget( NVPCfg cfg,
                               boolean notify )
             throws IllegalAccessException, InvocationTargetException {
 
@@ -98,7 +99,7 @@ public class NVPConfigTarget {
 
     public void loadState() throws InvocationTargetException, IllegalAccessException {
         NVPConfigDAO dao = configRepo.findByGroupNameAndConfigName( configGroupName, configName ) ;
-        com.sandy.sconsole.core.nvpconfig.NVPConfig cfg = new com.sandy.sconsole.core.nvpconfig.NVPConfig( dao, configRepo ) ;
+        NVPCfg       cfg = new NVPCfg( dao, configRepo ) ;
         updateTarget( cfg, true ) ;
     }
 
@@ -106,7 +107,7 @@ public class NVPConfigTarget {
         return convertFieldValToString() ;
     }
 
-    private Object convertCfgValToFieldType( com.sandy.sconsole.core.nvpconfig.NVPConfig cfg ) {
+    private Object convertCfgValToFieldType( NVPCfg cfg ) {
 
         Object convertedVal = cfg.getValue() ;
         if( fieldClass.equals( Integer.class ) ||

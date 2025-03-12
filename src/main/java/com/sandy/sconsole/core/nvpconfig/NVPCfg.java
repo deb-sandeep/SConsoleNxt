@@ -7,12 +7,12 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-public class NVPConfig {
+public class NVPCfg {
     
     private final NVPConfigDAO nvpDAO ;
     private final NVPConfigDAORepo nvpRepo ;
     
-    public NVPConfig( NVPConfigDAO nvpDAO, NVPConfigDAORepo nvpRepo ) {
+    public NVPCfg( NVPConfigDAO nvpDAO, NVPConfigDAORepo nvpRepo ) {
         this.nvpDAO = nvpDAO ;
         this.nvpRepo = nvpRepo ;
     }

@@ -2,6 +2,7 @@ package com.sandy.sconsole.ui.screen;
 
 import com.sandy.sconsole.core.clock.ClockTickListener;
 import com.sandy.sconsole.core.clock.SConsoleClock;
+import com.sandy.sconsole.core.nvpconfig.NVPCfg;
 import com.sandy.sconsole.core.nvpconfig.NVPManager;
 import com.sandy.sconsole.core.nvpconfig.annotation.NVPConfig;
 import com.sandy.sconsole.core.nvpconfig.annotation.NVPConfigChangeListener;
@@ -48,7 +49,7 @@ public class ScreenManager implements ClockTickListener {
     
     @PostConstruct
     public void init() {
-        clock.addTickListener( this, TimeUnit.MINUTES ) ;
+        clock.addTickListener( this, TimeUnit.SECONDS ) ;
         refreshConfig() ;
     }
     
@@ -65,13 +66,13 @@ public class ScreenManager implements ClockTickListener {
     }
     
     @NVPConfigChangeListener
-    public void configChanged( com.sandy.sconsole.core.nvpconfig.NVPConfig nvpConfig ) {
+    public void configChanged( NVPCfg nvpCfg ) {
         parseConfigDates() ;
     }
     
     private void parseConfigDates() {
         try {
-            startOfDaySecs = secondsSinceStartOfDay( startOfDay == null ? DEF_SOD : startOfDay) ;
+            startOfDaySecs = secondsSinceStartOfDay( startOfDay == null ? DEF_SOD : startOfDay ) ;
             endOfDaySecs = secondsSinceStartOfDay( endOfDay == null ? DEF_EOD : endOfDay ) ;
         }
         catch( ParseException e ) {
@@ -95,6 +96,7 @@ public class ScreenManager implements ClockTickListener {
         // as the root screens for night and day respectively.
         if( nightRootScreen == null ) {
             nightRootScreen = screen ;
+            dayRootScreen = screen ;
         }
         else if( dayRootScreen == null ) {
             dayRootScreen = screen ;
@@ -109,15 +111,18 @@ public class ScreenManager implements ClockTickListener {
     }
     
     @Override
-    public void clockTick( Calendar calendar ) { // Ticks at minute intervals
+    public void clockTick( Calendar calendar ) { // Ticks at second interval
     }
     
     private void computeRootScreen() {
         Calendar now = Calendar.getInstance() ;
         long secsTillNow = secondsSinceStartOfDay( now ) ;
-
-        rootScreen = ( secsTillNow >= endOfDaySecs || secsTillNow < startOfDaySecs ) ?
-                                                nightRootScreen : dayRootScreen ;
+        if( secsTillNow >= endOfDaySecs || secsTillNow < startOfDaySecs ) {
+            rootScreen = nightRootScreen ;
+        }
+        else {
+            rootScreen = dayRootScreen ;
+        }
     }
     
     private long secondsSinceStartOfDay( String dateStr ) throws ParseException {

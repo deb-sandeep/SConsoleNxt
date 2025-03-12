@@ -14,54 +14,54 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-public class NVPConfigGroup {
+public class NVPCfgGroup {
 
     private static final String SIMPLE_SDF_FMT = "dd-MM-yyyy" ;
     private static final SimpleDateFormat SIMPLE_SDF = new SimpleDateFormat( SIMPLE_SDF_FMT ) ;
 
-    private final Map<String, NVPConfig> childCfgs = new HashMap<>() ;
-    private final NVPConfigDAORepo nvpRepo ;
+    private final Map<String, NVPCfg> childCfgs = new HashMap<>() ;
+    private final NVPConfigDAORepo    nvpRepo ;
     
     @Getter private final String groupName ;
 
-    public NVPConfigGroup( String groupName, NVPConfigDAORepo nvpRepo ) {
+    public NVPCfgGroup( String groupName, NVPConfigDAORepo nvpRepo ) {
         this.groupName = groupName ;
         this.nvpRepo = nvpRepo ;
     }
     
-    void addNVPConfig( NVPConfig cfg ) {
+    void addNVPConfig( NVPCfg cfg ) {
         this.childCfgs.put( cfg.getConfigName(), cfg ) ;
     }
     
-    private NVPConfig getNVPConfig( String cfgKey, String defaultValue ) {
-        NVPConfig cfg = this.childCfgs.get( cfgKey ) ;
+    private NVPCfg getNVPConfig( String cfgKey, String defaultValue ) {
+        NVPCfg cfg = this.childCfgs.get( cfgKey ) ;
         if( cfg == null ) {
             NVPConfigDAO nvp = new NVPConfigDAO( cfgKey, defaultValue ) ;
             nvp.setGroupName( groupName ) ;
             nvp = nvpRepo.save( nvp ) ;
-            cfg = new NVPConfig( nvp, nvpRepo ) ;
+            cfg = new NVPCfg( nvp, nvpRepo ) ;
             this.childCfgs.put( cfgKey, cfg ) ;
         }
         return cfg ;
     }
     
     public String getStringValue( String cfgKey, String defaultValue ) {
-        NVPConfig cfg = getNVPConfig( cfgKey, defaultValue ) ;
+        NVPCfg cfg = getNVPConfig( cfgKey, defaultValue ) ;
         return cfg.getValue() ;
     }
     
     public Integer getIntValue( String cfgKey, int defaultValue ) {
-        NVPConfig cfg = getNVPConfig( cfgKey, Integer.toString( defaultValue ) ) ;
+        NVPCfg cfg = getNVPConfig( cfgKey, Integer.toString( defaultValue ) ) ;
         return cfg.getIntValue() ;
     }
     
     public Boolean getBoolValue( String cfgKey, boolean defaultValue ) {
-        NVPConfig cfg = getNVPConfig( cfgKey, Boolean.toString( defaultValue ) ) ;
+        NVPCfg cfg = getNVPConfig( cfgKey, Boolean.toString( defaultValue ) ) ;
         return cfg.getBooleanValue() ;
     }
     
     public Date getDateValue( String cfgKey, Date defaultValue ) {
-        NVPConfig cfg = getNVPConfig( cfgKey, NVPConfigDAO.SDF.format( defaultValue ) ) ;
+        NVPCfg cfg = getNVPConfig( cfgKey, NVPConfigDAO.SDF.format( defaultValue ) ) ;
         return cfg.getDateValue() ;
     }
     
@@ -82,23 +82,23 @@ public class NVPConfigGroup {
     }
 
     public String[] getArrayValue( String cfgKey, String defaultValue ) {
-        NVPConfig cfg = getNVPConfig( cfgKey, defaultValue ) ;
+        NVPCfg cfg = getNVPConfig( cfgKey, defaultValue ) ;
         return cfg.getArrayValue() ;
     }
 
     public List<String> getListValue( String cfgKey, String defaultValue ) {
-        NVPConfig cfg = getNVPConfig( cfgKey, defaultValue ) ;
+        NVPCfg cfg = getNVPConfig( cfgKey, defaultValue ) ;
         return cfg.getListValue() ;
     }
 
     public void setValue( String cfgKey, int i ) {
-        NVPConfig cfg = getNVPConfig( cfgKey, Integer.toString( i ) ) ;
+        NVPCfg cfg = getNVPConfig( cfgKey, Integer.toString( i ) ) ;
         cfg.setValue( i ) ;
         cfg.save() ;
     }
     
     public void setValue( String cfgKey, boolean b ) {
-        NVPConfig cfg = getNVPConfig( cfgKey, Boolean.toString( b ) ) ;
+        NVPCfg cfg = getNVPConfig( cfgKey, Boolean.toString( b ) ) ;
         cfg.setValue( b ) ;
         cfg.save() ;
     }
@@ -109,7 +109,7 @@ public class NVPConfigGroup {
                                                 "Key = " + cfgKey ) ;
         }
         
-        NVPConfig cfg = getNVPConfig( cfgKey, NVPConfigDAO.SDF.format( date ) ) ;
+        NVPCfg cfg = getNVPConfig( cfgKey, NVPConfigDAO.SDF.format( date ) ) ;
         cfg.setValue( date ) ;
         cfg.save() ;
     }
@@ -119,7 +119,7 @@ public class NVPConfigGroup {
             throw new IllegalArgumentException( "Cfg array value is null. " + 
                                                 "Key = " + cfgKey ) ;
         }
-        NVPConfig cfg = getNVPConfig( cfgKey, String.join( ",", values ) ) ;
+        NVPCfg cfg = getNVPConfig( cfgKey, String.join( ",", values ) ) ;
         cfg.setValue( values ) ;
         cfg.save() ;
     }
@@ -129,7 +129,7 @@ public class NVPConfigGroup {
             throw new IllegalArgumentException( "Cfg value is null. " +
                                                 "Key = " + cfgKey ) ;
         }
-        NVPConfig cfg = getNVPConfig( cfgKey, cfgVal ) ;
+        NVPCfg cfg = getNVPConfig( cfgKey, cfgVal ) ;
         cfg.setValue( cfgVal ) ;
         cfg.save() ;
     }
