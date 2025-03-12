@@ -1,9 +1,8 @@
-package com.sandy.sconsole.ui ;
+package com.sandy.sconsole.core.ui;
 
 import com.sandy.sconsole.core.SConsoleConfig;
 import com.sandy.sconsole.core.ui.screen.Screen;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
-import com.sandy.sconsole.ui.screen.ScreenManager;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +19,6 @@ public class SConsoleFrame extends JFrame {
     
     private final Container contentPane ;
     
-    @Autowired private ScreenManager  screenManager ;
     @Autowired private SConsoleConfig config ;
     @Autowired private UITheme        theme ;
 
@@ -41,6 +39,30 @@ public class SConsoleFrame extends JFrame {
         }
     }
     
+    public void setScreen( Screen screen ) {
+        
+        if( screen == null ) return ;
+        
+        if( currentScreen != null && currentScreen.getName().equals( screen.getName() ) ) {
+            log.debug( "  Requested screen {} is already active.", screen.getName() ) ;
+            return ;
+        }
+        
+        SwingUtilities.invokeLater( () -> {
+            if( currentScreen != null ) {
+                currentScreen.beforeDeactivation();
+                contentPane.remove( currentScreen );
+            }
+            
+            currentScreen = screen ;
+            currentScreen.beforeActivation() ;
+            
+            contentPane.add( currentScreen, BorderLayout.CENTER ) ;
+            contentPane.revalidate() ;
+            contentPane.repaint() ;
+        } ) ;
+    }
+
     private void makeFrameVisible() {
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment() ;
         GraphicsDevice[] devices = ge.getScreenDevices() ;
@@ -67,32 +89,7 @@ public class SConsoleFrame extends JFrame {
         contentPane.setBackground( theme.getBackgroundColor() ) ;
         contentPane.setLayout( new BorderLayout() ) ;
 
-        setScreen( screenManager.getActiveScreen() ) ;
-
         this.setBounds( 0,0, 1920, 1080 ) ;
     }
     
-    void setScreen( Screen screen ) {
-        
-        if( screen == null ) return ;
-        
-        if( currentScreen != null && currentScreen.getName().equals( screen.getName() ) ) {
-            log.debug( "  Requested screen {} is already active.", screen.getName() ) ;
-            return ;
-        }
-
-        SwingUtilities.invokeLater( () -> {
-            if( currentScreen != null ) {
-                currentScreen.beforeDeactivation();
-                contentPane.remove( currentScreen );
-            }
-                
-            currentScreen = screen ;
-            currentScreen.beforeActivation() ;
-    
-            contentPane.add( currentScreen, BorderLayout.CENTER ) ;
-            contentPane.revalidate() ;
-            contentPane.repaint() ;
-        } ) ;
-    }
 }

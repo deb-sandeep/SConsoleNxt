@@ -21,8 +21,7 @@ public class NVPManager {
     public static class NVPPersistCallback {
         @PostUpdate
         public void postNVPSave( NVPConfigDAO nvpConfigDAO ) {
-            SConsole.getAppCtx()
-                    .getBean( NVPManager.class )
+            SConsole.getBean( NVPManager.class )
                     .notifyConfigChangeListeners( nvpConfigDAO ) ;
         }
     }

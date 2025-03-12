@@ -3,9 +3,10 @@ package com.sandy.sconsole;
 import com.sandy.sconsole.core.SConsoleConfig;
 import com.sandy.sconsole.core.clock.SConsoleClock;
 import com.sandy.sconsole.core.nvpconfig.annotation.NVPConfigAnnotationProcessor;
+import com.sandy.sconsole.core.ui.SConsoleFrame;
+import com.sandy.sconsole.core.ui.screen.Screen;
+import com.sandy.sconsole.core.ui.screen.ScreenManager;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
-import com.sandy.sconsole.ui.SConsoleFrame;
-import com.sandy.sconsole.ui.screen.ScreenManager;
 import com.sandy.sconsole.dao.quote.QuoteManager;
 import com.sandy.sconsole.ui.screen.clock.ClockScreen;
 import lombok.Getter;
@@ -35,10 +36,10 @@ public class SConsole
         return APP;
     }
 
-    public static ApplicationContext getAppCtx() {
-        return APP_CTX ;
+    public static <T> T getBean( Class<T> requiredType ) {
+        return APP_CTX.getBean( requiredType ) ;
     }
-
+    
     // ---------------- Instance methods start ---------------------------------
     
     @Autowired private SConsoleClock  clock ;
@@ -49,8 +50,6 @@ public class SConsole
     
     @Autowired @Getter private SConsoleConfig config ;
     @Autowired @Getter private UITheme uiTheme ;
-    
-    @Autowired private ClockScreen clockScreen ;
     
     public SConsole() {
         APP = this;
@@ -85,7 +84,17 @@ public class SConsole
     }
     
     private void initializeScreenManager() {
-        screenManager.registerScreen( clockScreen ) ;
+        // 1. Get screens from application context and configure them
+        Screen clockScreen = getBean( ClockScreen.class ).withPriority( 0 ) ;
+        
+        // 2. Register the screens. The screen manager calls initialize on screens
+        screenManager.registerScreen( clockScreen, 0 ) ;
+        
+        // 3. Set the day and night root screens
+        screenManager.setDayRootScreen( clockScreen.getName() ) ;
+        
+        // 4. Initialize the screen manager
+        screenManager.init() ;
     }
     
     private void invokeFinalizers() {
@@ -105,7 +114,7 @@ public class SConsole
                          ) ;
 
         log.debug( "Starting SConsole.." ) ;
-        SConsole app = SConsole.getAppCtx().getBean( SConsole.class ) ;
+        SConsole app = getBean( SConsole.class ) ;
         try {
             app.initialize() ;
         }

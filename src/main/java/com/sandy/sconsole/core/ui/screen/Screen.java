@@ -8,11 +8,31 @@ import lombok.Setter;
 @Setter
 @Getter
 public abstract class Screen extends AbstractPanel {
+    
+    private static final int DEF_EPHEMERAL_LIFE_SPAN = 60 ; // In seconds
 
     private String name ;
+    private int priority ;
+    private boolean ephemeral = false ;
+    private int ephemeralLifeSpan = -1 ;
     
     protected Screen( String name ) {
         this.name = name ;
+    }
+    
+    public Screen withPriority( int priority ) {
+        this.priority = priority ;
+        return this ;
+    }
+    
+    public Screen asEphemeral() {
+        return withLifeSpan( DEF_EPHEMERAL_LIFE_SPAN ) ;
+    }
+    
+    public Screen withLifeSpan( int lifeSpan ) {
+        this.ephemeral = true ;
+        this.ephemeralLifeSpan = lifeSpan ;
+        return this ;
     }
 
     /**
