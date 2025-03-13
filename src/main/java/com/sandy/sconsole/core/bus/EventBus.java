@@ -1,23 +1,16 @@
 package com.sandy.sconsole.core.bus;
 
+import org.springframework.stereotype.Component;
+
 import java.util.*;
 import java.util.Map.Entry;
 
-/**
- * This class can register multiple subscribers and dispatch events to the
- * registered subscribers in a synchronous or asynchronous fashion based on the
- * registration preferences.
- * <p>
- * Note that this class is intentionally not made a singleton. It is up to the
- * using application to scope the instance(s) as appropriate. 
- *
- * @author Sandeep Deb [deb.sandeep@gmail.com]
- */
+@Component
 public class EventBus {
 
     public static final int ALL_EVENTS = 0xCAFEBABE ;
     
-    private static class EventRange {
+    public static class EventRange {
         
         private final int lowerBoundEventId ;
         private final int upperBoundEventId ;

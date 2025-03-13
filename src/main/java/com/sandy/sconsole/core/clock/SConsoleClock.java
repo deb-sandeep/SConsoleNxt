@@ -129,7 +129,7 @@ public class SConsoleClock {
 
     public void removeTickListener( @NonNull ClockTickListener l ) {
         synchronized( lock ) {
-            Set<TimeUnit> keys = tickListeners.keySet() ;
+            TimeUnit[] keys = tickListeners.keySet().toArray( new TimeUnit[0] ) ;
             for( TimeUnit tu : keys ) {
                 tickListeners.remove( tu, l ) ;
             }
