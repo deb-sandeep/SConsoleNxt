@@ -12,6 +12,10 @@ public class StringTile extends Tile {
     @Getter @Setter private String content ;
 
     private JLabel textLabel = null ;
+    
+    public StringTile() {
+        this( 20 ) ;
+    }
 
     public StringTile( int fontSize ) {
         this( Font.PLAIN, fontSize, JLabel.CENTER, JLabel.CENTER, false ) ;

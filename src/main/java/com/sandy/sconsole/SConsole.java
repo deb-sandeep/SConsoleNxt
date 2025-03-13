@@ -9,6 +9,7 @@ import com.sandy.sconsole.core.ui.screen.ScreenManager;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
 import com.sandy.sconsole.dao.quote.QuoteManager;
 import com.sandy.sconsole.ui.screen.clock.ClockScreen;
+import com.sandy.sconsole.ui.screen.dashboard.DashboardScreen;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -85,13 +86,26 @@ public class SConsole
     
     private void initializeScreenManager() {
         // 1. Get screens from application context and configure them
-        Screen clockScreen = getBean( ClockScreen.class ).withPriority( 0 ) ;
+        Screen clockScreen     = getBean( ClockScreen.class ) ;
+        Screen dashboardScreen = getBean( DashboardScreen.class ) ;
         
         // 2. Register the screens. The screen manager calls initialize on screens
-        screenManager.registerScreen( clockScreen, 0 ) ;
+        screenManager.registerScreen( clockScreen ) ;
+        screenManager.registerScreen( dashboardScreen ) ;
         
         // 3. Set the day and night root screens
-        screenManager.setDayRootScreen( clockScreen.getName() ) ;
+        screenManager.setDayRootScreen( dashboardScreen.getId() ) ;
+        screenManager.setNightRootScreen( clockScreen.getId() ) ;
+        
+        // 4. Add screen transitions
+        screenManager.addScreenTransitions( clockScreen,
+                dashboardScreen.getId(),
+                "NEW_SESSION"
+        ) ;
+        screenManager.addScreenTransitions( dashboardScreen,
+                clockScreen.getId(),
+                "NEW_SESSION"
+        ) ;
         
         // 4. Initialize the screen manager
         screenManager.init() ;

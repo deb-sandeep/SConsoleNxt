@@ -1,9 +1,12 @@
 package com.sandy.sconsole.core.ui;
 
+import com.sandy.sconsole.SConsole;
 import com.sandy.sconsole.core.SConsoleConfig;
 import com.sandy.sconsole.core.ui.screen.Screen;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
+import com.sandy.sconsole.endpoints.websockets.controlscreen.AppRemoteWSController;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -21,7 +24,7 @@ public class SConsoleFrame extends JFrame {
     
     @Autowired private SConsoleConfig config ;
     @Autowired private UITheme        theme ;
-
+    
     @Getter private Screen currentScreen = null ;
 
     public SConsoleFrame() {
@@ -39,14 +42,7 @@ public class SConsoleFrame extends JFrame {
         }
     }
     
-    public void setScreen( Screen screen ) {
-        
-        if( screen == null ) return ;
-        
-        if( currentScreen != null && currentScreen.getName().equals( screen.getName() ) ) {
-            log.debug( "  Requested screen {} is already active.", screen.getName() ) ;
-            return ;
-        }
+    public void setScreen( @NonNull Screen screen ) {
         
         SwingUtilities.invokeLater( () -> {
             if( currentScreen != null ) {
@@ -60,6 +56,11 @@ public class SConsoleFrame extends JFrame {
             contentPane.add( currentScreen, BorderLayout.CENTER ) ;
             contentPane.revalidate() ;
             contentPane.repaint() ;
+            
+            // Send a notification to any browsers connected to the server
+            // to change their remote control screen
+            AppRemoteWSController webSocket = SConsole.getBean( AppRemoteWSController.class ) ;
+            webSocket.sendPeerScreenDisplayMsg() ;
         } ) ;
     }
 

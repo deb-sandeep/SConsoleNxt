@@ -11,13 +11,16 @@ public abstract class Screen extends AbstractPanel {
     
     private static final int DEF_EPHEMERAL_LIFE_SPAN = 60 ; // In seconds
 
-    private String name ;
-    private int priority ;
+    private String id ;
+    private String screenName;
+    private int    priority = 0 ;
     private boolean ephemeral = false ;
     private int ephemeralLifeSpan = -1 ;
     
-    protected Screen( String name ) {
-        this.name = name ;
+    protected Screen( String id, String screenName ) {
+        this.id = id ;
+        this.screenName = screenName;
+        this.withLifeSpan( DEF_EPHEMERAL_LIFE_SPAN ) ;
     }
     
     public Screen withPriority( int priority ) {
@@ -25,8 +28,10 @@ public abstract class Screen extends AbstractPanel {
         return this ;
     }
     
-    public Screen asEphemeral() {
-        return withLifeSpan( DEF_EPHEMERAL_LIFE_SPAN ) ;
+    public Screen asPerpetual() {
+        this.ephemeral = false ;
+        this.ephemeralLifeSpan = -1 ;
+        return this ;
     }
     
     public Screen withLifeSpan( int lifeSpan ) {

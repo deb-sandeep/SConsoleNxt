@@ -1,5 +1,8 @@
 package com.sandy.sconsole.core.ui.screen;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
+import com.sandy.sconsole.SConsole;
 import com.sandy.sconsole.core.clock.ClockTickListener;
 import com.sandy.sconsole.core.clock.SConsoleClock;
 import com.sandy.sconsole.core.nvpconfig.NVPManager;
@@ -7,15 +10,15 @@ import com.sandy.sconsole.core.nvpconfig.annotation.NVPConfig;
 import com.sandy.sconsole.core.nvpconfig.annotation.NVPConfigChangeListener;
 import com.sandy.sconsole.core.nvpconfig.annotation.NVPConfigGroup;
 import com.sandy.sconsole.core.ui.SConsoleFrame;
+import com.sandy.sconsole.endpoints.websockets.controlscreen.AppRemoteWSController;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -33,16 +36,16 @@ public class ScreenManager extends Thread implements ClockTickListener {
     @Autowired private SConsoleClock clock ;
     @Autowired private NVPManager nvpManager ;
     @Autowired private SConsoleFrame mainFrame ;
+    private AppRemoteWSController wsController ;
     
     @NVPConfig private String endOfDay ;
     @NVPConfig private String startOfDay ;
     
     private final Map<String, Screen> screenMap = new HashMap<>() ;
-    private final Map<String, Integer> screenPriority = new HashMap<>() ;
     
-    private Screen currentScreen ;
+    @Getter private Screen currentScreen ;
+    
     private Screen currentRootScreen ;
-    
     private Screen dayRootScreen ;
     private Screen nightRootScreen ;
     
@@ -50,6 +53,9 @@ public class ScreenManager extends Thread implements ClockTickListener {
     private long endOfDaySecs ;
     
     private final LinkedBlockingQueue<ScreenCmd> cmdQueue = new LinkedBlockingQueue<>() ;
+    private final Multimap<String, String> screenTransitions = HashMultimap.create() ;
+    
+    private int ephemeralLifeSpanLeft = -1 ;
     
     public ScreenManager() {
         super.setDaemon( true ) ;
@@ -57,11 +63,10 @@ public class ScreenManager extends Thread implements ClockTickListener {
     
     // ----------------- API methods -------------------------------------------
     // ................. Initialization methods ................................
-    public void registerScreen( Screen screen, int priority ) {
+    public void registerScreen( Screen screen ) {
         
         screen.initialize() ;
-        screenMap.put( screen.getName(), screen ) ;
-        screenPriority.put( screen.getName(), priority ) ;
+        screenMap.put( screen.getId(), screen ) ;
         
         // Convenience logic to treat the first and the second registrations
         // as the root screens for night and day respectively.
@@ -74,17 +79,27 @@ public class ScreenManager extends Thread implements ClockTickListener {
         }
     }
     
-    public void setDayRootScreen( String dayRootScreenName ) {
-        dayRootScreen = screenMap.get( dayRootScreenName ) ;
+    public void setDayRootScreen( String screenId ) {
+        dayRootScreen = screenMap.get( screenId ) ;
     }
     
-    public void setNightRootScreen( String nightRootScreenName ) {
-        nightRootScreen = screenMap.get( nightRootScreenName ) ;
+    public void setNightRootScreen( String screenId ) {
+        nightRootScreen = screenMap.get( screenId ) ;
+    }
+    
+    public void addScreenTransitions( Screen sourceScreen,
+                                      String targetScreenId, String ...targetScreenIds ) {
+        
+        screenTransitions.put( sourceScreen.getId(), targetScreenId ) ;
+        Arrays.stream( targetScreenIds )
+              .iterator()
+              .forEachRemaining( tgt -> screenTransitions.put( sourceScreen.getId(), tgt ) ) ;
     }
     
     // Call this method after all the screens have been registered and
     // day/night root screens have been set.
     public void init() {
+        wsController = SConsole.getBean( AppRemoteWSController.class ) ;
         clock.addTickListener( this, TimeUnit.SECONDS ) ;
         loadConfig() ;
         super.start() ;
@@ -92,6 +107,15 @@ public class ScreenManager extends Thread implements ClockTickListener {
     
     public void execute( ScreenCmd cmd ) {
         this.cmdQueue.add( cmd ) ;
+    }
+    
+    // -------------------- Public external methods ----------------------------
+    public Collection<String> getScreenTransitions( String screenId ) {
+        return screenTransitions.get( screenId ) ;
+    }
+    
+    public void scheduleScreenChange( String screenId ) {
+        execute( CHANGE_SCREEN_CMD( screenId ) ) ;
     }
     
     // -------------------- Internal methods -----------------------------------
@@ -141,13 +165,24 @@ public class ScreenManager extends Thread implements ClockTickListener {
         
         if( currentRootScreen == null || newRootScreen != currentRootScreen ) {
             currentRootScreen = newRootScreen ;
-            execute( CHANGE_SCREEN_CMD( currentRootScreen.getName() ) );
+            scheduleScreenChange( currentRootScreen.getId() ) ;
         }
     }
     
     @Override
     public void clockTick( Calendar calendar ) { // Ticks at second interval
         refreshRootScreenIfApplicable() ;
+        updateScreenLongevity() ;
+    }
+    
+    private void updateScreenLongevity() {
+        if( currentScreen.isEphemeral() && ephemeralLifeSpanLeft > 0 ) {
+            ephemeralLifeSpanLeft-- ;
+            wsController.sendScreenTimeLeft( ephemeralLifeSpanLeft ) ;
+            if( ephemeralLifeSpanLeft == 0 ) {
+                scheduleScreenChange( currentRootScreen.getId() ) ;
+            }
+        }
     }
     
     public void run() {
@@ -170,20 +205,23 @@ public class ScreenManager extends Thread implements ClockTickListener {
         
         Screen screen = screenMap.get( cmd.getNewScreenName() ) ;
         if( currentScreen == null ) {
-            currentScreen = screen ;
-            mainFrame.setScreen( screen ) ;
+            setCurrentScreen( screen ) ;
         }
         else {
             if( currentScreen != screen &&
-                ( getScreenPriority( currentScreen ) <= getScreenPriority( screen ) ) ) {
-                currentScreen = screen ;
-                mainFrame.setScreen( screen ) ;
+                ( screen.getPriority() >= currentScreen.getPriority() ) ) {
+                setCurrentScreen( screen ) ;
             }
         }
     }
     
-    private int getScreenPriority( Screen screen ) {
-        return screenPriority.get( screen.getName() ) ;
+    private void setCurrentScreen( Screen screen ) {
+        currentScreen = screen ;
+        mainFrame.setScreen( screen ) ;
+        
+        if( currentScreen != currentRootScreen && currentScreen.isEphemeral() ) {
+            ephemeralLifeSpanLeft = currentScreen.getEphemeralLifeSpan() ;
+        }
     }
     
     private long secondsSinceStartOfDay( String dateStr ) throws ParseException {

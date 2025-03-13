@@ -15,6 +15,8 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class ClockScreen extends Screen implements ClockTickListener {
     
+    public static final String ID = "CLOCK_SCREEN" ;
+    
     @Autowired private SConsoleClock clock ;
     @Autowired private UITheme theme ;
 
@@ -22,7 +24,7 @@ public class ClockScreen extends Screen implements ClockTickListener {
     private DateTile dateTile ;
     
     public ClockScreen() {
-        super( "Clock Screen" ) ;
+        super( ID, "Clock Screen" ) ;
     }
 
     @Override
