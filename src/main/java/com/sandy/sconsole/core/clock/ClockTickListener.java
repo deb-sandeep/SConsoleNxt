@@ -4,7 +4,13 @@ import java.util.Calendar;
 
 public interface ClockTickListener {
 
-    void clockTick( Calendar calendar ) ;
+    default void dayTicked( Calendar calendar ) {}
+    
+    default void hourTicked( Calendar calendar ) {}
+    
+    default void minuteTicked( Calendar calendar ) {}
+    
+    default void secondTicked( Calendar calendar ) {}
 
     default boolean isAsync() {
         return false ;

@@ -36,6 +36,8 @@ public class ScreenManager extends Thread implements ClockTickListener {
     @Autowired private SConsoleClock clock ;
     @Autowired private NVPManager nvpManager ;
     @Autowired private SConsoleFrame mainFrame ;
+    
+    // Can't autowire this, else it will cause a cyclic dependency :)
     private AppRemoteWSController wsController ;
     
     @NVPConfig private String endOfDay ;
@@ -170,7 +172,7 @@ public class ScreenManager extends Thread implements ClockTickListener {
     }
     
     @Override
-    public void clockTick( Calendar calendar ) { // Ticks at second interval
+    public void secondTicked( Calendar calendar ) { // Ticks at second interval
         refreshRootScreenIfApplicable() ;
         updateScreenLongevity() ;
     }
@@ -222,6 +224,10 @@ public class ScreenManager extends Thread implements ClockTickListener {
         if( currentScreen != currentRootScreen && currentScreen.isEphemeral() ) {
             ephemeralLifeSpanLeft = currentScreen.getEphemeralLifeSpan() ;
         }
+        else {
+            ephemeralLifeSpanLeft = 0 ;
+        }
+        wsController.sendScreenTimeLeft( ephemeralLifeSpanLeft ) ;
     }
     
     private long secondsSinceStartOfDay( String dateStr ) throws ParseException {

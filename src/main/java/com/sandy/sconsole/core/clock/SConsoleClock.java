@@ -1,8 +1,11 @@
 package com.sandy.sconsole.core.clock;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.SetMultimap;
 import com.sandy.sconsole.core.log.LogIndenter;
 import it.sauronsoftware.cron4j.Scheduler;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.jfree.data.time.Day;
@@ -36,8 +39,8 @@ public class SConsoleClock {
 
     @Setter private CurrentTimeProvider currentTimeProvider = new CurrentTimeProvider() ;
 
-    private final Map<TimeUnit, List<ClockTickListener>> tickListeners = new HashMap<>() ;
-    private final Set<ClockTickListener> registeredListeners = new HashSet<>() ;
+    private final SetMultimap<TimeUnit, ClockTickListener> tickListeners = HashMultimap.create() ;
+    
     private final Scheduler scheduler = new Scheduler() ;
 
     public void initialize() {
@@ -97,9 +100,17 @@ public class SConsoleClock {
             scheduler.stop() ;
         }
     }
+    
+    public void addTickListener( ClockTickListener tickListener, TimeUnit timeUnit, TimeUnit ...additionalTimeUnits ) {
+        synchronized ( lock ) {
+            addTickListenerForSingleTimeUnit( tickListener, timeUnit ) ;
+            for( TimeUnit tu : additionalTimeUnits ) {
+                addTickListenerForSingleTimeUnit( tickListener, tu ) ;
+            }
+        }
+    }
 
-    public void addTickListener( ClockTickListener l, TimeUnit unit ) {
-
+    public void addTickListenerForSingleTimeUnit( ClockTickListener l, TimeUnit unit ) {
         if( !( unit == TimeUnit.SECONDS ||
                unit == TimeUnit.MINUTES ||
                unit == TimeUnit.DAYS ||
@@ -109,27 +120,25 @@ public class SConsoleClock {
         }
 
         synchronized( lock ) {
-            if( registeredListeners.contains( l ) ) {
+            if( tickListeners.get( unit ).contains( l ) ) {
                 throw new IllegalArgumentException( "ClockTickListener is already registered." ) ;
             }
-
-            List<ClockTickListener> listeners ;
-            listeners = tickListeners.computeIfAbsent( unit, k -> new ArrayList<>() ) ;
-            listeners.add( l ) ;
-            registeredListeners.add( l ) ;
+            tickListeners.put( unit, l ) ;
         }
     }
 
-    public void removeTickListener( ClockTickListener l ) {
+    public void removeTickListener( @NonNull ClockTickListener l ) {
         synchronized( lock ) {
-            if( l != null && registeredListeners.contains( l ) ) {
-                tickListeners.values().forEach( listeners -> {
-                    if( listeners.contains( l ) ) {
-                        listeners.remove( l ) ;
-                        registeredListeners.remove( l ) ;
-                    }
-                } ) ;
+            Set<TimeUnit> keys = tickListeners.keySet() ;
+            for( TimeUnit tu : keys ) {
+                tickListeners.remove( tu, l ) ;
             }
+        }
+    }
+    
+    public void removeTickListener( TimeUnit unit, @NonNull ClockTickListener l ) {
+        synchronized( lock ) {
+            tickListeners.remove( unit, l ) ;
         }
     }
 
@@ -151,19 +160,19 @@ public class SConsoleClock {
 
     private void notifyTickListeners( TimeUnit timeUnit, Calendar now ) {
 
-        List<ClockTickListener> listeners = tickListeners.get( timeUnit ) ;
-        if( listeners != null ) {
+        synchronized( lock ) {
+            Set<ClockTickListener> listeners = tickListeners.get( timeUnit ) ;
+            
             // Do not replace with enhanced for loop or iterator. The
             // listener list can be modified during the notification cycle.
-            for( int i=0; i<listeners.size(); i++ ) {
-                ClockTickListener l = listeners.get( i ) ;
+            listeners.iterator().forEachRemaining( listener -> {
                 try {
-                    if( l.isAsync() ) {
+                    if( listener.isAsync() ) {
                         Map<String, String> mdcCtxMap = MDC.getCopyOfContextMap() ;
                         new Thread( () -> {
                             try {
                                 MDC.setContextMap( mdcCtxMap ) ;
-                                l.clockTick( now ) ;
+                                callTickNotificationMethod( timeUnit, now, listener ) ;
                             }
                             catch( Exception e ) {
                                 log.error( "Exception in processing async clock tick.", e ) ;
@@ -171,13 +180,23 @@ public class SConsoleClock {
                         }).start() ;
                     }
                     else {
-                        l.clockTick( now ) ;
+                        callTickNotificationMethod( timeUnit, now, listener ) ;
                     }
                 }
                 catch( Exception e ) {
                     log.error( "Exception in processing clock tick.", e ) ;
                 }
-            }
+            } ) ;
+        }
+    }
+    
+    private void callTickNotificationMethod( TimeUnit timeUnit, Calendar now,
+                                             ClockTickListener tickListener ) {
+        switch( timeUnit ) {
+            case DAYS -> tickListener.dayTicked( now ) ;
+            case HOURS -> tickListener.hourTicked( now ) ;
+            case MINUTES -> tickListener.minuteTicked( now ) ;
+            case SECONDS -> tickListener.secondTicked( now ) ;
         }
     }
 

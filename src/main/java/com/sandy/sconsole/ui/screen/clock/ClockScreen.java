@@ -51,7 +51,7 @@ public class ClockScreen extends Screen implements ClockTickListener {
     }
 
     @Override
-    public void clockTick( Calendar calendar ) {
+    public void secondTicked( Calendar calendar ) {
         timeTile.updateDisplay( calendar ) ;
         dateTile.updateDisplay( calendar ) ;
     }
