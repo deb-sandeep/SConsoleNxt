@@ -46,4 +46,10 @@ public abstract class Tile extends AbstractPanel {
         label.setOpaque( true ) ;
         return label ;
     }
+    
+    /** This method is called before a screen is made visible. */
+    public void beforeActivation() {}
+    
+    /** This method is called before a screen is removed from display. */
+    public void beforeDeactivation() {}
 }

@@ -3,6 +3,7 @@ package com.sandy.sconsole.core.ui;
 import com.sandy.sconsole.SConsole;
 import com.sandy.sconsole.core.SConsoleConfig;
 import com.sandy.sconsole.core.ui.screen.Screen;
+import com.sandy.sconsole.core.ui.screen.Tile;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
 import com.sandy.sconsole.endpoints.websockets.controlscreen.AppRemoteWSController;
 import lombok.Getter;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 import java.awt.*;
+import java.lang.reflect.Field;
 
 import static com.sandy.sconsole.core.ui.uiutil.SwingUtils.hideCursor;
 
@@ -46,12 +48,12 @@ public class SConsoleFrame extends JFrame {
         
         SwingUtilities.invokeLater( () -> {
             if( currentScreen != null ) {
-                currentScreen.beforeDeactivation();
+                callScreenLifecycleMethod( currentScreen, false ) ;
                 contentPane.remove( currentScreen );
             }
             
             currentScreen = screen ;
-            currentScreen.beforeActivation() ;
+            callScreenLifecycleMethod( currentScreen, true ) ;
             
             contentPane.add( currentScreen, BorderLayout.CENTER ) ;
             contentPane.revalidate() ;
@@ -93,4 +95,44 @@ public class SConsoleFrame extends JFrame {
         this.setBounds( 0,0, 1920, 1080 ) ;
     }
     
+    private void callScreenLifecycleMethod( Screen screen, boolean activate ) {
+        
+        try {
+            Field[] fields = screen.getClass().getDeclaredFields() ;
+            for( Field field : fields ) {
+                if( isTile( field.getType() ) ) {
+                    field.setAccessible( true ) ;
+                    Tile tile = ( Tile )field.get( screen ) ;
+                    
+                    if( activate ) {
+                        tile.beforeActivation() ;
+                    }
+                    else {
+                        tile.beforeDeactivation() ;
+                    }
+                }
+            }
+            
+            if( activate ) {
+                screen.beforeActivation() ;
+            }
+            else {
+                screen.beforeDeactivation() ;
+            }
+        }
+        catch( IllegalAccessException e ) {
+            log.error( "Error calling screen lifecycle method", e ) ;
+            throw new RuntimeException( e );
+        }
+    }
+    
+    private boolean isTile( Class<?> fieldClass ) {
+        if( fieldClass == null || fieldClass.equals( Object.class ) ) {
+            return false ;
+        }
+        else if( fieldClass.equals( Tile.class ) ) {
+            return true ;
+        }
+        return isTile( fieldClass.getSuperclass() ) ;
+    }
 }

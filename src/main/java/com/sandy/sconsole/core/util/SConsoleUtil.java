@@ -1,6 +1,6 @@
 package com.sandy.sconsole.core.util;
 
-import com.sandy.sconsole.SConsole ;
+import com.sandy.sconsole.SConsole;
 
 public class SConsoleUtil {
     
@@ -16,7 +16,7 @@ public class SConsoleUtil {
         return String.format( "%02d:%02d", minutes, secs ) ;
     }
 
-    public static boolean isOperatingOnPiMon() throws Exception {
+    public static boolean isOperatingOnPiMon() {
         return SConsole.getApp()
                        .getConfig()
                        .getEnvType()
