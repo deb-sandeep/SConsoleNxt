@@ -8,6 +8,16 @@ import javax.swing.*;
 import java.awt.*;
 
 public abstract class Tile extends AbstractPanel {
+    
+    public static boolean isTile( Class<?> fieldClass ) {
+        if( fieldClass == null || fieldClass.equals( Object.class ) ) {
+            return false ;
+        }
+        else if( fieldClass.equals( Tile.class ) ) {
+            return true ;
+        }
+        return isTile( fieldClass.getSuperclass() ) ;
+    }
 
     protected UITheme theme ;
     
@@ -16,7 +26,7 @@ public abstract class Tile extends AbstractPanel {
     }
 
     protected Tile( boolean isBordered ) {
-        this( false, -1, -1 ) ;
+        this( isBordered, -1, -1 ) ;
     }
     
     protected Tile( boolean isBordered, int numRows, int numCols ) {
@@ -32,6 +42,7 @@ public abstract class Tile extends AbstractPanel {
         else {
             super.setLayout( new BorderLayout() ) ;
         }
+        
         if( isBordered ) {
             super.setBorder( theme.getTileBorder() ) ;
         }
@@ -46,6 +57,9 @@ public abstract class Tile extends AbstractPanel {
         label.setOpaque( true ) ;
         return label ;
     }
+    
+    /** This method is called on the tile as a part of the parent screen initialization. */
+    public void initialize() {}
     
     /** This method is called before a screen is made visible. */
     public void beforeActivation() {}

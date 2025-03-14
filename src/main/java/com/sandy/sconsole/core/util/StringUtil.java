@@ -17,6 +17,14 @@ public final class StringUtil {
     public static String getHash( String input ) {
         return new String( Hex.encodeHex( DigestUtils.md5( input ) ) ) ;
     }
+    
+    public static String getElapsedTimeLabel( long seconds ) {
+        int secs    = (int)(seconds) % 60 ;
+        int minutes = (int)((seconds / 60) % 60) ;
+        int hours   = (int)(seconds / (60*60)) ;
+        
+        return String.format("%02d:%02d:%02d", hours, minutes, secs ) ;
+    }
 
     public static String enrichExample( String strToEnrich, String word ) {
 

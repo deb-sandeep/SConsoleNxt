@@ -16,6 +16,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.lang.reflect.Field;
 
+import static com.sandy.sconsole.core.ui.screen.Tile.isTile;
 import static com.sandy.sconsole.core.ui.uiutil.SwingUtils.hideCursor;
 
 @Slf4j
@@ -47,12 +48,15 @@ public class SConsoleFrame extends JFrame {
     public void setScreen( @NonNull Screen screen ) {
         
         SwingUtilities.invokeLater( () -> {
+            log.debug( "Setting screen to {}", screen.getScreenName() );
             if( currentScreen != null ) {
+                log.debug( "  Deactivating current screen. {}", currentScreen.getScreenName() ) ;
                 callScreenLifecycleMethod( currentScreen, false ) ;
                 contentPane.remove( currentScreen );
             }
             
             currentScreen = screen ;
+            log.debug( "  Activating new screen. {}", currentScreen.getScreenName() ) ;
             callScreenLifecycleMethod( currentScreen, true ) ;
             
             contentPane.add( currentScreen, BorderLayout.CENTER ) ;
@@ -101,22 +105,27 @@ public class SConsoleFrame extends JFrame {
             Field[] fields = screen.getClass().getDeclaredFields() ;
             for( Field field : fields ) {
                 if( isTile( field.getType() ) ) {
+                    log.debug( "    Found a tile. {}", field.getName() ) ;
                     field.setAccessible( true ) ;
                     Tile tile = ( Tile )field.get( screen ) ;
                     
                     if( activate ) {
+                        log.debug( "     Activating tile" ) ;
                         tile.beforeActivation() ;
                     }
                     else {
+                        log.debug( "     Deactivating tile" ) ;
                         tile.beforeDeactivation() ;
                     }
                 }
             }
             
             if( activate ) {
+                log.debug( "     Activating screen" ) ;
                 screen.beforeActivation() ;
             }
             else {
+                log.debug( "     Deactivating screen" ) ;
                 screen.beforeDeactivation() ;
             }
         }
@@ -124,15 +133,5 @@ public class SConsoleFrame extends JFrame {
             log.error( "Error calling screen lifecycle method", e ) ;
             throw new RuntimeException( e );
         }
-    }
-    
-    private boolean isTile( Class<?> fieldClass ) {
-        if( fieldClass == null || fieldClass.equals( Object.class ) ) {
-            return false ;
-        }
-        else if( fieldClass.equals( Tile.class ) ) {
-            return true ;
-        }
-        return isTile( fieldClass.getSuperclass() ) ;
     }
 }

@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -23,6 +24,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import static com.sandy.sconsole.core.ui.screen.ScreenCmd.CHANGE_SCREEN_CMD;
+import static com.sandy.sconsole.core.ui.screen.Tile.isTile;
 
 @Slf4j
 @Component
@@ -67,7 +69,7 @@ public class ScreenManager extends Thread implements ClockTickListener {
     // ................. Initialization methods ................................
     public void registerScreen( Screen screen ) {
         
-        screen.initialize() ;
+        initializeScreen( screen ) ;
         screenMap.put( screen.getId(), screen ) ;
         
         // Convenience logic to treat the first and the second registrations
@@ -135,7 +137,6 @@ public class ScreenManager extends Thread implements ClockTickListener {
     
     @NVPConfigChangeListener
     public void refreshConfig() {
-        log.debug( "Screen Manager config change detected" ) ;
         parseConfigDates() ;
     }
     
@@ -228,6 +229,27 @@ public class ScreenManager extends Thread implements ClockTickListener {
             ephemeralLifeSpanLeft = 0 ;
         }
         wsController.sendScreenTimeLeft( ephemeralLifeSpanLeft ) ;
+    }
+    
+    private void initializeScreen( Screen screen ) {
+        
+        log.debug( "      Initializing screen {}", screen.getId() ) ;
+        try {
+            screen.initialize() ;
+            Field[] fields = screen.getClass().getDeclaredFields() ;
+            for( Field field : fields ) {
+                if( isTile( field.getType() ) ) {
+                    log.debug( "        Initializing tile {}", field.getName() ) ;
+                    field.setAccessible( true ) ;
+                    Tile tile = ( Tile )field.get( screen ) ;
+                    tile.initialize() ;
+                }
+            }
+        }
+        catch( IllegalAccessException e ) {
+            log.error( "Error calling screen lifecycle method", e ) ;
+            throw new RuntimeException( e );
+        }
     }
     
     private long secondsSinceStartOfDay( String dateStr ) throws ParseException {
