@@ -63,10 +63,12 @@ public class SConsoleFrame extends JFrame {
             contentPane.revalidate() ;
             contentPane.repaint() ;
             
+            log.debug( "Sending screen change message to any connected clients" ) ;
             // Send a notification to any browsers connected to the server
             // to change their remote control screen
             AppRemoteWSController webSocket = SConsole.getBean( AppRemoteWSController.class ) ;
             webSocket.sendPeerScreenDisplayMsg() ;
+            log.debug( "Setting screen completed" );
         } ) ;
     }
 

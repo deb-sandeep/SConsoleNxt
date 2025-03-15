@@ -24,11 +24,10 @@ public class DashboardScreen extends Screen {
     @Override
     public void initialize() {
         super.setUpBaseUI( theme ) ;
-        setUpUI( theme ) ;
+        setUpUI() ;
     }
     
-    private void setUpUI( UITheme theme ) {
-        
+    private void setUpUI() {
         super.addTile( dayGanttTile, 0, 0, 15, 0 ) ;
         super.addTile( dateTimeTile, 0, 1, 15, 2 ) ;
     }

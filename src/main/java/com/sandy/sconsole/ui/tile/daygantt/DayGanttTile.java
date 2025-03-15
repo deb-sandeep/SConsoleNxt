@@ -3,6 +3,8 @@ package com.sandy.sconsole.ui.tile.daygantt;
 import com.sandy.sconsole.core.bus.Event;
 import com.sandy.sconsole.core.bus.EventBus;
 import com.sandy.sconsole.core.bus.EventSubscriber;
+import com.sandy.sconsole.core.clock.ClockTickListener;
+import com.sandy.sconsole.core.clock.SConsoleClock;
 import com.sandy.sconsole.core.ui.screen.Tile;
 import com.sandy.sconsole.core.ui.uiutil.UIConstant;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
@@ -23,6 +25,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static com.sandy.sconsole.EventCatalog.*;
 import static com.sandy.sconsole.core.util.StringUtil.getElapsedTimeLabelHHmm;
@@ -31,7 +34,7 @@ import static com.sandy.sconsole.core.util.StringUtil.getElapsedTimeLabelHHmm;
 @Component
 @Scope( "prototype" )
 public class DayGanttTile extends Tile
-    implements EventSubscriber {
+    implements EventSubscriber, ClockTickListener {
     
     private static final Insets INSET = new Insets( 0, 0, 25, 0 ) ;
     private static final Font   TOTAL_TIME_FONT = UIConstant.BASE_FONT.deriveFont( 30F ) ;
@@ -42,17 +45,16 @@ public class DayGanttTile extends Tile
     
     @Autowired private UITheme theme ;
     @Autowired private EventBus eventBus ;
-    
+    @Autowired private SConsoleClock clock ;
     @Autowired private SessionRepo sessionRepo ;
     @Autowired private SessionPauseRepo sessionPauseRepo ;
-
     @Autowired private ConfiguredUIAttributes uiAttributes ;
     
-    private Dimension tileSize ;
-    private final Rectangle chartArea = new Rectangle() ;
+    private Dimension tileSize ; // Computed during each paint
+    private final Rectangle chartArea = new Rectangle() ; // Populated during each paint
     
-    private float numPixelsPerHour = 0 ;
-    private float numPixelsPerSecond = 0 ;
+    private float numPixelsPerHour = 0 ; // Computed during each paint
+    private float numPixelsPerSecond = 0 ; // Computed during each paint
     
     // Functional state. These need to be reset in initializeFunctionalState method
     private final Map<Integer, SessionDTO>      todaySessions  = new LinkedHashMap<>() ;
@@ -61,27 +63,59 @@ public class DayGanttTile extends Tile
     private Day today = new Day() ;
     private int totalTimeInSec = 0 ;
     
+    private static final int[] SUBSCRIBED_EVENTS = {
+            SESSION_STARTED,
+            PAUSE_STARTED,
+            SESSION_EXTENDED,
+            PAUSE_EXTENDED
+    } ;
+    
     public DayGanttTile() {
         setDoubleBuffered( true ) ;
         setPreferredSize( new Dimension( 10, 10 ) );
     }
     
     @Override
-    public void initialize() {
-        eventBus.addSubscriberForEventTypes( this, true,
-                SESSION_STARTED,
-                PAUSE_STARTED,
-                SESSION_EXTENDED,
-                PAUSE_EXTENDED ) ;
+    public void beforeActivation() {
+        clock.addTickListener( this, TimeUnit.DAYS ) ;
+        eventBus.addSubscriberForEventTypes( this, true, SUBSCRIBED_EVENTS) ;
         initializeFunctionalState() ;
     }
     
     @Override
+    public void beforeDeactivation() {
+        clock.removeTickListener( this ) ;
+        eventBus.removeSubscriber( this, SUBSCRIBED_EVENTS );
+    }
+    
+    @Override
+    public void dayTicked( Calendar calendar ) {
+        initializeFunctionalState() ;
+    }
+    
+    private void initializeFunctionalState() {
+        
+        // Clear any existing state
+        today = new Day() ;
+        todaySessions.clear() ;
+        todayPauses.clear() ;
+        totalTimeInSec = 0 ;
+        
+        // Load the existing sessions and pauses for today
+        sessionRepo.getTodaySessions()
+                .forEach( s -> updateSession( new SessionDTO( s ) ) ) ;
+        sessionPauseRepo.getTodayPauses()
+                .forEach( p -> updatePause( new SessionPauseDTO( p ) ) ) ;
+        
+        super.repaint() ;
+    }
+    
+    @Override
     public void paint( Graphics gOld ) {
+        
         super.paint( gOld ) ;
         Graphics2D g = ( Graphics2D )gOld ;
         
-        tileSize = getSize() ;
         initPaintingControlUnits() ;
         
         paintBackground( g ) ;
@@ -92,6 +126,7 @@ public class DayGanttTile extends Tile
     }
     
     private void initPaintingControlUnits() {
+        tileSize = getSize() ;
         
         chartArea.x = INSET.left ;
         chartArea.y = INSET.top ;
@@ -105,21 +140,6 @@ public class DayGanttTile extends Tile
     private void paintBackground( Graphics2D g ) {
         g.setColor( theme.getBackgroundColor() ) ;
         g.fillRect( 0, 0, tileSize.width, tileSize.height ) ;
-    }
-    
-    private void paintSessions( Graphics2D g ) {
-        todaySessions.values().forEach( session -> {
-            log.debug( "paintSessions: {}", session );
-            Color sessionColor = uiAttributes.getSyllabusColor( session.getSyllabusName() ) ;
-            paintArea( session.getStartTime(), session.getDuration(), g, sessionColor ) ;
-        } );
-    }
-    
-    private void paintPauses( Graphics2D g ) {
-        todayPauses.values().forEach( pause -> {
-            log.debug( "painPauses: {}", pause );
-            paintArea( pause.getStartTime(), pause.getDuration(), g, theme.getBackgroundColor() ) ;
-        } );
     }
     
     private void paintSwimlane( Graphics2D g ) {
@@ -140,6 +160,21 @@ public class DayGanttTile extends Tile
         }
     }
     
+    private void paintSessions( Graphics2D g ) {
+        todaySessions.values().forEach( session -> {
+            log.debug( "paintSessions: {}", session );
+            Color sessionColor = uiAttributes.getSyllabusColor( session.getSyllabusName() ) ;
+            paintArea( session.getStartTime(), session.getDuration(), g, sessionColor ) ;
+        } );
+    }
+    
+    private void paintPauses( Graphics2D g ) {
+        todayPauses.values().forEach( pause -> {
+            log.debug( "paintPauses: {}", pause );
+            paintArea( pause.getStartTime(), pause.getDuration(), g, Color.DARK_GRAY ) ;
+        } );
+    }
+    
     private void paintTotalTime( Graphics2D g ) {
         
         // These values are empirically calculated to show the total time
@@ -158,7 +193,7 @@ public class DayGanttTile extends Tile
                       area.y+(area.height/2)+(textHeight/2) - 7 ) ;
     }
     
-    private Rectangle paintArea( Date startTime, int durationSec, Graphics2D g, Color color ) {
+    private void paintArea( Date startTime, int durationSec, Graphics2D g, Color color ) {
         
         Calendar calendar = Calendar.getInstance() ;
         calendar.setTime( startTime ) ;
@@ -166,10 +201,12 @@ public class DayGanttTile extends Tile
         int minutes = calendar.get(Calendar.MINUTE) ;
         int seconds = calendar.get(Calendar.SECOND) ;
         
-        return paintArea( hours, minutes, seconds, durationSec, g, color ) ;
+        paintArea( hours, minutes, seconds, durationSec, g, color );
     }
     
-    private Rectangle paintArea( int startHr, int startMin, int startSec, int durationSec, Graphics2D g, Color color ) {
+    private Rectangle paintArea( int startHr, int startMin, int startSec, int durationSec,
+                                 Graphics2D g, Color color ) {
+        
         Color oldColor = g.getColor() ;
         Rectangle area = getPaintArea( startHr, startMin, startSec, durationSec ) ;
         g.setColor( color ) ;
@@ -194,25 +231,9 @@ public class DayGanttTile extends Tile
         return area ;
     }
     
-    private void initializeFunctionalState() {
-        
-        // Clear any existing state
-        today = new Day() ;
-        todaySessions.clear() ;
-        todayPauses.clear() ;
-        totalTimeInSec = 0 ;
-        
-        // Load the existing sessions and pauses for today
-        sessionRepo.getTodaySessions()
-                .forEach( session -> updateSession( new SessionDTO( session ) ) ) ;
-        sessionPauseRepo.getTodayPauses()
-                .forEach( pause -> updatePause( new SessionPauseDTO( pause ) ) ) ;
-        
-        super.repaint() ;
-    }
-
     @Override
     public void handleEvent( Event event ) {
+        
         switch( event.getEventType() ) {
             case SESSION_STARTED:
             case SESSION_EXTENDED:
