@@ -2,11 +2,13 @@ package com.sandy.sconsole.dao.session.dto;
 
 import com.sandy.sconsole.dao.session.SessionPause;
 import lombok.Data;
+import lombok.ToString;
 
 import java.io.Serializable;
 import java.util.Date;
 
 @Data
+@ToString
 public class SessionPauseDTO implements Serializable {
     
     private int  id;

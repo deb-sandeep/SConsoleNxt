@@ -31,6 +31,10 @@ public final class StringUtil {
         int minutes = (int)((seconds / 60) % 60) ;
         int hours   = (int)(seconds / (60*60)) ;
         
+        if( seconds > 30 ) {
+            minutes++ ;
+        }
+        
         return String.format("%02d:%02d", hours, minutes ) ;
     }
 

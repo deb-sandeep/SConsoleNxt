@@ -11,6 +11,7 @@ import com.sandy.sconsole.dao.session.dto.SessionDTO;
 import com.sandy.sconsole.dao.session.dto.SessionPauseDTO;
 import com.sandy.sconsole.dao.session.repo.SessionPauseRepo;
 import com.sandy.sconsole.dao.session.repo.SessionRepo;
+import com.sandy.sconsole.ui.ConfiguredUIAttributes;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.awt.*;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -30,19 +33,21 @@ import static com.sandy.sconsole.core.util.StringUtil.getElapsedTimeLabelHHmm;
 public class DayGanttTile extends Tile
     implements EventSubscriber {
     
-    private static final Insets INSET           = new Insets( 0, 0, 25, 0 ) ;
+    private static final Insets INSET = new Insets( 0, 0, 25, 0 ) ;
     private static final Font   TOTAL_TIME_FONT = UIConstant.BASE_FONT.deriveFont( 30F ) ;
     
-    // The expected minimum study hours per day. It total time is less than
+    // The expected minimum study hours per day. If total time is less than
     // this, time will show up in red, else green.
     private static final int MIN_TOTAL_TIME_SECONDS = 5*3600 ;
     
-    @Autowired private UITheme  theme ;
+    @Autowired private UITheme theme ;
     @Autowired private EventBus eventBus ;
     
-    @Autowired private SessionRepo      sessionRepo ;
+    @Autowired private SessionRepo sessionRepo ;
     @Autowired private SessionPauseRepo sessionPauseRepo ;
 
+    @Autowired private ConfiguredUIAttributes uiAttributes ;
+    
     private Dimension tileSize ;
     private final Rectangle chartArea = new Rectangle() ;
     
@@ -81,6 +86,8 @@ public class DayGanttTile extends Tile
         
         paintBackground( g ) ;
         paintSwimlane( g ) ;
+        paintSessions( g ) ;
+        paintPauses( g ) ;
         paintTotalTime( g ) ;
     }
     
@@ -98,6 +105,21 @@ public class DayGanttTile extends Tile
     private void paintBackground( Graphics2D g ) {
         g.setColor( theme.getBackgroundColor() ) ;
         g.fillRect( 0, 0, tileSize.width, tileSize.height ) ;
+    }
+    
+    private void paintSessions( Graphics2D g ) {
+        todaySessions.values().forEach( session -> {
+            log.debug( "paintSessions: {}", session );
+            Color sessionColor = uiAttributes.getSyllabusColor( session.getSyllabusName() ) ;
+            paintArea( session.getStartTime(), session.getDuration(), g, sessionColor ) ;
+        } );
+    }
+    
+    private void paintPauses( Graphics2D g ) {
+        todayPauses.values().forEach( pause -> {
+            log.debug( "painPauses: {}", pause );
+            paintArea( pause.getStartTime(), pause.getDuration(), g, theme.getBackgroundColor() ) ;
+        } );
     }
     
     private void paintSwimlane( Graphics2D g ) {
@@ -123,16 +145,8 @@ public class DayGanttTile extends Tile
         // These values are empirically calculated to show the total time
         // in the wee hours of the night where the probability of overlapping
         // a study session is negligible.
-        int startSec = 3600*2 + 10*60 ;
-        int duration = 3600*2 - 20*60 ;
+        Rectangle area = paintArea( 2, 10, 0, (3600*2 - 20*60), g, theme.getBackgroundColor() ) ;
         
-        int x1 = chartArea.x + (int)(startSec * numPixelsPerSecond) ;
-        int y1 = chartArea.y + 1 ;
-        int width = (int)(duration * numPixelsPerSecond) ;
-        int height = chartArea.height - 1 ;
-        
-        g.setColor( theme.getBackgroundColor() ) ;
-        g.fillRect( x1, y1, width, height ) ;
         g.setColor( totalTimeInSec >= MIN_TOTAL_TIME_SECONDS ? Color.GREEN : Color.RED ) ;
         g.setFont( TOTAL_TIME_FONT ) ;
         
@@ -140,8 +154,44 @@ public class DayGanttTile extends Tile
         int textHeight = metrics.getHeight() ;
         
         g.drawString( getElapsedTimeLabelHHmm( totalTimeInSec ),
-                      x1+10, 
-                      y1+(height/2)+(textHeight/2) - 7 ) ;
+                      area.x+10,
+                      area.y+(area.height/2)+(textHeight/2) - 7 ) ;
+    }
+    
+    private Rectangle paintArea( Date startTime, int durationSec, Graphics2D g, Color color ) {
+        
+        Calendar calendar = Calendar.getInstance() ;
+        calendar.setTime( startTime ) ;
+        int hours = calendar.get(Calendar.HOUR_OF_DAY) ;
+        int minutes = calendar.get(Calendar.MINUTE) ;
+        int seconds = calendar.get(Calendar.SECOND) ;
+        
+        return paintArea( hours, minutes, seconds, durationSec, g, color ) ;
+    }
+    
+    private Rectangle paintArea( int startHr, int startMin, int startSec, int durationSec, Graphics2D g, Color color ) {
+        Color oldColor = g.getColor() ;
+        Rectangle area = getPaintArea( startHr, startMin, startSec, durationSec ) ;
+        g.setColor( color ) ;
+        g.fillRect( area.x, area.y, area.width, area.height ) ;
+        g.setColor( oldColor ) ;
+        return area ;
+    }
+    
+    private Rectangle getPaintArea( int startHr, int startMin, int startSec, int durationSec ) {
+        
+        int start = startHr*3600 + startMin*60 + startSec ;
+
+        Rectangle area = new Rectangle() ;
+        area.x = chartArea.x + (int)(start * numPixelsPerSecond) ;
+        area.y = chartArea.y + 1 ;
+        area.width = (int)(durationSec * numPixelsPerSecond) ;
+        area.height = chartArea.height - 1 ;
+        
+        // If our chart area resolution is less than 1 pixel, we show a minimum of 1 pixel.
+        area.width = area.width == 0 ? 1 : area.width ;
+        
+        return area ;
     }
     
     private void initializeFunctionalState() {
