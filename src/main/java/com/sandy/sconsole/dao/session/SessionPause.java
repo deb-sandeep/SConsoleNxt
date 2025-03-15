@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.Instant;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -21,8 +21,8 @@ public class SessionPause {
     private Session session;
     
     @Column( name = "start_time", nullable = false )
-    private Instant startTime;
+    private Date startTime;
     
     @Column( name = "end_time", nullable = false )
-    private Instant endTime;
+    private Date endTime;
 }

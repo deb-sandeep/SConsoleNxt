@@ -2,7 +2,7 @@ package com.sandy.sconsole.endpoints.rest.session;
 
 import lombok.Data;
 
-import java.time.Instant;
+import java.util.Date;
 
 @Data
 public class ExtendSessionReq {
@@ -11,7 +11,7 @@ public class ExtendSessionReq {
     private int pauseId ;
     private int problemAttemptId ;
     
-    private Instant endTime ;
+    private Date endTime ;
     
     private int sessionEffectiveDuration ;
     private int problemAttemptEffectiveDuration ;

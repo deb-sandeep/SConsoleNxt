@@ -4,15 +4,15 @@ import com.sandy.sconsole.dao.session.ProblemAttempt;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.time.Instant;
+import java.util.Date;
 
 @Data
 public class ProblemAttemptDTO implements Serializable {
     private Integer id;
     private Integer sessionId;
     private Integer problemId;
-    private Instant startTime;
-    private Instant endTime;
+    private Date    startTime;
+    private Date    endTime;
     private Integer effectiveDuration;
     private String  prevState;
     private String  targetState;

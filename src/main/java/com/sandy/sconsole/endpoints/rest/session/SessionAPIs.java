@@ -1,14 +1,19 @@
 package com.sandy.sconsole.endpoints.rest.session;
 
 import com.sandy.sconsole.core.api.AR;
-import com.sandy.sconsole.dao.master.*;
+import com.sandy.sconsole.core.bus.EventBus;
+import com.sandy.sconsole.dao.master.SessionType;
+import com.sandy.sconsole.dao.master.TopicProblem;
+import com.sandy.sconsole.dao.master.repo.ProblemRepo;
+import com.sandy.sconsole.dao.master.repo.SessionTypeRepo;
+import com.sandy.sconsole.dao.master.repo.TopicProblemRepo;
+import com.sandy.sconsole.dao.master.repo.TopicRepo;
 import com.sandy.sconsole.dao.session.ProblemAttempt;
 import com.sandy.sconsole.dao.session.Session;
 import com.sandy.sconsole.dao.session.SessionPause;
 import com.sandy.sconsole.dao.session.dto.ProblemAttemptDTO;
 import com.sandy.sconsole.dao.session.dto.SessionDTO;
 import com.sandy.sconsole.dao.session.dto.SessionPauseDTO;
-import com.sandy.sconsole.dao.master.repo.*;
 import com.sandy.sconsole.dao.session.repo.ProblemAttemptRep;
 import com.sandy.sconsole.dao.session.repo.SessionPauseRepo;
 import com.sandy.sconsole.dao.session.repo.SessionRepo;
@@ -19,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static com.sandy.sconsole.EventCatalog.*;
 import static com.sandy.sconsole.core.api.AR.*;
 
 @Slf4j
@@ -34,6 +40,8 @@ public class SessionAPIs {
     @Autowired private ProblemRepo       problemRepo ;
     @Autowired private ProblemAttemptRep paRepo ;
     @Autowired private ProblemAttemptRep problemAttemptRep;
+    
+    @Autowired private EventBus eventBus ;
     
     @GetMapping( "/Types" )
     public ResponseEntity<AR<List<SessionType>>> getAllSessionTypes() {
@@ -58,6 +66,8 @@ public class SessionAPIs {
             
             Session savedDao = sessionRepo.save( dao ) ;
             
+            eventBus.publishEvent( SESSION_STARTED, new SessionDTO( savedDao ) ) ;
+            
             return success( savedDao.getId() ) ;
         }
         catch( Exception e ) {
@@ -77,7 +87,11 @@ public class SessionAPIs {
             pa.setPrevState( req.getPrevState() ) ;
             pa.setTargetState( req.getTargetState() ) ;
             
-            return success( paRepo.save( pa ).getId() ) ;
+            ProblemAttempt savedDao = paRepo.save( pa ) ;
+            
+            eventBus.publishEvent( PROBLEM_ATTEMPT_STARTED, new ProblemAttemptDTO( savedDao ) ) ;
+            
+            return success( savedDao.getId() ) ;
         }
         catch( Exception e ) {
             return systemError( e ) ;
@@ -89,7 +103,9 @@ public class SessionAPIs {
         try {
             ProblemAttempt pa = paRepo.findById( req.getId() ).get() ;
             pa.setTargetState( req.getTargetState() ) ;
-            paRepo.save( pa ) ;
+            ProblemAttempt savedDao = paRepo.save( pa ) ;
+            
+            eventBus.publishEvent( PROBLEM_ATTEMPT_ENDED, new ProblemAttemptDTO( savedDao ) ) ;
             
             return success() ;
         }
@@ -108,6 +124,8 @@ public class SessionAPIs {
             
             SessionPause savedDao = sessionPauseRepo.save( dao ) ;
             
+            eventBus.publishEvent( PAUSE_STARTED, new SessionPauseDTO( savedDao )  );
+            
             return success( savedDao.getId() ) ;
         }
         catch( Exception e ) {
@@ -122,19 +140,28 @@ public class SessionAPIs {
                 Session dao = sessionRepo.findById( req.getSessionId() ).get() ;
                 dao.setEndTime( req.getEndTime() ) ;
                 dao.setEffectiveDuration( req.getSessionEffectiveDuration() ) ;
-                sessionRepo.save( dao ) ;
+                
+                Session savedSessionDao = sessionRepo.save( dao ) ;
+                
+                eventBus.publishEvent( SESSION_EXTENDED, new SessionDTO( savedSessionDao ) ) ;
 
                 if( req.getPauseId() > 0 ) {
                     SessionPause pauseDao = sessionPauseRepo.findById( req.getPauseId() ).get() ;
                     pauseDao.setEndTime( req.getEndTime() ) ;
-                    sessionPauseRepo.save( pauseDao ) ;
+                
+                    SessionPause savedSPDao = sessionPauseRepo.save( pauseDao ) ;
+                    
+                    eventBus.publishEvent( PAUSE_EXTENDED, new SessionPauseDTO( savedSPDao )  );
                 }
                 
                 if( req.getProblemAttemptId() > 0 ) {
                     ProblemAttempt paDao = problemAttemptRep.findById( req.getProblemAttemptId() ).get() ;
                     paDao.setEndTime( req.getEndTime() ) ;
                     paDao.setEffectiveDuration( req.getProblemAttemptEffectiveDuration() ) ;
-                    problemAttemptRep.save( paDao ) ;
+                
+                    ProblemAttempt savedPADao = problemAttemptRep.save( paDao ) ;
+                    
+                    eventBus.publishEvent( PROBLEM_ATTEMPT_EXTENDED, new ProblemAttemptDTO( savedPADao ) ) ;
                 }
                 return success() ;
             }

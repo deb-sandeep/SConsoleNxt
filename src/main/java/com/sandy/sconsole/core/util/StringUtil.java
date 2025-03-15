@@ -18,12 +18,20 @@ public final class StringUtil {
         return new String( Hex.encodeHex( DigestUtils.md5( input ) ) ) ;
     }
     
-    public static String getElapsedTimeLabel( long seconds ) {
+    public static String getElapsedTimeLabelHHmmss( long seconds ) {
         int secs    = (int)(seconds) % 60 ;
         int minutes = (int)((seconds / 60) % 60) ;
         int hours   = (int)(seconds / (60*60)) ;
         
         return String.format("%02d:%02d:%02d", hours, minutes, secs ) ;
+    }
+
+    public static String getElapsedTimeLabelHHmm( long seconds ) {
+        int secs    = (int)(seconds) % 60 ;
+        int minutes = (int)((seconds / 60) % 60) ;
+        int hours   = (int)(seconds / (60*60)) ;
+        
+        return String.format("%02d:%02d", hours, minutes ) ;
     }
 
     public static String enrichExample( String strToEnrich, String word ) {

@@ -3,7 +3,6 @@ package com.sandy.sconsole.core.ui;
 import com.sandy.sconsole.SConsole;
 import com.sandy.sconsole.core.SConsoleConfig;
 import com.sandy.sconsole.core.ui.screen.Screen;
-import com.sandy.sconsole.core.ui.screen.Tile;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
 import com.sandy.sconsole.endpoints.websockets.controlscreen.AppRemoteWSController;
 import lombok.Getter;
@@ -14,9 +13,9 @@ import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 import java.awt.*;
-import java.lang.reflect.Field;
 
-import static com.sandy.sconsole.core.ui.screen.Tile.isTile;
+import static com.sandy.sconsole.core.ui.screen.Screen.LifecycleMethodType.BEFORE_ACTIVATION;
+import static com.sandy.sconsole.core.ui.screen.Screen.LifecycleMethodType.BEFORE_DEACTIVATION;
 import static com.sandy.sconsole.core.ui.uiutil.SwingUtils.hideCursor;
 
 @Slf4j
@@ -51,13 +50,14 @@ public class SConsoleFrame extends JFrame {
             log.debug( "Setting screen to {}", screen.getScreenName() );
             if( currentScreen != null ) {
                 log.debug( "  Deactivating current screen. {}", currentScreen.getScreenName() ) ;
-                callScreenLifecycleMethod( currentScreen, false ) ;
+                currentScreen.invokeLifecycleMethod( BEFORE_DEACTIVATION ) ;
                 contentPane.remove( currentScreen );
             }
             
             currentScreen = screen ;
+            
             log.debug( "  Activating new screen. {}", currentScreen.getScreenName() ) ;
-            callScreenLifecycleMethod( currentScreen, true ) ;
+            currentScreen.invokeLifecycleMethod( BEFORE_ACTIVATION ) ;
             
             contentPane.add( currentScreen, BorderLayout.CENTER ) ;
             contentPane.revalidate() ;
@@ -97,41 +97,5 @@ public class SConsoleFrame extends JFrame {
         contentPane.setLayout( new BorderLayout() ) ;
 
         this.setBounds( 0,0, 1920, 1080 ) ;
-    }
-    
-    private void callScreenLifecycleMethod( Screen screen, boolean activate ) {
-        
-        try {
-            Field[] fields = screen.getClass().getDeclaredFields() ;
-            for( Field field : fields ) {
-                if( isTile( field.getType() ) ) {
-                    log.debug( "    Found a tile. {}", field.getName() ) ;
-                    field.setAccessible( true ) ;
-                    Tile tile = ( Tile )field.get( screen ) ;
-                    
-                    if( activate ) {
-                        log.debug( "     Activating tile" ) ;
-                        tile.beforeActivation() ;
-                    }
-                    else {
-                        log.debug( "     Deactivating tile" ) ;
-                        tile.beforeDeactivation() ;
-                    }
-                }
-            }
-            
-            if( activate ) {
-                log.debug( "     Activating screen" ) ;
-                screen.beforeActivation() ;
-            }
-            else {
-                log.debug( "     Deactivating screen" ) ;
-                screen.beforeDeactivation() ;
-            }
-        }
-        catch( IllegalAccessException e ) {
-            log.error( "Error calling screen lifecycle method", e ) ;
-            throw new RuntimeException( e );
-        }
     }
 }

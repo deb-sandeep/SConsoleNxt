@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 
-import java.time.Instant;
+import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -21,15 +21,15 @@ public class Session {
     private Integer id;
     
     @Column( name = "start_time", nullable = false )
-    private Instant startTime;
+    private Date startTime;
     
     @Column( name = "end_time", nullable = false )
-    private Instant endTime;
+    private Date endTime;
     
     @JoinColumn( name = "session_type", nullable = false )
     private String sessionType;
     
-    @ManyToOne( fetch = FetchType.LAZY, optional = false )
+    @ManyToOne( optional = false )
     @JoinColumn( name = "topic_id", nullable = false )
     private Topic topic;
     
