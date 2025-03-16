@@ -34,7 +34,7 @@ public abstract class Tile extends AbstractPanel {
 
     private void setUpUI( boolean isBordered, int numRows, int numCols ) {
         this.theme = SConsole.getApp().getUiTheme() ;
-        super.setBackground( theme.getBackgroundColor() ) ;
+        super.setBackground( UITheme.BG_COLOR ) ;
         if( numRows > 0 && numCols > 0 ) {
             super.setTableLayout( numRows, numCols ) ;
         }
@@ -43,7 +43,7 @@ public abstract class Tile extends AbstractPanel {
         }
         
         if( isBordered ) {
-            super.setBorder( theme.getTileBorder() ) ;
+            super.setBorder( UITheme.TILE_BORDER ) ;
         }
     }
 

@@ -98,7 +98,7 @@ public abstract class Screen extends AbstractPanel {
     public abstract void initialize() ;
 
     protected void setUpBaseUI( UITheme theme ) {
-        super.setBackground( theme.getBackgroundColor() ) ;
+        super.setBackground( UITheme.BG_COLOR ) ;
         super.setDefaultTableLayout() ;
     }
     

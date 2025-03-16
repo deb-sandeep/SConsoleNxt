@@ -1,7 +1,6 @@
 package com.sandy.sconsole.ui.screen.dashboard.tile.burn;
 
 import com.sandy.sconsole.core.ui.uiutil.SwingUtils;
-import com.sandy.sconsole.core.ui.uiutil.UIConstant;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
 import com.sandy.sconsole.ui.util.ActiveTopicStatistics;
 import com.sandy.sconsole.ui.util.ConfiguredUIAttributes;
@@ -34,17 +33,17 @@ public class TopicBurnPanel extends JPanel {
     @PostConstruct
     private void setUpUI() {
         super.setLayout( new BorderLayout() ) ;
-        super.setBackground( theme.getBackgroundColor() ) ;
+        super.setBackground( UITheme.BG_COLOR ) ;
         super.setBorder( new EmptyBorder( 0, 10, 0, 10 ) ) ;
         
         topicNameLabel = createEmptyLabel( theme ) ;
         topicNameLabel.setHorizontalAlignment( SwingConstants.LEFT ) ;
-        topicNameLabel.setFont( UIConstant.BASE_FONT.deriveFont( Font.PLAIN, 22f ) ) ;
+        topicNameLabel.setFont( UITheme.BASE_FONT.deriveFont( Font.PLAIN, 25f ) ) ;
         
         add( topicNameLabel, BorderLayout.NORTH ) ;
         
         JPanel centerPanel = new JPanel( new BorderLayout() ) ;
-        centerPanel.setBackground( theme.getBackgroundColor() ) ;
+        centerPanel.setBackground( UITheme.BG_COLOR ) ;
         centerPanel.add( pctCompletionBar, BorderLayout.NORTH ) ;
         centerPanel.add( burnMeter, BorderLayout.CENTER ) ;
         add( centerPanel, BorderLayout.CENTER ) ;

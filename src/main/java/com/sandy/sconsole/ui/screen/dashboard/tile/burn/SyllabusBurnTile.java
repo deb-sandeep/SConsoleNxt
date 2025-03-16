@@ -4,6 +4,7 @@ import com.sandy.sconsole.core.bus.Event;
 import com.sandy.sconsole.core.bus.EventBus;
 import com.sandy.sconsole.core.bus.EventSubscriber;
 import com.sandy.sconsole.core.ui.screen.Tile;
+import com.sandy.sconsole.core.ui.uiutil.UITheme;
 import com.sandy.sconsole.ui.util.ActiveTopicStatistics;
 import com.sandy.sconsole.ui.util.ActiveTopicStatisticsManager;
 import lombok.Getter;
@@ -21,6 +22,15 @@ import java.util.Map;
 
 import static com.sandy.sconsole.EventCatalog.ATS_MANAGER_REFRESHED;
 
+/**
+ * -
+ *
+ * <p>
+ * Reactive features:
+ * ------------------
+ * - Lifecycle events:
+ *
+ */
 @Slf4j
 @Component
 @Scope( "prototype" )
@@ -43,7 +53,7 @@ public class SyllabusBurnTile extends Tile
     @Override
     public void initialize() {
         eventBus.addSubscriberForEventTypes( this, false, SUBSCRIBED_EVENTS ) ;
-        setBorder( new MatteBorder( 1, 1, 0, 1, theme.getTileBorderColor() ) ) ;
+        setBorder( new MatteBorder( 1, 1, 0, 1, UITheme.TILE_BORDER_COLOR ) ) ;
         setLayout( new GridLayout( 2, 1 ) ) ;
         
         add( topBurnPanel, 0 ) ;

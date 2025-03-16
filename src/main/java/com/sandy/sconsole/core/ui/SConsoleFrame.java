@@ -95,7 +95,7 @@ public class SConsoleFrame extends JFrame {
         setResizable( false ) ;
         hideCursor( contentPane ) ;
         
-        contentPane.setBackground( theme.getBackgroundColor() ) ;
+        contentPane.setBackground( UITheme.BG_COLOR ) ;
         contentPane.setLayout( new BorderLayout() ) ;
 
         this.setBounds( 0,0, 1920, 1080 ) ;

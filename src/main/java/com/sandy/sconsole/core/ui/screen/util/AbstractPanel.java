@@ -46,7 +46,7 @@ public abstract class AbstractPanel extends JPanel {
     public void fillWithDebugTiles( UITheme theme ) {
         for( int i = 0; i< Screen.DEFAULT_NUM_ROWS; i++ ) {
             for( int j = 0; j<Screen.DEFAULT_NUM_COLS; j++ ) {
-                Tile tile = new DebugTile( theme.getBackgroundColor() ) ;
+                Tile tile = new DebugTile( UITheme.BG_COLOR ) ;
                 addTile( tile, i, j, i, j );
             }
         }

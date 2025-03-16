@@ -6,7 +6,6 @@ import com.sandy.sconsole.core.bus.EventSubscriber;
 import com.sandy.sconsole.core.clock.ClockTickListener;
 import com.sandy.sconsole.core.clock.SConsoleClock;
 import com.sandy.sconsole.core.ui.screen.Tile;
-import com.sandy.sconsole.core.ui.uiutil.UIConstant;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
 import com.sandy.sconsole.core.util.Day;
 import com.sandy.sconsole.dao.session.dto.SessionDTO;
@@ -30,6 +29,30 @@ import java.util.concurrent.TimeUnit;
 import static com.sandy.sconsole.EventCatalog.*;
 import static com.sandy.sconsole.core.util.StringUtil.getElapsedTimeLabelHHmm;
 
+/**
+ * - Paints the sessions and pauses for the current day in a 24 hour gantt chart
+ * - Shows the total effective duration of study for today
+ *    - If the time is greater than 5 hours, shows in green, else red
+ * - Truncates any sessions and pauses at the day start and end markers
+ *   adjusting the effective time accordingly
+ *
+ * <p>
+ * Lifecycle behavior
+ * ------------------
+ * Attached and detaches itself from the clock and event bus notifications
+ * during activation and deactivation.
+ *
+ * <p>
+ * Reactive features:
+ * ------------------
+ * - Lifecycle events:
+ *    - Detaches itself from event sources (clock, event bus) while deactivation
+ *    - Reattaches itself to event sources during activation and refreshes
+ *      itself before being put to display
+ * - Day tick: Refreshes itself every tick of a new day
+ * - Events on bus: Listens to session and pause (start and extension) events
+ *   and updates the gantt blocks in real time
+ */
 @Slf4j
 @Component
 @Scope( "prototype" )
@@ -37,13 +60,12 @@ public class DayGanttTile extends Tile
     implements EventSubscriber, ClockTickListener {
     
     private static final Insets INSET = new Insets( 0, 0, 25, 0 ) ;
-    private static final Font   TOTAL_TIME_FONT = UIConstant.BASE_FONT.deriveFont( 30F ) ;
+    private static final Font   TOTAL_TIME_FONT = UITheme.BASE_FONT.deriveFont( 30F ) ;
     
     // The expected minimum study hours per day. If total time is less than
     // this, time will show up in red, else green.
     private static final int MIN_TOTAL_TIME_SECONDS = 5*3600 ;
     
-    @Autowired private UITheme theme ;
     @Autowired private EventBus eventBus ;
     @Autowired private SConsoleClock clock ;
     @Autowired private SessionRepo sessionRepo ;
@@ -93,6 +115,23 @@ public class DayGanttTile extends Tile
         initializeFunctionalState() ;
     }
     
+    @Override
+    public void handleEvent( Event event ) {
+        
+        switch( event.getEventType() ) {
+            case SESSION_STARTED:
+            case SESSION_EXTENDED:
+                updateSession( ( SessionDTO )event.getValue() ) ;
+                break ;
+            
+            case PAUSE_STARTED:
+            case PAUSE_EXTENDED:
+                updatePause( ( SessionPauseDTO )event.getValue() ) ;
+                break ;
+        }
+        super.repaint() ;
+    }
+    
     private void initializeFunctionalState() {
         
         // Clear any existing state
@@ -138,13 +177,13 @@ public class DayGanttTile extends Tile
     }
     
     private void paintBackground( Graphics2D g ) {
-        g.setColor( theme.getBackgroundColor() ) ;
+        g.setColor( UITheme.BG_COLOR ) ;
         g.fillRect( 0, 0, tileSize.width, tileSize.height ) ;
     }
     
     private void paintSwimlane( Graphics2D g ) {
         
-        g.setFont( UIConstant.BASE_FONT.deriveFont( 15F ) ) ;
+        g.setFont( UITheme.BASE_FONT.deriveFont( 15F ) ) ;
         g.setColor( Color.DARK_GRAY.darker() ) ;
         
         g.drawRect( chartArea.x, chartArea.y, chartArea.width, chartArea.height ) ;
@@ -162,7 +201,6 @@ public class DayGanttTile extends Tile
     
     private void paintSessions( Graphics2D g ) {
         todaySessions.values().forEach( session -> {
-            log.debug( "paintSessions: {}", session );
             Color sessionColor = uiAttributes.getSyllabusColor( session.getSyllabusName() ) ;
             paintArea( session.getStartTime(), session.getDuration(), g, sessionColor ) ;
         } );
@@ -170,7 +208,6 @@ public class DayGanttTile extends Tile
     
     private void paintPauses( Graphics2D g ) {
         todayPauses.values().forEach( pause -> {
-            log.debug( "paintPauses: {}", pause );
             paintArea( pause.getStartTime(), pause.getDuration(), g, Color.DARK_GRAY ) ;
         } );
     }
@@ -180,7 +217,7 @@ public class DayGanttTile extends Tile
         // These values are empirically calculated to show the total time
         // in the wee hours of the night where the probability of overlapping
         // a study session is negligible.
-        Rectangle area = paintArea( 2, 10, 0, (3600*2 - 20*60), g, theme.getBackgroundColor() ) ;
+        Rectangle area = paintArea( 2, 10, 0, (3600*2 - 20*60), g, UITheme.BG_COLOR ) ;
         
         g.setColor( totalTimeInSec >= MIN_TOTAL_TIME_SECONDS ? Color.GREEN : Color.RED ) ;
         g.setFont( TOTAL_TIME_FONT ) ;
@@ -229,23 +266,6 @@ public class DayGanttTile extends Tile
         area.width = area.width == 0 ? 1 : area.width ;
         
         return area ;
-    }
-    
-    @Override
-    public void handleEvent( Event event ) {
-        
-        switch( event.getEventType() ) {
-            case SESSION_STARTED:
-            case SESSION_EXTENDED:
-                updateSession( ( SessionDTO )event.getValue() ) ;
-                break ;
-                
-            case PAUSE_STARTED:
-            case PAUSE_EXTENDED:
-                updatePause( ( SessionPauseDTO )event.getValue() ) ;
-                break ;
-        }
-        super.repaint() ;
     }
     
     private void updateSession( @NonNull SessionDTO _session ) {

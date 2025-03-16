@@ -8,27 +8,19 @@ import java.awt.*;
 
 @Component
 public class UITheme {
-
-    // Screen theme settings
-    public Color getBackgroundColor() {
-        return Color.BLACK ;
-    }
-    public String getDefaultScreenIconName() { return "def_screen_icon" ; }
-
-    // Tile theme settings
-    public Color getTileBorderColor() { return SwingUtils.darkerColor( Color.DARK_GRAY, 0.5F ) ; }
-    public Border getTileBorder() { return new LineBorder( getTileBorderColor() ) ; }
-    public Color getTileForeground() { return Color.GRAY.darker(); }
-
-    // Label theme settings
-    public String getLabelFontName() { return "Courier" ; }
-    public Font getLabelBaseFont() { return new Font( getLabelFontName(), Font.PLAIN, 20 ) ; }
+    
+    public static final String FONT_NAME = "Courier" ;
+    public static final Font   BASE_FONT = new Font( FONT_NAME, Font.PLAIN, 20 ) ;
+    public static final Color  TILE_BORDER_COLOR = SwingUtils.darkerColor( Color.DARK_GRAY, 0.5F ) ;
+    public static final Border TILE_BORDER = new LineBorder( TILE_BORDER_COLOR ) ;
+    public static final Color  BG_COLOR = Color.BLACK ;
+    public static final Color  TILE_FG_COLOR = Color.GRAY.darker() ;
 
     public Font getLabelFont( int style, int size ) {
-        return getLabelBaseFont().deriveFont( style, size ) ;
+        return BASE_FONT.deriveFont( style, size ) ;
     }
 
     public Font getLabelFont( int size ) {
-        return getLabelBaseFont().deriveFont( Font.PLAIN, size ) ;
+        return BASE_FONT.deriveFont( Font.PLAIN, size ) ;
     }
 }

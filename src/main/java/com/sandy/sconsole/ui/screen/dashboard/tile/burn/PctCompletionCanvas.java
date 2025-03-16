@@ -28,7 +28,7 @@ class PctCompletionCanvas extends JPanel {
     
     @PostConstruct
     public void init() {
-        setBackground( theme.getBackgroundColor() ) ;
+        setBackground( UITheme.BG_COLOR ) ;
     }
     
     void refreshUI() {
