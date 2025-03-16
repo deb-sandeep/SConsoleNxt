@@ -14,7 +14,7 @@ import java.awt.*;
 
 public abstract class AbstractPanel extends JPanel {
 
-    public static final int DEFAULT_NUM_ROWS = 16 ;
+    public static final int DEFAULT_NUM_ROWS = 32 ;
     public static final int DEFAULT_NUM_COLS = 16 ;
     
     protected int numRows = -1 ;

@@ -3,12 +3,14 @@ package com.sandy.sconsole.dao.master;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
-import java.time.LocalDate;
+import java.util.Date;
 
 @Getter
 @Setter
 @Entity
+@ToString
 @Table( name = "topic_track_assignment" )
 public class TopicTrackAssignment {
     
@@ -36,8 +38,8 @@ public class TopicTrackAssignment {
     private Integer theoryMargin ;
     
     @Column( name = "start_date", nullable = false )
-    private LocalDate startDate ;
+    private Date startDate ;
     
     @Column( name = "end_date", nullable = false )
-    private LocalDate endDate ;
+    private Date endDate ;
 }

@@ -15,6 +15,8 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
+import static com.sandy.sconsole.core.ui.uiutil.SwingUtils.createEmptyLabel;
+
 @Component
 @Scope( "prototype" )
 public class DateTimeTile extends Tile implements ClockTickListener {
@@ -36,14 +38,14 @@ public class DateTimeTile extends Tile implements ClockTickListener {
     
     @Override
     public void initialize() {
-        timeLabel = super.createEmptyLabel() ;
+        timeLabel = createEmptyLabel( theme ) ;
         timeLabel.setFont( TIME_FONT ) ;
         
-        dateLabel = super.createEmptyLabel() ;
+        dateLabel = createEmptyLabel( theme ) ;
         dateLabel.setHorizontalAlignment( SwingConstants.LEFT ) ;
         dateLabel.setFont( DATE_DAY_FONT ) ;
         
-        dayLabel = super.createEmptyLabel() ;
+        dayLabel = createEmptyLabel( theme ) ;
         dateLabel.setHorizontalAlignment( SwingConstants.RIGHT ) ;
         dayLabel.setFont( DATE_DAY_FONT ) ;
         

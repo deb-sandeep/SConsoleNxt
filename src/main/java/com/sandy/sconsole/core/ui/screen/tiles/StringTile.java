@@ -7,6 +7,8 @@ import lombok.Setter;
 import javax.swing.*;
 import java.awt.*;
 
+import static com.sandy.sconsole.core.ui.uiutil.SwingUtils.createEmptyLabel;
+
 public class StringTile extends Tile {
 
     @Getter @Setter private String content ;
@@ -35,7 +37,7 @@ public class StringTile extends Tile {
     }
 
     private void setUpUI( int fontStyle, int fontSize, int hAlign, int vAlign ) {
-        textLabel = super.createEmptyLabel() ;
+        textLabel = createEmptyLabel( theme ) ;
         textLabel.setFont( theme.getLabelFont( fontStyle, fontSize ) ) ;
         textLabel.setHorizontalAlignment( hAlign ) ;
         textLabel.setVerticalAlignment( vAlign ) ;

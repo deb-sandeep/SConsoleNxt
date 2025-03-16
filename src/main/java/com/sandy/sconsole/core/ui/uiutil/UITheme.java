@@ -16,9 +16,9 @@ public class UITheme {
     public String getDefaultScreenIconName() { return "def_screen_icon" ; }
 
     // Tile theme settings
-    public Color getTileBorderColor() { return Color.DARK_GRAY.darker() ; }
+    public Color getTileBorderColor() { return SwingUtils.darkerColor( Color.DARK_GRAY, 0.5F ) ; }
     public Border getTileBorder() { return new LineBorder( getTileBorderColor() ) ; }
-    public Color getTileForeground() { return Color.GRAY; }
+    public Color getTileForeground() { return Color.GRAY.darker(); }
 
     // Label theme settings
     public String getLabelFontName() { return "Courier" ; }

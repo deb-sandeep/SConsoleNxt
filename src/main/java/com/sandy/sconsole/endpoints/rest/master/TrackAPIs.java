@@ -12,8 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,10 +38,10 @@ public class TrackAPIs {
     
     @GetMapping( "/CurrentTopicAssignments" )
     public ResponseEntity<AR<List<TopicTrackAssignment>>> getCurrentTopicAssignments(
-            @RequestParam( "date" ) @DateTimeFormat( iso = DateTimeFormat.ISO.DATE ) LocalDate date ) {
+            @RequestParam( "date" ) @DateTimeFormat( iso = DateTimeFormat.ISO.DATE ) Date date ) {
         try {
             if( date == null ) {
-                date = LocalDate.now() ;
+                date = new Date() ;
             }
             List<TopicTrackAssignment> trackAssignments = ttaRepo.findActiveAssignments( date ) ;
             return AR.success( trackAssignments ) ;

@@ -9,8 +9,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Component
 public class APIInterceptorsConfig implements WebMvcConfigurer {
     
-    @Autowired
-    private APILogInterceptor apiLogInterceptor = null ;
+    @Autowired private APILogInterceptor apiLogInterceptor = null ;
     
     @Override
     public void addInterceptors( InterceptorRegistry registry ) {

@@ -7,6 +7,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
+import static com.sandy.sconsole.core.ui.uiutil.SwingUtils.createEmptyLabel;
+
 @Slf4j
 public class ImageTile extends Tile {
 
@@ -18,7 +20,7 @@ public class ImageTile extends Tile {
     }
 
     private void setUpUI() {
-        imgLabel = super.createEmptyLabel() ;
+        imgLabel = createEmptyLabel( theme ) ;
         
         super.setLayout( new BorderLayout() ) ;
         super.add( imgLabel, BorderLayout.CENTER ) ;

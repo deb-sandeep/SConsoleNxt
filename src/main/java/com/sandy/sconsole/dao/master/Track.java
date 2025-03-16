@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDate;
+import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -33,5 +33,5 @@ public class Track {
     private Set<TopicTrackAssignment> assignedTopics = new LinkedHashSet<>();
     
     @Column( name = "start_date" )
-    private LocalDate startDate;
+    private Date startDate;
 }

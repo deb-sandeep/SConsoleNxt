@@ -1,10 +1,10 @@
 package com.sandy.sconsole.endpoints.rest.master.helper;
 
+import com.sandy.sconsole.dao.master.*;
+import com.sandy.sconsole.dao.master.repo.*;
 import com.sandy.sconsole.endpoints.rest.master.vo.BookTopicMappingVO;
 import com.sandy.sconsole.endpoints.rest.master.vo.TopicChapterMappingVO;
 import com.sandy.sconsole.endpoints.rest.master.vo.reqres.ChapterTopicMappingReq;
-import com.sandy.sconsole.dao.master.*;
-import com.sandy.sconsole.dao.master.repo.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,15 +16,15 @@ import static com.sandy.sconsole.endpoints.rest.master.vo.TopicChapterMappingVO.
 @Slf4j
 @Component
 public class TopicMappingHelper {
-    @Autowired
-    private ProblemRepo problemRepo;
     
-    @Autowired BookRepo bookRepo ;
-    @Autowired ChapterRepo chapterRepo ;
-    @Autowired TopicRepo topicRepo ;
-    @Autowired TopicChapterMapRepo tcmRepo ;
-    @Autowired SyllabusBookMapRepo sbmRepo ;
-    @Autowired TopicChapterProblemMapRepo tcpmRepo ;
+    @Autowired private ProblemRepo problemRepo;
+    
+    @Autowired private BookRepo bookRepo ;
+    @Autowired private ChapterRepo chapterRepo ;
+    @Autowired private TopicRepo topicRepo ;
+    @Autowired private TopicChapterMapRepo tcmRepo ;
+    @Autowired private SyllabusBookMapRepo sbmRepo ;
+    @Autowired private TopicChapterProblemMapRepo tcpmRepo ;
     
     public int saveChapterTopicMapping( ChapterTopicMappingReq req ) {
         

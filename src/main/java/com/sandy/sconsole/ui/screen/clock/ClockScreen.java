@@ -63,8 +63,8 @@ public class ClockScreen extends Screen implements ClockTickListener {
     private void setUpUI( UITheme theme ) {
         timeTile = new TimeTile() ;
         dateTile = new DateTile() ;
-        super.addTile( timeTile, 2, 5, 13, 8 ) ;
-        super.addTile( dateTile, 2, 9, 13, 10 ) ;
+        super.addTile( timeTile, 2, 10, 13, 18 ) ;
+        super.addTile( dateTile, 2, 18, 13, 21 ) ;
     }
 
     @Override

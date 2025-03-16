@@ -10,12 +10,10 @@ public class EventCatalog {
     public static final int CORE_EVENT_RANGE_MIN = 100 ;
     public static final int CORE_EVENT_RANGE_MAX = 200 ;
 
-    // =============== Core Events [Start] =====================================
+    // =============== Core Events =============================================
     
-    // --------------- Core Events [End] ---------------------------------------
-
-    // =============== Session Events [Start] ==================================
-    // Range : 201 - 300
+    // =============== Session Events ==========================================
+    // Range : 201 - 250
     @Payload( SessionDTO.class )
     public static final int SESSION_STARTED = 201 ;
     
@@ -37,7 +35,9 @@ public class EventCatalog {
     @Payload( ProblemAttemptDTO.class )
     public static final int PROBLEM_ATTEMPT_ENDED = 207 ;
     
+    // =============== Active Topic Statistics Events ==========================
+    // Range : 250 - 300
     
-    
-    // --------------- Session Events [End] ------------------------------------
+    @Payload( Void.class )
+    public static final int ATS_MANAGER_REFRESHED = 250 ;
 }

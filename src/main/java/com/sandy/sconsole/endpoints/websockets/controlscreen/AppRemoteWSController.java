@@ -19,8 +19,8 @@ import static com.sandy.sconsole.endpoints.websockets.controlscreen.RemoteCtrlMs
 @MessageMapping( "/app-remote" )
 public class AppRemoteWSController {
     
-    @Autowired SimpMessagingTemplate template ;
-    @Autowired ScreenManager screenManager ;
+    @Autowired private SimpMessagingTemplate template ;
+    @Autowired private ScreenManager screenManager ;
     
     private final MessageHeaders headers ;
     

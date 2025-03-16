@@ -1,4 +1,4 @@
-package com.sandy.sconsole.ui;
+package com.sandy.sconsole.ui.util;
 
 import com.sandy.sconsole.dao.master.repo.SyllabusRepo;
 import jakarta.annotation.PostConstruct;

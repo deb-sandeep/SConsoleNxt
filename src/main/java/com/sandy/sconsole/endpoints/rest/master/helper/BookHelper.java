@@ -1,11 +1,11 @@
 package com.sandy.sconsole.endpoints.rest.master.helper;
 
-import com.sandy.sconsole.endpoints.rest.master.vo.BookProblemSummaryVO;
 import com.sandy.sconsole.core.SConsoleConfig;
 import com.sandy.sconsole.dao.master.Book;
 import com.sandy.sconsole.dao.master.Problem;
 import com.sandy.sconsole.dao.master.Syllabus;
 import com.sandy.sconsole.dao.master.repo.*;
+import com.sandy.sconsole.endpoints.rest.master.vo.BookProblemSummaryVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -25,15 +25,15 @@ public class BookHelper {
         }
     }
     
-    @Autowired SConsoleConfig config ;
-    @Autowired BookMetaValidator validator ;
+    @Autowired private SConsoleConfig config ;
+    @Autowired private BookMetaValidator validator ;
     
-    @Autowired SyllabusRepo syllabusRepo ;
-    @Autowired BookRepo bookRepo ;
-    @Autowired ChapterRepo chapterRepo ;
-    @Autowired ProblemRepo problemRepo ;
-    @Autowired ProblemTypeRepo problemTypeRepo ;
-    @Autowired SyllabusBookMapRepo syllabusBookMapRepo ;
+    @Autowired private SyllabusRepo syllabusRepo ;
+    @Autowired private BookRepo bookRepo ;
+    @Autowired private ChapterRepo chapterRepo ;
+    @Autowired private ProblemRepo problemRepo ;
+    @Autowired private ProblemTypeRepo problemTypeRepo ;
+    @Autowired private SyllabusBookMapRepo syllabusBookMapRepo ;
     
     public List<BookRepo.BookSummary> getAllBookSummaries() {
         return bookRepo.findAllBooks() ;

@@ -44,4 +44,29 @@ public interface TopicRepo extends CrudRepository<Topic, Integer> {
     """ )
     List<TopicProblemTypeCount> getTopicProblemCounts() ;
     
+    @Query( nativeQuery = true, value = """
+        select count( problem_id )
+        from topic_problems
+        where topic_id = :topicId
+    """ )
+    int getTotalProblemCount( @Param( "topicId" ) int topicId ) ;
+    
+    @Query( nativeQuery = true, value = """
+        select count( problem_id )
+        from topic_problems
+        where
+            topic_id = :topicId and
+            problem_state in ( 'Assigned', 'Later', 'Pigeon', 'Redo' )
+    """ )
+    int getRemainingProblemCount( @Param( "topicId" ) int topicId ) ;
+    
+    @Query( nativeQuery = true, value = """
+        select count( problem_id )
+        from topic_problems
+        where
+            topic_id = :topicId and
+            problem_state not in ( 'Assigned', 'Later', 'Pigeon', 'Redo' )
+    """ )
+    int getCompletedProblemCount( @Param( "topicId" ) int topicId ) ;
+    
 }

@@ -80,4 +80,26 @@ public class SwingUtils {
     public static String getHexColorString( Color color ) {
         return "#"+Integer.toHexString( color.getRGB() ).substring(2 ) ;
     }
+    
+    public static JLabel createEmptyLabel( UITheme theme ) {
+        JLabel label = new JLabel() ;
+        label.setHorizontalAlignment( SwingConstants.CENTER ) ;
+        label.setVerticalAlignment( SwingConstants.CENTER ) ;
+        label.setBackground( theme.getBackgroundColor() ) ;
+        label.setForeground( theme.getTileForeground() ) ;
+        label.setOpaque( true ) ;
+        return label ;
+    }
+    
+    public static Color darkerColor( Color color ) {
+        return darkerColor( color, 0.5f ) ;
+    }
+
+    public static Color darkerColor( Color color, float factor ) {
+        return new Color(
+                Math.max((int)(color.getRed() * factor), 0),
+                Math.max((int)(color.getGreen()*factor), 0),
+                Math.max((int)(color.getBlue() *factor), 0),
+                color.getAlpha());
+    }
 }

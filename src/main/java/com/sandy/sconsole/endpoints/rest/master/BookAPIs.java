@@ -1,11 +1,17 @@
 package com.sandy.sconsole.endpoints.rest.master;
 
+import com.sandy.sconsole.core.api.AR;
+import com.sandy.sconsole.dao.master.Book;
+import com.sandy.sconsole.dao.master.Chapter;
+import com.sandy.sconsole.dao.master.ChapterId;
+import com.sandy.sconsole.dao.master.Syllabus;
+import com.sandy.sconsole.dao.master.dto.TopicVO;
+import com.sandy.sconsole.dao.master.repo.BookRepo;
+import com.sandy.sconsole.dao.master.repo.ChapterRepo;
+import com.sandy.sconsole.dao.master.repo.SyllabusBookMapRepo;
+import com.sandy.sconsole.dao.master.repo.TopicRepo;
 import com.sandy.sconsole.endpoints.rest.master.helper.BookHelper;
 import com.sandy.sconsole.endpoints.rest.master.helper.TopicMappingHelper;
-import com.sandy.sconsole.core.api.AR;
-import com.sandy.sconsole.dao.master.*;
-import com.sandy.sconsole.dao.master.dto.TopicVO;
-import com.sandy.sconsole.dao.master.repo.*;
 import com.sandy.sconsole.endpoints.rest.master.vo.BookProblemSummaryVO;
 import com.sandy.sconsole.endpoints.rest.master.vo.BookTopicMappingVO;
 import com.sandy.sconsole.endpoints.rest.master.vo.reqres.AttrChangeReq;
@@ -29,15 +35,10 @@ import static java.text.MessageFormat.format;
 public class BookAPIs {
     
     @Autowired private ChapterRepo chapterRepo;
-    
     @Autowired private BookRepo bookRepo;
-    
     @Autowired private SyllabusBookMapRepo sbmRepo = null ;
-    
     @Autowired private TopicRepo topicRepo;
-    
     @Autowired private BookHelper bookHelper = null ;
-    
     @Autowired private TopicMappingHelper helper = null ;
 
     @GetMapping( "Listing" )
@@ -111,7 +112,7 @@ public class BookAPIs {
             
             bookRepo.save( book ) ;
             
-            return success( format( "Attribute '{0}' updated to '{1}' for book '{2}'",
+            return success( format( "Attribute {0} updated to {1} for book {2}",
                                     request.getAttribute(),
                                     request.getValue(),
                                     book.getBookShortName() ) ) ;
@@ -135,7 +136,7 @@ public class BookAPIs {
             
             chapterRepo.save( ch ) ;
             
-            return success( format( "Chapter name updated to '{1}'",
+            return success( format( "Chapter name updated to {0}",
                                     request.getValue() ) ) ;
         }
         catch( Exception e ) {

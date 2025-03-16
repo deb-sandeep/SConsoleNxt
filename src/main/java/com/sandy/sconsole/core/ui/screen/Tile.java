@@ -4,7 +4,6 @@ import com.sandy.sconsole.SConsole;
 import com.sandy.sconsole.core.ui.screen.util.AbstractPanel;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
 
-import javax.swing.*;
 import java.awt.*;
 
 public abstract class Tile extends AbstractPanel {
@@ -48,16 +47,6 @@ public abstract class Tile extends AbstractPanel {
         }
     }
 
-    protected JLabel createEmptyLabel() {
-        JLabel label = new JLabel() ;
-        label.setHorizontalAlignment( SwingConstants.CENTER ) ;
-        label.setVerticalAlignment( SwingConstants.CENTER ) ;
-        label.setBackground( theme.getBackgroundColor() ) ;
-        label.setForeground( theme.getTileForeground() ) ;
-        label.setOpaque( true ) ;
-        return label ;
-    }
-    
     /** This method is called on the tile as a part of the parent screen initialization. */
     public void initialize() {}
     

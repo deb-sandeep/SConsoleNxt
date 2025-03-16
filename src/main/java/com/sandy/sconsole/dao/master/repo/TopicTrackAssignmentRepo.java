@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
-import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 public interface TopicTrackAssignmentRepo extends CrudRepository<TopicTrackAssignment, Integer> {
@@ -30,5 +30,5 @@ public interface TopicTrackAssignmentRepo extends CrudRepository<TopicTrackAssig
         order by
             tta.topicId
     """)
-    List<TopicTrackAssignment> findActiveAssignments( LocalDate date ) ;
+    List<TopicTrackAssignment> findActiveAssignments( Date date ) ;
 }

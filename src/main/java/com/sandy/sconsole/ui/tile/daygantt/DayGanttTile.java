@@ -13,7 +13,7 @@ import com.sandy.sconsole.dao.session.dto.SessionDTO;
 import com.sandy.sconsole.dao.session.dto.SessionPauseDTO;
 import com.sandy.sconsole.dao.session.repo.SessionPauseRepo;
 import com.sandy.sconsole.dao.session.repo.SessionRepo;
-import com.sandy.sconsole.ui.ConfiguredUIAttributes;
+import com.sandy.sconsole.ui.util.ConfiguredUIAttributes;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

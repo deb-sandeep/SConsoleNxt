@@ -1,11 +1,11 @@
 package com.sandy.sconsole.endpoints.rest.master;
 
+import com.sandy.sconsole.core.api.AR;
 import com.sandy.sconsole.endpoints.rest.master.helper.BookHelper;
 import com.sandy.sconsole.endpoints.rest.master.helper.BookUploadHelper;
 import com.sandy.sconsole.endpoints.rest.master.vo.BookMetaVO;
 import com.sandy.sconsole.endpoints.rest.master.vo.reqres.SaveBookMetaReq;
 import com.sandy.sconsole.endpoints.rest.master.vo.reqres.SaveBookMetaRes;
-import com.sandy.sconsole.core.api.AR;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,8 +21,7 @@ import static com.sandy.sconsole.core.api.AR.*;
 @RequestMapping( "/Master/Book" )
 public class BookUploadAPIs {
     
-    @Autowired
-    private BookUploadHelper bookHelper = null ;
+    @Autowired private BookUploadHelper bookHelper = null ;
     
     @PostMapping( "/ValidateMetaFile" )
     public ResponseEntity<AR<BookMetaVO>> validateMetaFile(

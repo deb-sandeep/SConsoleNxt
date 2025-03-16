@@ -2,11 +2,11 @@ package com.sandy.sconsole.endpoints.rest.master.helper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.sandy.sconsole.endpoints.rest.master.vo.BookMetaVO;
-import com.sandy.sconsole.endpoints.rest.master.vo.reqres.SaveBookMetaRes;
 import com.sandy.sconsole.core.SConsoleConfig;
 import com.sandy.sconsole.dao.master.*;
 import com.sandy.sconsole.dao.master.repo.*;
+import com.sandy.sconsole.endpoints.rest.master.vo.BookMetaVO;
+import com.sandy.sconsole.endpoints.rest.master.vo.reqres.SaveBookMetaRes;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -30,16 +30,16 @@ public class BookUploadHelper {
         }
     }
     
-    @Autowired SConsoleConfig config ;
-    @Autowired BookMetaValidator validator ;
+    @Autowired private SConsoleConfig config ;
+    @Autowired private BookMetaValidator validator ;
     
-    @Autowired SubjectRepo subjectRepo ;
-    @Autowired SyllabusRepo syllabusRepo ;
-    @Autowired BookRepo bookRepo ;
-    @Autowired ChapterRepo chapterRepo ;
-    @Autowired ProblemRepo problemRepo ;
-    @Autowired ProblemTypeRepo problemTypeRepo ;
-    @Autowired SyllabusBookMapRepo syllabusBookMapRepo ;
+    @Autowired private SubjectRepo subjectRepo ;
+    @Autowired private SyllabusRepo syllabusRepo ;
+    @Autowired private BookRepo bookRepo ;
+    @Autowired private ChapterRepo chapterRepo ;
+    @Autowired private ProblemRepo problemRepo ;
+    @Autowired private ProblemTypeRepo problemTypeRepo ;
+    @Autowired private SyllabusBookMapRepo syllabusBookMapRepo ;
     
     private File uploadDir = null ;
     

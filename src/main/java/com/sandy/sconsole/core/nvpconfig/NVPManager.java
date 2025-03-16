@@ -26,8 +26,8 @@ public class NVPManager {
         }
     }
     
-    private @Autowired NVPConfigDAORepo nvpRepo ;
-    private @Autowired NVPConfigAnnotationProcessor annotationProcessor ;
+    @Autowired private NVPConfigDAORepo nvpRepo ;
+    @Autowired private NVPConfigAnnotationProcessor annotationProcessor ;
 
     // Config group --[*]-> Config name --[*]-> Change listeners
     private final Map<String, Map<String, Set<NVPCfgChangeListener>>> listeners = new HashMap<>() ;

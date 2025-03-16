@@ -18,8 +18,7 @@ import java.util.List;
 @RequestMapping( "/Master/Syllabus" )
 public class SyllabusAPIs {
     
-    @Autowired
-    private SyllabusRepo syllabusRepo = null ;
+    @Autowired private SyllabusRepo syllabusRepo = null ;
     
     @GetMapping( "/All" )
     public ResponseEntity<AR<List<Syllabus>>> getAllSyllabus() {

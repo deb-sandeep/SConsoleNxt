@@ -1,10 +1,10 @@
 package com.sandy.sconsole.endpoints.rest.master;
 
-import com.sandy.sconsole.endpoints.rest.master.vo.TopicProblemCountVO;
-import com.sandy.sconsole.dao.master.dto.TopicVO;
 import com.sandy.sconsole.core.api.AR;
 import com.sandy.sconsole.dao.master.Topic;
+import com.sandy.sconsole.dao.master.dto.TopicVO;
 import com.sandy.sconsole.dao.master.repo.TopicRepo;
+import com.sandy.sconsole.endpoints.rest.master.vo.TopicProblemCountVO;
 import jakarta.websocket.server.PathParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,15 +19,14 @@ import java.util.List;
 
 import static com.sandy.sconsole.core.api.AR.success;
 import static com.sandy.sconsole.core.api.AR.systemError;
-import static com.sandy.sconsole.dao.master.repo.TopicRepo.TopicProblemTypeCount ;
+import static com.sandy.sconsole.dao.master.repo.TopicRepo.TopicProblemTypeCount;
 
 @Slf4j
 @RestController
 @RequestMapping( "/Master/Topic" )
 public class TopicAPIs {
     
-    @Autowired
-    private TopicRepo topicRepo = null ;
+    @Autowired private TopicRepo topicRepo = null ;
     
     @GetMapping( "/{topicId}" )
     public ResponseEntity<AR<TopicVO>> getTopic( @PathVariable( "topicId" ) int topicId ) {

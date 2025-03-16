@@ -1,12 +1,12 @@
 package com.sandy.sconsole.endpoints.rest.master.helper;
 
-import com.sandy.sconsole.endpoints.rest.master.vo.BookMetaVO;
 import com.sandy.sconsole.core.util.StringUtil;
 import com.sandy.sconsole.dao.master.Book;
 import com.sandy.sconsole.dao.master.ProblemType;
 import com.sandy.sconsole.dao.master.repo.BookRepo;
 import com.sandy.sconsole.dao.master.repo.ProblemTypeRepo;
 import com.sandy.sconsole.dao.master.repo.SubjectRepo;
+import com.sandy.sconsole.endpoints.rest.master.vo.BookMetaVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,9 +19,9 @@ import static com.sandy.sconsole.endpoints.rest.master.vo.BookMetaVO.*;
 @Component
 public class BookMetaValidator {
     
-    @Autowired SubjectRepo     subjectRepo     = null ;
-    @Autowired BookRepo        bookRepo        = null ;
-    @Autowired ProblemTypeRepo problemTypeRepo = null ;
+    @Autowired private SubjectRepo     subjectRepo     = null ;
+    @Autowired private BookRepo        bookRepo        = null ;
+    @Autowired private ProblemTypeRepo problemTypeRepo = null ;
 
     public void validateBookMeta( BookMetaVO meta ) {
         
