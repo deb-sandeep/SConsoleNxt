@@ -3,6 +3,7 @@ package com.sandy.sconsole.state;
 import com.sandy.sconsole.dao.master.TopicTrackAssignment;
 import com.sandy.sconsole.dao.master.dto.TopicVO;
 import com.sandy.sconsole.dao.master.repo.TopicRepo;
+import com.sandy.sconsole.dao.session.repo.DaySyllabusStudyTimeRepo;
 import com.sandy.sconsole.dao.session.repo.TodaySolvedProblemCountRepo;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +13,10 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import static com.sandy.sconsole.core.util.SConsoleUtil.isBetween;
 
@@ -25,6 +29,7 @@ public class ActiveTopicStatistics {
     
     @Autowired private TopicRepo topicRepo ;
     @Autowired private TodaySolvedProblemCountRepo tspcRepo ;
+    @Autowired private DaySyllabusStudyTimeRepo studyTimeRepo ;
     
     @Getter private TopicVO topic ;
     
@@ -50,6 +55,8 @@ public class ActiveTopicStatistics {
     @Getter private int requiredBurnRate ;
     
     @Getter private int numProblemsSolvedToday = 0 ;
+    
+    private Map<Date, Integer> l30StudyTime = new LinkedHashMap<>() ;
 
     public ActiveTopicStatistics() {}
     
@@ -99,6 +106,26 @@ public class ActiveTopicStatistics {
                 requiredBurnRate = remainingProblemCount ;
             }
         }
+        
+        initializeL30StudyTime();
+    }
+    
+    private void initializeL30StudyTime() {
+        Date today = DateUtils.truncate( new Date(), Calendar.DAY_OF_MONTH ) ;
+        Date startDate = DateUtils.addDays( today, -29 ) ;
+        
+        l30StudyTime.clear() ;
+        l30StudyTime.put( startDate, 0 ) ;
+        for( int i=1; i<30; i++ ) {
+            Date date = DateUtils.addDays( startDate, i ) ;
+            l30StudyTime.put( date, 0 ) ;
+        }
+        
+        studyTimeRepo.getStudyTimesFromDate( startDate, topic.getSyllabusName() )
+                .forEach( studyTime -> {
+                    l30StudyTime.put( studyTime.getId().getDate(),
+                                      studyTime.getTotalTime().intValue() ) ;
+                });
     }
     
     private Zone computeCurrentZone() {

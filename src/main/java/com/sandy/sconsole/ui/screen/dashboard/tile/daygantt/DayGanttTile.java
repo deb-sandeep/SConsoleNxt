@@ -1,19 +1,12 @@
-package com.sandy.sconsole.ui.tile.daygantt;
+package com.sandy.sconsole.ui.screen.dashboard.tile.daygantt;
 
 import com.sandy.sconsole.core.bus.Event;
 import com.sandy.sconsole.core.bus.EventBus;
 import com.sandy.sconsole.core.bus.EventSubscriber;
-import com.sandy.sconsole.core.clock.ClockTickListener;
-import com.sandy.sconsole.core.clock.SConsoleClock;
 import com.sandy.sconsole.core.ui.screen.Tile;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
-import com.sandy.sconsole.core.util.Day;
-import com.sandy.sconsole.dao.session.dto.SessionDTO;
-import com.sandy.sconsole.dao.session.dto.SessionPauseDTO;
-import com.sandy.sconsole.dao.session.repo.SessionPauseRepo;
-import com.sandy.sconsole.dao.session.repo.SessionRepo;
+import com.sandy.sconsole.state.TodayStudyStatistics;
 import com.sandy.sconsole.ui.util.ConfiguredUIAttributes;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -22,11 +15,9 @@ import org.springframework.stereotype.Component;
 import java.awt.*;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
-import static com.sandy.sconsole.EventCatalog.*;
+import static com.sandy.sconsole.EventCatalog.TODAY_STUDY_STATS_UPDATED;
+import static com.sandy.sconsole.EventCatalog.TODAY_STUDY_TIME_UPDATED;
 import static com.sandy.sconsole.core.util.StringUtil.getElapsedTimeLabelHHmm;
 
 /**
@@ -36,28 +27,28 @@ import static com.sandy.sconsole.core.util.StringUtil.getElapsedTimeLabelHHmm;
  * - Truncates any sessions and pauses at the day start and end markers
  *   adjusting the effective time accordingly
  *
- * <p>
- * Lifecycle behavior
- * ------------------
- * Attached and detaches itself from the clock and event bus notifications
- * during activation and deactivation.
+ * This tile relies on the cached state provided by TodayStudyStatistics
+ * for rendering. It also subscribes to events emitted by this class for
+ * reactive behavior.
  *
  * <p>
  * Reactive features:
  * ------------------
  * - Lifecycle events:
- *    - Detaches itself from event sources (clock, event bus) while deactivation
+ *    - Detaches itself from event bus while deactivation
  *    - Reattaches itself to event sources during activation and refreshes
  *      itself before being put to display
- * - Day tick: Refreshes itself every tick of a new day
- * - Events on bus: Listens to session and pause (start and extension) events
- *   and updates the gantt blocks in real time
  */
 @Slf4j
 @Component
 @Scope( "prototype" )
 public class DayGanttTile extends Tile
-    implements EventSubscriber, ClockTickListener {
+    implements EventSubscriber {
+    
+    private static final int[] SUBSCRIBED_EVENTS = {
+            TODAY_STUDY_STATS_UPDATED,
+            TODAY_STUDY_TIME_UPDATED
+    } ;
     
     private static final Insets INSET = new Insets( 0, 0, 25, 0 ) ;
     private static final Font   TOTAL_TIME_FONT = UITheme.BASE_FONT.deriveFont( 30F ) ;
@@ -67,30 +58,14 @@ public class DayGanttTile extends Tile
     private static final int MIN_TOTAL_TIME_SECONDS = 5*3600 ;
     
     @Autowired private EventBus eventBus ;
-    @Autowired private SConsoleClock clock ;
-    @Autowired private SessionRepo sessionRepo ;
-    @Autowired private SessionPauseRepo sessionPauseRepo ;
     @Autowired private ConfiguredUIAttributes uiAttributes ;
+    @Autowired private TodayStudyStatistics studyStats ;
     
     private Dimension tileSize ; // Computed during each paint
     private final Rectangle chartArea = new Rectangle() ; // Populated during each paint
     
     private float numPixelsPerHour = 0 ; // Computed during each paint
     private float numPixelsPerSecond = 0 ; // Computed during each paint
-    
-    // Functional state. These need to be reset in initializeFunctionalState method
-    private final Map<Integer, SessionDTO>      todaySessions  = new LinkedHashMap<>() ;
-    private final Map<Integer, SessionPauseDTO> todayPauses    = new LinkedHashMap<>() ;
-    
-    private Day today = new Day() ;
-    private int totalTimeInSec = 0 ;
-    
-    private static final int[] SUBSCRIBED_EVENTS = {
-            SESSION_STARTED,
-            PAUSE_STARTED,
-            SESSION_EXTENDED,
-            PAUSE_EXTENDED
-    } ;
     
     public DayGanttTile() {
         setDoubleBuffered( true ) ;
@@ -99,54 +74,22 @@ public class DayGanttTile extends Tile
     
     @Override
     public void beforeActivation() {
-        clock.addTickListener( this, TimeUnit.DAYS ) ;
         eventBus.addSubscriberForEventTypes( this, true, SUBSCRIBED_EVENTS) ;
-        initializeFunctionalState() ;
     }
     
     @Override
     public void beforeDeactivation() {
-        clock.removeTickListener( this ) ;
         eventBus.removeSubscriber( this, SUBSCRIBED_EVENTS );
     }
     
     @Override
-    public void dayTicked( Calendar calendar ) {
-        initializeFunctionalState() ;
-    }
-    
-    @Override
     public void handleEvent( Event event ) {
-        
         switch( event.getEventType() ) {
-            case SESSION_STARTED:
-            case SESSION_EXTENDED:
-                updateSession( ( SessionDTO )event.getValue() ) ;
-                break ;
-            
-            case PAUSE_STARTED:
-            case PAUSE_EXTENDED:
-                updatePause( ( SessionPauseDTO )event.getValue() ) ;
+            case TODAY_STUDY_STATS_UPDATED:
+            case TODAY_STUDY_TIME_UPDATED:
+                super.repaint() ;
                 break ;
         }
-        super.repaint() ;
-    }
-    
-    private void initializeFunctionalState() {
-        
-        // Clear any existing state
-        today = new Day() ;
-        todaySessions.clear() ;
-        todayPauses.clear() ;
-        totalTimeInSec = 0 ;
-        
-        // Load the existing sessions and pauses for today
-        sessionRepo.getTodaySessions()
-                .forEach( s -> updateSession( new SessionDTO( s ) ) ) ;
-        sessionPauseRepo.getTodayPauses()
-                .forEach( p -> updatePause( new SessionPauseDTO( p ) ) ) ;
-        
-        super.repaint() ;
     }
     
     @Override
@@ -200,14 +143,14 @@ public class DayGanttTile extends Tile
     }
     
     private void paintSessions( Graphics2D g ) {
-        todaySessions.values().forEach( session -> {
+        studyStats.getSessions().forEach( session -> {
             Color sessionColor = uiAttributes.getSyllabusColor( session.getSyllabusName() ) ;
             paintArea( session.getStartTime(), session.getDuration(), g, sessionColor ) ;
         } );
     }
     
     private void paintPauses( Graphics2D g ) {
-        todayPauses.values().forEach( pause -> {
+        studyStats.getPauses().forEach( pause -> {
             paintArea( pause.getStartTime(), pause.getDuration(), g, Color.DARK_GRAY ) ;
         } );
     }
@@ -219,13 +162,13 @@ public class DayGanttTile extends Tile
         // a study session is negligible.
         Rectangle area = paintArea( 2, 10, 0, (3600*2 - 20*60), g, UITheme.BG_COLOR ) ;
         
-        g.setColor( totalTimeInSec >= MIN_TOTAL_TIME_SECONDS ? Color.GREEN : Color.RED ) ;
+        g.setColor( studyStats.getTotalTimeInSec() >= MIN_TOTAL_TIME_SECONDS ? Color.GREEN : Color.RED ) ;
         g.setFont( TOTAL_TIME_FONT ) ;
         
         FontMetrics metrics = g.getFontMetrics( TOTAL_TIME_FONT ) ;
         int textHeight = metrics.getHeight() ;
         
-        g.drawString( getElapsedTimeLabelHHmm( totalTimeInSec ),
+        g.drawString( getElapsedTimeLabelHHmm( studyStats.getTotalTimeInSec() ),
                       area.x+10,
                       area.y+(area.height/2)+(textHeight/2) - 7 ) ;
     }
@@ -266,44 +209,5 @@ public class DayGanttTile extends Tile
         area.width = area.width == 0 ? 1 : area.width ;
         
         return area ;
-    }
-    
-    private void updateSession( @NonNull SessionDTO _session ) {
-        
-        // Create a new copy. The incoming instance might be a shared
-        // instance (e.g. published on event bus)
-        SessionDTO session = new SessionDTO( _session ) ;
-        
-        // This overwrites any existing session with the same id.
-        todaySessions.put( session.getId(), session ) ;
-        if( today.after( session.getStartTime() ) ) {
-            session.setStartTime( today.getStartTime() ) ;
-        }
-        else if( today.before( session.getEndTime() ) ) {
-            session.setEndTime( today.getEndTime() ) ;
-        }
-        computeTotalEffectiveTimeForToday() ;
-    }
-    
-    private void updatePause( @NonNull SessionPauseDTO _pause ) {
-        
-        SessionPauseDTO pause = new SessionPauseDTO( _pause ) ;
-        todayPauses.put( pause.getId(), pause ) ;
-        
-        if( today.after( pause.getStartTime() ) ) {
-            pause.setStartTime( today.getStartTime() ) ;
-        }
-        else if( today.before( pause.getEndTime() ) ) {
-            pause.setEndTime( today.getEndTime() ) ;
-        }
-        computeTotalEffectiveTimeForToday() ;
-    }
-    
-    private void computeTotalEffectiveTimeForToday() {
-        
-        int totalSessionTime = todaySessions.values().stream().mapToInt( SessionDTO::getDuration ).sum() ;
-        int totalPauseTime = todayPauses.values().stream().mapToInt( SessionPauseDTO::getDuration ).sum() ;
-        
-        this.totalTimeInSec = totalSessionTime - totalPauseTime ;
     }
 }

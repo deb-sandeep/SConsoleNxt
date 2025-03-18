@@ -5,7 +5,7 @@ import com.sandy.sconsole.core.ui.screen.Screen;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
 import com.sandy.sconsole.ui.screen.dashboard.tile.DateTimeTile;
 import com.sandy.sconsole.ui.screen.dashboard.tile.burn.SyllabusBurnTile;
-import com.sandy.sconsole.ui.tile.daygantt.DayGanttTile;
+import com.sandy.sconsole.ui.screen.dashboard.tile.daygantt.DayGanttTile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

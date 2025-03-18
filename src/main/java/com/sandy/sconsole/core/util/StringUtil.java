@@ -27,14 +27,8 @@ public final class StringUtil {
     }
 
     public static String getElapsedTimeLabelHHmm( long seconds ) {
-        int secs    = (int)(seconds) % 60 ;
-        int minutes = (int)((seconds / 60) % 60) ;
-        int hours   = (int)(seconds / (60*60)) ;
-        
-        // Round off the minute
-        if( seconds > 30 ) minutes++ ;
-        
-        return String.format("%02d:%02d", hours, minutes ) ;
+        String label = getElapsedTimeLabelHHmmss( seconds ) ;
+        return label.substring( 0, 5 ) ;
     }
 
     public static String enrichExample( String strToEnrich, String word ) {

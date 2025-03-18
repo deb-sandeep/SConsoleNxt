@@ -2,6 +2,7 @@ package com.sandy.sconsole.dao.session.dto;
 
 import com.sandy.sconsole.dao.session.SessionPause;
 import lombok.Data;
+import lombok.NonNull;
 import lombok.ToString;
 
 import java.io.Serializable;
@@ -25,14 +26,18 @@ public class SessionPauseDTO implements Serializable {
         this.endTime = dao.getEndTime() ;
     }
     
-    public SessionPauseDTO( SessionPauseDTO pauseDTO ) {
-        this.id = pauseDTO.id ;
-        this.sessionId = pauseDTO.sessionId ;
-        this.startTime = pauseDTO.startTime ;
-        this.endTime = pauseDTO.endTime ;
+    public SessionPauseDTO( SessionPauseDTO pause ) {
+        this.id = pause.id ;
+        this.absorb( pause );
     }
     
     public int getDuration() {
         return (int)((endTime.getTime() - startTime.getTime())/1000) ;
+    }
+    
+    public void absorb( @NonNull SessionPauseDTO pause ) {
+        this.sessionId = pause.sessionId ;
+        this.startTime = pause.startTime ;
+        this.endTime = pause.endTime ;
     }
 }

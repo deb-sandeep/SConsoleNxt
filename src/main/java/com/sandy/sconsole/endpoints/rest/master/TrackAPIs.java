@@ -1,6 +1,8 @@
 package com.sandy.sconsole.endpoints.rest.master;
 
+import com.sandy.sconsole.EventCatalog;
 import com.sandy.sconsole.core.api.AR;
+import com.sandy.sconsole.core.bus.EventBus;
 import com.sandy.sconsole.dao.master.TopicTrackAssignment;
 import com.sandy.sconsole.dao.master.Track;
 import com.sandy.sconsole.dao.master.repo.TopicTrackAssignmentRepo;
@@ -22,8 +24,9 @@ import java.util.stream.Collectors;
 @RequestMapping( "/Master/Track" )
 public class TrackAPIs {
     
-    @Autowired private TrackRepo trackRepo = null ;
+    @Autowired private EventBus eventBus;
     
+    @Autowired private TrackRepo trackRepo = null ;
     @Autowired private TopicTrackAssignmentRepo ttaRepo = null ;
     
     @GetMapping( "/All" )
@@ -68,6 +71,8 @@ public class TrackAPIs {
             }) ;
             
             Track savedTrack = trackRepo.findById( trackId ).get() ;
+            eventBus.publishEvent( EventCatalog.TRACK_UPDATED, trackId ) ;
+            
             return AR.success( new ArrayList<>( savedTrack.getAssignedTopics() ) ) ;
         }
         catch( Exception e ) {

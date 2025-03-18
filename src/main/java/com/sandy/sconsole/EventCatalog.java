@@ -7,10 +7,8 @@ import com.sandy.sconsole.dao.session.dto.SessionPauseDTO;
 
 public class EventCatalog {
 
-    public static final int CORE_EVENT_RANGE_MIN = 100 ;
-    public static final int CORE_EVENT_RANGE_MAX = 200 ;
-
     // =============== Core Events =============================================
+    // Range : 100 - 200
     
     // =============== Session Events ==========================================
     // Range : 201 - 250
@@ -35,6 +33,9 @@ public class EventCatalog {
     @Payload( ProblemAttemptDTO.class )
     public static final int PROBLEM_ATTEMPT_ENDED = 207 ;
     
+    @Payload( SessionDTO.class )
+    public static final int HISTORIC_SESSION_UPDATED = 208 ;
+    
     // =============== Active Topic Statistics Events ==========================
     // Range : 250 - 300
     
@@ -43,4 +44,22 @@ public class EventCatalog {
 
     @Payload( Integer.class ) // topic id
     public static final int ATS_REFRESHED = 251 ;
+
+    // =============== Today Study Statistics Events ===========================
+    // Range : 301 - 350
+    // It is expected that the subscriber of these events will query the
+    // TodayStudyStatistics bean for any information that it seeks in
+    // response to these events
+    @Payload( Void.class )
+    public static final int TODAY_STUDY_STATS_UPDATED = 301 ;
+    
+    @Payload( Void.class )
+    public static final int TODAY_STUDY_TIME_UPDATED = 302 ;
+    
+    // =============== Track Update Events =====================================
+    // Range : 351 - 400
+    
+    @Payload( Integer.class ) // track id
+    public static final int TRACK_UPDATED = 351 ;
+
 }

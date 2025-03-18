@@ -91,7 +91,7 @@ public class SyllabusBurnTile extends Tile
         topBurnPanel.setTopicStats( null ) ;
         bottomBurnPanel.setTopicStats( null ) ;
         
-        List<ActiveTopicStatistics> topicStats = atsManager.getTopicStatstics( syllabusName ) ;
+        List<ActiveTopicStatistics> topicStats = atsManager.getTopicStatistics( syllabusName ) ;
         if( !topicStats.isEmpty() ) {
             ActiveTopicStatistics stat = topicStats.get( 0 ) ;
             topBurnPanel.setTopicStats( stat ) ;
