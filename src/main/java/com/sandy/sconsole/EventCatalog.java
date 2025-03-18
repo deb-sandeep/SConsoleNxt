@@ -40,4 +40,7 @@ public class EventCatalog {
     
     @Payload( Void.class )
     public static final int ATS_MANAGER_REFRESHED = 250 ;
+
+    @Payload( Integer.class ) // topic id
+    public static final int ATS_REFRESHED = 251 ;
 }

@@ -78,8 +78,10 @@ public class SessionAPIs {
     @PostMapping( "/StartProblemAttempt" )
     public ResponseEntity<AR<Integer>> startProblemAttempt( @RequestBody ProblemAttemptDTO req ) {
         try {
+            Session session = sessionRepo.findById( req.getSessionId() ).get() ;
             ProblemAttempt pa = new ProblemAttempt() ;
-            pa.setSession( sessionRepo.findById( req.getSessionId() ).get() ) ;
+            pa.setSession( session ) ;
+            pa.setTopic( session.getTopic() );
             pa.setProblem( problemRepo.findById( req.getProblemId() ).get() ) ;
             pa.setStartTime( req.getStartTime() ) ;
             pa.setEndTime( req.getEndTime() ) ;

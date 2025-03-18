@@ -2,7 +2,7 @@ package com.sandy.sconsole.ui.screen.dashboard.tile.burn;
 
 import com.sandy.sconsole.core.ui.uiutil.SwingUtils;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
-import com.sandy.sconsole.ui.util.ActiveTopicStatistics;
+import com.sandy.sconsole.state.ActiveTopicStatistics;
 import com.sandy.sconsole.ui.util.ConfiguredUIAttributes;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;

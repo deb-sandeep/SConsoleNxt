@@ -1,6 +1,7 @@
 package com.sandy.sconsole.dao.session;
 
 import com.sandy.sconsole.dao.master.Problem;
+import com.sandy.sconsole.dao.master.Topic;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,6 +23,10 @@ public class ProblemAttempt {
     @ManyToOne( fetch = FetchType.LAZY, optional = false )
     @JoinColumn( name = "session_id", nullable = false )
     private Session session;
+    
+    @ManyToOne( fetch = FetchType.LAZY, optional = false )
+    @JoinColumn( name = "topic_id", nullable = false )
+    private Topic topic;
     
     @ManyToOne( fetch = FetchType.LAZY, optional = false )
     @JoinColumn( name = "problem_id", nullable = false )

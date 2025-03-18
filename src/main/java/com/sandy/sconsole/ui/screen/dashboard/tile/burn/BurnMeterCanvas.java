@@ -1,7 +1,7 @@
 package com.sandy.sconsole.ui.screen.dashboard.tile.burn;
 
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
-import com.sandy.sconsole.ui.util.ActiveTopicStatistics;
+import com.sandy.sconsole.state.ActiveTopicStatistics;
 import jakarta.annotation.PostConstruct;
 import lombok.Setter;
 import org.apache.commons.lang3.math.NumberUtils;

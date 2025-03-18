@@ -5,8 +5,8 @@ import com.sandy.sconsole.core.bus.EventBus;
 import com.sandy.sconsole.core.bus.EventSubscriber;
 import com.sandy.sconsole.core.ui.screen.Tile;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
-import com.sandy.sconsole.ui.util.ActiveTopicStatistics;
-import com.sandy.sconsole.ui.util.ActiveTopicStatisticsManager;
+import com.sandy.sconsole.state.ActiveTopicStatistics;
+import com.sandy.sconsole.state.ActiveTopicStatisticsManager;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -21,14 +21,27 @@ import java.util.List;
 import java.util.Map;
 
 import static com.sandy.sconsole.EventCatalog.ATS_MANAGER_REFRESHED;
+import static com.sandy.sconsole.EventCatalog.ATS_REFRESHED;
 
 /**
- * -
+ * This tile depicts the active topics for a given syllabus along with the
+ * following information:
+ * - A percentage completion bar, showing the percentage of problems in
+ *   this topic completed and percentage remaining
+ * - A burn meter for each topic depicting
+ *      - Target problem count for today
+ *      - Number of problems solved today (color coded - red, amber and green)
  *
  * <p>
  * Reactive features:
  * ------------------
  * - Lifecycle events:
+ *      - Setting up of syllabus name for this tile
+ *      - initialize() : sets up the UI and does the initial refresh
+ *
+ * - Event ATS_MANAGER_REFRESHED : Do a full refresh. Day might have changed
+ * - Event ATS_REFRESHED : Update the topic burn
+ *
  *
  */
 @Slf4j
@@ -37,7 +50,10 @@ import static com.sandy.sconsole.EventCatalog.ATS_MANAGER_REFRESHED;
 public class SyllabusBurnTile extends Tile
     implements EventSubscriber {
 
-    private static final int[] SUBSCRIBED_EVENTS = { ATS_MANAGER_REFRESHED } ;
+    private static final int[] SUBSCRIBED_EVENTS = {
+        ATS_MANAGER_REFRESHED,
+        ATS_REFRESHED
+    } ;
     
     @Autowired private EventBus eventBus ;
     @Autowired private ActiveTopicStatisticsManager atsManager ;
@@ -45,8 +61,6 @@ public class SyllabusBurnTile extends Tile
     @Autowired private TopicBurnPanel bottomBurnPanel ;
     
     @Getter @Setter private String syllabusName ;
-    
-    private final Map<Integer, ActiveTopicStatistics> statsMap = new HashMap<>() ;
     
     private final Map<Integer, TopicBurnPanel> burnPanelMap = new HashMap<>() ;
     
@@ -66,6 +80,7 @@ public class SyllabusBurnTile extends Tile
     public void handleEvent( Event event ) {
         switch( event.getEventType() ) {
             case ATS_MANAGER_REFRESHED -> refresh() ;
+            case ATS_REFRESHED -> refreshTopicBurn( (int)event.getValue() ) ;
         }
     }
     
@@ -91,5 +106,15 @@ public class SyllabusBurnTile extends Tile
         
         topBurnPanel.refreshUI() ;
         bottomBurnPanel.refreshUI() ;
+    }
+    
+    private void refreshTopicBurn( int topicId ) {
+        TopicBurnPanel topicBurnPanel = burnPanelMap.get( topicId ) ;
+        // Can the topic burn panel be null? Yes, note that this instance
+        // will receive ATS_REFRESHED message for all active topics and
+        // this tile manages topic tiles only for the given syllabus
+        if( topicBurnPanel != null ) {
+            topicBurnPanel.refreshUI() ;
+        }
     }
 }

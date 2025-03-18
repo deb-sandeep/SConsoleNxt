@@ -9,7 +9,7 @@ import com.sandy.sconsole.ui.tile.daygantt.DayGanttTile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import static com.sandy.sconsole.ui.util.UIConstants.*;
+import static com.sandy.sconsole.AppConstants.*;
 
 @Component
 public class DashboardScreen extends Screen

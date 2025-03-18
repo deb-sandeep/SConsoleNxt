@@ -1,8 +1,9 @@
-package com.sandy.sconsole.ui.util;
+package com.sandy.sconsole.state;
 
 import com.sandy.sconsole.dao.master.TopicTrackAssignment;
 import com.sandy.sconsole.dao.master.dto.TopicVO;
 import com.sandy.sconsole.dao.master.repo.TopicRepo;
+import com.sandy.sconsole.dao.session.repo.TodaySolvedProblemCountRepo;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.DateUtils;
@@ -23,6 +24,7 @@ public class ActiveTopicStatistics {
     public enum Zone { PRE_START, BUFFER_START, THEORY, EXERCISE, BUFFER_END, POST_END }
     
     @Autowired private TopicRepo topicRepo ;
+    @Autowired private TodaySolvedProblemCountRepo tspcRepo ;
     
     @Getter private TopicVO topic ;
     
@@ -47,7 +49,7 @@ public class ActiveTopicStatistics {
     @Getter private int originalBurnRate ;
     @Getter private int requiredBurnRate ;
     
-    @Getter private int numProblemsSolvedToday = (int)(2 + Math.random()*3) ; //TODO: remove temp
+    @Getter private int numProblemsSolvedToday = 0 ;
 
     public ActiveTopicStatistics() {}
     
@@ -69,13 +71,15 @@ public class ActiveTopicStatistics {
     void destroy() {}
     
     public int getCompletedProblemsCount() {
-        //return totalProblemsCount - remainingProblemCount ;
-        return (int)(totalProblemsCount*0.4) ;
+        return totalProblemsCount - remainingProblemCount ;
     }
     
     public void refreshState() {
         totalProblemsCount = topicRepo.getTotalProblemCount( topicId ) ;
         remainingProblemCount = topicRepo.getRemainingProblemCount( topicId ) ;
+        
+        Integer tempInt = tspcRepo.getNumSolvedProblems( topicId ) ;
+        numProblemsSolvedToday = tempInt == null ? 0 : tempInt ;
         
         Duration duration    = Duration.between( startDate.toInstant(), endDate.toInstant() ) ;
         totalDurationDays    = (int) duration.toDays() ;
@@ -84,7 +88,7 @@ public class ActiveTopicStatistics {
         exerciseDurationDays = totalDurationDays - bufferLeft - theoryMargin - bufferRight ;
         currentZone          = computeCurrentZone() ;
         originalBurnRate     = (int)Math.ceil((float)totalProblemsCount/exerciseDurationDays) ;
-        requiredBurnRate     = numProblemsSolvedToday + (int)(-2 + Math.random()*5) ; //TODO: Remove temp
+        requiredBurnRate     = originalBurnRate ;
         
         if( currentZone == Zone.EXERCISE ) {
             remainingExerciseDays = (int)Duration.between( new Date().toInstant(), exerciseEndDate.toInstant() ).toDays() ;

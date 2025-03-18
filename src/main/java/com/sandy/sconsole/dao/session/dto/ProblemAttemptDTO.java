@@ -10,6 +10,7 @@ import java.util.Date;
 public class ProblemAttemptDTO implements Serializable {
     private Integer id;
     private Integer sessionId;
+    private Integer topicId;
     private Integer problemId;
     private Date    startTime;
     private Date    endTime;
@@ -17,11 +18,14 @@ public class ProblemAttemptDTO implements Serializable {
     private String  prevState;
     private String  targetState;
     
+    // Do not delete the public no arg constructor. Is used by
+    // spring to populate request body
     public ProblemAttemptDTO() {}
     
     public ProblemAttemptDTO( ProblemAttempt pa ) {
         this.id = pa.getId() ;
         this.sessionId = pa.getSession().getId() ;
+        this.topicId = pa.getTopic().getId() ;
         this.problemId = pa.getProblem().getId() ;
         this.startTime = pa.getStartTime() ;
         this.endTime = pa.getEndTime() ;

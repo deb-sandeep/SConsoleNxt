@@ -309,4 +309,8 @@ public class EventBus {
             }
         }
     }
+    
+    public synchronized void publishEvent( final int eventType ) {
+        publishEvent( eventType, null ) ;
+    }
 }

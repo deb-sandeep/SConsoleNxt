@@ -19,6 +19,8 @@ public class SessionDTO implements Serializable {
     private String  syllabusName;
     private int     effectiveDuration;
     
+    // Do not delete the public no arg constructor. Is used by
+    // spring to populate request body
     public SessionDTO() {}
     
     public SessionDTO( Session session ) {
