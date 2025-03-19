@@ -72,7 +72,7 @@ public class SConsole
         this.clock.initialize() ;
 
         log.debug( "- Initializing EventBus" ) ;
-        this.eventBus.setPrintPublishLogs( true ) ;
+        this.eventBus.setPrintPublishLogs( false ) ;
         this.eventBus.setEventCatalogClass( EventCatalog.class ) ;
 
         log.debug( "- Initializing NVPConfig injector." ) ;

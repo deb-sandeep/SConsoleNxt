@@ -1,44 +1,52 @@
 package com.sandy.sconsole.state;
 
+import com.sandy.sconsole.core.util.DayValue;
+import com.sandy.sconsole.core.util.DayValueProvider;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.DateUtils;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
-public abstract class PastStudyTimes {
+@Slf4j
+public abstract class PastStudyTimes
+        implements DayValueProvider {
 
-    private int numPastDays ;
+    private final int numPastDays ;
     
     protected Date today ;
     protected Date startDate ;
-    protected Map<Date, Integer> studyTimes = new HashMap<>() ;
+    protected Map<Date, DayValue> studyTimes = new LinkedHashMap<>() ;
     
     protected PastStudyTimes( int numPastDays ) {
         this.numPastDays = numPastDays ;
     }
     
-    public void init() {
+    public void fullRefresh() {
         today = DateUtils.truncate( new Date(), Calendar.DAY_OF_MONTH ) ;
-        startDate = DateUtils.addDays( today, -29 ) ;
+        startDate = DateUtils.addDays( today, 1-numPastDays ) ;
         
         studyTimes.clear() ;
-        studyTimes.put( startDate, 0 ) ;
-        for( int i=1; i<30; i++ ) {
+        studyTimes.put( startDate, new DayValue( today, 0 ) ) ;
+        for( int i=1; i<numPastDays; i++ ) {
             Date date = DateUtils.addDays( startDate, i ) ;
-            studyTimes.put( date, 0 ) ;
+            studyTimes.put( date, new DayValue( date, 0 ) ) ;
         }
 
-        getPastStudyTimes( this.numPastDays ).forEach( (key, value) -> {
-            if( studyTimes.containsKey( key ) ) {
-                studyTimes.put( key, value ) ;
+        getPastStudyTimes( this.numPastDays ).forEach( (_date, value ) -> {
+            Date date = new Date( _date.getTime() ) ;
+            if( studyTimes.containsKey( date ) ) {
+                studyTimes.put( date, new DayValue( date, (float)value/3600 ) ) ;
             }
         } ) ;
     }
     
+    @Override
+    public Collection<DayValue> getDayValues() {
+        return studyTimes.values() ;
+    }
+    
     public final void updateTodayTime() {
-        studyTimes.put( today, getTodayTime() ) ;
+        studyTimes.put( today, new DayValue( today, (float)getTodayTime()/3600 ) ) ;
     }
     
     protected abstract Map<Date, Integer> getPastStudyTimes( int numPastDays ) ;
@@ -46,5 +54,5 @@ public abstract class PastStudyTimes {
     protected abstract int getTodayTime() ;
     
     /** The subclasses should override, call super method and then do their processing. */
-    protected void clearState() { studyTimes.clear() ;}
+    public void clearState() { studyTimes.clear() ;}
 }

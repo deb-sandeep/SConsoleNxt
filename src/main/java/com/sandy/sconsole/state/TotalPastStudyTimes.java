@@ -2,6 +2,7 @@ package com.sandy.sconsole.state;
 
 import com.sandy.sconsole.SConsole;
 import com.sandy.sconsole.dao.session.repo.DayStudyTimeRepo;
+import com.sandy.sconsole.state.manager.TodayStudyStatistics;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -9,12 +10,13 @@ import java.util.Map;
 
 public class TotalPastStudyTimes extends PastStudyTimes {
     
-    private final DayStudyTimeRepo studyTimeRepo ;
+    private final DayStudyTimeRepo     studyTimeRepo ;
+    private final TodayStudyStatistics todayStudyStatistics ;
     
     public TotalPastStudyTimes() {
         super( 60 ) ;
         this.studyTimeRepo = SConsole.getBean( DayStudyTimeRepo.class ) ;
-        super.init() ;
+        this.todayStudyStatistics = SConsole.getBean( TodayStudyStatistics.class ) ;
     }
     
     @Override
@@ -30,6 +32,6 @@ public class TotalPastStudyTimes extends PastStudyTimes {
     
     @Override
     protected int getTodayTime() {
-        return 0;
+        return todayStudyStatistics.getTotalTimeInSec() ;
     }
 }

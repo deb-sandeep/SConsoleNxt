@@ -2,23 +2,27 @@ package com.sandy.sconsole.state;
 
 import com.sandy.sconsole.SConsole;
 import com.sandy.sconsole.dao.session.repo.DaySyllabusStudyTimeRepo;
+import com.sandy.sconsole.state.manager.TodayStudyStatistics;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 public class SyllabusPastStudyTimes extends PastStudyTimes {
     
     @Getter private final String syllabusName ;
     
     private final DaySyllabusStudyTimeRepo studyTimeRepo ;
+    private final TodayStudyStatistics     todayStudyStatistics ;
     
     public SyllabusPastStudyTimes( String syllabusName ) {
         super( 30 ) ;
         this.syllabusName = syllabusName ;
         this.studyTimeRepo = SConsole.getBean( DaySyllabusStudyTimeRepo.class ) ;
-        super.init() ;
+        this.todayStudyStatistics = SConsole.getBean( TodayStudyStatistics.class ) ;
     }
     
     @Override
@@ -34,6 +38,6 @@ public class SyllabusPastStudyTimes extends PastStudyTimes {
     
     @Override
     protected int getTodayTime() {
-        return 0;
+        return todayStudyStatistics.getSyllabusTime( syllabusName ) ;
     }
 }

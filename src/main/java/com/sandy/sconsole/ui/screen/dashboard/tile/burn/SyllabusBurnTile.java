@@ -6,7 +6,7 @@ import com.sandy.sconsole.core.bus.EventSubscriber;
 import com.sandy.sconsole.core.ui.screen.Tile;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
 import com.sandy.sconsole.state.ActiveTopicStatistics;
-import com.sandy.sconsole.state.ActiveTopicStatisticsManager;
+import com.sandy.sconsole.state.manager.ActiveTopicStatisticsManager;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -41,8 +41,6 @@ import static com.sandy.sconsole.EventCatalog.ATS_REFRESHED;
  *
  * - Event ATS_MANAGER_REFRESHED : Do a full refresh. Day might have changed
  * - Event ATS_REFRESHED : Update the topic burn
- *
- *
  */
 @Slf4j
 @Component

@@ -5,7 +5,7 @@ import com.sandy.sconsole.core.bus.EventBus;
 import com.sandy.sconsole.core.bus.EventSubscriber;
 import com.sandy.sconsole.core.ui.screen.Tile;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
-import com.sandy.sconsole.state.TodayStudyStatistics;
+import com.sandy.sconsole.state.manager.TodayStudyStatistics;
 import com.sandy.sconsole.ui.util.ConfiguredUIAttributes;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

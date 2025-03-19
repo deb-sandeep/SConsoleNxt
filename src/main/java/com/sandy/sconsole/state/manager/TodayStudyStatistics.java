@@ -1,4 +1,4 @@
-package com.sandy.sconsole.state;
+package com.sandy.sconsole.state.manager;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.sandy.sconsole.core.bus.Event;

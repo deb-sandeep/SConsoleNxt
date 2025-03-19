@@ -1,4 +1,4 @@
-package com.sandy.sconsole.state;
+package com.sandy.sconsole.state.manager;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.sandy.sconsole.AppConstants;
@@ -14,6 +14,7 @@ import com.sandy.sconsole.dao.master.repo.TopicTrackAssignmentRepo;
 import com.sandy.sconsole.dao.session.Session;
 import com.sandy.sconsole.dao.session.dto.ProblemAttemptDTO;
 import com.sandy.sconsole.dao.session.repo.SessionRepo;
+import com.sandy.sconsole.state.ActiveTopicStatistics;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.DateUtils;
@@ -70,8 +71,8 @@ public class ActiveTopicStatisticsManager implements ClockTickListener, EventSub
     @Autowired private TopicTrackAssignmentRepo ttaRepo ;
     @Autowired private SessionRepo sessionRepo ;
     
-    private final Map<Integer, ActiveTopicStatistics> topicActiveStatistics = new HashMap<>() ; // Key -> Topic Id
-    private final ArrayListMultimap<String, ActiveTopicStatistics> syllabusActiveTopics  = ArrayListMultimap.create() ; // Key -> Syllabus Name
+    private final Map<Integer, ActiveTopicStatistics> topicStats = new HashMap<>() ; // Key -> Topic Id
+    private final ArrayListMultimap<String, ActiveTopicStatistics> syllabusTopicStats = ArrayListMultimap.create() ; // Key -> Syllabus Name
     
     @PostConstruct
     public void init() throws ParseException {
@@ -114,17 +115,17 @@ public class ActiveTopicStatisticsManager implements ClockTickListener, EventSub
             ats.setTopicTrackAssignment( assignment ) ;
             ats.init() ;
             
-            syllabusActiveTopics.put( ats.getTopic().getSyllabusName(), ats ) ;
-            topicActiveStatistics.put( ats.getTopic().getTopicId(), ats ) ;
+            syllabusTopicStats.put( ats.getTopic().getSyllabusName(), ats ) ;
+            topicStats.put( ats.getTopic().getTopicId(), ats ) ;
         } ) ;
         
         eventBus.publishEvent( EventCatalog.ATS_MANAGER_REFRESHED ) ;
     }
     
     private void clearState() {
-        topicActiveStatistics.values().forEach( ActiveTopicStatistics::destroy ) ;
-        syllabusActiveTopics.clear() ;
-        topicActiveStatistics.clear() ;
+        topicStats.values().forEach( ActiveTopicStatistics::destroy ) ;
+        syllabusTopicStats.clear() ;
+        topicStats.clear() ;
     }
     
     private void _handleProblemAttemptEnded( ProblemAttemptDTO pa ) {
@@ -136,7 +137,7 @@ public class ActiveTopicStatisticsManager implements ClockTickListener, EventSub
             targetState.equals( AppConstants.PROBLEM_STATE_REASSIGN ) ) {
             
             Session session = sessionRepo.findById( pa.getSessionId() ).get() ;
-            ActiveTopicStatistics ats = topicActiveStatistics.get( session.getTopic().getId() ) ;
+            ActiveTopicStatistics ats = topicStats.get( session.getTopic().getId() ) ;
             
             if( ats != null ) {
                 ats.refreshState() ;
@@ -146,6 +147,6 @@ public class ActiveTopicStatisticsManager implements ClockTickListener, EventSub
     }
     
     public List<ActiveTopicStatistics> getTopicStatistics( String syllabusName ) {
-        return syllabusActiveTopics.get( syllabusName ) ;
+        return syllabusTopicStats.get( syllabusName ) ;
     }
 }

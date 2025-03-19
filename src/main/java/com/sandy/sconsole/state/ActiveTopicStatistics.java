@@ -53,7 +53,7 @@ public class ActiveTopicStatistics {
     
     public ActiveTopicStatistics() {}
     
-    void setTopicTrackAssignment( TopicTrackAssignment assignment ) {
+    public void setTopicTrackAssignment( TopicTrackAssignment assignment ) {
         this.topicId      = assignment.getTopicId() ;
         this.bufferLeft   = assignment.getBufferLeft() ;
         this.bufferRight  = assignment.getBufferRight() ;
@@ -62,13 +62,12 @@ public class ActiveTopicStatistics {
         this.endDate      = assignment.getEndDate() ;
     }
     
-    void init() {
+    public void init() {
         topic = new TopicVO( topicRepo.findById( topicId ).get() ) ;
-        log.debug( "    Initializing active topic statistics for topic {}", topic.getTopicName() );
         refreshState() ;
     }
     
-    void destroy() {}
+    public void destroy() {}
     
     public int getCompletedProblemsCount() {
         return totalProblemsCount - remainingProblemCount ;

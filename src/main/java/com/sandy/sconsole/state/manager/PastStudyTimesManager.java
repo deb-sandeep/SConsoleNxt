@@ -1,4 +1,4 @@
-package com.sandy.sconsole.state;
+package com.sandy.sconsole.state.manager;
 
 import com.sandy.sconsole.AppConstants;
 import com.sandy.sconsole.EventCatalog;
@@ -7,6 +7,10 @@ import com.sandy.sconsole.core.bus.EventBus;
 import com.sandy.sconsole.core.bus.EventSubscriber;
 import com.sandy.sconsole.core.clock.ClockTickListener;
 import com.sandy.sconsole.core.clock.SConsoleClock;
+import com.sandy.sconsole.core.util.DayValue;
+import com.sandy.sconsole.state.PastStudyTimes;
+import com.sandy.sconsole.state.SyllabusPastStudyTimes;
+import com.sandy.sconsole.state.TotalPastStudyTimes;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,6 +86,7 @@ public class PastStudyTimesManager implements ClockTickListener, EventSubscriber
     public void init() {
         clock.addTickListener( this, TimeUnit.DAYS ) ;
         eventBus.addSubscriberForEventTypes( this, true, SUBSCRIBED_EVENTS ) ;
+        fullRefresh() ;
     }
     
     @Override
@@ -109,7 +114,7 @@ public class PastStudyTimesManager implements ClockTickListener, EventSubscriber
     private void fullRefresh() {
         Arrays.stream( allPastStudyTimes ).forEach( item -> {
             item.clearState() ;
-            item.init() ;
+            item.fullRefresh() ;
         } ) ;
         eventBus.publishEvent( EventCatalog.PAST_STUDY_TIME_UPDATED ) ;
     }
@@ -117,5 +122,19 @@ public class PastStudyTimesManager implements ClockTickListener, EventSubscriber
     private void updateTodayTime() {
         Arrays.stream( allPastStudyTimes ).forEach( PastStudyTimes::updateTodayTime ) ;
         eventBus.publishEvent( EventCatalog.PAST_STUDY_TIME_UPDATED ) ;
+    }
+    
+    // Returns the max day value across the historic data of all syllabus
+    public double getMaxSyllabusTime() {
+        return syllabusStudyTimesMap.values()
+                .stream()
+                .mapToDouble( st ->
+                        st.getDayValues()
+                          .stream()
+                          .mapToDouble( DayValue::value )
+                          .max()
+                          .getAsDouble() )
+                .max()
+                .getAsDouble() ;
     }
 }
