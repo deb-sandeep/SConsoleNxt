@@ -1,6 +1,7 @@
 package com.sandy.sconsole;
 
 import com.sandy.sconsole.core.SConsoleConfig;
+import com.sandy.sconsole.core.bus.EventBus;
 import com.sandy.sconsole.core.clock.SConsoleClock;
 import com.sandy.sconsole.core.nvpconfig.annotation.NVPConfigAnnotationProcessor;
 import com.sandy.sconsole.core.ui.SConsoleFrame;
@@ -43,9 +44,10 @@ public class SConsole
     
     // ---------------- Instance methods start ---------------------------------
     
-    @Autowired private SConsoleClock  clock ;
-    @Autowired private SConsoleFrame  frame ;
-    @Autowired private QuoteManager   quoteManager ;
+    @Autowired private SConsoleClock clock ;
+    @Autowired private EventBus eventBus ;
+    @Autowired private SConsoleFrame frame ;
+    @Autowired private QuoteManager quoteManager ;
     @Autowired private NVPConfigAnnotationProcessor nvpAnnotationProcessor ;
     @Autowired private ScreenManager screenManager ;
     
@@ -68,6 +70,10 @@ public class SConsole
 
         log.debug( "- Initializing Clock" ) ;
         this.clock.initialize() ;
+
+        log.debug( "- Initializing EventBus" ) ;
+        this.eventBus.setPrintPublishLogs( true ) ;
+        this.eventBus.setEventCatalogClass( EventCatalog.class ) ;
 
         log.debug( "- Initializing NVPConfig injector." ) ;
         nvpAnnotationProcessor.processNVPConfigAnnotations() ;

@@ -9,7 +9,7 @@ import lombok.Setter;
 import org.hibernate.annotations.Immutable;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -20,7 +20,7 @@ public class DayStudyTime {
 
     @Id
     @Column( name = "date" )
-    private LocalDate date;
+    private Date date;
     
     @Column( name = "total_time", precision = 32 )
     private BigDecimal totalTime;

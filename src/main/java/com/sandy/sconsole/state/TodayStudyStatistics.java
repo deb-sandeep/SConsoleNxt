@@ -67,8 +67,8 @@ public class TodayStudyStatistics
     // Sessions per syllabus. Key = Syllabus Name
     private final ArrayListMultimap<String, SessionDTO> syllabusSessions = ArrayListMultimap.create();
     
-    @Getter private int totalTimeInSec = 0 ;
     private Day today = new Day() ;
+    @Getter private int totalTimeInSec = 0 ;
     
     // Stores effective times for each syllabus. Key = Syllabus Name
     private final Map<String, Integer> syllabusTimes = new HashMap<>() ;

@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 import static com.sandy.sconsole.core.log.LogIndenter.THREAD_NAME_KEY;
 
 @Slf4j
-@Component
+@Component( "clock" )
 public class SConsoleClock {
 
     public static class CurrentTimeProvider {

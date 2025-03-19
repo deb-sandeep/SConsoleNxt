@@ -4,9 +4,11 @@ import com.sandy.sconsole.core.bus.Payload;
 import com.sandy.sconsole.dao.session.dto.ProblemAttemptDTO;
 import com.sandy.sconsole.dao.session.dto.SessionDTO;
 import com.sandy.sconsole.dao.session.dto.SessionPauseDTO;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class EventCatalog {
-
+    
     // =============== Core Events =============================================
     // Range : 100 - 200
     
@@ -61,5 +63,11 @@ public class EventCatalog {
     
     @Payload( Integer.class ) // track id
     public static final int TRACK_UPDATED = 351 ;
+
+    // =============== Past Study Time Update Events ===========================
+    // Range : 401 - 410
+    
+    @Payload( Void.class ) // track id
+    public static final int PAST_STUDY_TIME_UPDATED = 401 ;
 
 }

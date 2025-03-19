@@ -18,6 +18,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
@@ -43,10 +44,6 @@ import java.util.concurrent.TimeUnit;
  *   has ended. The problem attempt is analyzed to determine if it can result in
  *   a burn statistics change and if so, the topic state is updated.
  *
- * -> Topic study time refresh : Topic statistics maintains the study time for
- *   last 30 days, including today. TODO: Complete
- *   TODO: Consume HISTORIC_SESSION_UPDATED event
- *
  * Events Consumed:
  * ----------------
  * 1. Day tick -> Full refresh
@@ -56,6 +53,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 @Component
+@DependsOn( {"clock", "eventBus" } )
 public class ActiveTopicStatisticsManager implements ClockTickListener, EventSubscriber {
     
     private static final int[] SUBSCRIBED_EVENTS = {
@@ -72,8 +70,8 @@ public class ActiveTopicStatisticsManager implements ClockTickListener, EventSub
     @Autowired private TopicTrackAssignmentRepo ttaRepo ;
     @Autowired private SessionRepo sessionRepo ;
     
-    private final ArrayListMultimap<String, ActiveTopicStatistics> syllabusActiveTopics  = ArrayListMultimap.create() ;
-    private final Map<Integer, ActiveTopicStatistics>              topicActiveStatistics = new HashMap<>() ;
+    private final Map<Integer, ActiveTopicStatistics> topicActiveStatistics = new HashMap<>() ; // Key -> Topic Id
+    private final ArrayListMultimap<String, ActiveTopicStatistics> syllabusActiveTopics  = ArrayListMultimap.create() ; // Key -> Syllabus Name
     
     @PostConstruct
     public void init() throws ParseException {
@@ -95,11 +93,9 @@ public class ActiveTopicStatisticsManager implements ClockTickListener, EventSub
     @Override
     public void handleEvent( Event event ) {
         int eventType = event.getEventType() ;
-        if( eventType == EventCatalog.TRACK_UPDATED ) {
-            refreshState( REF_DATE );
-        }
-        else if( eventType == EventCatalog.PROBLEM_ATTEMPT_ENDED ) {
-            _handleProblemAttemptEnded( (ProblemAttemptDTO)event.getValue() ) ;
+        switch ( eventType ) {
+            case EventCatalog.TRACK_UPDATED -> refreshState( REF_DATE ) ;
+            case EventCatalog.PROBLEM_ATTEMPT_ENDED -> _handleProblemAttemptEnded( (ProblemAttemptDTO)event.getValue() ) ;
         }
     }
     
@@ -148,7 +144,7 @@ public class ActiveTopicStatisticsManager implements ClockTickListener, EventSub
             }
         }
     }
-
+    
     public List<ActiveTopicStatistics> getTopicStatistics( String syllabusName ) {
         return syllabusActiveTopics.get( syllabusName ) ;
     }

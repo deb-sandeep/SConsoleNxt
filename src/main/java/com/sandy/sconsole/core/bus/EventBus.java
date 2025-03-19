@@ -1,11 +1,16 @@
 package com.sandy.sconsole.core.bus;
 
+import com.sandy.sconsole.EventCatalog;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.lang.reflect.Field;
 import java.util.*;
 import java.util.Map.Entry;
 
-@Component
+@Slf4j
+@Component( "eventBus" )
 public class EventBus {
 
     public static final int ALL_EVENTS = 0xCAFEBABE ;
@@ -41,6 +46,14 @@ public class EventBus {
     private final Map<EventRange, List<EventSubscriber>> eventRangeSubscriberMap =
             new HashMap<>() ;
     
+    // A class which contains public static final int definitions of events
+    // This class is introspected to reverse translate the event code to
+    // event name for debugging purposes
+    @Setter private Class<?> eventCatalogClass ;
+    
+    @Setter private boolean printPublishLogs = false ;
+    
+    private final Map<Integer, String> eventCodeVsNameMap = new HashMap<>() ;
     
     private boolean isSubscriberPresent( List<EventSubscriber> subscribers, 
                                          EventSubscriber subscriber ) {
@@ -301,6 +314,10 @@ public class EventBus {
      */
     public synchronized void publishEvent( final int eventType, final Object value ) {
         
+        if( printPublishLogs ) {
+            log.debug( "Publishing event {} with value {}", getEventName( eventType ), value ) ;
+        }
+        
         Event event = new Event( eventType, value ) ;
         List<EventSubscriber> subscribers = getSubscribersForEvent( eventType ) ;
         if( !subscribers.isEmpty() ) {
@@ -312,5 +329,37 @@ public class EventBus {
     
     public synchronized void publishEvent( final int eventType ) {
         publishEvent( eventType, null ) ;
+    }
+    
+    private String getEventName( final int eventType ) {
+        String eventName = "EVENT_NAME_UNKNOWN" ;
+        if( eventCatalogClass != null ) {
+            if( eventCodeVsNameMap.containsKey( eventType ) ) {
+                eventName = eventCodeVsNameMap.get( eventType ) ;
+            }
+            else {
+                eventName = extractEventName( eventType ) ;
+                eventCodeVsNameMap.put( eventType, eventName ) ;
+            }
+        }
+        return eventName ;
+    }
+    
+    private String extractEventName( final int eventCode ) {
+        try {
+            Field[] fields = eventCatalogClass.getDeclaredFields() ;
+            for ( Field field : fields ) {
+                if( field.getAnnotation( Payload.class ) != null ) {
+                    Integer code = ( Integer )field.get( EventCatalog.class ) ;
+                    if( code == eventCode ) {
+                        return field.getName() ;
+                    }
+                }
+            }
+        }
+        catch( Exception e ) {
+            log.error( "Error while getting event name for event code {}", eventCode, e ) ;
+        }
+        return "EVENT_NAME_UNKNOWN" ;
     }
 }
