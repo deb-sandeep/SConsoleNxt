@@ -41,9 +41,15 @@ public abstract class Tile extends AbstractPanel {
         else {
             super.setLayout( new BorderLayout() ) ;
         }
-        
-        if( isBordered ) {
+        enableBorder( isBordered ) ;
+    }
+    
+    protected void enableBorder( boolean enable ) {
+        if( enable ) {
             super.setBorder( UITheme.TILE_BORDER ) ;
+        }
+        else {
+            super.setBorder( null ) ;
         }
     }
 

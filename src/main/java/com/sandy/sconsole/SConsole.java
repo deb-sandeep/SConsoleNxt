@@ -103,7 +103,8 @@ public class SConsole
         screenManager.registerScreen( sessionScreen ) ;
         
         // 3. Set the day and night root screens
-        screenManager.setDayRootScreen( dashboardScreen.getId() ) ;
+        //screenManager.setDayRootScreen( dashboardScreen.getId() ) ;
+        screenManager.setDayRootScreen( sessionScreen.getId() ) ;
         screenManager.setNightRootScreen( clockScreen.getId() ) ;
         
         // 4. Add screen transitions

@@ -3,41 +3,14 @@ package com.sandy.sconsole.ui.screen.clock;
 import com.sandy.sconsole.core.clock.ClockTickListener;
 import com.sandy.sconsole.core.clock.SConsoleClock;
 import com.sandy.sconsole.core.ui.screen.Screen;
-import com.sandy.sconsole.core.ui.screen.tiles.StringTile;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
+import com.sandy.sconsole.ui.util.DateTile;
+import com.sandy.sconsole.ui.util.TimeTile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
-
-class DateTile extends StringTile {
-    
-    private final SimpleDateFormat dateFormat ;
-    
-    public DateTile() {
-        super( 70 ) ;
-        this.dateFormat = new SimpleDateFormat( "dd MMM, EEEE" ) ;
-    }
-    
-    public void updateDisplay( Calendar calendar ) {
-        setLabelText( dateFormat.format( calendar.getTime() ) ) ;
-    }
-}
-
-class TimeTile extends StringTile {
-    
-    private static final SimpleDateFormat SDF = new SimpleDateFormat( "HH:mm:ss" ) ;
-    
-    public TimeTile() {
-        super( 150 ) ;
-    }
-    
-    public void updateDisplay( Calendar calendar ) {
-        setLabelText( SDF.format( calendar.getTime() ) ) ;
-    }
-}
 
 @Component
 public class ClockScreen extends Screen implements ClockTickListener {
@@ -57,12 +30,12 @@ public class ClockScreen extends Screen implements ClockTickListener {
     @Override
     public void initialize() {
         super.setUpBaseUI( theme ) ;
-        setUpUI( theme ) ;
+        setUpUI() ;
     }
 
-    private void setUpUI( UITheme theme ) {
-        timeTile = new TimeTile() ;
-        dateTile = new DateTile() ;
+    private void setUpUI() {
+        timeTile = new TimeTile( 150 ) ;
+        dateTile = new DateTile( 70 ) ;
         super.addTile( timeTile, 2, 10, 13, 18 ) ;
         super.addTile( dateTile, 2, 18, 13, 21 ) ;
     }
