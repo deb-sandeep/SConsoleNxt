@@ -2,6 +2,7 @@ package com.sandy.sconsole.endpoints.rest.session;
 
 import com.sandy.sconsole.core.api.AR;
 import com.sandy.sconsole.core.bus.EventBus;
+import com.sandy.sconsole.core.ui.screen.ScreenManager;
 import com.sandy.sconsole.dao.master.SessionType;
 import com.sandy.sconsole.dao.master.TopicProblem;
 import com.sandy.sconsole.dao.master.repo.ProblemRepo;
@@ -17,6 +18,7 @@ import com.sandy.sconsole.dao.session.dto.SessionPauseDTO;
 import com.sandy.sconsole.dao.session.repo.ProblemAttemptRep;
 import com.sandy.sconsole.dao.session.repo.SessionPauseRepo;
 import com.sandy.sconsole.dao.session.repo.SessionRepo;
+import com.sandy.sconsole.ui.screen.session.SessionScreen;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -40,6 +42,8 @@ public class SessionAPIs {
     @Autowired private ProblemRepo       problemRepo ;
     @Autowired private ProblemAttemptRep paRepo ;
     @Autowired private ProblemAttemptRep problemAttemptRep;
+    
+    @Autowired private ScreenManager screenManager ;
     
     @Autowired private EventBus eventBus ;
     
@@ -67,8 +71,21 @@ public class SessionAPIs {
             Session savedDao = sessionRepo.save( dao ) ;
             
             eventBus.publishEvent( SESSION_STARTED, new SessionDTO( savedDao ) ) ;
+            screenManager.scheduleScreenChange( SessionScreen.ID ) ;
             
             return success( savedDao.getId() ) ;
+        }
+        catch( Exception e ) {
+            return systemError( e ) ;
+        }
+    }
+    
+    @PostMapping( "/{sessionId}/EndSession" )
+    public ResponseEntity<AR<String>> endSession(  @PathVariable( "sessionId" ) int sessionId ) {
+        try {
+            eventBus.publishEvent( SESSION_ENDED, sessionId ) ;
+            screenManager.showRootScreen() ;
+            return success() ;
         }
         catch( Exception e ) {
             return systemError( e ) ;

@@ -122,6 +122,10 @@ public class ScreenManager extends Thread implements ClockTickListener {
         execute( CHANGE_SCREEN_CMD( screenId ) ) ;
     }
     
+    public void showRootScreen() {
+        execute( CHANGE_SCREEN_CMD( currentRootScreen.getId() ) );
+    }
+    
     // -------------------- Internal methods -----------------------------------
     private void loadConfig() {
         try {

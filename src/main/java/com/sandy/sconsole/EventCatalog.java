@@ -17,26 +17,29 @@ public class EventCatalog {
     @Payload( SessionDTO.class )
     public static final int SESSION_STARTED = 201 ;
     
-    @Payload( SessionPauseDTO.class )
-    public static final int PAUSE_STARTED = 202 ;
-    
-    @Payload( ProblemAttemptDTO.class )
-    public static final int PROBLEM_ATTEMPT_STARTED = 203 ;
-    
     @Payload( SessionDTO.class )
-    public static final int SESSION_EXTENDED = 204 ;
+    public static final int SESSION_EXTENDED = 202 ;
+    
+    @Payload( Integer.class ) // Session ID
+    public static final int SESSION_ENDED = 203 ;
+    
+    @Payload( SessionPauseDTO.class )
+    public static final int PAUSE_STARTED = 204 ;
     
     @Payload( SessionPauseDTO.class )
     public static final int PAUSE_EXTENDED = 205 ;
     
     @Payload( ProblemAttemptDTO.class )
-    public static final int PROBLEM_ATTEMPT_EXTENDED = 206 ;
+    public static final int PROBLEM_ATTEMPT_STARTED = 206 ;
     
     @Payload( ProblemAttemptDTO.class )
-    public static final int PROBLEM_ATTEMPT_ENDED = 207 ;
+    public static final int PROBLEM_ATTEMPT_EXTENDED = 207 ;
+    
+    @Payload( ProblemAttemptDTO.class )
+    public static final int PROBLEM_ATTEMPT_ENDED = 208 ;
     
     @Payload( SessionDTO.class )
-    public static final int HISTORIC_SESSION_UPDATED = 208 ;
+    public static final int HISTORIC_SESSION_UPDATED = 209 ;
     
     // =============== Active Topic Statistics Events ==========================
     // Range : 250 - 300
