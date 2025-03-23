@@ -32,6 +32,10 @@ import java.util.concurrent.TimeUnit;
  * of the active topics it manages an instance of ActiveTopicStatistics and
  * updates their state accordingly.
  *
+ * In case a request is made for a topic that is not active, it is loaded
+ * and cached before returning the active stats. This scenario might occur
+ * if the user requests to start a session for a topic which is not active.
+ *
  * The state of this cache is updated at three levels of granularity:
  *
  * -> Full refresh : Active topics are updated and the entire state is computed
@@ -54,7 +58,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 @Component
-@DependsOn( {"clock", "eventBus" } )
+@DependsOn( { "clock", "eventBus" } )
 public class ActiveTopicStatisticsManager implements ClockTickListener, EventSubscriber {
     
     private static final int[] SUBSCRIBED_EVENTS = {
@@ -110,16 +114,18 @@ public class ActiveTopicStatisticsManager implements ClockTickListener, EventSub
         List<TopicTrackAssignment> activeAssignments = ttaRepo.findActiveAssignments( date ) ;
         log.debug( "    Found {} active assignments", activeAssignments.size() ) ;
         
-        activeAssignments.forEach( assignment -> {
-            ActiveTopicStatistics ats = SConsole.getBean( ActiveTopicStatistics.class ) ;
-            ats.setTopicTrackAssignment( assignment ) ;
-            ats.init() ;
-            
-            syllabusTopicStats.put( ats.getTopic().getSyllabusName(), ats ) ;
-            topicStats.put( ats.getTopic().getTopicId(), ats ) ;
-        } ) ;
+        activeAssignments.forEach( this::initializeActiveTopicStats ) ;
         
         eventBus.publishEvent( EventCatalog.ATS_MANAGER_REFRESHED ) ;
+    }
+    
+    private void initializeActiveTopicStats( TopicTrackAssignment assignment ) {
+        ActiveTopicStatistics ats = SConsole.getBean( ActiveTopicStatistics.class ) ;
+        ats.setTopicTrackAssignment( assignment ) ;
+        ats.init() ;
+        
+        syllabusTopicStats.put( ats.getTopic().getSyllabusName(), ats ) ;
+        topicStats.put( ats.getTopic().getTopicId(), ats ) ;
     }
     
     private void clearState() {
@@ -148,5 +154,14 @@ public class ActiveTopicStatisticsManager implements ClockTickListener, EventSub
     
     public List<ActiveTopicStatistics> getTopicStatistics( String syllabusName ) {
         return syllabusTopicStats.get( syllabusName ) ;
+    }
+    
+    public ActiveTopicStatistics getTopicStatistics( int topicId ) {
+        ActiveTopicStatistics ats = topicStats.get( topicId ) ;
+        if( ats == null ) {
+            TopicTrackAssignment tta = ttaRepo.findByTopicId( topicId ) ;
+            this.initializeActiveTopicStats( tta ) ;
+        }
+        return topicStats.get( topicId ) ;
     }
 }

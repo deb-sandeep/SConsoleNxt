@@ -43,8 +43,8 @@ class PctCompletionCanvas extends JPanel {
             int width = getWidth() - BORDER.left - BORDER.right ;
             int height = getHeight() - BORDER.top - BORDER.bottom ;
             
-            float pixelsPerQuestion = ((float)width)/topicStats.getTotalProblemsCount() ;
-            int partition = (int)(pixelsPerQuestion * topicStats.getCompletedProblemsCount() ) ;
+            float pixelsPerQuestion = ((float)width)/topicStats.getNumTotalProblems() ;
+            int partition = (int)(pixelsPerQuestion * topicStats.numProblemsCompleted() ) ;
             
             g.setColor( Color.GREEN.darker() .darker()) ;
             g.fillRect( BORDER.left, BORDER.top, partition, height ) ;

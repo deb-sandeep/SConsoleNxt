@@ -19,7 +19,7 @@ public class SwingUtils {
     public static BufferedImage getIconImage( String iconName ) {
         BufferedImage img ;
         try {
-            URL url = SwingUtils.class.getResource( "/icons/" + iconName + ".png" ) ;
+            URL url = SwingUtils.class.getResource( "/icons/" + iconName ) ;
             assert url != null;
             img = ImageIO.read( url ) ;
         }

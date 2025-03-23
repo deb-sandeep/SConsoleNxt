@@ -31,4 +31,6 @@ public interface TopicTrackAssignmentRepo extends CrudRepository<TopicTrackAssig
             tta.topicId
     """)
     List<TopicTrackAssignment> findActiveAssignments( Date date ) ;
+    
+    TopicTrackAssignment findByTopicId( Integer topicId ) ;
 }

@@ -46,8 +46,9 @@ public class TodayStudyStatistics
     
     private static final int[] SUBSCRIBED_EVENTS = {
             SESSION_STARTED,
-            PAUSE_STARTED,
             SESSION_EXTENDED,
+            SESSION_ENDED,
+            PAUSE_STARTED,
             PAUSE_EXTENDED,
             HISTORIC_SESSION_UPDATED
     } ;
@@ -69,6 +70,7 @@ public class TodayStudyStatistics
     
     private Day today = new Day() ;
     @Getter private int totalTimeInSec = 0 ;
+    @Getter SessionDTO liveSession ;
     
     // Stores effective times for each syllabus. Key = Syllabus Name
     private final Map<String, Integer> syllabusTimes = new HashMap<>() ;
@@ -76,7 +78,10 @@ public class TodayStudyStatistics
     @PostConstruct
     public void init() {
         clock.addTickListener( this, TimeUnit.DAYS ) ;
-        eventBus.addSubscriberForEventTypes( this, true, SUBSCRIBED_EVENTS) ;
+        // Consume the events synchronously. Why? Because the session screen
+        // will ask for the live session before activation and handling a
+        // session start event needs to be deterministically done before that.
+        eventBus.addSubscriberForEventTypes( this, false, SUBSCRIBED_EVENTS) ;
         initializeState() ;
     }
     
@@ -114,6 +119,10 @@ public class TodayStudyStatistics
             case PAUSE_EXTENDED:
                 updateCachedPause( (SessionPauseDTO)event.getValue(), true ) ;
                 break ;
+                
+            case SESSION_ENDED:
+                liveSession = null ;
+                break ;
         }
     }
     
@@ -142,6 +151,7 @@ public class TodayStudyStatistics
             syllabusSessions.put( newSession.getSyllabusName(), newSession ) ;
             return newSession ;
         } ) ;
+        liveSession = session ;
         session.absorb( _session ) ;
         
         if( today.after( session.getStartTime() ) ) {

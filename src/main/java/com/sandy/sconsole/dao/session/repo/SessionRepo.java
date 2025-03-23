@@ -31,4 +31,14 @@ public interface SessionRepo extends JpaRepository<Session, Integer> {
         ORDER BY id
     """ )
     List<Session> getSessionsForDate( @Param( "date" ) Date date ) ;
+    
+    @Query( nativeQuery=true, value = """
+        SELECT *
+        FROM
+            session s
+        WHERE
+            s.start_time > DATE(DATE_SUB(NOW(), INTERVAL 31 DAY))
+        ORDER BY id
+    """ )
+    List<Session> getL30Sessions() ;
 }

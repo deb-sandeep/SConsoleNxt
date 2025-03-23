@@ -236,9 +236,8 @@ public class EventBus {
      *        will not be notified by the bus. If the event types is null,
      *        this subscriber will be removed from all existing registrations
      */
-    public synchronized void removeSubscriber( 
-                                              final EventSubscriber subscriber,
-                                              int... eventTypes ) {
+    public synchronized void removeSubscriber( final EventSubscriber subscriber,
+                                               int... eventTypes ) {
         
         if( eventTypes == null || eventTypes.length == 0 ) {
             removeSubscriberFromEventMap( subscriber, ALL_EVENTS ) ;

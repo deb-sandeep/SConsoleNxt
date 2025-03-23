@@ -44,7 +44,7 @@ public abstract class Tile extends AbstractPanel {
         enableBorder( isBordered ) ;
     }
     
-    protected void enableBorder( boolean enable ) {
+    public void enableBorder( boolean enable ) {
         if( enable ) {
             super.setBorder( UITheme.TILE_BORDER ) ;
         }
