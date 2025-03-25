@@ -57,11 +57,13 @@ public abstract class Screen extends AbstractPanel {
     public final void invokeLifecycleMethod( LifecycleMethodType methodType ) {
         
         try {
-            // In case of initialization, the screen gets initialized first
-            // followed by all the tiles. For activation and deactivation,
-            // the reverse order is followed.
+            // In case of initialization and activation, the screen gets initialized first
+            // followed by all the tiles. For deactivation, the reverse order is followed.
             if( methodType == LifecycleMethodType.INITIALIZE ) {
                 this.initialize() ;
+            }
+            else if( methodType == LifecycleMethodType.BEFORE_ACTIVATION ) {
+                this.beforeActivation() ;
             }
             
             Field[] fields = this.getClass().getDeclaredFields() ;
@@ -81,9 +83,8 @@ public abstract class Screen extends AbstractPanel {
                 }
             }
             
-            switch( methodType ) {
-                case BEFORE_ACTIVATION -> this.beforeActivation() ;
-                case BEFORE_DEACTIVATION -> this.beforeDeactivation() ;
+            if( methodType == LifecycleMethodType.BEFORE_DEACTIVATION ) {
+                this.beforeDeactivation() ;
             }
         }
         catch( IllegalAccessException e ) {

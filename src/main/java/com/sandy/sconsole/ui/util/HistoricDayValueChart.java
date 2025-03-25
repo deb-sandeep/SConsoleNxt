@@ -25,7 +25,7 @@ import java.util.Collection;
 import java.util.function.Supplier;
 
 @Slf4j
-public class DayValueChart {
+public class HistoricDayValueChart {
     
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd");
     
@@ -49,12 +49,12 @@ public class DayValueChart {
     
     private final Supplier<Double> rangeMaxValueSupplier ;
     
-    public DayValueChart( String valueAxisLabel,
-                          Color valueColor,
-                          Color trendColor,
-                          DayValueProvider dataProvider,
-                          Supplier<Double> rangeMaxValueSupplier,
-                          boolean subtle ) {
+    public HistoricDayValueChart( String valueAxisLabel,
+                                  Color valueColor,
+                                  Color trendColor,
+                                  DayValueProvider dataProvider,
+                                  Supplier<Double> rangeMaxValueSupplier,
+                                  boolean subtle ) {
         
         this.valueAxisLabel = valueAxisLabel ;
         this.valueColor     = valueColor ;

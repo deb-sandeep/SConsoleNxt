@@ -11,6 +11,8 @@ import com.sandy.sconsole.ui.screen.dashboard.tile.daygantt.DayGanttTile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.swing.border.MatteBorder;
+
 import static com.sandy.sconsole.AppConstants.*;
 
 @Component
@@ -58,6 +60,8 @@ public class DashboardScreen extends Screen
     }
     
     private void setUpUI() {
+        setUpTileBorders() ;
+        
         super.addTile( dayGanttTile, 0,  0, 15,  1 ) ;
         super.addTile( dateTimeTile, 0,  2, 15,  5 ) ;
         
@@ -72,5 +76,12 @@ public class DashboardScreen extends Screen
         super.addTile( reasoningL30StudyTimeTile, 8,  21,  15, 25 ) ;
         
         super.addTile( l60EffortTile, 0, 26, 15, 31 ) ;
+    }
+    
+    private void setUpTileBorders() {
+        phyL30StudyTimeTile.setBorder( new MatteBorder( 0, 1, 1, 1, UITheme.TILE_BORDER_COLOR ) ) ;
+        chemL30StudyTimeTile.setBorder( new MatteBorder( 0, 1, 1, 1, UITheme.TILE_BORDER_COLOR ) ) ;
+        mathsL30StudyTimeTile.setBorder( new MatteBorder( 0, 1, 1, 1, UITheme.TILE_BORDER_COLOR ) ) ;
+        reasoningL30StudyTimeTile.setBorder( new MatteBorder( 0, 1, 1, 1, UITheme.TILE_BORDER_COLOR ) ) ;
     }
 }

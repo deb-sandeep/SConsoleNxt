@@ -16,6 +16,7 @@ import com.sandy.sconsole.dao.session.repo.SessionRepo;
 import com.sandy.sconsole.state.ActiveTopicStatistics;
 import com.sandy.sconsole.state.manager.ActiveTopicStatisticsManager;
 import com.sandy.sconsole.state.manager.TodayStudyStatistics;
+import com.sandy.sconsole.ui.screen.dashboard.tile.SyllabusL30EffortTile;
 import com.sandy.sconsole.ui.screen.dashboard.tile.daygantt.DayGanttTile;
 import com.sandy.sconsole.ui.screen.session.tile.FragmentationTile;
 import com.sandy.sconsole.ui.screen.session.tile.TopicBurnStatTile;
@@ -64,6 +65,7 @@ public class SessionScreen extends Screen
     @Autowired private DayGanttTile dayGanttTile ;
     @Autowired private TopicBurnStatTile topicBurnStatTile ;
     @Autowired private FragmentationTile fragmentationTile ;
+    @Autowired private SyllabusL30EffortTile sylL30EffortTile;
     
     private int sessionId ;
     private String sessionType ;
@@ -105,21 +107,23 @@ public class SessionScreen extends Screen
     private void setUpUI() {
         setUpTileBorders() ;
         
-        addTile( dayGanttTile,        0, 0, 15, 1 ) ;
-        addTile( dateTile,            0, 2,  2, 4 ) ;
-        addTile( sessionTypeIconTile, 3, 2,  3, 4 ) ;
-        addTile( syllabusIconTile,    4, 2,  4, 4 ) ;
-        addTile( sessionTimeTile,    11, 2, 12, 4 ) ;
-        addTile( timeTile,           13, 2, 15, 4 ) ;
-        addTile( syllabusTile,        5, 2, 10, 4 ) ;
-        addTile( topicTile,           3, 5, 12, 6 ) ;
-        addTile( topicBurnStatTile,   0, 5,  2,17 ) ;
-        addTile( fragmentationTile,   13,5, 15,17 ) ;
+        addTile( dayGanttTile,        0,   0, 15,  1 ) ;
+        addTile( dateTile,            0,   2,  2,  4 ) ;
+        addTile( sessionTypeIconTile, 3,   2,  3,  4 ) ;
+        addTile( syllabusIconTile,    4,   2,  4,  4 ) ;
+        addTile( sessionTimeTile,    11,   2, 12,  4 ) ;
+        addTile( timeTile,           13,   2, 15,  4 ) ;
+        addTile( syllabusTile,        5,   2, 10,  4 ) ;
+        addTile( topicTile,           3,   5, 12,  6 ) ;
+        addTile( topicBurnStatTile,   0,   5,  2, 17 ) ;
+        addTile( fragmentationTile,   13,  5, 15, 17 ) ;
+        addTile( sylL30EffortTile,     9, 18, 15, 24 ) ;
     }
     
     private void setUpTileBorders() {
         this.dateTile.enableBorder( true ) ;
         this.timeTile.enableBorder( true ) ;
+        this.sylL30EffortTile.enableBorder( true ) ;
         this.sessionTypeIconTile.setBorder( new MatteBorder( 1, 0, 1, 0, UITheme.TILE_BORDER_COLOR ) );
         this.syllabusIconTile.setBorder( new MatteBorder( 1, 0, 1, 0, UITheme.TILE_BORDER_COLOR ) ) ;
         this.syllabusTile.setBorder( new MatteBorder( 1, 0, 1, 0, UITheme.TILE_BORDER_COLOR ) ) ;
@@ -147,6 +151,7 @@ public class SessionScreen extends Screen
             
             this.syllabusColor = uiAttributes.getSyllabusColor( this.syllabusName ) ;
             this.fragmentationTile.setSyllabusName( this.syllabusName ) ;
+            this.sylL30EffortTile.setSyllabusName( this.syllabusName ) ;
             
             setTileForegroundToSyllabusColor() ;
             setSyllabusAndTopicNames() ;

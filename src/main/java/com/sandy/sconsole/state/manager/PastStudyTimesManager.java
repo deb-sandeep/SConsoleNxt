@@ -103,8 +103,8 @@ public class PastStudyTimesManager implements ClockTickListener, EventSubscriber
         }
     }
     
-    public PastStudyTimes getPastStudyTimes( String syllabusName ) {
-        return syllabusStudyTimesMap.get( syllabusName ) ;
+    public SyllabusPastStudyTimes getPastStudyTimes( String syllabusName ) {
+        return ( SyllabusPastStudyTimes )syllabusStudyTimesMap.get( syllabusName );
     }
     
     public PastStudyTimes getPastStudyTimes() {
