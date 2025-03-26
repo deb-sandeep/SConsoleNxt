@@ -18,7 +18,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
-import javax.swing.border.MatteBorder;
 import java.awt.*;
 import java.text.SimpleDateFormat;
 
@@ -125,7 +124,6 @@ public class TopicBurnStatTile extends Tile
     private void setUpUI() {
         
         setLayout() ;
-        setBorder( new MatteBorder( 0, 1, 1, 1, UITheme.TILE_BORDER_COLOR ) );
         
         for( int row=0; row<labels.length/2; row++ ) {
             JLabel titleLbl = labels[2*row] ;

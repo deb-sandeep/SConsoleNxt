@@ -48,6 +48,7 @@ public interface TopicRepo extends CrudRepository<Topic, Integer> {
         select count( problem_id )
         from topic_problems
         where topic_id = :topicId
+        and problem_state <> 'Reassign'
     """ )
     int getTotalProblemCount( @Param( "topicId" ) int topicId ) ;
     

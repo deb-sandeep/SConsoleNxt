@@ -12,13 +12,11 @@ import com.sandy.sconsole.core.ui.uiutil.UITheme;
 import com.sandy.sconsole.dao.master.repo.SessionTypeRepo;
 import com.sandy.sconsole.dao.master.repo.SyllabusRepo;
 import com.sandy.sconsole.dao.session.dto.SessionDTO;
-import com.sandy.sconsole.dao.session.repo.SessionRepo;
-import com.sandy.sconsole.state.ActiveTopicStatistics;
-import com.sandy.sconsole.state.manager.ActiveTopicStatisticsManager;
 import com.sandy.sconsole.state.manager.TodayStudyStatistics;
 import com.sandy.sconsole.ui.screen.dashboard.tile.SyllabusL30EffortTile;
 import com.sandy.sconsole.ui.screen.dashboard.tile.daygantt.DayGanttTile;
 import com.sandy.sconsole.ui.screen.session.tile.FragmentationTile;
+import com.sandy.sconsole.ui.screen.session.tile.TopicBurnChartTile;
 import com.sandy.sconsole.ui.screen.session.tile.TopicBurnStatTile;
 import com.sandy.sconsole.ui.util.ConfiguredUIAttributes;
 import com.sandy.sconsole.ui.util.DateTile;
@@ -42,23 +40,22 @@ public class SessionScreen extends Screen
             EventCatalog.ATS_REFRESHED
     } ;
     
-    @Autowired private SessionRepo sessionRepo ;
     @Autowired private SyllabusRepo syllabusRepo ;
     @Autowired private SessionTypeRepo sessionTypeRepo ;
     
     @Autowired private UITheme theme ;
     @Autowired private EventBus eventBus ;
     @Autowired private ConfiguredUIAttributes uiAttributes ;
-    @Autowired private ActiveTopicStatisticsManager atsManager ;
     @Autowired private TodayStudyStatistics todayStudyStats ;
+    @Autowired private TopicBurnChartTile burnChartTile;
 
     private final DateTile dateTile ;
     private final TimeTile timeTile ;
     private final StringTile syllabusTile ;
     private final StringTile sessionTimeTile ;
     private final StringTile topicTile ;
-    private final ImageTile  sessionTypeIconTile ;
-    private final ImageTile  syllabusIconTile ;
+    private final ImageTile sessionTypeIconTile ;
+    private final ImageTile syllabusIconTile ;
     
     private Color syllabusColor ;
     
@@ -67,17 +64,16 @@ public class SessionScreen extends Screen
     @Autowired private FragmentationTile fragmentationTile ;
     @Autowired private SyllabusL30EffortTile sylL30EffortTile;
     
-    private int sessionId ;
     private String sessionType ;
     private String syllabusName ;
     private int topicId ;
     private String topicName ;
     
-    private ActiveTopicStatistics activeTopicStats ;
-    
     public SessionScreen() {
         super( ID, "Session Screen" ) ;
         super.asPerpetual() ;
+        
+        // Initialize only the non autowired tiles
         this.dateTile = new DateTile( 40, "dd MMM, EEE" ) ;
         this.timeTile = new TimeTile( 50 ) ;
         this.syllabusTile = new StringTile( 50 ) ;
@@ -118,6 +114,7 @@ public class SessionScreen extends Screen
         addTile( topicBurnStatTile,   0,   5,  2, 17 ) ;
         addTile( fragmentationTile,   13,  5, 15, 17 ) ;
         addTile( sylL30EffortTile,     9, 18, 15, 24 ) ;
+        addTile( burnChartTile,        0, 18,  7, 31 ) ;
     }
     
     private void setUpTileBorders() {
@@ -128,6 +125,9 @@ public class SessionScreen extends Screen
         this.syllabusIconTile.setBorder( new MatteBorder( 1, 0, 1, 0, UITheme.TILE_BORDER_COLOR ) ) ;
         this.syllabusTile.setBorder( new MatteBorder( 1, 0, 1, 0, UITheme.TILE_BORDER_COLOR ) ) ;
         this.sessionTimeTile.setBorder( new MatteBorder( 1, 0, 1, 0, UITheme.TILE_BORDER_COLOR ) ) ;
+        this.topicBurnStatTile.setBorder( new MatteBorder( 0, 1, 0, 1, UITheme.TILE_BORDER_COLOR ) );
+        this.burnChartTile.setBorder( new MatteBorder( 1, 1, 1, 1, UITheme.TILE_BORDER_COLOR ) );
+        
     }
 
     @Override
@@ -142,16 +142,15 @@ public class SessionScreen extends Screen
     
     private void _handleSessionStarted( SessionDTO session ) {
         if( session != null ) {
-            this.sessionId = session.getId() ;
             this.sessionType = session.getSessionType() ;
             this.syllabusName = session.getSyllabusName() ;
             this.topicId = session.getTopicId() ;
             this.topicName = session.getTopicName() ;
-            this.activeTopicStats = atsManager.getTopicStatistics( this.topicId ) ;
             
             this.syllabusColor = uiAttributes.getSyllabusColor( this.syllabusName ) ;
             this.fragmentationTile.setSyllabusName( this.syllabusName ) ;
             this.sylL30EffortTile.setSyllabusName( this.syllabusName ) ;
+            this.burnChartTile.setTopicId( this.topicId ) ;
             
             setTileForegroundToSyllabusColor() ;
             setSyllabusAndTopicNames() ;

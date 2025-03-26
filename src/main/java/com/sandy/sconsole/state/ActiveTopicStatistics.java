@@ -3,15 +3,18 @@ package com.sandy.sconsole.state;
 import com.sandy.sconsole.dao.master.TopicTrackAssignment;
 import com.sandy.sconsole.dao.master.dto.TopicVO;
 import com.sandy.sconsole.dao.master.repo.TopicRepo;
+import com.sandy.sconsole.dao.session.repo.ProblemAttemptRepo;
 import com.sandy.sconsole.dao.session.repo.TodaySolvedProblemCountRepo;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.DateUtils;
+import org.jfree.data.statistics.Regression;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.List;
 
 import static com.sandy.sconsole.core.util.SConsoleUtil.duration;
 import static com.sandy.sconsole.core.util.SConsoleUtil.isBetween;
@@ -25,6 +28,7 @@ public class ActiveTopicStatistics {
     
     @Autowired private TopicRepo topicRepo ;
     @Autowired private TodaySolvedProblemCountRepo tspcRepo ;
+    @Autowired private ProblemAttemptRepo paRepo ;
     
     @Getter private TopicVO topic ;
     
@@ -77,7 +81,7 @@ public class ActiveTopicStatistics {
 
         this.topicId            = assignment.getTopicId() ;
         this.startDate          = assignment.getStartDate() ;
-        this.endDate            = assignment.getEndDate() ;
+        this.endDate            = assignment.getEndDate() ; // End time is 23:59:59 of end date
         this.numStartBufferDays = assignment.getBufferLeft() ;
         this.numTheoryDays      = assignment.getTheoryMargin() ;
         this.numEndBufferDays   = assignment.getBufferRight() ;
@@ -97,10 +101,10 @@ public class ActiveTopicStatistics {
     public void refreshState() {
         
         // Derived information from topic plan
-        numTotalDays      = duration( startDate, endDate ) ;
+        numTotalDays      = duration( startDate, endDate ) + 1 ;
         numExerciseDays   = numTotalDays - numStartBufferDays - numTheoryDays - numEndBufferDays ;
         exerciseStartDate = DateUtils.addDays( startDate, numStartBufferDays + numTheoryDays ) ;
-        exerciseEndDate   = DateUtils.addDays( exerciseStartDate, numExerciseDays ) ;
+        exerciseEndDate   = DateUtils.addDays( exerciseStartDate, numExerciseDays-1 ) ;
         numTotalProblems  = topicRepo.getTotalProblemCount( topicId ) ;
         originalBurnRate  = Math.round( (float)numTotalProblems / numExerciseDays ) ;
         
@@ -108,7 +112,6 @@ public class ActiveTopicStatistics {
         currentZone         = computeCurrentZone() ;
         numProblemsLeft     = topicRepo.getRemainingProblemCount( topicId ) ;
         numExerciseDaysLeft = duration( new Date(), exerciseEndDate ) ;
-        currentBurnRate     = 0 ; // Will be calculated down the line
         
         // Today data
         Integer tempInt = tspcRepo.getNumSolvedProblems( topicId ) ;
@@ -116,7 +119,6 @@ public class ActiveTopicStatistics {
         
         // Projection based on current data
         requiredBurnRate = 0 ;
-        numOvershootDays = 0 ;
         
         if( currentZone == Zone.PRE_START ||
             currentZone == Zone.BUFFER_START ||
@@ -126,20 +128,48 @@ public class ActiveTopicStatistics {
             requiredBurnRate = (int)Math.ceil( (float)numProblemsLeft / numExerciseDaysLeft ) ;
         }
         else { // We are at or beyond the exercise start date
-            int numDaysSinceExerciseStart = duration( exerciseEndDate, new Date() ) ;
             if( numProblemsLeft > 0 ) {
-                currentBurnRate = Math.round((float)numProblemsCompleted()/numDaysSinceExerciseStart) ;
                 if( currentZone == Zone.EXERCISE ) {
                     requiredBurnRate = (int)Math.ceil((float)numProblemsLeft / numExerciseDaysLeft ) ;
                 }
                 else {
                     requiredBurnRate = numProblemsLeft;
                 }
-                
-                int numDaysToCompletionAtCurrentBurn = (int)Math.ceil( (float)numProblemsLeft / currentBurnRate ) ;
-                numOvershootDays = numDaysToCompletionAtCurrentBurn - numExerciseDaysLeft;
             }
         }
+        computeCurrentBurnAndOvershoot() ;
+    }
+    
+    private void computeCurrentBurnAndOvershoot() {
+        
+        this.currentBurnRate = 0 ;
+        this.numOvershootDays = 0 ;
+    
+        List<ProblemAttemptRepo.DayBurnStat> dayBurns = paRepo.getHistoricBurnStats( topicId ) ;
+        if( dayBurns.size() < 2 ) return ;
+        
+        double[][] data = new double[dayBurns.size()+1][2] ;
+        int remainingProblems = numTotalProblems ;
+        
+        Date startDate = DateUtils.addDays( dayBurns.get( 0 ).getDate(), -1 ) ;
+        data[0][0] = startDate.getTime() ;
+        data[0][1] = remainingProblems ;
+        
+        for( int i=1; i<data.length; i++ ) {
+            ProblemAttemptRepo.DayBurnStat db = dayBurns.get( i-1 ) ;
+            remainingProblems -= db.getNumQuestionsSolved() ;
+            
+            data[i][0] = db.getDate().getTime() ;
+            data[i][1] = remainingProblems ;
+        }
+        
+        double[] coefficients = Regression.getOLSRegression( data ) ;
+        
+        long xIntercept = (long)(-coefficients[0]/coefficients[1]) ;
+        Date projectedCompletionDate = new Date( xIntercept ) ;
+        this.numOvershootDays = duration( endDate, projectedCompletionDate ) ;
+
+        this.currentBurnRate = (int)Math.round( -coefficients[1]*86400*1000 ) ;
     }
     
     private Zone computeCurrentZone() {
@@ -169,5 +199,9 @@ public class ActiveTopicStatistics {
             return Zone.BUFFER_END ;
         }
         return Zone.POST_END ;
+    }
+    
+    public List<ProblemAttemptRepo.DayBurnStat> getHistoricBurns() {
+        return paRepo.getHistoricBurnStats( topicId ) ;
     }
 }

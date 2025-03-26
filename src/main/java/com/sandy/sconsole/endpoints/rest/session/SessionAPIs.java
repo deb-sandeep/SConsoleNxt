@@ -15,7 +15,7 @@ import com.sandy.sconsole.dao.session.SessionPause;
 import com.sandy.sconsole.dao.session.dto.ProblemAttemptDTO;
 import com.sandy.sconsole.dao.session.dto.SessionDTO;
 import com.sandy.sconsole.dao.session.dto.SessionPauseDTO;
-import com.sandy.sconsole.dao.session.repo.ProblemAttemptRep;
+import com.sandy.sconsole.dao.session.repo.ProblemAttemptRepo;
 import com.sandy.sconsole.dao.session.repo.SessionPauseRepo;
 import com.sandy.sconsole.dao.session.repo.SessionRepo;
 import com.sandy.sconsole.ui.screen.session.SessionScreen;
@@ -39,9 +39,9 @@ public class SessionAPIs {
     @Autowired private SessionPauseRepo  sessionPauseRepo ;
     @Autowired private TopicRepo         topicRepo ;
     @Autowired private TopicProblemRepo  tpRepo ;
-    @Autowired private ProblemRepo       problemRepo ;
-    @Autowired private ProblemAttemptRep paRepo ;
-    @Autowired private ProblemAttemptRep problemAttemptRep;
+    @Autowired private ProblemRepo        problemRepo ;
+    @Autowired private ProblemAttemptRepo paRepo ;
+    @Autowired private ProblemAttemptRepo problemAttemptRep;
     
     @Autowired private ScreenManager screenManager ;
     

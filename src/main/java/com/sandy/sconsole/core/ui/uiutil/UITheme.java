@@ -15,7 +15,14 @@ public class UITheme {
     public static final Border TILE_BORDER = new LineBorder( TILE_BORDER_COLOR ) ;
     public static final Color  BG_COLOR = Color.BLACK ;
     public static final Color  TILE_FG_COLOR = Color.GRAY.darker() ;
-
+    
+    public static final Font CHART_XAXIS_FONT = new Font( FONT_NAME, Font.PLAIN, 12 ) ;
+    public static final Font CHART_YAXIS_FONT = new Font( FONT_NAME, Font.PLAIN, 10 ) ;
+    
+    public static final Color HISTORIC_BURN_COLOR     = Color.GREEN ;
+    public static final Color BASE_BURN_COLOR                = Color.GRAY ;
+    public static final Color HISTORIC_BURN_REGRESSION_COLOR = Color.RED.brighter() ;
+    
     public Font getLabelFont( int style, int size ) {
         return BASE_FONT.deriveFont( style, size ) ;
     }
