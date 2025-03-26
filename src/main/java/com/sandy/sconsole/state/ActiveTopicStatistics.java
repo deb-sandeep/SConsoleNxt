@@ -146,7 +146,7 @@ public class ActiveTopicStatistics {
         this.numOvershootDays = 0 ;
     
         List<ProblemAttemptRepo.DayBurnStat> dayBurns = paRepo.getHistoricBurnStats( topicId ) ;
-        if( dayBurns.size() < 2 ) return ;
+        if( dayBurns.isEmpty() ) return ;
         
         double[][] data = new double[dayBurns.size()+1][2] ;
         int remainingProblems = numTotalProblems ;

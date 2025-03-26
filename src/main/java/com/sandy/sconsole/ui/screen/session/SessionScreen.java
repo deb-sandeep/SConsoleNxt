@@ -16,6 +16,7 @@ import com.sandy.sconsole.state.manager.TodayStudyStatistics;
 import com.sandy.sconsole.ui.screen.dashboard.tile.SyllabusL30EffortTile;
 import com.sandy.sconsole.ui.screen.dashboard.tile.daygantt.DayGanttTile;
 import com.sandy.sconsole.ui.screen.session.tile.FragmentationTile;
+import com.sandy.sconsole.ui.screen.session.tile.ThermometerTile;
 import com.sandy.sconsole.ui.screen.session.tile.TopicBurnChartTile;
 import com.sandy.sconsole.ui.screen.session.tile.TopicBurnStatTile;
 import com.sandy.sconsole.ui.util.ConfiguredUIAttributes;
@@ -47,7 +48,6 @@ public class SessionScreen extends Screen
     @Autowired private EventBus eventBus ;
     @Autowired private ConfiguredUIAttributes uiAttributes ;
     @Autowired private TodayStudyStatistics todayStudyStats ;
-    @Autowired private TopicBurnChartTile burnChartTile;
 
     private final DateTile dateTile ;
     private final TimeTile timeTile ;
@@ -63,6 +63,8 @@ public class SessionScreen extends Screen
     @Autowired private TopicBurnStatTile topicBurnStatTile ;
     @Autowired private FragmentationTile fragmentationTile ;
     @Autowired private SyllabusL30EffortTile sylL30EffortTile;
+    @Autowired private TopicBurnChartTile burnChartTile;
+    @Autowired private ThermometerTile thermometerTile ;
     
     private String sessionType ;
     private String syllabusName ;
@@ -115,6 +117,7 @@ public class SessionScreen extends Screen
         addTile( fragmentationTile,   13,  5, 15, 17 ) ;
         addTile( sylL30EffortTile,     9, 18, 15, 24 ) ;
         addTile( burnChartTile,        0, 18,  7, 31 ) ;
+        addTile( thermometerTile,      8, 18,  8, 31 ) ;
     }
     
     private void setUpTileBorders() {
@@ -127,7 +130,7 @@ public class SessionScreen extends Screen
         this.sessionTimeTile.setBorder( new MatteBorder( 1, 0, 1, 0, UITheme.TILE_BORDER_COLOR ) ) ;
         this.topicBurnStatTile.setBorder( new MatteBorder( 0, 1, 0, 1, UITheme.TILE_BORDER_COLOR ) );
         this.burnChartTile.setBorder( new MatteBorder( 1, 1, 1, 1, UITheme.TILE_BORDER_COLOR ) );
-        
+        this.thermometerTile.setBorder( new MatteBorder( 1, 0, 1, 0, UITheme.TILE_BORDER_COLOR ) );
     }
 
     @Override
@@ -151,6 +154,7 @@ public class SessionScreen extends Screen
             this.fragmentationTile.setSyllabusName( this.syllabusName ) ;
             this.sylL30EffortTile.setSyllabusName( this.syllabusName ) ;
             this.burnChartTile.setTopicId( this.topicId ) ;
+            this.thermometerTile.setTopicId( this.topicId ) ;
             
             setTileForegroundToSyllabusColor() ;
             setSyllabusAndTopicNames() ;

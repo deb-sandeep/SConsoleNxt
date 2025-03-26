@@ -47,7 +47,6 @@ public class TopicBurnChartTile extends Tile
 
     private static final int[] SUBSCRIBED_EVENTS = {
             EventCatalog.ATS_REFRESHED,
-            EventCatalog.SESSION_ENDED
     } ;
     
     @Autowired private ActiveTopicStatisticsManager atsManager ;
@@ -57,9 +56,9 @@ public class TopicBurnChartTile extends Tile
     private ActiveTopicStatistics ats = null ;
     
     private TimeSeries historicBurn = null ;
-    private TimeSeries           baseBurnProjection     = null ;
-    private TimeSeries           historicBurnRegression = null ;
-    private TimeSeriesCollection seriesColl             = null ;
+    private TimeSeries baseBurnProjection = null ;
+    private TimeSeries historicBurnRegression = null ;
+    private TimeSeriesCollection seriesColl = null ;
     
     private JFreeChart chart = null ;
     private XYPlot plot = null ;

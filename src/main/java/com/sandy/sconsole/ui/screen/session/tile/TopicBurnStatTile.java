@@ -201,7 +201,7 @@ public class TopicBurnStatTile extends Tile
         
         currentBurnRate.setText( String.valueOf( ats.getCurrentBurnRate() ) ) ;
         
-        if( ats.getCurrentBurnRate() < ats.getOriginalBurnRate() ) {
+        if( ats.getCurrentBurnRate() < ats.getRequiredBurnRate() ) {
             currentBurnRate.setForeground( Color.RED ) ;
         }
         else {
