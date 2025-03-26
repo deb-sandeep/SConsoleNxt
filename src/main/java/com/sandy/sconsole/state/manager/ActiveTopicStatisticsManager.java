@@ -17,7 +17,6 @@ import com.sandy.sconsole.dao.session.repo.SessionRepo;
 import com.sandy.sconsole.state.ActiveTopicStatistics;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
@@ -66,9 +65,6 @@ public class ActiveTopicStatisticsManager implements ClockTickListener, EventSub
             EventCatalog.TRACK_UPDATED
     } ;
     
-    // TODO: Remove this once the system becomes live. A live system should use current date
-    private Date REF_DATE = null ;
-    
     @Autowired private SConsoleClock clock ;
     @Autowired private EventBus eventBus ;
     
@@ -85,9 +81,7 @@ public class ActiveTopicStatisticsManager implements ClockTickListener, EventSub
         clock.addTickListener( this, TimeUnit.DAYS ) ;
         eventBus.addSubscriberForEventTypes( this, true, SUBSCRIBED_EVENTS ) ;
         
-        // TODO: This is for development purposes only. Remove before production release.
-        REF_DATE = DateUtils.parseDate( "2025-04-10", "YYYY-MM-dd" ) ;
-        refreshState( REF_DATE ) ;
+        refreshState( new Date() ) ;
     }
     
     @Override
@@ -99,7 +93,7 @@ public class ActiveTopicStatisticsManager implements ClockTickListener, EventSub
     public void handleEvent( Event event ) {
         int eventType = event.getEventType() ;
         switch ( eventType ) {
-            case EventCatalog.TRACK_UPDATED -> refreshState( REF_DATE ) ;
+            case EventCatalog.TRACK_UPDATED -> refreshState( new Date() ) ;
             case EventCatalog.PROBLEM_ATTEMPT_ENDED -> _handleProblemAttemptEnded( (ProblemAttemptDTO)event.getValue() ) ;
         }
     }
