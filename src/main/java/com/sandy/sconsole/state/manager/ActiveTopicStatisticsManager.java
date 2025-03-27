@@ -21,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
-import java.text.ParseException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -75,11 +74,11 @@ public class ActiveTopicStatisticsManager implements ClockTickListener, EventSub
     private final ArrayListMultimap<String, ActiveTopicStatistics> syllabusTopicStats = ArrayListMultimap.create() ; // Key -> Syllabus Name
     
     @PostConstruct
-    public void init() throws ParseException {
+    public void init() {
         log.debug( "Initializing ActiveTopicStatisticsManager..." ) ;
         
         clock.addTickListener( this, TimeUnit.DAYS ) ;
-        eventBus.addSubscriberForEventTypes( this, true, SUBSCRIBED_EVENTS ) ;
+        eventBus.addSubscriber( this, true, SUBSCRIBED_EVENTS ) ;
         
         refreshState( new Date() ) ;
     }
@@ -114,6 +113,7 @@ public class ActiveTopicStatisticsManager implements ClockTickListener, EventSub
     }
     
     private void initializeActiveTopicStats( TopicTrackAssignment assignment ) {
+        
         ActiveTopicStatistics ats = SConsole.getBean( ActiveTopicStatistics.class ) ;
         ats.setTopicTrackAssignment( assignment ) ;
         ats.init() ;

@@ -38,7 +38,6 @@ public class SessionScreen extends Screen
     private static final int[] SUBSCRIBED_EVENTS = {
             EventCatalog.SESSION_STARTED,
             EventCatalog.SESSION_EXTENDED,
-            EventCatalog.ATS_REFRESHED
     } ;
     
     @Autowired private SyllabusRepo syllabusRepo ;
@@ -68,7 +67,6 @@ public class SessionScreen extends Screen
     
     private String sessionType ;
     private String syllabusName ;
-    private int topicId ;
     private String topicName ;
     
     public SessionScreen() {
@@ -93,7 +91,7 @@ public class SessionScreen extends Screen
     
     @Override
     public void beforeActivation() {
-        eventBus.addSubscriberForEventTypes( this, true, SUBSCRIBED_EVENTS ) ;
+        eventBus.addSubscriber( this, true, SUBSCRIBED_EVENTS ) ;
         _handleSessionStarted( todayStudyStats.getLiveSession() ) ;
     }
     
@@ -139,22 +137,21 @@ public class SessionScreen extends Screen
         switch( eventType ) {
             case EventCatalog.SESSION_STARTED -> _handleSessionStarted( ( SessionDTO )event.getValue() ) ;
             case EventCatalog.SESSION_EXTENDED -> _handleSessionExtended( ( SessionDTO )event.getValue() ) ;
-            case EventCatalog.ATS_REFRESHED -> _handleATSRefreshed( (Integer)event.getValue() ) ;
         }
     }
     
     private void _handleSessionStarted( SessionDTO session ) {
         if( session != null ) {
+            
             this.sessionType = session.getSessionType() ;
             this.syllabusName = session.getSyllabusName() ;
-            this.topicId = session.getTopicId() ;
             this.topicName = session.getTopicName() ;
             
             this.syllabusColor = uiAttributes.getSyllabusColor( this.syllabusName ) ;
             this.fragmentationTile.setSyllabusName( this.syllabusName ) ;
             this.sylL30EffortTile.setSyllabusName( this.syllabusName ) ;
-            this.burnChartTile.setTopicId( this.topicId ) ;
-            this.thermometerTile.setTopicId( this.topicId ) ;
+            this.burnChartTile.setTopicId( session.getTopicId() ) ;
+            this.thermometerTile.setTopicId( session.getTopicId() ) ;
             
             setTileForegroundToSyllabusColor() ;
             setSyllabusAndTopicNames() ;
@@ -182,10 +179,6 @@ public class SessionScreen extends Screen
         
         this.sessionTypeIconTile.setImage( SwingUtils.getIconImage( stIconName ) );
         this.syllabusIconTile.setImage( SwingUtils.getIconImage( sylIconName ) );
-    }
-    
-    private void _handleATSRefreshed( Integer topicId ) {
-        assert topicId == this.topicId ;
     }
     
     private void _handleSessionExtended( SessionDTO session ) {

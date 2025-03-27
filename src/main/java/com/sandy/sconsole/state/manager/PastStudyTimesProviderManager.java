@@ -8,9 +8,9 @@ import com.sandy.sconsole.core.bus.EventSubscriber;
 import com.sandy.sconsole.core.clock.ClockTickListener;
 import com.sandy.sconsole.core.clock.SConsoleClock;
 import com.sandy.sconsole.core.util.DayValue;
-import com.sandy.sconsole.state.PastStudyTimes;
-import com.sandy.sconsole.state.SyllabusPastStudyTimes;
-import com.sandy.sconsole.state.TotalPastStudyTimes;
+import com.sandy.sconsole.state.PastStudyTimesProvider;
+import com.sandy.sconsole.state.SyllabusPastStudyTimesProvider;
+import com.sandy.sconsole.state.TotalPastStudyTimesProvider;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +52,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @Component
 @DependsOn( {"clock", "eventBus" } )
-public class PastStudyTimesManager implements ClockTickListener, EventSubscriber {
+public class PastStudyTimesProviderManager implements ClockTickListener, EventSubscriber {
     
     private static final int[] SUBSCRIBED_EVENTS = {
             EventCatalog.HISTORIC_SESSION_UPDATED,
@@ -62,22 +62,22 @@ public class PastStudyTimesManager implements ClockTickListener, EventSubscriber
     @Autowired private SConsoleClock clock ;
     @Autowired private EventBus eventBus ;
     
-    private final PastStudyTimes totalPastStudyTimes = new TotalPastStudyTimes();
+    private final PastStudyTimesProvider totalPastStudyTimesProvider = new TotalPastStudyTimesProvider();
     
-    private final PastStudyTimes[] allPastStudyTimes = {
-       new SyllabusPastStudyTimes( AppConstants.IIT_PHY_SYLLABUS_NAME ),
-       new SyllabusPastStudyTimes( AppConstants.IIT_CHEM_SYLLABUS_NAME ),
-       new SyllabusPastStudyTimes( AppConstants.IIT_MATHS_SYLLABUS_NAME ),
-       new SyllabusPastStudyTimes( AppConstants.REASONING_SYLLABUS_NAME ),
-       totalPastStudyTimes
+    private final PastStudyTimesProvider[] studyTimesProviders = {
+       new SyllabusPastStudyTimesProvider( AppConstants.IIT_PHY_SYLLABUS_NAME ),
+       new SyllabusPastStudyTimesProvider( AppConstants.IIT_CHEM_SYLLABUS_NAME ),
+       new SyllabusPastStudyTimesProvider( AppConstants.IIT_MATHS_SYLLABUS_NAME ),
+       new SyllabusPastStudyTimesProvider( AppConstants.REASONING_SYLLABUS_NAME ),
+       totalPastStudyTimesProvider
     } ;
     
-    private final Map<String, PastStudyTimes> syllabusStudyTimesMap = new HashMap<>() ;
+    private final Map<String, PastStudyTimesProvider> syllabusTimeProvidersMap = new HashMap<>() ;
     
-    public PastStudyTimesManager() {
-        Arrays.stream( allPastStudyTimes ).forEach( pastStudyTimes -> {
-            if( pastStudyTimes instanceof SyllabusPastStudyTimes ) {
-                syllabusStudyTimesMap.put( (( SyllabusPastStudyTimes )pastStudyTimes).getSyllabusName(), pastStudyTimes ) ;
+    public PastStudyTimesProviderManager() {
+        Arrays.stream( studyTimesProviders ).forEach( provider -> {
+            if( provider instanceof SyllabusPastStudyTimesProvider ) {
+                syllabusTimeProvidersMap.put( (( SyllabusPastStudyTimesProvider )provider).getSyllabusName(), provider ) ;
             }
         }) ;
     }
@@ -85,7 +85,7 @@ public class PastStudyTimesManager implements ClockTickListener, EventSubscriber
     @PostConstruct
     public void init() {
         clock.addTickListener( this, TimeUnit.DAYS ) ;
-        eventBus.addSubscriberForEventTypes( this, true, SUBSCRIBED_EVENTS ) ;
+        eventBus.addSubscriber( this, true, SUBSCRIBED_EVENTS ) ;
         fullRefresh() ;
     }
     
@@ -103,30 +103,27 @@ public class PastStudyTimesManager implements ClockTickListener, EventSubscriber
         }
     }
     
-    public SyllabusPastStudyTimes getPastStudyTimes( String syllabusName ) {
-        return ( SyllabusPastStudyTimes )syllabusStudyTimesMap.get( syllabusName );
+    public SyllabusPastStudyTimesProvider getPastStudyTimesProvider( String syllabusName ) {
+        return ( SyllabusPastStudyTimesProvider )syllabusTimeProvidersMap.get( syllabusName );
     }
     
-    public PastStudyTimes getPastStudyTimes() {
-        return totalPastStudyTimes ;
+    public PastStudyTimesProvider getPastStudyTimesProvider() {
+        return totalPastStudyTimesProvider;
     }
     
     private void fullRefresh() {
-        Arrays.stream( allPastStudyTimes ).forEach( item -> {
-            item.clearState() ;
-            item.fullRefresh() ;
-        } ) ;
+        Arrays.stream( studyTimesProviders ).forEach( PastStudyTimesProvider::fullRefresh ) ;
         eventBus.publishEvent( EventCatalog.PAST_STUDY_TIME_UPDATED ) ;
     }
     
     private void updateTodayTime() {
-        Arrays.stream( allPastStudyTimes ).forEach( PastStudyTimes::updateTodayTime ) ;
+        Arrays.stream( studyTimesProviders ).forEach( PastStudyTimesProvider::updateTodayTime ) ;
         eventBus.publishEvent( EventCatalog.PAST_STUDY_TIME_UPDATED ) ;
     }
     
     // Returns the max day value across the historic data of all syllabus
     public double getMaxSyllabusTime() {
-        return syllabusStudyTimesMap.values()
+        return syllabusTimeProvidersMap.values()
                 .stream()
                 .mapToDouble( st ->
                         st.getDayValues()

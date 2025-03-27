@@ -68,6 +68,7 @@ public class ScreenManager extends Thread implements ClockTickListener {
     // ................. Initialization methods ................................
     public void registerScreen( Screen screen ) {
         
+        log.debug( "      Registering screen - " + screen.getScreenName() ) ;
         screen.invokeLifecycleMethod( INITIALIZE ) ;
         
         screenMap.put( screen.getId(), screen ) ;

@@ -16,4 +16,5 @@ public class SConsoleConfig {
     private boolean showSwingApp = true ;
     private String envType = "dev" ;
     private File workspacePath = null ;
+    private boolean printEventPublishLogs = false ;
 }

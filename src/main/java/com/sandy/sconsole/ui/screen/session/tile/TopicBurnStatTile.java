@@ -151,7 +151,7 @@ public class TopicBurnStatTile extends Tile
     
     @Override
     public void beforeActivation() {
-        eventBus.addSubscriberForEventTypes( this, true, SUBSCRIBED_EVENTS ) ;
+        eventBus.addSubscriber( this, true, SUBSCRIBED_EVENTS ) ;
         
         SessionDTO liveSession = todayStudyStats.getLiveSession() ;
         ats = atsManager.getTopicStatistics( liveSession.getTopicId() ) ;

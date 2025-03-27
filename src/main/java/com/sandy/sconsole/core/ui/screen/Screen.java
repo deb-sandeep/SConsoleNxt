@@ -69,7 +69,6 @@ public abstract class Screen extends AbstractPanel {
             Field[] fields = this.getClass().getDeclaredFields() ;
             for( Field field : fields ) {
                 if( isTile( field.getType() ) ) {
-                    log.debug( "    Found a tile. {}", field.getName() ) ;
                     if( !field.canAccess( this ) ) {
                         field.setAccessible( true ) ;
                     }

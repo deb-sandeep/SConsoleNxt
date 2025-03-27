@@ -43,7 +43,7 @@ public class HistoricDayValueChart {
     private final Color   trendColor ;
     private final boolean subtle ;
     
-    private final DayValueProvider dataProvider ;
+    private final DayValueProvider dayValueProvider;
     
     private final Object lock = new Object() ;
     
@@ -52,15 +52,15 @@ public class HistoricDayValueChart {
     public HistoricDayValueChart( String valueAxisLabel,
                                   Color valueColor,
                                   Color trendColor,
-                                  DayValueProvider dataProvider,
+                                  DayValueProvider dayValueProvider,
                                   Supplier<Double> rangeMaxValueSupplier,
                                   boolean subtle ) {
         
-        this.valueAxisLabel = valueAxisLabel ;
-        this.valueColor     = valueColor ;
-        this.trendColor     = trendColor ;
-        this.dataProvider   = dataProvider ;
-        this.subtle         = subtle ;
+        this.valueAxisLabel   = valueAxisLabel ;
+        this.valueColor       = valueColor ;
+        this.trendColor       = trendColor ;
+        this.dayValueProvider = dayValueProvider ;
+        this.subtle           = subtle ;
         this.rangeMaxValueSupplier = rangeMaxValueSupplier ;
         
         createDataSet() ;
@@ -206,7 +206,7 @@ public class HistoricDayValueChart {
                 rangeAxis.setRange( 0, Math.ceil( maxTimeHrs ) );
             }
             
-            historicValues = dataProvider.getDayValues() ;
+            historicValues = dayValueProvider.getDayValues() ;
             
             if( historicValues != null ) {
                 for( DayValue dv : historicValues ) {

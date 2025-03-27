@@ -8,7 +8,7 @@ import org.apache.commons.lang3.time.DateUtils;
 import java.util.*;
 
 @Slf4j
-public abstract class PastStudyTimes
+public abstract class PastStudyTimesProvider
         implements DayValueProvider {
 
     private final int numPastDays ;
@@ -17,16 +17,17 @@ public abstract class PastStudyTimes
     protected Date startDate ;
     protected Map<Date, DayValue> studyTimes = new LinkedHashMap<>() ;
     
-    protected PastStudyTimes( int numPastDays ) {
+    protected PastStudyTimesProvider( int numPastDays ) {
         this.numPastDays = numPastDays ;
     }
     
     public void fullRefresh() {
+        clearState() ;
+        
         today = DateUtils.truncate( new Date(), Calendar.DAY_OF_MONTH ) ;
         startDate = DateUtils.addDays( today, 1-numPastDays ) ;
         
-        studyTimes.clear() ;
-        studyTimes.put( startDate, new DayValue( today, 0 ) ) ;
+        studyTimes.put( startDate, new DayValue( startDate, 0 ) ) ;
         for( int i=1; i<numPastDays; i++ ) {
             Date date = DateUtils.addDays( startDate, i ) ;
             studyTimes.put( date, new DayValue( date, 0 ) ) ;

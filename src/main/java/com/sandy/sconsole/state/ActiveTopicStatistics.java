@@ -89,6 +89,8 @@ public class ActiveTopicStatistics {
     
     public void init() {
         topic = new TopicVO( topicRepo.findById( topicId ).get() ) ;
+        log.debug( "      Initializing active topic statistics for {}-{}",
+                   topic.getSyllabusName(), topic.getTopicName() ) ;
         refreshState() ;
     }
     

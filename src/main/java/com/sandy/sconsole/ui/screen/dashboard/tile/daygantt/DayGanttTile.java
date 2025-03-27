@@ -74,7 +74,8 @@ public class DayGanttTile extends Tile
     
     @Override
     public void beforeActivation() {
-        eventBus.addSubscriberForEventTypes( this, true, SUBSCRIBED_EVENTS) ;
+        eventBus.addSubscriber( this, true, SUBSCRIBED_EVENTS) ;
+        super.repaint() ;
     }
     
     @Override

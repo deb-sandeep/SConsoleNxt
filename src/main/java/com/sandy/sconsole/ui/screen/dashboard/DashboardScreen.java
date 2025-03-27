@@ -33,7 +33,7 @@ public class DashboardScreen extends Screen
     
     @Autowired private SyllabusL30EffortTile phyL30StudyTimeTile ;
     @Autowired private SyllabusL30EffortTile chemL30StudyTimeTile ;
-    @Autowired private SyllabusL30EffortTile mathsL30StudyTimeTile;
+    @Autowired private SyllabusL30EffortTile mathsL30StudyTimeTile ;
     @Autowired private SyllabusL30EffortTile reasoningL30StudyTimeTile ;
     
     @Autowired private L60EffortTile l60EffortTile ;

@@ -60,15 +60,27 @@ public class TrackAPIs {
                             @PathVariable("id") int trackId,
                             @RequestBody List<TopicTrackAssignment> schedules ) {
         try {
+            log.debug( "Saving track assignments for track id {}", trackId ) ;
+            
+            // First we delete all topics belonging to the given track
             ttaRepo.deleteByTrackId( trackId ) ;
+            
+            // Then we delete all assignments for the given topic. This is
+            // important as some of the topics n this track might have been
+            // moved from other tracks. So the earlier track assignments need
+            // to be deleted.
             ttaRepo.deleteByTopicId( schedules.stream()
                                               .map( TopicTrackAssignment::getTopicId )
                                               .collect( Collectors.toList() ) ) ;
             
             schedules.forEach( schedule -> {
+                // Null the id so that a new entry will be created
                 schedule.setId( null ) ;
                 ttaRepo.save( schedule ) ;
             }) ;
+            
+            log.debug( "New assignment saved for track id {}", trackId ) ;
+            log.debug( "Publishing TRACK_UPDATED event for track id {}", trackId ) ;
             
             Track savedTrack = trackRepo.findById( trackId ).get() ;
             eventBus.publishEvent( EventCatalog.TRACK_UPDATED, trackId ) ;

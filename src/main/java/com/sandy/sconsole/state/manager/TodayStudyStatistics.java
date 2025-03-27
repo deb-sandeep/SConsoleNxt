@@ -44,12 +44,15 @@ import static com.sandy.sconsole.EventCatalog.*;
 public class TodayStudyStatistics
     implements EventSubscriber, ClockTickListener {
     
-    private static final int[] SUBSCRIBED_EVENTS = {
+    private static final int[] SYNC_SUBSCRIBED_EVENTS  = {
             SESSION_STARTED,
             SESSION_EXTENDED,
             SESSION_ENDED,
             PAUSE_STARTED,
             PAUSE_EXTENDED,
+    } ;
+    
+    private static final int[] ASYNC_SUBSCRIBED_EVENTS = {
             HISTORIC_SESSION_UPDATED
     } ;
     
@@ -81,7 +84,8 @@ public class TodayStudyStatistics
         // Consume the events synchronously. Why? Because the session screen
         // will ask for the live session before activation and handling a
         // session start event needs to be deterministically done before that.
-        eventBus.addSubscriberForEventTypes( this, false, SUBSCRIBED_EVENTS) ;
+        eventBus.addSubscriber( this, false, SYNC_SUBSCRIBED_EVENTS ) ;
+        eventBus.addSubscriber( this, true, ASYNC_SUBSCRIBED_EVENTS ) ;
         initializeState() ;
     }
     

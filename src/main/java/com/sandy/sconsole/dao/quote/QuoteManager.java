@@ -1,15 +1,13 @@
 package com.sandy.sconsole.dao.quote;
 
 import com.sandy.sconsole.SConsole;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
 import java.util.*;
 
-@Slf4j
-@Component
+//@Slf4j
+//@Component
 public class QuoteManager {
 
     private static final int MAX_QUOTE_LEN = 100 ;

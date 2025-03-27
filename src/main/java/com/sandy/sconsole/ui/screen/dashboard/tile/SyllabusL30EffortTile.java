@@ -5,8 +5,8 @@ import com.sandy.sconsole.core.bus.EventBus;
 import com.sandy.sconsole.core.bus.EventSubscriber;
 import com.sandy.sconsole.core.ui.screen.Tile;
 import com.sandy.sconsole.core.ui.uiutil.SwingUtils;
-import com.sandy.sconsole.state.SyllabusPastStudyTimes;
-import com.sandy.sconsole.state.manager.PastStudyTimesManager;
+import com.sandy.sconsole.state.SyllabusPastStudyTimesProvider;
+import com.sandy.sconsole.state.manager.PastStudyTimesProviderManager;
 import com.sandy.sconsole.ui.util.ConfiguredUIAttributes;
 import com.sandy.sconsole.ui.util.HistoricDayValueChart;
 import lombok.Setter;
@@ -31,38 +31,45 @@ public class SyllabusL30EffortTile extends Tile
     } ;
     
     @Autowired private EventBus eventBus ;
-    @Autowired private ConfiguredUIAttributes uiAttributes ;
-    @Autowired private PastStudyTimesManager pastStudyTimesManager ;
+    @Autowired private ConfiguredUIAttributes        uiAttributes ;
+    @Autowired private PastStudyTimesProviderManager pastStudyTimesManager ;
     
     @Setter private String syllabusName ;
     
-    private SyllabusPastStudyTimes pastStudyTimes ;
-    private HistoricDayValueChart  dayValueChart ;
+    private SyllabusPastStudyTimesProvider pastStudyTimesProvider;
+    private HistoricDayValueChart dayValueChart ;
     private ChartPanel chartPanel ;
     
     @Override
     public void beforeActivation() {
-        eventBus.addSubscriberForEventTypes( this, false, SUBSCRIBED_EVENTS ) ;
-        
-        if( chartPanel == null ||
-            ( pastStudyTimes != null && !syllabusName.equals( pastStudyTimes.getSyllabusName() ) ) ) {
-            
-            Color syllabusColor = uiAttributes.getSyllabusColor( syllabusName ) ;
-            pastStudyTimes = pastStudyTimesManager.getPastStudyTimes( syllabusName ) ;
-            dayValueChart = new HistoricDayValueChart( "Hours",
-                                SwingUtils.darkerColor( syllabusColor, 0.5F ),
-                                syllabusColor.brighter(),
-                                pastStudyTimes,
-                                pastStudyTimesManager::getMaxSyllabusTime,
-                                true ) ;
-            
-            if( chartPanel != null ) {
-                remove( chartPanel ) ;
-            }
-            
-            chartPanel = new ChartPanel( dayValueChart.getJFreeChart() ) ;
-            add( chartPanel, BorderLayout.CENTER ) ;
+        eventBus.addSubscriber( this, true, SUBSCRIBED_EVENTS ) ;
+        if( chartPanel == null ) {
+            createNewDayValueChart() ;
         }
+        else if( pastStudyTimesProvider != null && !syllabusName.equals( pastStudyTimesProvider.getSyllabusName() ) ) {
+            createNewDayValueChart() ;
+        }
+        else {
+            dayValueChart.refreshChart() ;
+        }
+    }
+    
+    private void createNewDayValueChart() {
+        
+        Color syllabusColor = uiAttributes.getSyllabusColor( syllabusName ) ;
+        pastStudyTimesProvider = pastStudyTimesManager.getPastStudyTimesProvider( syllabusName ) ;
+        dayValueChart = new HistoricDayValueChart( "Hours",
+                                    SwingUtils.darkerColor( syllabusColor, 0.5F ),
+                                    syllabusColor.brighter(),
+                                    pastStudyTimesProvider,
+                                    pastStudyTimesManager::getMaxSyllabusTime,
+                                    true ) ;
+        
+        if( chartPanel != null ) {
+            remove( chartPanel ) ;
+        }
+        chartPanel = new ChartPanel( dayValueChart.getJFreeChart() ) ;
+        add( chartPanel, BorderLayout.CENTER ) ;
     }
     
     @Override

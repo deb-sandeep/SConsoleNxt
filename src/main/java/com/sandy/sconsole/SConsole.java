@@ -8,7 +8,6 @@ import com.sandy.sconsole.core.ui.SConsoleFrame;
 import com.sandy.sconsole.core.ui.screen.Screen;
 import com.sandy.sconsole.core.ui.screen.ScreenManager;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
-import com.sandy.sconsole.dao.quote.QuoteManager;
 import com.sandy.sconsole.ui.screen.clock.ClockScreen;
 import com.sandy.sconsole.ui.screen.dashboard.DashboardScreen;
 import com.sandy.sconsole.ui.screen.session.SessionScreen;
@@ -48,7 +47,6 @@ public class SConsole
     @Autowired private SConsoleClock clock ;
     @Autowired private EventBus eventBus ;
     @Autowired private SConsoleFrame frame ;
-    @Autowired private QuoteManager quoteManager ;
     @Autowired private NVPConfigAnnotationProcessor nvpAnnotationProcessor ;
     @Autowired private ScreenManager screenManager ;
     
@@ -73,15 +71,12 @@ public class SConsole
         this.clock.initialize() ;
 
         log.debug( "- Initializing EventBus" ) ;
-        this.eventBus.setPrintPublishLogs( false ) ;
+        this.eventBus.setPrintPublishLogs( config.isPrintEventPublishLogs() ) ;
         this.eventBus.setEventCatalogClass( EventCatalog.class ) ;
 
         log.debug( "- Initializing NVPConfig injector." ) ;
         nvpAnnotationProcessor.processNVPConfigAnnotations() ;
 
-        log.debug( "- Initializing QuoteManager." ) ;
-        quoteManager.initialize( this ) ;
-        
         log.debug( "- Initializing ScreenManager." ) ;
         initializeScreenManager() ;
 
@@ -104,7 +99,6 @@ public class SConsole
         
         // 3. Set the day and night root screens
         screenManager.setDayRootScreen( dashboardScreen.getId() ) ;
-        //screenManager.setDayRootScreen( sessionScreen.getId() ) ;
         screenManager.setNightRootScreen( clockScreen.getId() ) ;
         
         // 4. Add screen transitions
@@ -122,6 +116,7 @@ public class SConsole
     }
     
     private void invokeFinalizers() {
+        eventBus.terminateExecutor() ;
     }
 
     // --------------------- Main method ---------------------------------------

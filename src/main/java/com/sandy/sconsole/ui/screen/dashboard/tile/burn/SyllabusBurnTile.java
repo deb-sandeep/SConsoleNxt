@@ -64,7 +64,7 @@ public class SyllabusBurnTile extends Tile
     
     @Override
     public void initialize() {
-        eventBus.addSubscriberForEventTypes( this, false, SUBSCRIBED_EVENTS ) ;
+        eventBus.addSubscriber( this, true, SUBSCRIBED_EVENTS ) ;
         setBorder( new MatteBorder( 1, 1, 0, 1, UITheme.TILE_BORDER_COLOR ) ) ;
         setLayout( new GridLayout( 2, 1 ) ) ;
         
@@ -83,8 +83,6 @@ public class SyllabusBurnTile extends Tile
     }
     
     private void refresh() {
-        log.debug( "Refreshing syllabus burn tile" ) ;
-        
         burnPanelMap.clear() ;
         topBurnPanel.setTopicStats( null ) ;
         bottomBurnPanel.setTopicStats( null ) ;

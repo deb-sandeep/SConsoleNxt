@@ -5,8 +5,8 @@ import com.sandy.sconsole.core.bus.EventBus;
 import com.sandy.sconsole.core.bus.EventSubscriber;
 import com.sandy.sconsole.core.ui.screen.Tile;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
-import com.sandy.sconsole.state.PastStudyTimes;
-import com.sandy.sconsole.state.manager.PastStudyTimesManager;
+import com.sandy.sconsole.state.PastStudyTimesProvider;
+import com.sandy.sconsole.state.manager.PastStudyTimesProviderManager;
 import com.sandy.sconsole.ui.util.HistoricDayValueChart;
 import lombok.extern.slf4j.Slf4j;
 import org.jfree.chart.ChartPanel;
@@ -29,17 +29,17 @@ public class L60EffortTile extends Tile
             PAST_STUDY_TIME_UPDATED,
     } ;
     
-    @Autowired private EventBus eventBus ;
-    @Autowired private PastStudyTimesManager pastStudyTimesManager ;
+    @Autowired private EventBus                      eventBus ;
+    @Autowired private PastStudyTimesProviderManager pastStudyTimesManager ;
     
     private HistoricDayValueChart dayValueChart ;
     
     @Override
     public void initialize() {
-        eventBus.addSubscriberForEventTypes( this, false, SUBSCRIBED_EVENTS ) ;
+        eventBus.addSubscriber( this, true, SUBSCRIBED_EVENTS ) ;
         setBorder( new MatteBorder( 0, 1, 1, 1, UITheme.TILE_BORDER_COLOR ) ) ;
         
-        PastStudyTimes pastStudyTimes = pastStudyTimesManager.getPastStudyTimes() ;
+        PastStudyTimesProvider pastStudyTimes = pastStudyTimesManager.getPastStudyTimesProvider() ;
         dayValueChart = new HistoricDayValueChart( "Hours",
                                             Color.DARK_GRAY,
                                             Color.LIGHT_GRAY,

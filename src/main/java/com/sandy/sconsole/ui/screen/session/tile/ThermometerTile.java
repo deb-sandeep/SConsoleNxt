@@ -93,7 +93,7 @@ public class ThermometerTile extends Tile
         if( ats == null ) {
             throw new RuntimeException( "No active topic statistics found" ) ;
         }
-        eventBus.addSubscriberForEventTypes( this, true, SUBSCRIBED_EVENTS ) ;
+        eventBus.addSubscriber( this, true, SUBSCRIBED_EVENTS ) ;
         refreshPlot() ;
     }
     

@@ -3,7 +3,7 @@ package com.sandy.sconsole.ui.util;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-public class TimeTile extends AbstractCalendarTile{
+public class TimeTile extends AbstractCalendarTile {
     
     private static final SimpleDateFormat SDF = new SimpleDateFormat( "HH:mm:ss" ) ;
     

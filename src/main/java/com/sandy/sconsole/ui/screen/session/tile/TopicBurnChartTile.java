@@ -90,7 +90,7 @@ public class TopicBurnChartTile extends Tile
         attachChartPanel() ;
         scheduleReplot() ;
         
-        eventBus.addSubscriberForEventTypes( this, true, SUBSCRIBED_EVENTS ) ;
+        eventBus.addSubscriber( this, true, SUBSCRIBED_EVENTS ) ;
     }
     
     @Override
