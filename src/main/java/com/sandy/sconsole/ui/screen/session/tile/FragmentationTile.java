@@ -31,7 +31,7 @@ public class FragmentationTile extends Tile {
     
     private static final SimpleDateFormat SDF = new SimpleDateFormat( "E" ) ;
     
-    private static final Insets I = new Insets( 1, 1, 1, 1 ) ;
+    private static final Insets I = new Insets( 0, 0, 0, 1 ) ;
     private static final int DAY_START_HR = 6 ;
     private static final int NUM_HRS_IN_DAY = 24 - DAY_START_HR ;
             

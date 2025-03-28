@@ -37,9 +37,6 @@ public class ClockScreen extends Screen implements ClockTickListener {
         timeTile = new TimeTile( 150 ) ;
         dateTile = new DateTile( 70 ) ;
         
-        timeTile.enableBorder( false ) ;
-        dateTile.enableBorder( false ) ;
-        
         super.addTile( timeTile, 2, 10, 13, 18 ) ;
         super.addTile( dateTile, 2, 18, 13, 21 ) ;
     }

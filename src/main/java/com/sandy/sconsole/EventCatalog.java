@@ -59,7 +59,7 @@ public class EventCatalog {
     public static final int TODAY_STUDY_STATS_UPDATED = 301 ;
     
     @Payload( Void.class )
-    public static final int TODAY_STUDY_TIME_UPDATED = 302 ;
+    public static final int TODAY_EFFORT_UPDATED = 302 ;
     
     // =============== Track Update Events =====================================
     // Range : 351 - 400
@@ -70,7 +70,7 @@ public class EventCatalog {
     // =============== Past Study Time Update Events ===========================
     // Range : 401 - 410
     
-    @Payload( Void.class ) // track id
-    public static final int PAST_STUDY_TIME_UPDATED = 401 ;
+    @Payload( Void.class )
+    public static final int PAST_EFFORT_UPDATED = 401 ;
 
 }

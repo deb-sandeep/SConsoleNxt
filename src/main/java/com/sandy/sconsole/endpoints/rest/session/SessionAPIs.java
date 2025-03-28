@@ -18,6 +18,7 @@ import com.sandy.sconsole.dao.session.dto.SessionPauseDTO;
 import com.sandy.sconsole.dao.session.repo.ProblemAttemptRepo;
 import com.sandy.sconsole.dao.session.repo.SessionPauseRepo;
 import com.sandy.sconsole.dao.session.repo.SessionRepo;
+import com.sandy.sconsole.state.manager.TodayStudyStatistics;
 import com.sandy.sconsole.ui.screen.session.SessionScreen;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,7 @@ public class SessionAPIs {
     
     @Autowired private ScreenManager screenManager ;
     
+    @Autowired private TodayStudyStatistics todayStudyStats ;
     @Autowired private EventBus eventBus ;
     
     @GetMapping( "/Types" )
@@ -69,8 +71,10 @@ public class SessionAPIs {
             dao.setEffectiveDuration( req.getEffectiveDuration() ) ;
             
             Session savedDao = sessionRepo.save( dao ) ;
+            SessionDTO sessionDto = new SessionDTO( savedDao ) ;
             
-            eventBus.publishEvent( SESSION_STARTED, new SessionDTO( savedDao ) ) ;
+            todayStudyStats.sessionStarted( sessionDto ) ;
+            eventBus.publishEvent( SESSION_STARTED, sessionDto ) ;
             screenManager.scheduleScreenChange( SessionScreen.ID ) ;
             
             return success( savedDao.getId() ) ;
@@ -83,6 +87,7 @@ public class SessionAPIs {
     @PostMapping( "/{sessionId}/EndSession" )
     public ResponseEntity<AR<String>> endSession(  @PathVariable( "sessionId" ) int sessionId ) {
         try {
+            todayStudyStats.sessionEnded() ;
             eventBus.publishEvent( SESSION_ENDED, sessionId ) ;
             screenManager.showRootScreen() ;
             return success() ;

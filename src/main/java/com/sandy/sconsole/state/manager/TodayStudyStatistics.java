@@ -37,24 +37,11 @@ import static com.sandy.sconsole.EventCatalog.*;
  *
  * TODAY_STUDY_TIME_UPDATED : Today study time has been updated. This can happen
  * if session or pause has been started or extended.
- *
  */
 @Slf4j
 @Component
 public class TodayStudyStatistics
     implements EventSubscriber, ClockTickListener {
-    
-    private static final int[] SYNC_SUBSCRIBED_EVENTS  = {
-            SESSION_STARTED,
-            SESSION_EXTENDED,
-            SESSION_ENDED,
-            PAUSE_STARTED,
-            PAUSE_EXTENDED,
-    } ;
-    
-    private static final int[] ASYNC_SUBSCRIBED_EVENTS = {
-            HISTORIC_SESSION_UPDATED
-    } ;
     
     @Autowired private EventBus eventBus ;
     @Autowired private SConsoleClock clock ;
@@ -62,8 +49,8 @@ public class TodayStudyStatistics
     @Autowired private SessionPauseRepo pauseRepo;
     
     // Functional state. These need to be reset in initializeFunctionalState method
-    private final Map<Integer, SessionDTO> sessions = new LinkedHashMap<>() ; // Key = Session ID
-    private final Map<Integer, SessionPauseDTO> pauses = new LinkedHashMap<>() ; // Key = Pause ID
+    private final Map<Integer, SessionDTO>      allSessions = new LinkedHashMap<>() ; // Key = Session ID
+    private final Map<Integer, SessionPauseDTO> allPauses   = new LinkedHashMap<>() ; // Key = Pause ID
     
     // Pauses per session. Key = Session ID
     private final ArrayListMultimap<Integer, SessionPauseDTO> sessionPauses = ArrayListMultimap.create();
@@ -71,27 +58,90 @@ public class TodayStudyStatistics
     // Sessions per syllabus. Key = Syllabus Name
     private final ArrayListMultimap<String, SessionDTO> syllabusSessions = ArrayListMultimap.create();
     
-    private Day today = new Day() ;
-    @Getter private int totalTimeInSec = 0 ;
-    @Getter SessionDTO liveSession ;
-    
-    // Stores effective times for each syllabus. Key = Syllabus Name
+    // Stores "effective" times for each syllabus. Key = Syllabus Name
     private final Map<String, Integer> syllabusTimes = new HashMap<>() ;
+    
+    private Day today = new Day() ;
+    
+    @Getter
+    private int totalEffectiveTimeInSec = 0 ;
+    
+    // If a session is ongoing, this will store a reference to that session
+    // else, null.
+    @Getter
+    SessionDTO currentSession ;
     
     @PostConstruct
     public void init() {
         clock.addTickListener( this, TimeUnit.DAYS ) ;
-        // Consume the events synchronously. Why? Because the session screen
-        // will ask for the live session before activation and handling a
-        // session start event needs to be deterministically done before that.
-        eventBus.addSubscriber( this, false, SYNC_SUBSCRIBED_EVENTS ) ;
-        eventBus.addSubscriber( this, true, ASYNC_SUBSCRIBED_EVENTS ) ;
+        subscribeToEvents() ;
         initializeState() ;
     }
     
-    public Collection<SessionDTO> getSessions() { return sessions.values() ; }
+    private void subscribeToEvents() {
+        // Consume the events synchronously. Why? Because the session screen
+        // will ask for the live session before activation and handling a
+        // session start event needs to be deterministically done before that.
+        // NOTE: SESSION_STARTED and SESSION_ENDED events are not registered
+        //       as they are called on this bean directly from the API
+        eventBus.addSyncSubscriber( this,
+                SESSION_EXTENDED,
+                PAUSE_STARTED,
+                PAUSE_EXTENDED ) ;
+        
+        eventBus.addAsyncSubscriber( this, HISTORIC_SESSION_UPDATED ) ;
+    }
     
-    public Collection<SessionPauseDTO> getPauses() { return pauses.values() ; }
+    @Override
+    public void handleEvent( Event event ) {
+        
+        final int eventType = event.getEventId() ;
+        switch( eventType ) {
+            case HISTORIC_SESSION_UPDATED:
+                initializeState() ;
+                break ;
+            
+            case SESSION_EXTENDED:
+                SessionDTO session = ( SessionDTO )event.getValue() ;
+                currentSession = updateCachedSession( session, true ) ;
+                break ;
+            
+            case PAUSE_STARTED:
+            case PAUSE_EXTENDED:
+                updateCachedPause( (SessionPauseDTO)event.getValue(), true ) ;
+                break ;
+        }
+    }
+    
+    @Override
+    public void dayTicked( Calendar calendar ) {
+        initializeState() ;
+    }
+    
+    private void initializeState() {
+        
+        today = new Day() ;
+        allSessions.clear() ;
+        allPauses.clear() ;
+        sessionPauses.clear() ;
+        syllabusSessions.clear() ;
+        syllabusTimes.clear() ;
+        
+        totalEffectiveTimeInSec = 0 ;
+        
+        // Load the existing sessions and pauses for today
+        sessionRepo.getTodaySessions()
+                   .forEach( s -> updateCachedSession( new SessionDTO( s ), false ) ) ;
+        
+        pauseRepo.getTodayPauses()
+                 .forEach( p -> updateCachedPause( new SessionPauseDTO( p ), false ) ) ;
+        
+        eventBus.publishEvent( TODAY_STUDY_STATS_UPDATED ) ;
+    }
+    
+    public Collection<SessionDTO> getAllSessions() { return allSessions.values() ; }
+    
+    public Collection<SessionPauseDTO> getAllPauses() { return allPauses.values() ; }
     
     public int getSyllabusTime( String syllabusName ) {
         if( syllabusTimes.containsKey( syllabusName ) ) {
@@ -100,103 +150,69 @@ public class TodayStudyStatistics
         return 0 ;
     }
     
-    @Override
-    public void dayTicked( Calendar calendar ) {
-        initializeState() ;
+    public void sessionStarted( SessionDTO session ) {
+        currentSession = updateCachedSession( session, true ) ;
     }
     
-    @Override
-    public void handleEvent( Event event ) {
-     
-        final int eventType = event.getEventType() ;
-        switch( eventType ) {
-            case HISTORIC_SESSION_UPDATED:
-                initializeState() ;
-                break ;
-                
-            case SESSION_STARTED:
-            case SESSION_EXTENDED:
-                updateCachedSession( (SessionDTO)event.getValue(), true ) ;
-                break ;
-                
-            case PAUSE_STARTED:
-            case PAUSE_EXTENDED:
-                updateCachedPause( (SessionPauseDTO)event.getValue(), true ) ;
-                break ;
-                
-            case SESSION_ENDED:
-                liveSession = null ;
-                break ;
-        }
+    public void sessionEnded() {
+        currentSession = null ;
     }
     
-    private void initializeState() {
+    public SessionDTO updateCachedSession( @NonNull SessionDTO _session, boolean emitEvents ) {
         
-        today = new Day() ;
-        sessions.clear() ;
-        pauses.clear() ;
-        sessionPauses.clear() ;
-        syllabusSessions.clear() ;
-        syllabusTimes.clear() ;
-        
-        totalTimeInSec = 0 ;
-        
-        // Load the existing sessions and pauses for today
-        sessionRepo.getTodaySessions().forEach( s -> updateCachedSession( new SessionDTO( s ), false ) ) ;
-        pauseRepo.getTodayPauses().forEach( p -> updateCachedPause( new SessionPauseDTO( p ), false ) ) ;
-        
-        eventBus.publishEvent( TODAY_STUDY_STATS_UPDATED ) ;
-    }
-    
-    private void updateCachedSession( @NonNull SessionDTO _session, boolean emitEvents ) {
-        
-        SessionDTO session = sessions.computeIfAbsent( _session.getId(), k -> {
+        SessionDTO session = allSessions.computeIfAbsent( _session.getId(), k -> {
             SessionDTO newSession = new SessionDTO( _session ) ;
             syllabusSessions.put( newSession.getSyllabusName(), newSession ) ;
             return newSession ;
         } ) ;
-        liveSession = session ;
+        
         session.absorb( _session ) ;
         
-        if( today.after( session.getStartTime() ) ) {
+        if( today.startsAfter( session.getStartTime() ) ) {
             session.setStartTime( today.getStartTime() ) ;
         }
-        else if( today.before( session.getEndTime() ) ) {
+        else if( today.endsBefore( session.getEndTime() ) ) {
             session.setEndTime( today.getEndTime() ) ;
         }
+        
         computeTotalEffectiveTimeForToday( emitEvents ) ;
+        return session ;
     }
     
-    private void updateCachedPause( @NonNull SessionPauseDTO _pause, boolean emitEvents ) {
+    public void updateCachedPause( @NonNull SessionPauseDTO _pause, boolean emitEvents ) {
         
-        SessionPauseDTO pause = pauses.computeIfAbsent( _pause.getId(), k -> {
+        SessionPauseDTO pause = allPauses.computeIfAbsent( _pause.getId(), k -> {
             SessionPauseDTO newPause = new SessionPauseDTO( _pause ) ;
             sessionPauses.put( newPause.getSessionId(), newPause ) ;
             return newPause ;
         } ) ;
+        
         pause.absorb( _pause ) ;
         
-        if( today.after( pause.getStartTime() ) ) {
+        if( today.startsAfter( pause.getStartTime() ) ) {
             pause.setStartTime( today.getStartTime() ) ;
         }
-        else if( today.before( pause.getEndTime() ) ) {
+        else if( today.endsBefore( pause.getEndTime() ) ) {
             pause.setEndTime( today.getEndTime() ) ;
         }
+        
         computeTotalEffectiveTimeForToday( emitEvents ) ;
     }
     
     private void computeTotalEffectiveTimeForToday( boolean emitEvents ) {
         
-        int totalSessionTime = sessions.values().stream().mapToInt( SessionDTO::getDuration ).sum() ;
-        int totalPauseTime = pauses.values().stream().mapToInt( SessionPauseDTO::getDuration ).sum() ;
-        this.totalTimeInSec = totalSessionTime - totalPauseTime ;
+        int totalSessionTime = allSessions.values().stream().mapToInt( SessionDTO::getDuration ).sum() ;
+        int totalPauseTime = allPauses.values().stream().mapToInt( SessionPauseDTO::getDuration ).sum() ;
+        
+        this.totalEffectiveTimeInSec = totalSessionTime - totalPauseTime ;
         
         syllabusSessions.keySet().forEach( syllabusName -> {
-            List<SessionDTO> sessions = syllabusSessions.get( syllabusName ) ;
+            
             int totalSyllabusTime = 0 ;
-            for( SessionDTO session : sessions ) {
+            for( SessionDTO session : syllabusSessions.get( syllabusName ) ) {
+                
                 totalSyllabusTime += session.getDuration() ;
-                for( SessionPauseDTO pause : pauses.values() ) {
+                for( SessionPauseDTO pause : sessionPauses.get( session.getId() ) ) {
                     totalSyllabusTime -= pause.getDuration() ;
                 }
             }
@@ -204,7 +220,7 @@ public class TodayStudyStatistics
         } ) ;
         
         if( emitEvents ) {
-            eventBus.publishEvent( TODAY_STUDY_TIME_UPDATED ) ;
+            eventBus.publishEvent( TODAY_EFFORT_UPDATED ) ;
         }
     }
 }

@@ -5,8 +5,8 @@ import com.sandy.sconsole.core.bus.EventBus;
 import com.sandy.sconsole.core.bus.EventSubscriber;
 import com.sandy.sconsole.core.ui.screen.Tile;
 import com.sandy.sconsole.core.ui.uiutil.SwingUtils;
-import com.sandy.sconsole.state.SyllabusPastStudyTimesProvider;
-import com.sandy.sconsole.state.manager.PastStudyTimesProviderManager;
+import com.sandy.sconsole.state.SyllabusPastEffortProvider;
+import com.sandy.sconsole.state.manager.PastEffortProviderManager;
 import com.sandy.sconsole.ui.util.ConfiguredUIAttributes;
 import com.sandy.sconsole.ui.util.HistoricDayValueChart;
 import lombok.Setter;
@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 
 import java.awt.*;
 
-import static com.sandy.sconsole.EventCatalog.PAST_STUDY_TIME_UPDATED;
+import static com.sandy.sconsole.EventCatalog.PAST_EFFORT_UPDATED;
 
 @Slf4j
 @Component
@@ -26,27 +26,30 @@ import static com.sandy.sconsole.EventCatalog.PAST_STUDY_TIME_UPDATED;
 public class SyllabusL30EffortTile extends Tile
         implements EventSubscriber {
     
-    private static final int[] SUBSCRIBED_EVENTS = {
-       PAST_STUDY_TIME_UPDATED,
-    } ;
+    @Autowired
+    private EventBus eventBus ;
     
-    @Autowired private EventBus eventBus ;
-    @Autowired private ConfiguredUIAttributes        uiAttributes ;
-    @Autowired private PastStudyTimesProviderManager pastStudyTimesManager ;
+    @Autowired
+    private ConfiguredUIAttributes uiAttributes ;
     
-    @Setter private String syllabusName ;
+    @Autowired
+    private PastEffortProviderManager pastEffortsManager;
     
-    private SyllabusPastStudyTimesProvider pastStudyTimesProvider;
+    @Setter
+    private String syllabusName ;
+    
+    private SyllabusPastEffortProvider pastEffortProvider;
+    
     private HistoricDayValueChart dayValueChart ;
     private ChartPanel chartPanel ;
     
     @Override
     public void beforeActivation() {
-        eventBus.addSubscriber( this, true, SUBSCRIBED_EVENTS ) ;
+        subscribeToEvents() ;
         if( chartPanel == null ) {
             createNewDayValueChart() ;
         }
-        else if( pastStudyTimesProvider != null && !syllabusName.equals( pastStudyTimesProvider.getSyllabusName() ) ) {
+        else if( pastEffortProvider != null && !syllabusName.equals( pastEffortProvider.getSyllabusName() ) ) {
             createNewDayValueChart() ;
         }
         else {
@@ -54,15 +57,26 @@ public class SyllabusL30EffortTile extends Tile
         }
     }
     
+    private void subscribeToEvents() {
+        eventBus.addAsyncSubscriber( this, PAST_EFFORT_UPDATED ) ;
+    }
+    
+    @Override
+    public void handleEvent( Event event ) {
+        dayValueChart.refreshChart() ;
+    }
+
     private void createNewDayValueChart() {
         
         Color syllabusColor = uiAttributes.getSyllabusColor( syllabusName ) ;
-        pastStudyTimesProvider = pastStudyTimesManager.getPastStudyTimesProvider( syllabusName ) ;
+        
+        pastEffortProvider = pastEffortsManager.getPastEffortProvider( syllabusName ) ;
+        
         dayValueChart = new HistoricDayValueChart( "Hours",
                                     SwingUtils.darkerColor( syllabusColor, 0.5F ),
-                                    syllabusColor.brighter(),
-                                    pastStudyTimesProvider,
-                                    pastStudyTimesManager::getMaxSyllabusTime,
+                                    syllabusColor.brighter(), 
+                                    pastEffortProvider,
+                                    pastEffortsManager::getMaxSyllabusTime,
                                     true ) ;
         
         if( chartPanel != null ) {
@@ -77,8 +91,4 @@ public class SyllabusL30EffortTile extends Tile
         eventBus.removeSubscriber( this ) ;
     }
     
-    @Override
-    public void handleEvent( Event event ) {
-        dayValueChart.refreshChart() ;
-    }
 }

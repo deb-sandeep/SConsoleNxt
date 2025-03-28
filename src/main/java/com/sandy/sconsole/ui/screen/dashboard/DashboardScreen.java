@@ -4,8 +4,8 @@ import com.sandy.sconsole.core.clock.ClockTickListener;
 import com.sandy.sconsole.core.ui.screen.Screen;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
 import com.sandy.sconsole.ui.screen.dashboard.tile.DateTimeTile;
-import com.sandy.sconsole.ui.screen.dashboard.tile.L60EffortTile;
 import com.sandy.sconsole.ui.screen.dashboard.tile.SyllabusL30EffortTile;
+import com.sandy.sconsole.ui.screen.dashboard.tile.TotalL60EffortTile;
 import com.sandy.sconsole.ui.screen.dashboard.tile.burn.SyllabusBurnTile;
 import com.sandy.sconsole.ui.screen.dashboard.tile.daygantt.DayGanttTile;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +36,7 @@ public class DashboardScreen extends Screen
     @Autowired private SyllabusL30EffortTile mathsL30StudyTimeTile ;
     @Autowired private SyllabusL30EffortTile reasoningL30StudyTimeTile ;
     
-    @Autowired private L60EffortTile l60EffortTile ;
+    @Autowired private TotalL60EffortTile l60EffortTile ;
     
     public DashboardScreen() {
         super( ID, "Daily Dashboard" ) ;

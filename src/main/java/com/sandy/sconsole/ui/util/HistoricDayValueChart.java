@@ -181,7 +181,7 @@ public class HistoricDayValueChart {
     public void refreshChart() {
         SwingUtilities.invokeLater( () -> {
             try {
-                refreshHistoricValuesAsync() ;
+                _refreshHistoricValues() ;
             }
             catch( ParseException e ) {
                 log.error( "Error populating initial data.", e ) ;
@@ -189,7 +189,7 @@ public class HistoricDayValueChart {
         } ) ;
     }
     
-    private void refreshHistoricValuesAsync() 
+    private void _refreshHistoricValues()
         throws ParseException {
         
         Collection<DayValue> historicValues ;

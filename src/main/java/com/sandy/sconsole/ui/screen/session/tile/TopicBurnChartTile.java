@@ -176,7 +176,7 @@ public class TopicBurnChartTile extends Tile
     
     @Override
     public void handleEvent( Event event ) {
-        if( event.getEventType() == EventCatalog.ATS_REFRESHED ) {
+        if( event.getEventId() == EventCatalog.ATS_REFRESHED ) {
             scheduleReplot() ;
         }
     }

@@ -49,14 +49,14 @@ public class ThermometerTile extends Tile
         configurePlot() ;
         
         ChartPanel chartPanel = new ChartPanel( chart ) ;
-        chartPanel.setMinimumDrawHeight( UITheme.GRID_HEIGHT*7 ) ;
+        chartPanel.setMinimumDrawHeight( UITheme.GRID_HEIGHT*14 ) ;
         chartPanel.setMinimumDrawWidth( UITheme.GRID_WIDTH ) ;
         
         add( chartPanel ) ;
     }
     
     private void configureChart() {
-
+        
         chart.setBackgroundPaint( UITheme.BG_COLOR ) ;
         chart.removeLegend() ;
     }
@@ -64,7 +64,7 @@ public class ThermometerTile extends Tile
     private void configurePlot() {
 
         plot.setGap( 7 ) ;
-        plot.setInsets( new RectangleInsets( 0, 0, 0, 0 ) ) ;
+        plot.setInsets( new RectangleInsets( -1, -1, -1, -1 ) ) ;
         plot.setPadding(new RectangleInsets( 15.0, 5.0, 15.0, 5.0 ) ) ;
         plot.setBackgroundPaint( UITheme.BG_COLOR ) ;
         plot.setThermometerStroke( new BasicStroke( 1.0f ) ) ;
@@ -104,7 +104,7 @@ public class ThermometerTile extends Tile
     
     @Override
     public void handleEvent( Event event ) {
-        if( event.getEventType() == EventCatalog.ATS_REFRESHED ) {
+        if( event.getEventId() == EventCatalog.ATS_REFRESHED ) {
             refreshPlot() ;
         }
     }

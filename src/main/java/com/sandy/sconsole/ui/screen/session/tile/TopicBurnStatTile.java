@@ -153,7 +153,7 @@ public class TopicBurnStatTile extends Tile
     public void beforeActivation() {
         eventBus.addSubscriber( this, true, SUBSCRIBED_EVENTS ) ;
         
-        SessionDTO liveSession = todayStudyStats.getLiveSession() ;
+        SessionDTO liveSession = todayStudyStats.getCurrentSession() ;
         ats = atsManager.getTopicStatistics( liveSession.getTopicId() ) ;
         refreshBurnInfo() ;
     }
@@ -165,7 +165,7 @@ public class TopicBurnStatTile extends Tile
     
     @Override
     public void handleEvent( Event event ) {
-        final int eventType = event.getEventType() ;
+        final int eventType = event.getEventId() ;
         switch( eventType ) {
             case EventCatalog.ATS_REFRESHED -> refreshBurnInfo() ;
             case EventCatalog.SESSION_ENDED -> ats = null ;

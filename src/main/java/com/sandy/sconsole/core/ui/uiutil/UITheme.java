@@ -18,6 +18,7 @@ public class UITheme {
     public static final Border TILE_BORDER = new LineBorder( TILE_BORDER_COLOR ) ;
     public static final Color  BG_COLOR = Color.BLACK ;
     public static final Color  TILE_FG_COLOR = Color.GRAY.darker() ;
+    public static final Color  TILE_FG_COLOR_BRIGHTER = Color.GRAY ;
     
     public static final Font CHART_XAXIS_FONT = new Font( FONT_NAME, Font.PLAIN, 12 ) ;
     public static final Font CHART_YAXIS_FONT = new Font( FONT_NAME, Font.PLAIN, 10 ) ;

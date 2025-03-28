@@ -8,12 +8,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TotalPastStudyTimesProvider extends PastStudyTimesProvider {
+public class TotalPastEffortProvider extends PastEffortProvider {
     
     private final DayStudyTimeRepo     studyTimeRepo ;
     private final TodayStudyStatistics todayStudyStatistics ;
     
-    public TotalPastStudyTimesProvider() {
+    public TotalPastEffortProvider() {
         super( 60 ) ;
         this.studyTimeRepo = SConsole.getBean( DayStudyTimeRepo.class ) ;
         this.todayStudyStatistics = SConsole.getBean( TodayStudyStatistics.class ) ;
@@ -32,6 +32,6 @@ public class TotalPastStudyTimesProvider extends PastStudyTimesProvider {
     
     @Override
     protected int getTodayTime() {
-        return todayStudyStatistics.getTotalTimeInSec() ;
+        return todayStudyStatistics.getTotalEffectiveTimeInSec() ;
     }
 }

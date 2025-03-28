@@ -21,18 +21,22 @@ public class Day {
         this.endTime = DateUtils.addSeconds( this.startTime, 86400 ) ;
     }
     
+    /**
+     * Returns true if the time provided lies between start and end of this day.
+     * startTime inclusive and endTime exclusive.
+     */
+    public boolean contains( Date time ) {
+        return startTime.getTime() <= time.getTime() &&
+               endTime.getTime() > time.getTime() ;
+    }
+    
     /** Returns true if this day ends before the given date */
-    public boolean before( Date time ) {
-        return endTime.compareTo( time ) <= 0 ;
+    public boolean endsBefore( Date time ) {
+        return endTime.compareTo( time ) < 0 ;
     }
     
     /** Returns true if this day starts after the given date */
-    public boolean after( Date time ) {
-        return startTime.after( time ) ;
-    }
-    
-    public boolean contains( Date time ) {
-        return time.compareTo( startTime ) >= 0 &&
-               time.before( endTime ) ;
+    public boolean startsAfter( Date time ) {
+        return startTime.compareTo( time ) >= 0 ;
     }
 }

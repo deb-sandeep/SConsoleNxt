@@ -16,8 +16,8 @@ import java.awt.*;
 import java.util.Calendar;
 import java.util.Date;
 
+import static com.sandy.sconsole.EventCatalog.TODAY_EFFORT_UPDATED;
 import static com.sandy.sconsole.EventCatalog.TODAY_STUDY_STATS_UPDATED;
-import static com.sandy.sconsole.EventCatalog.TODAY_STUDY_TIME_UPDATED;
 import static com.sandy.sconsole.core.util.StringUtil.getElapsedTimeLabelHHmm;
 
 /**
@@ -46,8 +46,7 @@ public class DayGanttTile extends Tile
     implements EventSubscriber {
     
     private static final int[] SUBSCRIBED_EVENTS = {
-            TODAY_STUDY_STATS_UPDATED,
-            TODAY_STUDY_TIME_UPDATED
+            TODAY_STUDY_STATS_UPDATED, TODAY_EFFORT_UPDATED
     } ;
     
     private static final Insets INSET = new Insets( 0, 0, 25, 0 ) ;
@@ -85,9 +84,9 @@ public class DayGanttTile extends Tile
     
     @Override
     public void handleEvent( Event event ) {
-        switch( event.getEventType() ) {
+        switch( event.getEventId() ) {
             case TODAY_STUDY_STATS_UPDATED:
-            case TODAY_STUDY_TIME_UPDATED:
+            case TODAY_EFFORT_UPDATED:
                 super.repaint() ;
                 break ;
         }
@@ -144,14 +143,14 @@ public class DayGanttTile extends Tile
     }
     
     private void paintSessions( Graphics2D g ) {
-        studyStats.getSessions().forEach( session -> {
+        studyStats.getAllSessions().forEach( session -> {
             Color sessionColor = uiAttributes.getSyllabusColor( session.getSyllabusName() ) ;
             paintArea( session.getStartTime(), session.getDuration(), g, sessionColor ) ;
         } );
     }
     
     private void paintPauses( Graphics2D g ) {
-        studyStats.getPauses().forEach( pause -> {
+        studyStats.getAllPauses().forEach( pause -> {
             paintArea( pause.getStartTime(), pause.getDuration(), g, Color.DARK_GRAY ) ;
         } );
     }
@@ -163,13 +162,13 @@ public class DayGanttTile extends Tile
         // a study session is negligible.
         Rectangle area = paintArea( 2, 10, 0, (3600*2 - 20*60), g, UITheme.BG_COLOR ) ;
         
-        g.setColor( studyStats.getTotalTimeInSec() >= MIN_TOTAL_TIME_SECONDS ? Color.GREEN : Color.RED ) ;
+        g.setColor( studyStats.getTotalEffectiveTimeInSec() >= MIN_TOTAL_TIME_SECONDS ? Color.GREEN : Color.RED ) ;
         g.setFont( TOTAL_TIME_FONT ) ;
         
         FontMetrics metrics = g.getFontMetrics( TOTAL_TIME_FONT ) ;
         int textHeight = metrics.getHeight() ;
         
-        g.drawString( getElapsedTimeLabelHHmm( studyStats.getTotalTimeInSec() ),
+        g.drawString( getElapsedTimeLabelHHmm( studyStats.getTotalEffectiveTimeInSec() ),
                       area.x+10,
                       area.y+(area.height/2)+(textHeight/2) - 7 ) ;
     }

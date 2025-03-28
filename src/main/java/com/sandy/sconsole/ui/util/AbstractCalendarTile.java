@@ -18,7 +18,6 @@ public class AbstractCalendarTile extends StringTile
     
     protected AbstractCalendarTile( int fontSize, String dateFormatString ) {
         super( fontSize ) ;
-        super.enableBorder( true );
         this.dateFormat = new SimpleDateFormat( dateFormatString) ;
         this.clock = SConsole.getBean( SConsoleClock.class ) ;
     }

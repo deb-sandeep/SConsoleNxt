@@ -8,7 +8,7 @@ import org.apache.commons.lang3.time.DateUtils;
 import java.util.*;
 
 @Slf4j
-public abstract class PastStudyTimesProvider
+public abstract class PastEffortProvider
         implements DayValueProvider {
 
     private final int numPastDays ;
@@ -17,7 +17,7 @@ public abstract class PastStudyTimesProvider
     protected Date startDate ;
     protected Map<Date, DayValue> studyTimes = new LinkedHashMap<>() ;
     
-    protected PastStudyTimesProvider( int numPastDays ) {
+    protected PastEffortProvider( int numPastDays ) {
         this.numPastDays = numPastDays ;
     }
     

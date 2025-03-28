@@ -11,14 +11,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
-public class SyllabusPastStudyTimesProvider extends PastStudyTimesProvider {
+public class SyllabusPastEffortProvider extends PastEffortProvider {
     
     @Getter private final String syllabusName ;
     
     private final DaySyllabusStudyTimeRepo studyTimeRepo ;
     private final TodayStudyStatistics     todayStudyStatistics ;
     
-    public SyllabusPastStudyTimesProvider( String syllabusName ) {
+    public SyllabusPastEffortProvider( String syllabusName ) {
         super( 30 ) ;
         this.syllabusName = syllabusName ;
         this.studyTimeRepo = SConsole.getBean( DaySyllabusStudyTimeRepo.class ) ;
