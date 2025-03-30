@@ -27,6 +27,8 @@ public class TopicBurnPanel extends JPanel {
     private ActiveTopicStatistics topicStats ;
     
     private JLabel topicNameLabel ;
+    private JLabel originalBurnLabel ;
+    private JLabel requiredBurnLabel ;
     
     TopicBurnPanel() {}
     
@@ -40,7 +42,17 @@ public class TopicBurnPanel extends JPanel {
         topicNameLabel.setHorizontalAlignment( SwingConstants.LEFT ) ;
         topicNameLabel.setFont( UITheme.BASE_FONT.deriveFont( Font.PLAIN, 25f ) ) ;
         
-        add( topicNameLabel, BorderLayout.NORTH ) ;
+        originalBurnLabel = createEmptyLabel( theme ) ;
+        originalBurnLabel.setHorizontalAlignment( SwingConstants.RIGHT ) ;
+        originalBurnLabel.setFont( UITheme.BASE_FONT.deriveFont( Font.PLAIN, 18f ) ) ;
+        originalBurnLabel.setForeground( BurnMeterCanvas.ORIGINAL_BURN_COLOR );
+        
+        requiredBurnLabel = createEmptyLabel( theme ) ;
+        requiredBurnLabel.setHorizontalAlignment( SwingConstants.RIGHT ) ;
+        requiredBurnLabel.setFont( UITheme.BASE_FONT.deriveFont( Font.PLAIN, 18f ) ) ;
+        requiredBurnLabel.setForeground( BurnMeterCanvas.TARGET_BURN_COLOR ) ;
+        
+        add( getTopicNamePanel(), BorderLayout.NORTH ) ;
         
         JPanel centerPanel = new JPanel( new BorderLayout() ) ;
         centerPanel.setBackground( UITheme.BG_COLOR ) ;
@@ -55,17 +67,37 @@ public class TopicBurnPanel extends JPanel {
         this.pctCompletionBar.setTopicStats( topicStats ) ;
     }
     
+    private JPanel getTopicNamePanel() {
+        
+        JPanel markerPanel = new JPanel( new GridLayout(1, 2, 5, 0) ) ;
+        markerPanel.setBackground( UITheme.BG_COLOR ) ;
+        markerPanel.add( originalBurnLabel, 0 ) ;
+        markerPanel.add( requiredBurnLabel, 1 ) ;
+        
+        JPanel panel = new JPanel( new BorderLayout() ) ;
+        panel.setBackground( UITheme.BG_COLOR ) ;
+        panel.add( topicNameLabel, BorderLayout.CENTER ) ;
+        panel.add( markerPanel, BorderLayout.EAST ) ;
+        
+        return panel ;
+    }
+    
     void refreshUI() {
         
         topicNameLabel.setText( "" ) ;
+        
+        burnMeter.refreshUI() ;
+        pctCompletionBar.refreshUI() ;
+
         if( topicStats != null ) {
             String syllabusName = topicStats.getTopic().getSyllabusName() ;
             Color syllabusColor = uiAttributes.getSyllabusColor( syllabusName ) ;
             
             topicNameLabel.setForeground( SwingUtils.darkerColor( syllabusColor, 0.6F ) ) ;
             topicNameLabel.setText( topicStats.getTopic().getTopicName() ) ;
+            
+            originalBurnLabel.setText( "[" + burnMeter.getOriginalBurnRate() + "]" ) ;
+            requiredBurnLabel.setText( "[" + burnMeter.getRequiredBurnRate() + "]" ) ;
         }
-        burnMeter.refreshUI() ;
-        pctCompletionBar.refreshUI() ;
     }
 }

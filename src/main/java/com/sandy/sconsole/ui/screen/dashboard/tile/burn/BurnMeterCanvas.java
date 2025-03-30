@@ -3,6 +3,7 @@ package com.sandy.sconsole.ui.screen.dashboard.tile.burn;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
 import com.sandy.sconsole.state.ActiveTopicStatistics;
 import jakarta.annotation.PostConstruct;
+import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.context.annotation.Scope;
@@ -15,24 +16,25 @@ import java.awt.*;
 @Scope( "prototype" )
 class BurnMeterCanvas extends JPanel {
     
-    private final Color GRID_COLOR             = Color.decode( "#343333" ) ;
-    private final Color OVERBURN_COLOR         = Color.decode( "#06BF02" ) ;
-    private final Color SLIGHT_UNDERBURN_COLOR = Color.decode( "#558A3C" ) ;
-    private final Color UNDERBURN_COLOR        = Color.decode( "#7B2929" ) ;
-    private final Color ORIGINAL_BURN_COLOR    = Color.decode( "#BBBABA" ) ;
-    private final Color TARGET_BURN_COLOR      = Color.GREEN ;
+    private static final Color GRID_COLOR             = Color.decode( "#343333" ) ;
+    private static final Color OVERBURN_COLOR         = Color.decode( "#06BF02" ) ;
+    private static final Color SLIGHT_UNDERBURN_COLOR = Color.decode( "#558A3C" ) ;
+    private static final Color UNDERBURN_COLOR        = Color.decode( "#7B2929" ) ;
+    public  static final Color ORIGINAL_BURN_COLOR    = Color.decode( "#BBBABA" ) ;
+    public  static final Color TARGET_BURN_COLOR      = Color.GREEN ;
     
     private final Insets BORDER = new Insets( 2, 10, 10, 10 ) ;
     
     @Setter private ActiveTopicStatistics topicStats ;
     
-    private int maxValue         = 0 ;
-    private int originalBurnRate = 0 ;
-    private int requiredBurnRate = 0 ;
-    private int todayBurn        = 0 ;
+    @Getter private int originalBurnRate = 0 ;
+    @Getter private int requiredBurnRate = 0 ;
     
-    private int   width           = 0 ;
-    private int   height          = 0 ;
+    private int maxValue = 0 ;
+    private int todayBurn = 0 ;
+    
+    private int width = 0 ;
+    private int height = 0 ;
     private float widthPerProblem = 0 ;
     
     public BurnMeterCanvas() {}
