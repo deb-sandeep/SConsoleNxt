@@ -1,13 +1,12 @@
-package com.sandy.sconsole.ui.screen.dashboard.tile;
+package com.sandy.sconsole.ui.screen.session.tile;
 
+import com.sandy.sconsole.EventCatalog;
 import com.sandy.sconsole.core.bus.Event;
 import com.sandy.sconsole.core.bus.EventBus;
 import com.sandy.sconsole.core.bus.EventSubscriber;
 import com.sandy.sconsole.core.ui.screen.Tile;
-import com.sandy.sconsole.core.ui.uiutil.SwingUtils;
-import com.sandy.sconsole.state.SyllabusL30EffortProvider;
-import com.sandy.sconsole.state.manager.PastEffortProviderManager;
-import com.sandy.sconsole.ui.util.ConfiguredUIAttributes;
+import com.sandy.sconsole.dao.session.repo.ProblemAttemptRepo;
+import com.sandy.sconsole.state.TopicL30BurnProvider;
 import com.sandy.sconsole.ui.util.DayValueChart;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -18,30 +17,25 @@ import org.springframework.stereotype.Component;
 
 import java.awt.*;
 
-import static com.sandy.sconsole.EventCatalog.PAST_EFFORT_UPDATED;
-
 @Slf4j
 @Component
 @Scope( "prototype" )
-public class SyllabusL30EffortTile extends Tile
+public class TopicL30BurnTile extends Tile
         implements EventSubscriber {
     
     @Autowired
     private EventBus eventBus ;
     
     @Autowired
-    private ConfiguredUIAttributes uiAttributes ;
-    
-    @Autowired
-    private PastEffortProviderManager pastEffortsManager;
+    private ProblemAttemptRepo problemAttemptRepo ;
     
     @Setter
-    private String syllabusName ;
+    private Integer topicId ;
     
-    private SyllabusL30EffortProvider pastEffortProvider;
+    private TopicL30BurnProvider pastBurnProvider ;
     
     private DayValueChart dayValueChart ;
-    private ChartPanel    chartPanel ;
+    private ChartPanel chartPanel ;
     
     @Override
     public void beforeActivation() {
@@ -49,7 +43,7 @@ public class SyllabusL30EffortTile extends Tile
         if( chartPanel == null ) {
             createNewDayValueChart() ;
         }
-        else if( pastEffortProvider != null && !syllabusName.equals( pastEffortProvider.getSyllabusName() ) ) {
+        else if( pastBurnProvider != null && topicId != pastBurnProvider.getTopicId() ) {
             createNewDayValueChart() ;
         }
         else {
@@ -58,25 +52,25 @@ public class SyllabusL30EffortTile extends Tile
     }
     
     private void subscribeToEvents() {
-        eventBus.addAsyncSubscriber( this, PAST_EFFORT_UPDATED ) ;
+        eventBus.addAsyncSubscriber( this, EventCatalog.PROBLEM_ATTEMPT_ENDED ) ;
     }
     
     @Override
     public void handleEvent( Event event ) {
+        pastBurnProvider.updateTodayValue() ;
         dayValueChart.refreshChart() ;
     }
 
     private void createNewDayValueChart() {
         
-        Color syllabusColor = uiAttributes.getSyllabusColor( syllabusName ) ;
-        
-        pastEffortProvider = pastEffortsManager.getPastEffortProvider( syllabusName ) ;
+        pastBurnProvider = new TopicL30BurnProvider( topicId, problemAttemptRepo ) ;
+        pastBurnProvider.fullRefresh() ;
         
         dayValueChart = new DayValueChart( "Hours",
-                                    SwingUtils.darkerColor( syllabusColor, 0.5F ),
-                                    syllabusColor.brighter(), 
-                                    pastEffortProvider,
-                                    pastEffortsManager::getMaxSyllabusTime,
+                                    Color.BLUE,
+                                    Color.LIGHT_GRAY,
+                                    pastBurnProvider,
+                                    null,
                                     true ) ;
         
         if( chartPanel != null ) {

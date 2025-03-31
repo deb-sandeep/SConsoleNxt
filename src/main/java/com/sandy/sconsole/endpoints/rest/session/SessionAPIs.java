@@ -18,6 +18,7 @@ import com.sandy.sconsole.dao.session.dto.SessionPauseDTO;
 import com.sandy.sconsole.dao.session.repo.ProblemAttemptRepo;
 import com.sandy.sconsole.dao.session.repo.SessionPauseRepo;
 import com.sandy.sconsole.dao.session.repo.SessionRepo;
+import com.sandy.sconsole.state.manager.ActiveTopicStatisticsManager;
 import com.sandy.sconsole.state.manager.TodayStudyStatistics;
 import com.sandy.sconsole.ui.screen.session.SessionScreen;
 import lombok.extern.slf4j.Slf4j;
@@ -35,11 +36,11 @@ import static com.sandy.sconsole.core.api.AR.*;
 @RequestMapping( "/Session" )
 public class SessionAPIs {
     
-    @Autowired private SessionTypeRepo   stRepo ;
-    @Autowired private SessionRepo       sessionRepo ;
-    @Autowired private SessionPauseRepo  sessionPauseRepo ;
-    @Autowired private TopicRepo         topicRepo ;
-    @Autowired private TopicProblemRepo  tpRepo ;
+    @Autowired private SessionTypeRepo    stRepo ;
+    @Autowired private SessionRepo        sessionRepo ;
+    @Autowired private SessionPauseRepo   sessionPauseRepo ;
+    @Autowired private TopicRepo          topicRepo ;
+    @Autowired private TopicProblemRepo   tpRepo ;
     @Autowired private ProblemRepo        problemRepo ;
     @Autowired private ProblemAttemptRepo paRepo ;
     @Autowired private ProblemAttemptRepo problemAttemptRep;
@@ -47,6 +48,7 @@ public class SessionAPIs {
     @Autowired private ScreenManager screenManager ;
     
     @Autowired private TodayStudyStatistics todayStudyStats ;
+    @Autowired private ActiveTopicStatisticsManager activeTopicStatsMgr ;
     @Autowired private EventBus eventBus ;
     
     @GetMapping( "/Types" )
@@ -129,7 +131,9 @@ public class SessionAPIs {
             pa.setTargetState( req.getTargetState() ) ;
             ProblemAttempt savedDao = paRepo.save( pa ) ;
             
-            eventBus.publishEvent( PROBLEM_ATTEMPT_ENDED, new ProblemAttemptDTO( savedDao ) ) ;
+            ProblemAttemptDTO dto = new ProblemAttemptDTO( savedDao ) ;
+            activeTopicStatsMgr.handleProblemAttemptEnded( dto ) ;
+            eventBus.publishEvent( PROBLEM_ATTEMPT_ENDED, dto ) ;
             
             return success() ;
         }
@@ -201,7 +205,7 @@ public class SessionAPIs {
         try {
             if( sessionRepo.findById( sessionId ).isPresent() ) {
                 Session session = sessionRepo.findById( sessionId ).get() ;
-                return success( tpRepo.findActiveProblemsByTopicId( session.getTopic().getId() )) ;
+                return success( tpRepo.findActiveProblems( session.getTopic().getId() )) ;
             }
             return functionalError( "No active session" ) ;
         }
@@ -215,7 +219,7 @@ public class SessionAPIs {
         try {
             if( sessionRepo.findById( sessionId ).isPresent() ) {
                 Session session = sessionRepo.findById( sessionId ).get() ;
-                return success( tpRepo.findPigeonedProblemsByTopicId( session.getTopic().getId() )) ;
+                return success( tpRepo.findPigeonedProblems( session.getTopic().getId() )) ;
             }
             return functionalError( "No active session" ) ;
         }

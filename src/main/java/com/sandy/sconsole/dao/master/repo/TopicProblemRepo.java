@@ -22,7 +22,7 @@ public interface TopicProblemRepo extends JpaRepository<TopicProblem, Integer> {
     where tp.topicId = :topicId and
           tp.problemState in ( 'Assigned', 'Later', 'Redo' )
     """)
-    List<TopicProblem> findActiveProblemsByTopicId( Integer topicId ) ;
+    List<TopicProblem> findActiveProblems( Integer topicId ) ;
     
     @Query( """
     select tp
@@ -31,7 +31,14 @@ public interface TopicProblemRepo extends JpaRepository<TopicProblem, Integer> {
           tp.problemState = 'Pigeon'
     order by tp.problemId
     """)
-    List<TopicProblem> findPigeonedProblemsByTopicId( Integer topicId ) ;
+    List<TopicProblem> findPigeonedProblems( Integer topicId ) ;
     
-    
+    @Query( """
+    select count(tp)
+    from TopicProblem tp
+    where tp.topicId = :topicId and
+          tp.problemState = 'Pigeon'
+    order by tp.problemId
+    """)
+    Integer findNumPigeonedProblems( Integer topicId ) ;
 }

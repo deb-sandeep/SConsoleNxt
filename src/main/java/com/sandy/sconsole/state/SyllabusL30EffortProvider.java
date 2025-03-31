@@ -1,6 +1,7 @@
 package com.sandy.sconsole.state;
 
 import com.sandy.sconsole.SConsole;
+import com.sandy.sconsole.core.util.LastNDayValueProvider;
 import com.sandy.sconsole.dao.session.repo.DaySyllabusStudyTimeRepo;
 import com.sandy.sconsole.state.manager.TodayStudyStatistics;
 import lombok.Getter;
@@ -11,14 +12,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
-public class SyllabusPastEffortProvider extends LastNDayEffortProvider {
+public class SyllabusL30EffortProvider extends LastNDayValueProvider {
     
     @Getter private final String syllabusName ;
     
     private final DaySyllabusStudyTimeRepo studyTimeRepo ;
-    private final TodayStudyStatistics     todayStudyStatistics ;
+    private final TodayStudyStatistics todayStudyStatistics ;
     
-    public SyllabusPastEffortProvider( String syllabusName ) {
+    public SyllabusL30EffortProvider( String syllabusName ) {
         super( 30 ) ;
         this.syllabusName = syllabusName ;
         this.studyTimeRepo = SConsole.getBean( DaySyllabusStudyTimeRepo.class ) ;
@@ -26,18 +27,18 @@ public class SyllabusPastEffortProvider extends LastNDayEffortProvider {
     }
     
     @Override
-    protected Map<Date, Integer> getPastStudyTimes( int numPastDays ) {
-        Map<Date, Integer> studyTimes = new HashMap<>() ;
+    protected Map<Date, Double> getPastDayValues( int numPastDays ) {
+        Map<Date, Double> studyTimes = new HashMap<>() ;
         studyTimeRepo.getStudyTimesFromDate( startDate, syllabusName )
-                     .forEach( studyTime -> {
-                          studyTimes.put( studyTime.getId().getDate(),
-                                          studyTime.getTotalTime().intValue() ) ;
-                     } ) ;
+                .forEach( studyTime -> {
+                    studyTimes.put( studyTime.getId().getDate(),
+                                    (double)studyTime.getTotalTime().intValue()/3600 ) ;
+                } ) ;
         return studyTimes ;
     }
     
     @Override
-    protected int getTodayTime() {
-        return todayStudyStatistics.getSyllabusTime( syllabusName ) ;
+    protected double getTodayValue() {
+        return (double)todayStudyStatistics.getSyllabusTime( syllabusName )/3600 ;
     }
 }

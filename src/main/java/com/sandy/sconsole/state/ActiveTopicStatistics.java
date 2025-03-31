@@ -2,6 +2,7 @@ package com.sandy.sconsole.state;
 
 import com.sandy.sconsole.dao.master.TopicTrackAssignment;
 import com.sandy.sconsole.dao.master.dto.TopicVO;
+import com.sandy.sconsole.dao.master.repo.TopicProblemRepo;
 import com.sandy.sconsole.dao.master.repo.TopicRepo;
 import com.sandy.sconsole.dao.session.repo.ProblemAttemptRepo;
 import com.sandy.sconsole.dao.session.repo.TodaySolvedProblemCountRepo;
@@ -29,6 +30,7 @@ public class ActiveTopicStatistics {
     @Autowired private TopicRepo topicRepo ;
     @Autowired private TodaySolvedProblemCountRepo tspcRepo ;
     @Autowired private ProblemAttemptRepo paRepo ;
+    @Autowired private TopicProblemRepo tpRepo;
     
     @Getter private TopicVO topic ;
     
@@ -53,6 +55,7 @@ public class ActiveTopicStatistics {
     @Getter private int numProblemsLeft ;
     @Getter private int numExerciseDaysLeft;
     @Getter private int currentBurnRate ;
+    @Getter private int numPigeonedProblems ;
     
     // Today data
     @Getter private int numProblemsSolvedToday = 0 ;
@@ -75,6 +78,7 @@ public class ActiveTopicStatistics {
         this.numProblemsLeft = 0 ;
         this.originalBurnRate = 0 ;
         this.currentBurnRate = 0 ;
+        this.numPigeonedProblems = 0 ;
         this.requiredBurnRate = 0 ;
         this.numOvershootDays = 0 ;
         this.numProblemsSolvedToday = 0 ;
@@ -116,6 +120,9 @@ public class ActiveTopicStatistics {
         numExerciseDaysLeft = duration( new Date(), exerciseEndDate ) ;
         
         // Today data
+        Integer numPigeons = tpRepo.findNumPigeonedProblems( topicId ) ;
+        numPigeonedProblems = ( numPigeons == null ) ? 0 : numPigeons ;
+        
         Integer tempInt = tspcRepo.getNumSolvedProblems( topicId ) ;
         numProblemsSolvedToday = tempInt == null ? 0 : tempInt ;
         
@@ -147,7 +154,7 @@ public class ActiveTopicStatistics {
         this.currentBurnRate = 0 ;
         this.numOvershootDays = 0 ;
     
-        List<ProblemAttemptRepo.DayBurnStat> dayBurns = paRepo.getHistoricBurnStats( topicId ) ;
+        List<ProblemAttemptRepo.DayBurn> dayBurns = paRepo.getHistoricBurns( topicId ) ;
         if( dayBurns.isEmpty() ) return ;
         
         double[][] data = new double[dayBurns.size()+1][2] ;
@@ -158,7 +165,7 @@ public class ActiveTopicStatistics {
         data[0][1] = remainingProblems ;
         
         for( int i=1; i<data.length; i++ ) {
-            ProblemAttemptRepo.DayBurnStat db = dayBurns.get( i-1 ) ;
+            ProblemAttemptRepo.DayBurn db = dayBurns.get( i-1 ) ;
             remainingProblems -= db.getNumQuestionsSolved() ;
             
             data[i][0] = db.getDate().getTime() ;
@@ -203,7 +210,7 @@ public class ActiveTopicStatistics {
         return Zone.POST_END ;
     }
     
-    public List<ProblemAttemptRepo.DayBurnStat> getHistoricBurns() {
-        return paRepo.getHistoricBurnStats( topicId ) ;
+    public List<ProblemAttemptRepo.DayBurn> getHistoricBurns() {
+        return paRepo.getHistoricBurns( topicId ) ;
     }
 }

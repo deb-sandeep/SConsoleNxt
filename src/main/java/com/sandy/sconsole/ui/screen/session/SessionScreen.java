@@ -17,10 +17,7 @@ import com.sandy.sconsole.dao.session.dto.SessionDTO;
 import com.sandy.sconsole.state.manager.TodayStudyStatistics;
 import com.sandy.sconsole.ui.screen.dashboard.tile.SyllabusL30EffortTile;
 import com.sandy.sconsole.ui.screen.dashboard.tile.daygantt.DayGanttTile;
-import com.sandy.sconsole.ui.screen.session.tile.FragmentationTile;
-import com.sandy.sconsole.ui.screen.session.tile.ThermometerTile;
-import com.sandy.sconsole.ui.screen.session.tile.TopicBurnChartTile;
-import com.sandy.sconsole.ui.screen.session.tile.TopicBurnStatTile;
+import com.sandy.sconsole.ui.screen.session.tile.*;
 import com.sandy.sconsole.ui.util.ConfiguredUIAttributes;
 import com.sandy.sconsole.ui.util.DateTile;
 import com.sandy.sconsole.ui.util.TimeTile;
@@ -67,6 +64,7 @@ public class SessionScreen extends Screen
     @Autowired private SyllabusL30EffortTile sylL30EffortTile;
     @Autowired private TopicBurnChartTile burnChartTile;
     @Autowired private ThermometerTile thermometerTile ;
+    @Autowired private TopicL30BurnTile l30BurnTile ;
     
     private String sessionType ;
     private String syllabusName ;
@@ -119,6 +117,7 @@ public class SessionScreen extends Screen
         addTile( sylL30EffortTile,      9,  18, 15, 24 ) ;
         addTile( burnChartTile,         0,  18,  7, 31 ) ;
         addTile( thermometerTile,       8,  18,  8, 31 ) ;
+        addTile( l30BurnTile,           9,  25, 15, 31 ) ;
     }
     
     private Tile getDateTimeTile() {
@@ -154,6 +153,7 @@ public class SessionScreen extends Screen
         this.topicBurnStatTile.setBorder( new MatteBorder( 0, 1, 0, 1, UITheme.TILE_BORDER_COLOR ) );
         this.burnChartTile.setBorder( new MatteBorder( 1, 1, 1, 1, UITheme.TILE_BORDER_COLOR ) );
         this.thermometerTile.setBorder( new MatteBorder( 1, 0, 0, 0, UITheme.TILE_BORDER_COLOR ) );
+        this.l30BurnTile.setBorder( new MatteBorder( 0, 1, 1, 0, UITheme.TILE_BORDER_COLOR ) );
     }
 
     @Override
@@ -176,6 +176,7 @@ public class SessionScreen extends Screen
         this.sylL30EffortTile.setSyllabusName( this.syllabusName ) ;
         this.burnChartTile.setTopicId( session.getTopicId() ) ;
         this.thermometerTile.setTopicId( session.getTopicId() ) ;
+        this.l30BurnTile.setTopicId( session.getTopicId() ) ;
         
         setTileForegroundToSyllabusColor() ;
         setSyllabusAndTopicNames() ;

@@ -47,6 +47,7 @@ public class TodayStudyStatistics
     @Autowired private SConsoleClock clock ;
     @Autowired private SessionRepo sessionRepo ;
     @Autowired private SessionPauseRepo pauseRepo;
+    @Autowired private ActiveTopicStatisticsManager activeTopicStatsMgr;
     
     // Functional state. These need to be reset in initializeFunctionalState method
     private final Map<Integer, SessionDTO>      allSessions = new LinkedHashMap<>() ; // Key = Session ID
@@ -142,6 +143,10 @@ public class TodayStudyStatistics
     public Collection<SessionDTO> getAllSessions() { return allSessions.values() ; }
     
     public Collection<SessionPauseDTO> getAllPauses() { return allPauses.values() ; }
+    
+    public int getNumProblemsSolvedToday( int topicId ) {
+        return activeTopicStatsMgr.getTopicStatistics( topicId ).getNumProblemsSolvedToday() ;
+    }
     
     public int getSyllabusTime( String syllabusName ) {
         if( syllabusTimes.containsKey( syllabusName ) ) {

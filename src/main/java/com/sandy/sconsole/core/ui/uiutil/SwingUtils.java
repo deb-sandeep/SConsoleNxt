@@ -11,7 +11,7 @@ import java.util.Random;
 public class SwingUtils {
 
     public static ImageIcon getIcon( String iconName ) {
-        URL url = SwingUtils.class.getResource( "/icons/" + iconName + ".png" ) ;
+        URL url = SwingUtils.class.getResource( "/icons/" + iconName ) ;
         Image image = Toolkit.getDefaultToolkit().getImage( url ) ;
         return new ImageIcon( image ) ;
     }
@@ -65,6 +65,12 @@ public class SwingUtils {
         label.setBackground( UITheme.BG_COLOR ) ;
         label.setForeground( UITheme.TILE_FG_COLOR ) ;
         label.setOpaque( true ) ;
+        return label ;
+    }
+    
+    public static JLabel createEmptyLabel( UITheme theme, Font font  ) {
+        JLabel label = createEmptyLabel( theme ) ;
+        label.setFont( font ) ;
         return label ;
     }
     

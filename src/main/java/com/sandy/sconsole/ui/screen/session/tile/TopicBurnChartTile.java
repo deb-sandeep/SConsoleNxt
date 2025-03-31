@@ -282,14 +282,14 @@ public class TopicBurnChartTile extends Tile
     
     private void plotHistoricBurns() {
         
-        int numRemainingProblems = ats.getNumTotalProblems() ;
-        List<ProblemAttemptRepo.DayBurnStat> histBurns = ats.getHistoricBurns() ;
+        int                              numRemainingProblems = ats.getNumTotalProblems() ;
+        List<ProblemAttemptRepo.DayBurn> histBurns            = ats.getHistoricBurns() ;
         
         if( !histBurns.isEmpty() ) {
-            ProblemAttemptRepo.DayBurnStat firstDayBurnStats = histBurns.get( 0 ) ;
+            ProblemAttemptRepo.DayBurn firstDayBurnStats = histBurns.get( 0 ) ;
             historicBurn.add( new Day( firstDayBurnStats.getDate() ).previous(), numRemainingProblems ) ;
 
-            for( ProblemAttemptRepo.DayBurnStat hb : ats.getHistoricBurns() ) {
+            for( ProblemAttemptRepo.DayBurn hb : ats.getHistoricBurns() ) {
                 Date date = hb.getDate() ;
                 numRemainingProblems -= hb.getNumQuestionsSolved() ;
                 historicBurn.add( new Day( date ), numRemainingProblems, false ) ;

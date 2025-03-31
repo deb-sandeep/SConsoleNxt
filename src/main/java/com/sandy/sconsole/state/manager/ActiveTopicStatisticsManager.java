@@ -1,7 +1,6 @@
 package com.sandy.sconsole.state.manager;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.sandy.sconsole.AppConstants;
 import com.sandy.sconsole.EventCatalog;
 import com.sandy.sconsole.SConsole;
 import com.sandy.sconsole.core.bus.Event;
@@ -59,11 +58,6 @@ import java.util.concurrent.TimeUnit;
 @DependsOn( { "clock", "eventBus" } )
 public class ActiveTopicStatisticsManager implements ClockTickListener, EventSubscriber {
     
-    private static final int[] SUBSCRIBED_EVENTS = {
-            EventCatalog.PROBLEM_ATTEMPT_ENDED,
-            EventCatalog.TRACK_UPDATED
-    } ;
-    
     @Autowired private SConsoleClock clock ;
     @Autowired private EventBus eventBus ;
     
@@ -78,7 +72,7 @@ public class ActiveTopicStatisticsManager implements ClockTickListener, EventSub
         log.debug( "Initializing ActiveTopicStatisticsManager..." ) ;
         
         clock.addTickListener( this, TimeUnit.DAYS ) ;
-        eventBus.addSubscriber( this, true, SUBSCRIBED_EVENTS ) ;
+        eventBus.addAsyncSubscriber( this, EventCatalog.TRACK_UPDATED ) ;
         
         refreshState( new Date() ) ;
     }
@@ -93,7 +87,6 @@ public class ActiveTopicStatisticsManager implements ClockTickListener, EventSub
         int eventType = event.getEventId() ;
         switch ( eventType ) {
             case EventCatalog.TRACK_UPDATED -> refreshState( new Date() ) ;
-            case EventCatalog.PROBLEM_ATTEMPT_ENDED -> _handleProblemAttemptEnded( (ProblemAttemptDTO)event.getValue() ) ;
         }
     }
     
@@ -128,21 +121,12 @@ public class ActiveTopicStatisticsManager implements ClockTickListener, EventSub
         topicStats.clear() ;
     }
     
-    private void _handleProblemAttemptEnded( ProblemAttemptDTO pa ) {
-        String targetState = pa.getTargetState() ;
-        if( targetState.equals( AppConstants.PROBLEM_STATE_CORRECT ) ||
-            targetState.equals( AppConstants.PROBLEM_STATE_INCORRECT ) ||
-            targetState.equals( AppConstants.PROBLEM_STATE_PURGE ) ||
-            targetState.equals( AppConstants.PROBLEM_STATE_PIGEON_KILL ) ||
-            targetState.equals( AppConstants.PROBLEM_STATE_REASSIGN ) ) {
-            
-            Session session = sessionRepo.findById( pa.getSessionId() ).get() ;
-            ActiveTopicStatistics ats = topicStats.get( session.getTopic().getId() ) ;
-            
-            if( ats != null ) {
-                ats.refreshState() ;
-                eventBus.publishEvent( EventCatalog.ATS_REFRESHED, ats.getTopic().getTopicId() ) ;
-            }
+    public void handleProblemAttemptEnded( ProblemAttemptDTO pa ) {
+        Session session = sessionRepo.findById( pa.getSessionId() ).get() ;
+        ActiveTopicStatistics ats = topicStats.get( session.getTopic().getId() ) ;
+        if( ats != null ) {
+            ats.refreshState() ;
+            eventBus.publishEvent( EventCatalog.ATS_REFRESHED, ats.getTopic().getTopicId() ) ;
         }
     }
     

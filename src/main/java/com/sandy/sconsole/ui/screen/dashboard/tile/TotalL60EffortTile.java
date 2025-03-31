@@ -5,7 +5,7 @@ import com.sandy.sconsole.core.bus.EventBus;
 import com.sandy.sconsole.core.bus.EventSubscriber;
 import com.sandy.sconsole.core.ui.screen.Tile;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
-import com.sandy.sconsole.state.LastNDayEffortProvider;
+import com.sandy.sconsole.core.util.LastNDayValueProvider;
 import com.sandy.sconsole.state.manager.PastEffortProviderManager;
 import com.sandy.sconsole.ui.util.DayValueChart;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +35,7 @@ public class TotalL60EffortTile extends Tile
         subscribeToEvents() ;
         setBorder( new MatteBorder( 0, 1, 1, 1, UITheme.TILE_BORDER_COLOR ) ) ;
         
-        LastNDayEffortProvider pastStudyTimes = pastStudyTimesManager.getPastEffortProvider() ;
+        LastNDayValueProvider pastStudyTimes = pastStudyTimesManager.getPastEffortProvider() ;
         dayValueChart = new DayValueChart( "Hours",
                                             Color.DARK_GRAY,
                                             Color.LIGHT_GRAY,

@@ -7,9 +7,9 @@ import com.sandy.sconsole.core.bus.EventSubscriber;
 import com.sandy.sconsole.core.clock.ClockTickListener;
 import com.sandy.sconsole.core.clock.SConsoleClock;
 import com.sandy.sconsole.core.util.DayValue;
-import com.sandy.sconsole.state.LastNDayEffortProvider;
-import com.sandy.sconsole.state.SyllabusPastEffortProvider;
-import com.sandy.sconsole.state.TotalPastEffortProvider;
+import com.sandy.sconsole.core.util.LastNDayValueProvider;
+import com.sandy.sconsole.state.SyllabusL30EffortProvider;
+import com.sandy.sconsole.state.TotalL60PastEffortProvider;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,22 +63,22 @@ public class PastEffortProviderManager implements ClockTickListener, EventSubscr
     @Autowired private SConsoleClock clock ;
     @Autowired private EventBus eventBus ;
     
-    private final LastNDayEffortProvider totalPastEffortProvider = new TotalPastEffortProvider();
+    private final LastNDayValueProvider totalPastEffortProvider = new TotalL60PastEffortProvider();
     
-    private final LastNDayEffortProvider[] pastEffortProviders = {
-       new SyllabusPastEffortProvider( IIT_PHY_SYLLABUS_NAME ),
-       new SyllabusPastEffortProvider( IIT_CHEM_SYLLABUS_NAME ),
-       new SyllabusPastEffortProvider( IIT_MATHS_SYLLABUS_NAME ),
-       new SyllabusPastEffortProvider( REASONING_SYLLABUS_NAME ),
+    private final LastNDayValueProvider[] pastEffortProviders = {
+       new SyllabusL30EffortProvider( IIT_PHY_SYLLABUS_NAME ),
+       new SyllabusL30EffortProvider( IIT_CHEM_SYLLABUS_NAME ),
+       new SyllabusL30EffortProvider( IIT_MATHS_SYLLABUS_NAME ),
+       new SyllabusL30EffortProvider( REASONING_SYLLABUS_NAME ),
        totalPastEffortProvider
     } ;
     
-    private final Map<String, LastNDayEffortProvider> syllabusPastEffortProvidersMap = new HashMap<>() ;
+    private final Map<String, LastNDayValueProvider> syllabusPastEffortProvidersMap = new HashMap<>() ;
     
     public PastEffortProviderManager() {
         Arrays.stream( pastEffortProviders ).forEach( provider -> {
-            if( provider instanceof SyllabusPastEffortProvider ) {
-                syllabusPastEffortProvidersMap.put( (( SyllabusPastEffortProvider )provider).getSyllabusName(), provider ) ;
+            if( provider instanceof SyllabusL30EffortProvider ) {
+                syllabusPastEffortProvidersMap.put( (( SyllabusL30EffortProvider )provider).getSyllabusName(), provider ) ;
             }
         }) ;
     }
@@ -104,21 +104,21 @@ public class PastEffortProviderManager implements ClockTickListener, EventSubscr
         }
     }
     
-    public SyllabusPastEffortProvider getPastEffortProvider( String syllabusName ) {
-        return ( SyllabusPastEffortProvider )syllabusPastEffortProvidersMap.get( syllabusName );
+    public SyllabusL30EffortProvider getPastEffortProvider( String syllabusName ) {
+        return ( SyllabusL30EffortProvider )syllabusPastEffortProvidersMap.get( syllabusName );
     }
     
-    public LastNDayEffortProvider getPastEffortProvider() {
+    public LastNDayValueProvider getPastEffortProvider() {
         return totalPastEffortProvider;
     }
     
     private void fullRefresh() {
-        Arrays.stream( pastEffortProviders ).forEach( LastNDayEffortProvider::fullRefresh ) ;
+        Arrays.stream( pastEffortProviders ).forEach( LastNDayValueProvider::fullRefresh ) ;
         eventBus.publishEvent( EventCatalog.PAST_EFFORT_UPDATED ) ;
     }
     
     private void updateTodayTime() {
-        Arrays.stream( pastEffortProviders ).forEach( LastNDayEffortProvider::updateTodayTime ) ;
+        Arrays.stream( pastEffortProviders ).forEach( LastNDayValueProvider::updateTodayValue ) ;
         eventBus.publishEvent( EventCatalog.PAST_EFFORT_UPDATED ) ;
     }
     
