@@ -5,9 +5,9 @@ import com.sandy.sconsole.core.bus.EventBus;
 import com.sandy.sconsole.core.bus.EventSubscriber;
 import com.sandy.sconsole.core.ui.screen.Tile;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
-import com.sandy.sconsole.state.PastEffortProvider;
+import com.sandy.sconsole.state.LastNDayEffortProvider;
 import com.sandy.sconsole.state.manager.PastEffortProviderManager;
-import com.sandy.sconsole.ui.util.HistoricDayValueChart;
+import com.sandy.sconsole.ui.util.DayValueChart;
 import lombok.extern.slf4j.Slf4j;
 import org.jfree.chart.ChartPanel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,15 +28,15 @@ public class TotalL60EffortTile extends Tile
     @Autowired private EventBus                  eventBus ;
     @Autowired private PastEffortProviderManager pastStudyTimesManager ;
     
-    private HistoricDayValueChart dayValueChart ;
+    private DayValueChart dayValueChart ;
     
     @Override
     public void initialize() {
         subscribeToEvents() ;
         setBorder( new MatteBorder( 0, 1, 1, 1, UITheme.TILE_BORDER_COLOR ) ) ;
         
-        PastEffortProvider pastStudyTimes = pastStudyTimesManager.getPastEffortProvider() ;
-        dayValueChart = new HistoricDayValueChart( "Hours",
+        LastNDayEffortProvider pastStudyTimes = pastStudyTimesManager.getPastEffortProvider() ;
+        dayValueChart = new DayValueChart( "Hours",
                                             Color.DARK_GRAY,
                                             Color.LIGHT_GRAY,
                                             pastStudyTimes,

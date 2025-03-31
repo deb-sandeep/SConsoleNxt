@@ -7,7 +7,7 @@ import com.sandy.sconsole.core.bus.EventSubscriber;
 import com.sandy.sconsole.core.clock.ClockTickListener;
 import com.sandy.sconsole.core.clock.SConsoleClock;
 import com.sandy.sconsole.core.util.DayValue;
-import com.sandy.sconsole.state.PastEffortProvider;
+import com.sandy.sconsole.state.LastNDayEffortProvider;
 import com.sandy.sconsole.state.SyllabusPastEffortProvider;
 import com.sandy.sconsole.state.TotalPastEffortProvider;
 import jakarta.annotation.PostConstruct;
@@ -63,9 +63,9 @@ public class PastEffortProviderManager implements ClockTickListener, EventSubscr
     @Autowired private SConsoleClock clock ;
     @Autowired private EventBus eventBus ;
     
-    private final PastEffortProvider totalPastEffortProvider = new TotalPastEffortProvider();
+    private final LastNDayEffortProvider totalPastEffortProvider = new TotalPastEffortProvider();
     
-    private final PastEffortProvider[] pastEffortProviders = {
+    private final LastNDayEffortProvider[] pastEffortProviders = {
        new SyllabusPastEffortProvider( IIT_PHY_SYLLABUS_NAME ),
        new SyllabusPastEffortProvider( IIT_CHEM_SYLLABUS_NAME ),
        new SyllabusPastEffortProvider( IIT_MATHS_SYLLABUS_NAME ),
@@ -73,7 +73,7 @@ public class PastEffortProviderManager implements ClockTickListener, EventSubscr
        totalPastEffortProvider
     } ;
     
-    private final Map<String, PastEffortProvider> syllabusPastEffortProvidersMap = new HashMap<>() ;
+    private final Map<String, LastNDayEffortProvider> syllabusPastEffortProvidersMap = new HashMap<>() ;
     
     public PastEffortProviderManager() {
         Arrays.stream( pastEffortProviders ).forEach( provider -> {
@@ -108,17 +108,17 @@ public class PastEffortProviderManager implements ClockTickListener, EventSubscr
         return ( SyllabusPastEffortProvider )syllabusPastEffortProvidersMap.get( syllabusName );
     }
     
-    public PastEffortProvider getPastEffortProvider() {
+    public LastNDayEffortProvider getPastEffortProvider() {
         return totalPastEffortProvider;
     }
     
     private void fullRefresh() {
-        Arrays.stream( pastEffortProviders ).forEach( PastEffortProvider::fullRefresh ) ;
+        Arrays.stream( pastEffortProviders ).forEach( LastNDayEffortProvider::fullRefresh ) ;
         eventBus.publishEvent( EventCatalog.PAST_EFFORT_UPDATED ) ;
     }
     
     private void updateTodayTime() {
-        Arrays.stream( pastEffortProviders ).forEach( PastEffortProvider::updateTodayTime ) ;
+        Arrays.stream( pastEffortProviders ).forEach( LastNDayEffortProvider::updateTodayTime ) ;
         eventBus.publishEvent( EventCatalog.PAST_EFFORT_UPDATED ) ;
     }
     

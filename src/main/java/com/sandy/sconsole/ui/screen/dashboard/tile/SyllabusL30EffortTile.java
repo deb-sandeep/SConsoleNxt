@@ -8,7 +8,7 @@ import com.sandy.sconsole.core.ui.uiutil.SwingUtils;
 import com.sandy.sconsole.state.SyllabusPastEffortProvider;
 import com.sandy.sconsole.state.manager.PastEffortProviderManager;
 import com.sandy.sconsole.ui.util.ConfiguredUIAttributes;
-import com.sandy.sconsole.ui.util.HistoricDayValueChart;
+import com.sandy.sconsole.ui.util.DayValueChart;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.jfree.chart.ChartPanel;
@@ -40,8 +40,8 @@ public class SyllabusL30EffortTile extends Tile
     
     private SyllabusPastEffortProvider pastEffortProvider;
     
-    private HistoricDayValueChart dayValueChart ;
-    private ChartPanel chartPanel ;
+    private DayValueChart dayValueChart ;
+    private ChartPanel    chartPanel ;
     
     @Override
     public void beforeActivation() {
@@ -72,7 +72,7 @@ public class SyllabusL30EffortTile extends Tile
         
         pastEffortProvider = pastEffortsManager.getPastEffortProvider( syllabusName ) ;
         
-        dayValueChart = new HistoricDayValueChart( "Hours",
+        dayValueChart = new DayValueChart( "Hours",
                                     SwingUtils.darkerColor( syllabusColor, 0.5F ),
                                     syllabusColor.brighter(), 
                                     pastEffortProvider,

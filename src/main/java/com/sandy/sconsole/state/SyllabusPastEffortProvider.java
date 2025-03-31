@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
-public class SyllabusPastEffortProvider extends PastEffortProvider {
+public class SyllabusPastEffortProvider extends LastNDayEffortProvider {
     
     @Getter private final String syllabusName ;
     

@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TotalPastEffortProvider extends PastEffortProvider {
+public class TotalPastEffortProvider extends LastNDayEffortProvider {
     
     private final DayStudyTimeRepo     studyTimeRepo ;
     private final TodayStudyStatistics todayStudyStatistics ;
