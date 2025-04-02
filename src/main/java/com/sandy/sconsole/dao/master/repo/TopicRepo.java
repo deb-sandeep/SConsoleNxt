@@ -57,7 +57,7 @@ public interface TopicRepo extends CrudRepository<Topic, Integer> {
         from topic_problems
         where
             topic_id = :topicId and
-            problem_state in ( 'Assigned', 'Later', 'Pigeon', 'Redo' )
+            problem_state in ( 'Assigned', 'Later', 'Pigeon', 'Pigeon Solved', 'Redo' )
     """ )
     int getRemainingProblemCount( @Param( "topicId" ) int topicId ) ;
     
@@ -66,7 +66,7 @@ public interface TopicRepo extends CrudRepository<Topic, Integer> {
         from topic_problems
         where
             topic_id = :topicId and
-            problem_state not in ( 'Assigned', 'Later', 'Pigeon', 'Redo' )
+            problem_state not in ( 'Assigned', 'Later', 'Pigeon', 'Pigeon Solved', 'Redo' )
     """ )
     int getCompletedProblemCount( @Param( "topicId" ) int topicId ) ;
     

@@ -28,16 +28,24 @@ public interface TopicProblemRepo extends JpaRepository<TopicProblem, Integer> {
     select tp
     from TopicProblem tp
     where tp.topicId = :topicId and
-          tp.problemState = 'Pigeon'
+          tp.problemState in ( 'Pigeon', 'Pigeon Solved' )
     order by tp.problemId
     """)
     List<TopicProblem> findPigeonedProblems( Integer topicId ) ;
     
     @Query( """
+    select tp
+    from TopicProblem tp
+    where tp.problemState in ( 'Pigeon', 'Pigeon Solved' )
+    order by tp.problemId
+    """)
+    List<TopicProblem> findAllPigeonedProblems() ;
+    
+    @Query( """
     select count(tp)
     from TopicProblem tp
     where tp.topicId = :topicId and
-          tp.problemState = 'Pigeon'
+          tp.problemState in ( 'Pigeon', 'Pigeon Solved' )
     order by tp.problemId
     """)
     Integer findNumPigeonedProblems( Integer topicId ) ;

@@ -28,7 +28,7 @@ AS
             (`pa`.`row_num` = 1)
     ) `day_counts`
     where
-        (`day_counts`.`target_state` in ('Correct','Incorrect','Pigeon Kill','Purge'))
+        (`day_counts`.`target_state` in ('Correct','Incorrect','Pigeon Explained','Purge'))
     group by
         `day_counts`.`date`,
         `day_counts`.`topic_id`

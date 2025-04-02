@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Immutable;
 
+import java.util.Date;
+
 @Getter
 @Setter
 @Entity
@@ -60,4 +62,7 @@ public class TopicProblem {
     
     @Column( name = "difficulty_level", nullable = false )
     private Integer difficultyLevel;
+    
+    @Column( name = "last_attempt_time" )
+    private Date lastAttemptTime;
 }

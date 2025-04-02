@@ -22,7 +22,7 @@ public interface ProblemAttemptRepo extends JpaRepository<ProblemAttempt, Intege
             from problem_attempt
             where
                 topic_id = :topicId and
-                target_state in ( 'Incorrect', 'Correct', 'Pigeon Kill', 'Purge' )
+                target_state in ( 'Incorrect', 'Correct', 'Pigeon Explained', 'Purge' )
             group by date
             order by date
             """
@@ -37,7 +37,7 @@ public interface ProblemAttemptRepo extends JpaRepository<ProblemAttempt, Intege
             where
                 topic_id = :topicId and
                 end_time > :startDate and
-                target_state in ( 'Incorrect', 'Correct', 'Pigeon Kill', 'Purge' )
+                target_state in ( 'Incorrect', 'Correct', 'Pigeon Explained', 'Purge' )
             group by date
             order by date
             """
