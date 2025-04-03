@@ -20,6 +20,9 @@ public class TopicProblem {
     @Column( name = "topic_id" )
     private Integer topicId;
     
+    @Column( name = "syllabus_name", length = 64 )
+    private String syllabusName;
+    
     @Column( name = "topic_section", length = 64 )
     private String topicSection;
     

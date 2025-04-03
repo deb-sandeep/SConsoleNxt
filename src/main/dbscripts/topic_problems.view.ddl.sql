@@ -5,6 +5,7 @@ CREATE
     VIEW `topic_problems` AS
 SELECT
     `tcm`.`topic_id` AS `topic_id`,
+    `t`.`syllabus_name` AS `syllabus_name`,
     `t`.`section` AS `topic_section`,
     `t`.`topic_name` AS `topic_name`,
     `p`.`book_id` AS `book_id`,

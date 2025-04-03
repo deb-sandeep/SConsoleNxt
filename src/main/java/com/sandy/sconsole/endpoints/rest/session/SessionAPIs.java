@@ -43,7 +43,6 @@ public class SessionAPIs {
     @Autowired private TopicProblemRepo   tpRepo ;
     @Autowired private ProblemRepo        problemRepo ;
     @Autowired private ProblemAttemptRepo paRepo ;
-    @Autowired private ProblemAttemptRepo problemAttemptRep;
     
     @Autowired private ScreenManager screenManager ;
     
@@ -132,7 +131,7 @@ public class SessionAPIs {
             ProblemAttempt savedDao = paRepo.save( pa ) ;
             
             ProblemAttemptDTO dto = new ProblemAttemptDTO( savedDao ) ;
-            activeTopicStatsMgr.handleProblemAttemptEnded( dto ) ;
+            activeTopicStatsMgr.handleProblemAttemptEnded( dto.getTopicId() ) ;
             eventBus.publishEvent( PROBLEM_ATTEMPT_ENDED, dto ) ;
             
             return success() ;
@@ -183,11 +182,11 @@ public class SessionAPIs {
                 }
                 
                 if( req.getProblemAttemptId() > 0 ) {
-                    ProblemAttempt paDao = problemAttemptRep.findById( req.getProblemAttemptId() ).get() ;
+                    ProblemAttempt paDao = paRepo.findById( req.getProblemAttemptId() ).get() ;
                     paDao.setEndTime( req.getEndTime() ) ;
                     paDao.setEffectiveDuration( req.getProblemAttemptEffectiveDuration() ) ;
                 
-                    ProblemAttempt savedPADao = problemAttemptRep.save( paDao ) ;
+                    ProblemAttempt savedPADao = paRepo.save( paDao ) ;
                     
                     eventBus.publishEvent( PROBLEM_ATTEMPT_EXTENDED, new ProblemAttemptDTO( savedPADao ) ) ;
                 }

@@ -10,8 +10,6 @@ import com.sandy.sconsole.core.clock.ClockTickListener;
 import com.sandy.sconsole.core.clock.SConsoleClock;
 import com.sandy.sconsole.dao.master.TopicTrackAssignment;
 import com.sandy.sconsole.dao.master.repo.TopicTrackAssignmentRepo;
-import com.sandy.sconsole.dao.session.Session;
-import com.sandy.sconsole.dao.session.dto.ProblemAttemptDTO;
 import com.sandy.sconsole.dao.session.repo.SessionRepo;
 import com.sandy.sconsole.state.ActiveTopicStatistics;
 import jakarta.annotation.PostConstruct;
@@ -121,9 +119,8 @@ public class ActiveTopicStatisticsManager implements ClockTickListener, EventSub
         topicStats.clear() ;
     }
     
-    public void handleProblemAttemptEnded( ProblemAttemptDTO pa ) {
-        Session session = sessionRepo.findById( pa.getSessionId() ).get() ;
-        ActiveTopicStatistics ats = topicStats.get( session.getTopic().getId() ) ;
+    public void handleProblemAttemptEnded( int topicId ) {
+        ActiveTopicStatistics ats = topicStats.get( topicId ) ;
         if( ats != null ) {
             ats.refreshState() ;
             eventBus.publishEvent( EventCatalog.ATS_REFRESHED, ats.getTopic().getTopicId() ) ;

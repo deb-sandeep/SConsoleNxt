@@ -15,6 +15,14 @@ public interface ProblemAttemptRepo extends JpaRepository<ProblemAttempt, Intege
         int getNumQuestionsSolved() ;
     }
     
+    @Query( """
+    select pa
+    from ProblemAttempt pa
+    where pa.problem.id = :problemId
+    order by pa.startTime
+    """)
+    List<ProblemAttempt> getProblemAttempts( @Param( "problemId" ) Integer problemId ) ;
+    
     @Query( nativeQuery=true, value = """
             select
                 date( start_time ) as date,

@@ -20,8 +20,8 @@ public class ProblemAttempt {
     @Column( name = "id", nullable = false )
     private Integer id;
     
-    @ManyToOne( fetch = FetchType.LAZY, optional = false )
-    @JoinColumn( name = "session_id", nullable = false )
+    @ManyToOne( fetch = FetchType.LAZY )
+    @JoinColumn( name = "session_id" )
     private Session session;
     
     @ManyToOne( fetch = FetchType.LAZY, optional = false )
