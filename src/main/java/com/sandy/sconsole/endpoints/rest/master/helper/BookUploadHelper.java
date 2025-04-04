@@ -166,6 +166,7 @@ public class BookUploadHelper {
                 problem.setExerciseName( exName ) ;
                 problem.setProblemType( type ) ;
                 problem.setProblemKey( problemKey ) ;
+                problem.setDifficultyLevel( 0 ) ;
                 
                 problemRepo.save( problem ) ;
                 stats.incProblemsCreated() ;
