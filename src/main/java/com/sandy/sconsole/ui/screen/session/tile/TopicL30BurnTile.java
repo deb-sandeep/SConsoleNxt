@@ -39,20 +39,13 @@ public class TopicL30BurnTile extends Tile
     
     @Override
     public void beforeActivation() {
-        subscribeToEvents() ;
-        if( chartPanel == null ) {
-            createNewDayValueChart() ;
-        }
-        else if( pastBurnProvider != null && topicId != pastBurnProvider.getTopicId() ) {
-            createNewDayValueChart() ;
-        }
-        else {
-            dayValueChart.refreshChart() ;
-        }
+        eventBus.addAsyncSubscriber( this, EventCatalog.PROBLEM_ATTEMPT_ENDED ) ;
+        createNewDayValueChart() ;
     }
     
-    private void subscribeToEvents() {
-        eventBus.addAsyncSubscriber( this, EventCatalog.PROBLEM_ATTEMPT_ENDED ) ;
+    @Override
+    public void beforeDeactivation() {
+        eventBus.removeSubscriber( this ) ;
     }
     
     @Override
@@ -73,16 +66,12 @@ public class TopicL30BurnTile extends Tile
                                     null,
                                     true ) ;
         
-        if( chartPanel != null ) {
-            remove( chartPanel ) ;
+        if( chartPanel == null ) {
+            chartPanel = new ChartPanel( dayValueChart.getJFreeChart() ) ;
+            add( chartPanel, BorderLayout.CENTER ) ;
         }
-        chartPanel = new ChartPanel( dayValueChart.getJFreeChart() ) ;
-        add( chartPanel, BorderLayout.CENTER ) ;
+        else {
+            chartPanel.setChart( dayValueChart.getJFreeChart() ) ;
+        }
     }
-    
-    @Override
-    public void beforeDeactivation() {
-        eventBus.removeSubscriber( this ) ;
-    }
-    
 }
