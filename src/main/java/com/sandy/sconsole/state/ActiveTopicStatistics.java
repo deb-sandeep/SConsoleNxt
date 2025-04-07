@@ -132,14 +132,14 @@ public class ActiveTopicStatistics {
         computeRequiredBurnRate() ;
         computeCurrentBurnAndOvershoot() ;
         
-        log.debug( "       Start date     - {}", DF.format( startDate ) ) ;
-        log.debug( "       Exercise start - {}", DF.format( exerciseStartDate ) ) ;
-        log.debug( "       Exercise end   - {}", DF.format( exerciseEndDate ) ) ;
-        log.debug( "       End date       - {}", DF.format( endDate ) ) ;
-        log.debug( "       Total days     - {}", numTotalDays ) ;
-        log.debug( "       Exercise days  - {}", numExerciseDays ) ;
-        log.debug( "       Ex days left   - {}", numExerciseDaysLeft ) ;
-        log.debug( "       Planned burn   - {}", originalBurnRate ) ;
+        //log.debug( "       Start date     - {}", DF.format( startDate ) ) ;
+        //log.debug( "       Exercise start - {}", DF.format( exerciseStartDate ) ) ;
+        //log.debug( "       Exercise end   - {}", DF.format( exerciseEndDate ) ) ;
+        //log.debug( "       End date       - {}", DF.format( endDate ) ) ;
+        //log.debug( "       Total days     - {}", numTotalDays ) ;
+        //log.debug( "       Exercise days  - {}", numExerciseDays ) ;
+        //log.debug( "       Ex days left   - {}", numExerciseDaysLeft ) ;
+        //log.debug( "       Planned burn   - {}", originalBurnRate ) ;
     }
     
     private void computeRequiredBurnRate() {

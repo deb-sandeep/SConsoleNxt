@@ -1,4 +1,4 @@
-package com.sandy.sconsole.endpoints.rest.session;
+package com.sandy.sconsole.endpoints.rest.live;
 
 import lombok.Data;
 

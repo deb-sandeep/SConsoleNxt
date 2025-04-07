@@ -1,4 +1,4 @@
-package com.sandy.sconsole.endpoints.rest.session;
+package com.sandy.sconsole.endpoints.rest.live;
 
 import com.sandy.sconsole.core.api.AR;
 import com.sandy.sconsole.core.bus.EventBus;
