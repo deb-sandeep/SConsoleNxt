@@ -112,8 +112,7 @@ public class ThermometerTile extends Tile
     private void refreshPlot() {
         
         int maxValue ;
-        int amberThreshold = 0 ;
-        int greenThreshold ;
+        int targetValue ;
         int curVal ;
 
         maxValue = NumberUtils.max( new int[]{
@@ -122,41 +121,29 @@ public class ThermometerTile extends Tile
                 ats.getNumProblemsSolvedToday()
         } ) + 2 ;
            
-        if( ats.getCurrentBurnRate() < ats.getRequiredBurnRate() ) {
-            amberThreshold = ats.getCurrentBurnRate() ;
-        }
-           
         curVal = ats.getNumProblemsSolvedToday() ;
-        greenThreshold = ats.getRequiredBurnRate() ;
+        targetValue = ats.getRequiredBurnRate() ;
         
         // If completion milestone date has passed, revised milestone burn
         // rate has no meaning and will be zero. In this case, set the
         // amber threshold to 0 and green threshold to the max value. This
         // will ensure that the bar will always be in red.
         if( ats.getCurrentZone() == ActiveTopicStatistics.Zone.POST_END ) {
-            amberThreshold = 0 ;
-            greenThreshold = maxValue ;
+            targetValue = maxValue ;
         }
         
         plot.setRange( 0, maxValue ) ;
-     
-        if( amberThreshold > 0 ) {
-            plot.setSubrange( 0, 0, amberThreshold-1 ) ;
-            plot.setSubrangePaint( 0, Color.RED.darker() ) ;
-            
-            plot.setSubrange( 1, amberThreshold-1, greenThreshold-1 ) ;
-            plot.setSubrangePaint( 1, Color.ORANGE.darker() ) ;
-            
-            plot.setSubrange( 2, greenThreshold-1, maxValue ) ;
-            plot.setSubrangePaint( 2, Color.GREEN.darker() ) ;
+        
+        plot.setSubrange( 0, 0, targetValue-1 ) ;
+        plot.setSubrangePaint( 0, Color.RED.darker() ) ;
+        
+        plot.setSubrange( 1, targetValue, maxValue ) ;
+        plot.setSubrangePaint( 1, Color.GREEN.darker() ) ;
+        
+        if( curVal > 0 ) {
+            plot.setMercuryPaint( Color.GREEN.darker() ) ;
         }
-        else {
-            plot.setSubrange( 0, 0, greenThreshold-1 ) ;
-            plot.setSubrangePaint( 0, Color.RED.darker() ) ;
-            
-            plot.setSubrange( 1, greenThreshold-1, maxValue ) ;
-            plot.setSubrangePaint( 1, Color.GREEN.darker() ) ;
-        }
+        
         valueDataset.setValue( curVal ) ;
     }
 }

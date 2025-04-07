@@ -14,10 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-import static com.sandy.sconsole.core.util.SConsoleUtil.duration;
+import static com.sandy.sconsole.core.util.SConsoleUtil.durationDays;
 import static com.sandy.sconsole.core.util.SConsoleUtil.isBetween;
 
 @Slf4j
@@ -25,6 +26,8 @@ import static com.sandy.sconsole.core.util.SConsoleUtil.isBetween;
 @Scope( "prototype" )
 public class ActiveTopicStatistics {
     
+    private static final SimpleDateFormat DF = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ) ;
+
     public enum Zone { PRE_START, BUFFER_START, THEORY, EXERCISE, BUFFER_END, POST_END }
     
     @Autowired private TopicRepo topicRepo ;
@@ -54,8 +57,8 @@ public class ActiveTopicStatistics {
     @Getter private Zone currentZone ;
     @Getter private int numProblemsLeft ;
     @Getter private int numExerciseDaysLeft;
-    @Getter private int currentBurnRate ;
     @Getter private int numPigeonedProblems ;
+    @Getter private int currentBurnRate ;
     
     // Today data
     @Getter private int numProblemsSolvedToday = 0 ;
@@ -76,9 +79,9 @@ public class ActiveTopicStatistics {
         this.numExerciseDaysLeft = 0 ;
         this.numTotalProblems = 0 ;
         this.numProblemsLeft = 0 ;
+        this.numPigeonedProblems = 0 ;
         this.originalBurnRate = 0 ;
         this.currentBurnRate = 0 ;
-        this.numPigeonedProblems = 0 ;
         this.requiredBurnRate = 0 ;
         this.numOvershootDays = 0 ;
         this.numProblemsSolvedToday = 0 ;
@@ -94,7 +97,7 @@ public class ActiveTopicStatistics {
     public void init() {
         topic = new TopicVO( topicRepo.findById( topicId ).get() ) ;
         log.debug( "      Initializing active topic statistics for {}-{}",
-                   topic.getSyllabusName(), topic.getTopicName() ) ;
+                          topic.getSyllabusName(), topic.getTopicName() ) ;
         refreshState() ;
     }
     
@@ -107,7 +110,7 @@ public class ActiveTopicStatistics {
     public void refreshState() {
         
         // Derived information from topic plan
-        numTotalDays      = duration( startDate, endDate ) + 1 ;
+        numTotalDays      = durationDays( startDate, endDate ) ;
         numExerciseDays   = numTotalDays - numStartBufferDays - numTheoryDays - numEndBufferDays ;
         exerciseStartDate = DateUtils.addDays( startDate, numStartBufferDays + numTheoryDays ) ;
         exerciseEndDate   = DateUtils.addDays( exerciseStartDate, numExerciseDays-1 ) ;
@@ -117,7 +120,7 @@ public class ActiveTopicStatistics {
         // Derived in relation to current date
         currentZone         = computeCurrentZone() ;
         numProblemsLeft     = topicRepo.getRemainingProblemCount( topicId ) ;
-        numExerciseDaysLeft = duration( new Date(), exerciseEndDate ) ;
+        numExerciseDaysLeft = durationDays( new Date(), exerciseEndDate ) ;
         
         // Today data
         Integer numPigeons = tpRepo.findNumPigeonedProblems( topicId ) ;
@@ -126,12 +129,27 @@ public class ActiveTopicStatistics {
         Integer tempInt = tspcRepo.getNumSolvedProblems( topicId ) ;
         numProblemsSolvedToday = tempInt == null ? 0 : tempInt ;
         
-        // Projection based on current data
+        computeRequiredBurnRate() ;
+        computeCurrentBurnAndOvershoot() ;
+        
+        log.debug( "       Start date     - {}", DF.format( startDate ) ) ;
+        log.debug( "       Exercise start - {}", DF.format( exerciseStartDate ) ) ;
+        log.debug( "       Exercise end   - {}", DF.format( exerciseEndDate ) ) ;
+        log.debug( "       End date       - {}", DF.format( endDate ) ) ;
+        log.debug( "       Total days     - {}", numTotalDays ) ;
+        log.debug( "       Exercise days  - {}", numExerciseDays ) ;
+        log.debug( "       Ex days left   - {}", numExerciseDaysLeft ) ;
+        log.debug( "       Planned burn   - {}", originalBurnRate ) ;
+    }
+    
+    private void computeRequiredBurnRate() {
+        
         requiredBurnRate = 0 ;
         
         if( currentZone == Zone.PRE_START ||
             currentZone == Zone.BUFFER_START ||
             currentZone == Zone.THEORY ) {
+
             // If we are before the exercise start date, current burn rate is considered zero
             // as there is nothing to track against.
             requiredBurnRate = (int)Math.ceil( (float)numProblemsLeft / numExerciseDaysLeft ) ;
@@ -146,7 +164,6 @@ public class ActiveTopicStatistics {
                 }
             }
         }
-        computeCurrentBurnAndOvershoot() ;
     }
     
     private void computeCurrentBurnAndOvershoot() {
@@ -176,8 +193,8 @@ public class ActiveTopicStatistics {
         
         long xIntercept = (long)(-coefficients[0]/coefficients[1]) ;
         Date projectedCompletionDate = new Date( xIntercept ) ;
-        this.numOvershootDays = duration( endDate, projectedCompletionDate ) ;
-
+        
+        this.numOvershootDays = durationDays( exerciseEndDate, projectedCompletionDate ) ;
         this.currentBurnRate = (int)Math.round( -coefficients[1]*86400*1000 ) ;
     }
     

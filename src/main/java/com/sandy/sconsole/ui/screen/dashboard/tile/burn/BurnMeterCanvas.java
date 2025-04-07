@@ -20,14 +20,16 @@ class BurnMeterCanvas extends JPanel {
     private static final Color OVERBURN_COLOR         = Color.decode( "#06BF02" ) ;
     private static final Color SLIGHT_UNDERBURN_COLOR = Color.decode( "#558A3C" ) ;
     private static final Color UNDERBURN_COLOR        = Color.decode( "#7B2929" ) ;
-    public  static final Color ORIGINAL_BURN_COLOR    = Color.decode( "#BBBABA" ) ;
-    public  static final Color TARGET_BURN_COLOR      = Color.GREEN ;
+    private static final Color TARGET_BURN_COLOR      = Color.GREEN ;
+    public  static final Color CURRENT_BURN_COLOR     = Color.decode( "#BBBABA" ) ;
+    
+    private static final Font VALUE_FONT = UITheme.BASE_FONT ;
     
     private final Insets BORDER = new Insets( 2, 10, 10, 10 ) ;
     
     @Setter private ActiveTopicStatistics topicStats ;
     
-    @Getter private int originalBurnRate = 0 ;
+    @Getter private int currentBurnRate  = 0 ;
     @Getter private int requiredBurnRate = 0 ;
     
     private int maxValue = 0 ;
@@ -47,7 +49,7 @@ class BurnMeterCanvas extends JPanel {
     void refreshUI() {
         
         maxValue = 0 ;
-        originalBurnRate = 0 ;
+        currentBurnRate = 0 ;
         requiredBurnRate = 0 ;
         todayBurn = 0 ;
         
@@ -58,7 +60,7 @@ class BurnMeterCanvas extends JPanel {
                     topicStats.getNumProblemsSolvedToday()
             } ) + 2 ;
             
-            originalBurnRate = topicStats.getOriginalBurnRate() ;
+            currentBurnRate = topicStats.getCurrentBurnRate() ;
             requiredBurnRate = topicStats.getRequiredBurnRate() ;
             todayBurn = topicStats.getNumProblemsSolvedToday() ;
         }
@@ -97,9 +99,9 @@ class BurnMeterCanvas extends JPanel {
         int markerWidth = 3 ;
         
         // Paint the original burn rate marker
-        if( originalBurnRate > 0 ) {
-            int x = (int)( BORDER.left + originalBurnRate * widthPerProblem ) ;
-            g.setColor( ORIGINAL_BURN_COLOR ) ;
+        if( currentBurnRate > 0 ) {
+            int x = (int)( BORDER.left + currentBurnRate * widthPerProblem ) ;
+            g.setColor( CURRENT_BURN_COLOR ) ;
             g.drawRect( x, markerY, markerWidth, markerHeight );
         }
         
@@ -112,21 +114,39 @@ class BurnMeterCanvas extends JPanel {
     private void paintCurrentValue( Graphics2D g ) {
         
         if( todayBurn >= requiredBurnRate ) {
-            paintValue( todayBurn, OVERBURN_COLOR, g ) ;
+            paintBar( todayBurn, OVERBURN_COLOR, g ) ;
         }
-        else if( todayBurn >= originalBurnRate ) {
-            paintValue( todayBurn, SLIGHT_UNDERBURN_COLOR, g ) ;
+        else if( todayBurn >= currentBurnRate ) {
+            paintBar( todayBurn, SLIGHT_UNDERBURN_COLOR, g ) ;
         }
         else {
-            paintValue( todayBurn, UNDERBURN_COLOR.darker(), g ) ;
+            paintBar( todayBurn, UNDERBURN_COLOR.darker(), g ) ;
+        }
+        
+        if( todayBurn > 0 ) {
+            paintValue( todayBurn, g ) ;
         }
     }
     
-    private void paintValue( int maxVal, Color color, Graphics2D g ) {
+    private void paintBar( int value, Color color, Graphics2D g ) {
         
-        int endX = (int)( BORDER.left + maxVal * widthPerProblem ) ;
+        int endX = (int)( BORDER.left + value * widthPerProblem ) ;
         
         g.setColor( color ) ;
         g.fillRect( BORDER.left, BORDER.top, (endX-BORDER.left), height ) ;
+    }
+    
+    private void paintValue( int todayBurn, Graphics2D g ) {
+        
+        FontMetrics metrics = g.getFontMetrics( VALUE_FONT ) ;
+        int textHeight = metrics.getAscent() ; // Since we are dealing only with numbers
+        int textWidth  = metrics.stringWidth( String.valueOf( todayBurn ) ) ;
+
+        int yPos = BORDER.top + height/2 + textHeight/2 ;
+        int xPos = (int)( BORDER.left + todayBurn * widthPerProblem - textWidth - 5 ) ;
+        
+        g.setColor( Color.WHITE ) ;
+        g.setFont( VALUE_FONT );
+        g.drawString( String.valueOf( todayBurn ), xPos, yPos ) ;
     }
 }

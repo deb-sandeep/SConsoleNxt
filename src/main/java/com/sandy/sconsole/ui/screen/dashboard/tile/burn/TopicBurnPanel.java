@@ -66,7 +66,7 @@ public class TopicBurnPanel extends JPanel {
     private ActiveTopicStatistics topicStats ;
     
     private JLabel topicNameLabel ;
-    private JLabel originalBurnLabel ;
+    private JLabel currentBurnLabel;
     private JLabel requiredBurnLabel ;
     private PigeonPanel pigeonPanel ;
     
@@ -81,15 +81,14 @@ public class TopicBurnPanel extends JPanel {
         topicNameLabel.setHorizontalAlignment( SwingConstants.LEFT ) ;
         topicNameLabel.setFont( UITheme.BASE_FONT.deriveFont( Font.PLAIN, 25f ) ) ;
         
-        originalBurnLabel = createEmptyLabel( theme, TITLE_NUM_FONT ) ;
-        originalBurnLabel.setHorizontalAlignment( SwingConstants.RIGHT ) ;
-        originalBurnLabel.setVerticalAlignment( SwingConstants.CENTER );
-        originalBurnLabel.setForeground( BurnMeterCanvas.ORIGINAL_BURN_COLOR );
+        currentBurnLabel = createEmptyLabel( theme, TITLE_NUM_FONT ) ;
+        currentBurnLabel.setHorizontalAlignment( SwingConstants.RIGHT ) ;
+        currentBurnLabel.setVerticalAlignment( SwingConstants.CENTER );
+        currentBurnLabel.setForeground( BurnMeterCanvas.CURRENT_BURN_COLOR );
         
         requiredBurnLabel = createEmptyLabel( theme, TITLE_NUM_FONT ) ;
         requiredBurnLabel.setHorizontalAlignment( SwingConstants.RIGHT ) ;
         requiredBurnLabel.setVerticalAlignment( SwingConstants.CENTER );
-        requiredBurnLabel.setForeground( BurnMeterCanvas.TARGET_BURN_COLOR ) ;
         
         pigeonPanel = new PigeonPanel() ;
         
@@ -122,7 +121,7 @@ public class TopicBurnPanel extends JPanel {
         markerPanel.setPreferredSize( new Dimension( 200, 10 ) ) ;
         markerPanel.setBackground( UITheme.BG_COLOR ) ;
         markerPanel.add( pigeonPanel, 0 ) ;
-        markerPanel.add( originalBurnLabel, 1 ) ;
+        markerPanel.add( currentBurnLabel, 1 ) ;
         markerPanel.add( requiredBurnLabel, 2 ) ;
         
         JPanel panel = new JPanel( new BorderLayout() ) ;
@@ -147,14 +146,21 @@ public class TopicBurnPanel extends JPanel {
             topicNameLabel.setForeground( SwingUtils.darkerColor( syllabusColor, 0.6F ) ) ;
             topicNameLabel.setText( topicStats.getTopic().getTopicName() ) ;
             
-            originalBurnLabel.setText( "[" + burnMeter.getOriginalBurnRate() + "]" ) ;
+            currentBurnLabel.setText( "[" + burnMeter.getCurrentBurnRate() + "]" ) ;
             requiredBurnLabel.setText( "[" + burnMeter.getRequiredBurnRate() + "]" ) ;
+            
+            if( burnMeter.getRequiredBurnRate() > burnMeter.getCurrentBurnRate() ) {
+                requiredBurnLabel.setForeground( Color.RED ) ;
+            }
+            else {
+                requiredBurnLabel.setForeground( Color.GREEN ) ;
+            }
             
             pigeonPanel.setNumPigeons( topicStats.getNumPigeonedProblems() ) ;
         }
         else {
             pigeonPanel.setNumPigeons( 0 ) ;
-            originalBurnLabel.setText( "" ) ;
+            currentBurnLabel.setText( "" ) ;
             requiredBurnLabel.setText( "" ) ;
         }
     }

@@ -8,7 +8,8 @@ export DISPLAY=:0
 
 CP="$SCRIPTDIR:$SCRIPTDIR/config:$SCRIPTDIR/lib/*"
 
-java -Djava.awt.headless=false \
+java -Xms256m -Xmx256m \
+     -Djava.awt.headless=false \
      -Dcom.sun.management.jmxremote \
      -Dcom.sun.management.jmxremote.port=9010 \
      -Dcom.sun.management.jmxremote.local.only=false \
