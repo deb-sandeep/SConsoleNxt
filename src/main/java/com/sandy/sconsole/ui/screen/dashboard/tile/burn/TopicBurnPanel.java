@@ -69,6 +69,7 @@ public class TopicBurnPanel extends JPanel {
     private JLabel currentBurnLabel;
     private JLabel requiredBurnLabel ;
     private PigeonPanel pigeonPanel ;
+    private JLabel overshootLabel ;
     
     TopicBurnPanel() {}
     
@@ -91,6 +92,10 @@ public class TopicBurnPanel extends JPanel {
         requiredBurnLabel.setVerticalAlignment( SwingConstants.CENTER );
         
         pigeonPanel = new PigeonPanel() ;
+        
+        overshootLabel = createEmptyLabel( theme, TITLE_NUM_FONT ) ;
+        overshootLabel.setHorizontalAlignment( SwingConstants.RIGHT ) ;
+        overshootLabel.setVerticalAlignment( SwingConstants.CENTER ) ;
         
         add( getTopicNamePanel(), BorderLayout.NORTH ) ;
         
@@ -118,11 +123,12 @@ public class TopicBurnPanel extends JPanel {
         
         JPanel markerPanel = new JPanel( new FlowLayout( FlowLayout.RIGHT, 5, 0 ) ) ;
         
-        markerPanel.setPreferredSize( new Dimension( 200, 10 ) ) ;
+        markerPanel.setPreferredSize( new Dimension( 250, 10 ) ) ;
         markerPanel.setBackground( UITheme.BG_COLOR ) ;
         markerPanel.add( pigeonPanel, 0 ) ;
         markerPanel.add( currentBurnLabel, 1 ) ;
         markerPanel.add( requiredBurnLabel, 2 ) ;
+        markerPanel.add( overshootLabel, 3 ) ;
         
         JPanel panel = new JPanel( new BorderLayout() ) ;
         panel.setBackground( UITheme.BG_COLOR ) ;
@@ -157,6 +163,14 @@ public class TopicBurnPanel extends JPanel {
             }
             
             pigeonPanel.setNumPigeons( topicStats.getNumPigeonedProblems() ) ;
+            
+            overshootLabel.setText( "{" + topicStats.getNumOvershootDays() + "}" ) ;
+            if( burnMeter.getOvershootDays() > 0 ) {
+                overshootLabel.setForeground( Color.RED ) ;
+            }
+            else {
+                overshootLabel.setForeground( Color.GREEN ) ;
+            }
         }
         else {
             pigeonPanel.setNumPigeons( 0 ) ;

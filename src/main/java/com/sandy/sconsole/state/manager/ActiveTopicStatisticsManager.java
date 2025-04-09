@@ -81,7 +81,7 @@ public class ActiveTopicStatisticsManager implements ClockTickListener, EventSub
     }
     
     @Override
-    public void handleEvent( Event event ) {
+    public synchronized void handleEvent( Event event ) {
         int eventType = event.getEventId() ;
         switch ( eventType ) {
             case EventCatalog.TRACK_UPDATED -> refreshState( new Date() ) ;

@@ -27,8 +27,8 @@ public class BookUploadAPIs {
     public ResponseEntity<AR<BookMetaVO>> validateMetaFile(
             @RequestParam( "file" ) MultipartFile multipartFile ) {
         try {
-            File       savedFile = bookHelper.saveUploadedFile( multipartFile ) ;
-            BookMetaVO meta      = bookHelper.parseAndValidateBookMeta( savedFile ) ;
+            File savedFile = bookHelper.saveUploadedFile( multipartFile ) ;
+            BookMetaVO meta = bookHelper.parseAndValidateBookMeta( savedFile ) ;
             
             meta.setServerFileName( savedFile.getName() );
             

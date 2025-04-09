@@ -31,6 +31,7 @@ class BurnMeterCanvas extends JPanel {
     
     @Getter private int currentBurnRate  = 0 ;
     @Getter private int requiredBurnRate = 0 ;
+    @Getter private int overshootDays = 0 ;
     
     private int maxValue = 0 ;
     private int todayBurn = 0 ;
@@ -63,6 +64,7 @@ class BurnMeterCanvas extends JPanel {
             currentBurnRate = topicStats.getCurrentBurnRate() ;
             requiredBurnRate = topicStats.getRequiredBurnRate() ;
             todayBurn = topicStats.getNumProblemsSolvedToday() ;
+            overshootDays = topicStats.getNumOvershootDays() ;
         }
         super.repaint() ;
     }

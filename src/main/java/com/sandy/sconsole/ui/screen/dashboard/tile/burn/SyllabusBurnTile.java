@@ -75,7 +75,7 @@ public class SyllabusBurnTile extends Tile
     }
     
     @Override
-    public void handleEvent( Event event ) {
+    public synchronized void handleEvent( Event event ) {
         switch( event.getEventId() ) {
             case ATS_MANAGER_REFRESHED -> refresh() ;
             case ATS_REFRESHED -> refreshTopicBurn( (int)event.getValue() ) ;
