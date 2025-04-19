@@ -191,7 +191,7 @@ public class BookMetaValidator {
     
     // Problem cluster meta is of the format
     // <SUB|SCA|MCA|MMT|LCT|NVT> <LCT_SEQ>? <START_COUNT>-<END_COUNT>
-    private ProblemCluster parseAndValidateProblemCluster( String data, ValidationMessages msgs ) {
+    public ProblemCluster parseAndValidateProblemCluster( String data, ValidationMessages msgs ) {
         
         ProblemCluster cluster = new ProblemCluster( data ) ;
         

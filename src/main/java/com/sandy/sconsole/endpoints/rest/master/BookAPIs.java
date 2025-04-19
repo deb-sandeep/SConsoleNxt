@@ -5,6 +5,7 @@ import com.sandy.sconsole.dao.master.Book;
 import com.sandy.sconsole.dao.master.Chapter;
 import com.sandy.sconsole.dao.master.ChapterId;
 import com.sandy.sconsole.dao.master.Syllabus;
+import com.sandy.sconsole.dao.master.dto.ChapterDTO;
 import com.sandy.sconsole.dao.master.dto.TopicVO;
 import com.sandy.sconsole.dao.master.repo.BookRepo;
 import com.sandy.sconsole.dao.master.repo.ChapterRepo;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static com.sandy.sconsole.core.api.AR.*;
 import static java.text.MessageFormat.format;
@@ -122,22 +124,32 @@ public class BookAPIs {
         }
     }
 
-    @PostMapping( "{bookId}/{chapterNum}/UpdateChapterName" )
-    public ResponseEntity<AR<String>> updateChapterName (
+    @PostMapping( "{bookId}/{chapterNum}/SaveChapterName" )
+    public ResponseEntity<AR<ChapterDTO>> saveChapterName (
             @PathVariable( "bookId" ) Integer bookId,
             @PathVariable( "chapterNum" ) Integer chapterNum,
             @RequestBody AttrChangeReq request ) {
         
         try {
             ChapterId chapterId = new ChapterId( bookId, chapterNum ) ;
-            Chapter ch = chapterRepo.findById( chapterId ).get() ;
+            Optional<Chapter> chOpt = chapterRepo.findById( chapterId ) ;
+            
+            Chapter ch ;
+            
+            if( chOpt.isPresent() ) {
+                ch = chOpt.get() ;
+            }
+            else {
+                ch = new Chapter() ;
+                ch.setId( chapterId ) ;
+                ch.setBook( bookRepo.findById( bookId ).get() ) ;
+            }
             
             ch.setChapterName( request.getValue() ) ;
             
-            chapterRepo.save( ch ) ;
+            Chapter savedChapter = chapterRepo.save( ch ) ;
             
-            return success( format( "Chapter name updated to {0}",
-                                    request.getValue() ) ) ;
+            return success( new ChapterDTO( savedChapter ) ) ;
         }
         catch( Exception e ) {
             return systemError( e );

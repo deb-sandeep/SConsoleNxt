@@ -20,4 +20,8 @@ public class SaveBookMetaRes {
     public void incProblemsCreated() {
         numProblemsCreated++ ;
     }
+    
+    public void incProblemsCreated( int numProblems ) {
+        numProblemsCreated += numProblems ;
+    }
 }

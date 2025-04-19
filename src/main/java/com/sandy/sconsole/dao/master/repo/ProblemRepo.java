@@ -61,4 +61,13 @@ public interface ProblemRepo extends CrudRepository<Problem, Integer> {
                                                      @Param( "chapterNum" ) int chapterNum ) ;
 
     
+    @Query( """
+        select CASE WHEN( max( p.exerciseNum ) IS NULL ) THEN 1 ELSE max( p.exerciseNum )+1 END
+        from Problem p
+        where
+            p.chapter.book.id = :bookId and
+            p.chapter.id.chapterNum = :chapterNum
+    """ )
+    Integer getNextExerciseNum( @Param( "bookId" ) int bookId,
+                                @Param( "chapterNum" ) int chapterNum ) ;
 }

@@ -5,12 +5,15 @@ import com.sandy.sconsole.dao.master.dto.BookDTO;
 import com.sandy.sconsole.dao.master.repo.BookRepo;
 import lombok.Data;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 @Data
 public class BookProblemSummaryVO {
 
-    private BookDTO                     book                    = new BookDTO() ;
+    private BookDTO book = new BookDTO() ;
     private List<ChapterProblemSummary> chapterProblemSummaries = new ArrayList<>() ;
 
     @Data
@@ -53,5 +56,7 @@ public class BookProblemSummaryVO {
         this.getBook().setBookName( book.getBookName() ) ;
         this.getBook().setAuthor( book.getAuthor() ) ;
         this.getBook().setBookShortName( book.getBookShortName() ) ;
+        this.getBook().setExtensible( book.isExtensible() ) ;
+        this.getBook().setTopicMappingDone( book.isTopicMappingDone() ) ;
     }
 }

@@ -13,6 +13,7 @@ public class BookDTO {
     private String bookName ;
     private String author ;
     private String bookShortName ;
+    private Boolean extensible ;
     private boolean topicMappingDone ;
     
     public BookDTO(){}
@@ -24,6 +25,7 @@ public class BookDTO {
         this.bookName = book.getBookName() ;
         this.author = book.getAuthor() ;
         this.bookShortName = book.getBookShortName() ;
+        this.extensible = book.isExtensible() ;
         this.topicMappingDone = book.isTopicMappingDone() ;
     }
 }

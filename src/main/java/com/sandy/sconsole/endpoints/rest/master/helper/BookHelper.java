@@ -51,20 +51,24 @@ public class BookHelper {
         problemTypeCounts = bookRepo.getProblemSummariesForChapter( bookId ) ;
         
         int lastChNum = -1 ;
-        int                                         lastExNum = -1 ;
-        BookProblemSummaryVO.ChapterProblemSummary  cps       = null ;
-        BookProblemSummaryVO.ExerciseProblemSummary eps       = null ;
+        int lastExNum = -1 ;
+        BookProblemSummaryVO.ChapterProblemSummary  cps = null ;
+        BookProblemSummaryVO.ExerciseProblemSummary eps = null ;
         
         for( BookRepo.ProblemTypeCount ptc : problemTypeCounts ) {
             if( ptc.getChapterNum() != lastChNum ) {
                 cps = new BookProblemSummaryVO.ChapterProblemSummary( ptc ) ;
-                eps = new BookProblemSummaryVO.ExerciseProblemSummary( ptc ) ;
-                
-                cps.getExerciseProblemSummaries().add( eps ) ;
                 bps.getChapterProblemSummaries().add( cps ) ;
                 
+                if( ptc.getExerciseNum() != null ) {
+                    // If we have a chapter with no exercises, skip creating an
+                    // exercise problem summary instance. Case: When a new chapter
+                    // is being dynamically added via UI
+                    eps = new BookProblemSummaryVO.ExerciseProblemSummary( ptc ) ;
+                    cps.getExerciseProblemSummaries().add( eps ) ;
+                    lastExNum = ptc.getExerciseNum() ;
+                }
                 lastChNum = ptc.getChapterNum() ;
-                lastExNum = ptc.getExerciseNum() ;
             }
             else if( ptc.getExerciseNum() != lastExNum ) {
                 eps = new BookProblemSummaryVO.ExerciseProblemSummary( ptc ) ;

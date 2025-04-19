@@ -3,9 +3,11 @@ package com.sandy.sconsole.endpoints.rest.master.helper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.sandy.sconsole.core.SConsoleConfig;
+import com.sandy.sconsole.core.util.StringUtil;
 import com.sandy.sconsole.dao.master.*;
 import com.sandy.sconsole.dao.master.repo.*;
 import com.sandy.sconsole.endpoints.rest.master.vo.BookMetaVO;
+import com.sandy.sconsole.endpoints.rest.master.vo.reqres.CreateNewExerciseReq;
 import com.sandy.sconsole.endpoints.rest.master.vo.reqres.SaveBookMetaRes;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -33,7 +36,6 @@ public class BookUploadHelper {
     @Autowired private SConsoleConfig config ;
     @Autowired private BookMetaValidator validator ;
     
-    @Autowired private SubjectRepo subjectRepo ;
     @Autowired private SyllabusRepo syllabusRepo ;
     @Autowired private BookRepo bookRepo ;
     @Autowired private ChapterRepo chapterRepo ;
@@ -133,24 +135,25 @@ public class BookUploadHelper {
             for( int i=0; i<chMeta.getExercises().size(); i++ ) {
                 BookMetaVO.ExerciseMeta exMeta = chMeta.getExercises().get( i ) ;
                 stats.incExercisesCreated() ;
-                addProblemsToChapter( chapter, (i+1), exMeta, stats ) ;
+                int numProblemsCreated = addProblemsToChapter( chapter, (i+1), exMeta.getName(), exMeta.getProblemClusters() ) ;
+                stats.incProblemsCreated( numProblemsCreated );
             }
         }
     }
     
-    private void addProblemsToChapter( Chapter chapter,
-                                       int exerciseNum,
-                                       BookMetaVO.ExerciseMeta exMeta,
-                                       SaveBookMetaRes stats ) {
+    private int addProblemsToChapter( Chapter chapter,
+                                      int exerciseNum,
+                                      String exerciseName,
+                                      List<BookMetaVO.ProblemCluster> problemClusters ) {
         
-        String exName = exMeta.getName() ;
-        for( BookMetaVO.ProblemCluster cluster : exMeta.getProblemClusters() ) {
+        int numProblemsCreated = 0 ;
+        for( BookMetaVO.ProblemCluster cluster : problemClusters ) {
             
             ProblemType type = problemTypeRepo.findById( cluster.getType() ).get() ;
             
             for( int i=cluster.getStartIndex(); i<=cluster.getEndIndex(); i++ ) {
                 
-                String problemKey = exName + "/" + type.getProblemType() ;
+                String problemKey = exerciseName + "/" + type.getProblemType() ;
                 if( cluster.getLctSequence() != null ) {
                     problemKey += "-" + cluster.getLctSequence() ;
                 }
@@ -163,14 +166,42 @@ public class BookUploadHelper {
                 Problem problem = new Problem() ;
                 problem.setChapter( chapter ) ;
                 problem.setExerciseNum( exerciseNum ) ;
-                problem.setExerciseName( exName ) ;
+                problem.setExerciseName( exerciseName ) ;
                 problem.setProblemType( type ) ;
                 problem.setProblemKey( problemKey ) ;
                 problem.setDifficultyLevel( 0 ) ;
                 
                 problemRepo.save( problem ) ;
-                stats.incProblemsCreated() ;
+                numProblemsCreated++ ;
             }
         }
+        return numProblemsCreated ;
+    }
+    
+    public List<String> createNewExercise( CreateNewExerciseReq request ) {
+        
+        BookMetaVO.ValidationMessages msgs = new BookMetaVO.ValidationMessages() ;
+        List<BookMetaVO.ProblemCluster> problemClusters = new ArrayList<>() ;
+        
+        if( StringUtil.isEmptyOrNull( request.getProblemClusters() ) ) {
+            msgs.addError( "", "Problem clusters metadata is empty." ) ;
+        }
+        else {
+            String[] clusterMetas = request.getProblemClusters().split( "\\r?\\n" ) ;
+            for( String cluster : clusterMetas ) {
+                problemClusters.add( validator.parseAndValidateProblemCluster( cluster, msgs ) ) ;
+            }
+        }
+        
+        if( msgs.getMessages().isEmpty() ) {
+            
+            ChapterId chapterId = new ChapterId( request.getBookId(), request.getChapterNum() ) ;
+            Chapter chapter = chapterRepo.findById( chapterId ).get() ;
+            
+            int nextExerciseNum = problemRepo.getNextExerciseNum( request.getBookId(), request.getChapterNum() ) ;
+            
+            addProblemsToChapter( chapter, nextExerciseNum, request.getExerciseName(), problemClusters ) ;
+        }
+        return msgs.flattenMessages() ;
     }
 }

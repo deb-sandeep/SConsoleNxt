@@ -19,6 +19,7 @@ public interface BookRepo extends CrudRepository<Book, Integer> {
         String getAuthor() ;
         String getBookShortName() ;
         boolean isTopicMappingDone() ;
+        boolean isExtensible() ;
         int getNumChapters() ;
         int getNumProblems() ;
     }
@@ -26,7 +27,7 @@ public interface BookRepo extends CrudRepository<Book, Integer> {
     interface ProblemTypeCount {
         int getChapterNum() ;
         String getChapterName() ;
-        int getExerciseNum() ;
+        Integer getExerciseNum() ;
         String getExerciseName() ;
         String getProblemType() ;
         int getNumProblems() ;
@@ -53,6 +54,7 @@ public interface BookRepo extends CrudRepository<Book, Integer> {
                b.author as author,
                b.bookShortName as bookShortName,
                b.topicMappingDone as topicMappingDone,
+               b.extensible as extensible,
                count( distinct( c ) ) as numChapters,
                count( p ) as numProblems
         from Book b

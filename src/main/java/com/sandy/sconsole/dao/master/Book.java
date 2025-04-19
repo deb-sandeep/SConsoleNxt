@@ -32,6 +32,9 @@ public class Book {
     @Column( name = "book_short_name", length = 64 )
     private String bookShortName;
     
+    @Column( name = "extensible", nullable = false )
+    private boolean extensible = false;
+    
     @Column( name = "topic_mapping_done" )
     private boolean topicMappingDone ;
 

@@ -79,6 +79,16 @@ public class BookMetaVO {
             List<ValidationMsg> msgs = messages.computeIfAbsent( field, k -> new ArrayList<>() );
             msgs.add( new ValidationMsg( type, msg ) ) ;
         }
+        
+        public List<String> flattenMessages() {
+            ArrayList<String> msgs = new ArrayList<>() ;
+            for( Map.Entry<String, List<ValidationMsg>> entry : messages.entrySet() ) {
+                for( ValidationMsg msg : entry.getValue() ) {
+                    msgs.add( msg.getType() + ": " + entry.getKey() + " - " + msg.getMsg() ) ;
+                }
+            }
+            return msgs ;
+        }
     }
     
     @Data
