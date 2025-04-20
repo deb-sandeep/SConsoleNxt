@@ -23,7 +23,15 @@ SELECT
          WHEN (`ps`.`state` IS NULL) THEN 'Assigned'
          ELSE `ps`.`state`
         END) AS `problem_state`,
-    `ps`.`last_attempt_time` as `last_attempt_time`
+    `ps`.`last_attempt_time` AS `last_attempt_time`,
+    (CASE
+         WHEN (`ps`.`total_duration` IS NULL) THEN 0
+         ELSE `ps`.`total_duration`
+        END) AS `total_duration`,
+    (CASE
+         WHEN (`ps`.`num_attempts` IS NULL) THEN 0
+         ELSE `ps`.`num_attempts`
+        END) AS `num_attempts`
 FROM
     ((((((`problem_master` `p`
         LEFT JOIN `topic_chapter_problem_map` `tcpm` ON ((`p`.`id` = `tcpm`.`problem_id`)))

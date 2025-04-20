@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Immutable;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Getter
@@ -68,4 +69,10 @@ public class TopicProblem {
     
     @Column( name = "last_attempt_time" )
     private Date lastAttemptTime;
+    
+    @Column( name = "total_duration", precision = 32 )
+    private BigDecimal totalDuration;
+    
+    @Column( name = "num_attempts" )
+    private Long numAttempts;
 }

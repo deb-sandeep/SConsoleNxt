@@ -2,7 +2,9 @@ package com.sandy.sconsole.endpoints.rest.master;
 
 import com.sandy.sconsole.core.api.AR;
 import com.sandy.sconsole.dao.master.Topic;
+import com.sandy.sconsole.dao.master.TopicProblem;
 import com.sandy.sconsole.dao.master.dto.TopicVO;
+import com.sandy.sconsole.dao.master.repo.TopicProblemRepo;
 import com.sandy.sconsole.dao.master.repo.TopicRepo;
 import com.sandy.sconsole.endpoints.rest.master.vo.TopicProblemCountVO;
 import jakarta.websocket.server.PathParam;
@@ -26,7 +28,9 @@ import static com.sandy.sconsole.dao.master.repo.TopicRepo.TopicProblemTypeCount
 @RequestMapping( "/Master/Topic" )
 public class TopicAPIs {
     
-    @Autowired private TopicRepo topicRepo = null ;
+    @Autowired private TopicRepo        topicRepo = null ;
+    @Autowired
+    private            TopicProblemRepo topicProblemRepo;
     
     @GetMapping( "/{topicId}" )
     public ResponseEntity<AR<TopicVO>> getTopic( @PathVariable( "topicId" ) int topicId ) {
@@ -79,6 +83,17 @@ public class TopicAPIs {
                 }
             }
             return success( response ) ;
+        }
+        catch( Exception e ) {
+            return systemError( e ) ;
+        }
+    }
+    
+    @GetMapping( "/{topicId}/Problems" )
+    public ResponseEntity<AR<List<TopicProblem>>> getProblems( @PathVariable( "topicId" ) int topicId ) {
+        
+        try {
+            return success( topicProblemRepo.findByTopicId( topicId ) ) ;
         }
         catch( Exception e ) {
             return systemError( e ) ;

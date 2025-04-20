@@ -7,13 +7,17 @@ AS
 select
     `pa`.`problem_id` AS `problem_id`,
     `pa`.`target_state` AS `state`,
-    `pa`.`end_time` AS `last_attempt_time`
+    `pa`.`end_time` AS `last_attempt_time`,
+    `pa`.`total_duration` AS `total_duration`,
+    `pa`.`num_attempts` AS `num_attempts`
 from (
          select
              `problem_attempt`.`problem_id` AS `problem_id`,
              `problem_attempt`.`target_state` AS `target_state`,
              `problem_attempt`.`end_time` AS `end_time`,
-             row_number() OVER (PARTITION BY `problem_attempt`.`problem_id` ORDER BY `problem_attempt`.`start_time` desc )  AS `row_num`
+             row_number() OVER (PARTITION BY `problem_attempt`.`problem_id` ORDER BY `problem_attempt`.`start_time` desc )  AS `row_num`,
+             sum(`problem_attempt`.`effective_duration`) OVER (PARTITION BY `problem_attempt`.`problem_id` )  AS `total_duration`,
+             count(`problem_attempt`.`id`) OVER (PARTITION BY `problem_attempt`.`problem_id` )  AS `num_attempts`
          from
              `problem_attempt`
      ) `pa`
