@@ -76,15 +76,15 @@ public class AttemptedProblemAPIs {
     }
     
     @Data
-    public static class PigeonChangeStateRequest {
+    public static class ProblemChangeStateRequest {
         private int problemId ;
         private int topicId ;
         private String currentState ;
         private String targetState ;
     }
     
-    @PostMapping( "/Pigeon/ChangeState" )
-    public ResponseEntity<AR<String>> changePigeonState( @RequestBody final PigeonChangeStateRequest req ) {
+    @PostMapping( "/ChangeState" )
+    public ResponseEntity<AR<String>> changeProblemState( @RequestBody final ProblemChangeStateRequest req ) {
         
         try {
             ProblemAttempt pa = new ProblemAttempt() ;
