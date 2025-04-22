@@ -9,8 +9,12 @@ import java.util.Map;
 public class TopicProblemCountVO {
     
     private int topicId ;
+    
     private int numProblems ;
-    private Map<String, Integer> problemTypeCount = new HashMap<>();
+    private Map<String, Integer> problemTypeCount = new HashMap<>() ;
+    
+    private int numRemainingProblems ;
+    private Map<String, Integer> remainingProblemTypeCount = new HashMap<>() ;
     
     public TopicProblemCountVO( int topicId ) {
         this.topicId = topicId ;
@@ -18,6 +22,12 @@ public class TopicProblemCountVO {
     
     public void addCount( String problemType, int numProblems ) {
         problemTypeCount.put( problemType, numProblems ) ;
+        remainingProblemTypeCount.put( problemType, 0 ) ;
         this.numProblems += numProblems ;
+    }
+    
+    public void addRemainingCount( String problemType, int numProblems ) {
+        remainingProblemTypeCount.put( problemType, numProblems ) ;
+        this.numRemainingProblems += numProblems ;
     }
 }

@@ -60,6 +60,17 @@ public class AttemptedProblemAPIs {
             return systemError( e ) ;
         }
     }
+    
+    @GetMapping( "/{problemId}" )
+    public ResponseEntity<AR<TopicProblem>> getTopicProblem(
+            @PathVariable( "problemId" ) final int problemId ){
+        try {
+            return success( tpRepo.findById( problemId ).get() ) ;
+        }
+        catch( Exception e ) {
+            return systemError( e ) ;
+        }
+    }
 
     @GetMapping( "/{problemId}/Attempts" )
     public ResponseEntity<AR<List<ProblemAttemptDTO>>> getProblemAttempts(
@@ -69,6 +80,18 @@ public class AttemptedProblemAPIs {
                                   .stream()
                                   .map(ProblemAttemptDTO::new)
                                   .toList() ) ;
+        }
+        catch( Exception e ) {
+            return systemError( e ) ;
+        }
+    }
+    
+    @DeleteMapping( "/Attempt/{problemAttemptId}" )
+    public ResponseEntity<AR<String>> deleteProblemAttempt(
+            @PathVariable( "problemAttemptId" ) final int problemAttemptId ) {
+        try {
+            paRepo.deleteById( problemAttemptId ) ;
+            return success() ;
         }
         catch( Exception e ) {
             return systemError( e ) ;

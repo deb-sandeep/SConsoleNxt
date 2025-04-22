@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.sandy.sconsole.core.api.AR.success;
 import static com.sandy.sconsole.core.api.AR.systemError;
@@ -72,16 +74,26 @@ public class TopicAPIs {
         
         try {
             List<TopicProblemCountVO> response = new ArrayList<>() ;
-            TopicProblemCountVO       lastVO   = null ;
+            TopicProblemCountVO lastVO   = null ;
+            
+            Map<Integer, TopicProblemCountVO> tpcMap = new HashMap<>() ;
+            
             for( TopicProblemTypeCount count : topicRepo.getTopicProblemCounts() ) {
                 if( lastVO == null || count.getTopicId() != lastVO.getTopicId() ) {
                     lastVO = new TopicProblemCountVO( count.getTopicId() ) ;
+                    tpcMap.put( lastVO.getTopicId(), lastVO ) ;
                     response.add( lastVO ) ;
                 }
                 if( count.getProblemType() != null ) {
                     lastVO.addCount( count.getProblemType(), count.getNumProblems() ) ;
                 }
             }
+            
+            for( TopicProblemTypeCount remainingCount : topicRepo.getRemainingTopicProblemCounts() ) {
+                TopicProblemCountVO vo = tpcMap.get( remainingCount.getTopicId() ) ;
+                vo.addRemainingCount( remainingCount.getProblemType(), remainingCount.getNumProblems() ) ;
+            }
+            
             return success( response ) ;
         }
         catch( Exception e ) {
