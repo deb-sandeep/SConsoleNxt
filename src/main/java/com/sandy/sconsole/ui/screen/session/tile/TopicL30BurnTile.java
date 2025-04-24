@@ -39,7 +39,7 @@ public class TopicL30BurnTile extends Tile
     
     @Override
     public void beforeActivation() {
-        eventBus.addAsyncSubscriber( this, EventCatalog.PROBLEM_ATTEMPT_ENDED ) ;
+        eventBus.addSyncSubscriber( this, EventCatalog.PROBLEM_ATTEMPT_ENDED ) ;
         createNewDayValueChart() ;
     }
     

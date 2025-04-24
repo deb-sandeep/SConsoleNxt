@@ -7,6 +7,13 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface TopicProblemRepo extends JpaRepository<TopicProblem, Integer> {
+    
+    @Query( """
+    select tp
+    from TopicProblem tp
+    where tp.problemId = :problemId
+    """)
+    TopicProblem findByProblemId( Integer problemId ) ;
 
     @Query( """
     select tp

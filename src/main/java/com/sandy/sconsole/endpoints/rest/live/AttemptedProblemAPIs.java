@@ -48,7 +48,9 @@ public class AttemptedProblemAPIs {
     private ActiveTopicStatisticsManager activeTopicStatsMgr ;
     
     @Autowired
-    private EventBus eventBus ;
+    private EventBus         eventBus ;
+    @Autowired
+    private TopicProblemRepo topicProblemRepo;
     
     
     @GetMapping( "/Pigeons" )
@@ -100,9 +102,8 @@ public class AttemptedProblemAPIs {
     
     @Data
     public static class ProblemChangeStateRequest {
-        private int problemId ;
+        private int[] problemIds ;
         private int topicId ;
-        private String currentState ;
         private String targetState ;
     }
     
@@ -110,24 +111,26 @@ public class AttemptedProblemAPIs {
     public ResponseEntity<AR<String>> changeProblemState( @RequestBody final ProblemChangeStateRequest req ) {
         
         try {
-            ProblemAttempt pa = new ProblemAttempt() ;
-            pa.setProblem( problemRepo.findById( req.getProblemId() ).get() ) ;
-            pa.setTopic( topicRepo.findById( req.getTopicId() ).get() ) ;
-            pa.setPrevState( req.getCurrentState() ) ;
-            pa.setTargetState( req.getTargetState() ) ;
-            pa.setStartTime( new Date() ) ;
-            pa.setEndTime( pa.getStartTime() ) ;
-            pa.setEffectiveDuration( 0 ) ;
             
-            // Session 0 is a special session to imply offline work by coach.
-            pa.setSession( sessionRepo.findById( 0 ).get() ) ;
-            
-            ProblemAttempt savedDao = paRepo.save( pa ) ;
-            
-            ProblemAttemptDTO dto = new ProblemAttemptDTO( savedDao ) ;
-            activeTopicStatsMgr.handleProblemAttemptEnded( dto.getTopicId() ) ;
-            eventBus.publishEvent( PROBLEM_ATTEMPT_ENDED, dto ) ;
-
+            for( int problemId : req.getProblemIds() ) {
+                ProblemAttempt pa = new ProblemAttempt() ;
+                pa.setProblem( problemRepo.findById( problemId ).get() ) ;
+                pa.setTopic( topicRepo.findById( req.getTopicId() ).get() ) ;
+                pa.setPrevState( topicProblemRepo.findByProblemId( problemId ).getProblemState() ) ;
+                pa.setTargetState( req.getTargetState() ) ;
+                pa.setStartTime( new Date() ) ;
+                pa.setEndTime( pa.getStartTime() ) ;
+                pa.setEffectiveDuration( 0 ) ;
+                
+                // Session 0 is a special session to imply offline work by coach.
+                pa.setSession( sessionRepo.findById( 0 ).get() ) ;
+                
+                ProblemAttempt savedDao = paRepo.save( pa ) ;
+                
+                ProblemAttemptDTO dto = new ProblemAttemptDTO( savedDao ) ;
+                activeTopicStatsMgr.handleProblemAttemptEnded( dto.getTopicId() ) ;
+                eventBus.publishEvent( PROBLEM_ATTEMPT_ENDED, dto ) ;
+            }
             return success() ;
         }
         catch( Exception e ) {
