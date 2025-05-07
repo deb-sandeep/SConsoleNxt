@@ -174,20 +174,23 @@ public class ActiveTopicStatistics {
         List<ProblemAttemptRepo.DayBurn> dayBurns = paRepo.getHistoricBurns( topicId ) ;
         if( dayBurns.isEmpty() ) return ;
         
-        double[][] data = new double[dayBurns.size()+1][2] ;
+        double[][] data = new double[dayBurns.size()+2][2] ;
         int remainingProblems = numTotalProblems ;
         
         Date startDate = DateUtils.addDays( dayBurns.get( 0 ).getDate(), -1 ) ;
         data[0][0] = startDate.getTime() ;
         data[0][1] = remainingProblems ;
         
-        for( int i=1; i<data.length; i++ ) {
+        for( int i=1; i<data.length-1; i++ ) {
             ProblemAttemptRepo.DayBurn db = dayBurns.get( i-1 ) ;
             remainingProblems -= db.getNumQuestionsSolved() ;
             
             data[i][0] = db.getDate().getTime() ;
             data[i][1] = remainingProblems ;
         }
+        
+        data[data.length-1][0] = new Date().getTime() ;
+        data[data.length-1][1] = remainingProblems ;
         
         double[] coefficients = Regression.getOLSRegression( data ) ;
         

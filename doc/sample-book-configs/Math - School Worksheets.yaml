@@ -1,0 +1,12 @@
+subject : Maths
+series : College Worksheets
+name : Maths College Worksheets 
+author : BJC
+shortName : BJC - Maths Worksheets
+chapters :
+  - title : 1 - Sets
+    exercises :
+      - { name : Practice Exercise 1, problems : [ SUB 1-6 ] }
+      - { name : Practice Exercise 2, problems : [ SUB 1-7 ] }
+      - { name : Cardinal Number,     problems : [ SUB 1-5 ] }
+      - { name : Practice Exercise 3, problems : [ SUB 1-8 ] }

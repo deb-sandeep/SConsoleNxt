@@ -1,0 +1,1 @@
+ffmpeg -r 10 -pattern_type glob -i 'sconsole-screenshots/*.png' -vcodec libx264 -crf 20 -pix_fmt yuv420p timelapse.mp4
