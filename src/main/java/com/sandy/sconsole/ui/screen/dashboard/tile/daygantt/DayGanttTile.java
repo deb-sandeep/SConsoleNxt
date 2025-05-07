@@ -150,9 +150,9 @@ public class DayGanttTile extends Tile
     }
     
     private void paintPauses( Graphics2D g ) {
-        studyStats.getAllPauses().forEach( pause -> {
-            paintArea( pause.getStartTime(), pause.getDuration(), g, Color.DARK_GRAY ) ;
-        } );
+        studyStats.getAllPauses().forEach( pause ->
+                paintArea( pause.getStartTime(), pause.getDuration(), g, Color.RED.darker() )
+        );
     }
     
     private void paintTotalTime( Graphics2D g ) {
