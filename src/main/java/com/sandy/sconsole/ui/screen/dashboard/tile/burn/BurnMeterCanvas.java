@@ -17,11 +17,12 @@ import java.awt.*;
 class BurnMeterCanvas extends JPanel {
     
     private static final Color GRID_COLOR             = Color.decode( "#343333" ) ;
-    private static final Color OVERBURN_COLOR         = Color.decode( "#06BF02" ) ;
-    private static final Color SLIGHT_UNDERBURN_COLOR = Color.decode( "#558A3C" ) ;
-    private static final Color UNDERBURN_COLOR        = Color.decode( "#7B2929" ) ;
+    private static final Color OVERBURN_COLOR         = Color.decode( "#37CB37" ) ;
+    private static final Color SLIGHT_UNDERBURN_COLOR = Color.decode( "#30AF30" ) ;
+    private static final Color UNDERBURN_COLOR        = Color.decode( "#2D832D" ) ;
     private static final Color TARGET_BURN_COLOR      = Color.GREEN ;
     public  static final Color CURRENT_BURN_COLOR     = Color.decode( "#BBBABA" ) ;
+    private static final Color UNBURNT_COLOR          = Color.decode( "#B10722" ) ;
     
     private static final Font VALUE_FONT = UITheme.BASE_FONT ;
     
@@ -81,6 +82,7 @@ class BurnMeterCanvas extends JPanel {
             height = getHeight() - BORDER.top - BORDER.bottom ;
             widthPerProblem = ((float)width)/maxValue ;
             
+            fillRequiredBurnRateBar( (Graphics2D)g ) ;
             paintCurrentValue( (Graphics2D)g ) ;
             paintGrid( (Graphics2D)g ) ;
         }
@@ -111,6 +113,10 @@ class BurnMeterCanvas extends JPanel {
         int x = (int)( BORDER.left + requiredBurnRate * widthPerProblem ) ;
         g.setColor( TARGET_BURN_COLOR ) ;
         g.drawRect( x, markerY, markerWidth, markerHeight );
+    }
+    
+    private void fillRequiredBurnRateBar( Graphics2D g ) {
+        paintBar( requiredBurnRate, UNBURNT_COLOR, g ) ;
     }
     
     private void paintCurrentValue( Graphics2D g ) {
