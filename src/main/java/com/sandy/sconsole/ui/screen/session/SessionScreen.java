@@ -4,6 +4,7 @@ import com.sandy.sconsole.EventCatalog;
 import com.sandy.sconsole.core.bus.Event;
 import com.sandy.sconsole.core.bus.EventBus;
 import com.sandy.sconsole.core.bus.EventSubscriber;
+import com.sandy.sconsole.core.bus.EventTargetMarker;
 import com.sandy.sconsole.core.ui.screen.Screen;
 import com.sandy.sconsole.core.ui.screen.Tile;
 import com.sandy.sconsole.core.ui.screen.tiles.ContainerTile;
@@ -14,7 +15,7 @@ import com.sandy.sconsole.core.ui.uiutil.UITheme;
 import com.sandy.sconsole.dao.master.repo.SessionTypeRepo;
 import com.sandy.sconsole.dao.master.repo.SyllabusRepo;
 import com.sandy.sconsole.dao.session.dto.SessionDTO;
-import com.sandy.sconsole.state.manager.TodayStudyStatistics;
+import com.sandy.sconsole.state.manager.TodaySessionStatistics;
 import com.sandy.sconsole.ui.screen.dashboard.tile.SyllabusL30EffortTile;
 import com.sandy.sconsole.ui.screen.dashboard.tile.daygantt.DayGanttTile;
 import com.sandy.sconsole.ui.screen.session.tile.*;
@@ -27,6 +28,7 @@ import org.springframework.stereotype.Component;
 import javax.swing.border.MatteBorder;
 import java.awt.*;
 
+import static com.sandy.sconsole.EventCatalog.SESSION_EXTENDED;
 import static com.sandy.sconsole.core.util.StringUtil.getElapsedTimeLabelHHmm;
 
 @Component
@@ -34,10 +36,6 @@ public class SessionScreen extends Screen
     implements EventSubscriber {
     
     public static final String ID = "SESSION_SCREEN" ;
-    private static final int[] SUBSCRIBED_EVENTS = {
-            EventCatalog.SESSION_STARTED,
-            EventCatalog.SESSION_EXTENDED,
-    } ;
     
     @Autowired private SyllabusRepo syllabusRepo ;
     @Autowired private SessionTypeRepo sessionTypeRepo ;
@@ -45,7 +43,7 @@ public class SessionScreen extends Screen
     @Autowired private UITheme theme ;
     @Autowired private EventBus eventBus ;
     @Autowired private ConfiguredUIAttributes uiAttributes ;
-    @Autowired private TodayStudyStatistics todayStudyStats ;
+    @Autowired private TodaySessionStatistics todayStudyStats ;
 
     private final DateTile dateTile ;
     private final TimeTile timeTile ;
@@ -93,7 +91,7 @@ public class SessionScreen extends Screen
     
     @Override
     public void beforeActivation() {
-        eventBus.addSubscriber( this, true, SUBSCRIBED_EVENTS ) ;
+        eventBus.addAsyncSubscriber( this, SESSION_EXTENDED ) ;
         _handleSessionStarted( todayStudyStats.getCurrentSession() ) ;
     }
     
@@ -157,10 +155,9 @@ public class SessionScreen extends Screen
     }
 
     @Override
-    public void handleEvent( Event event ) {
+    public synchronized void handleEvent( Event event ) {
         final int eventType = event.getEventId() ;
         switch( eventType ) {
-            case EventCatalog.SESSION_STARTED -> _handleSessionStarted( ( SessionDTO )event.getValue() ) ;
             case EventCatalog.SESSION_EXTENDED -> refreshTodayEffortTile( ( SessionDTO )event.getValue() ) ;
         }
     }
@@ -206,6 +203,7 @@ public class SessionScreen extends Screen
         this.syllabusIconTile.setImage( SwingUtils.getIconImage( sylIconName ) );
     }
     
+    @EventTargetMarker( SESSION_EXTENDED )
     private void refreshTodayEffortTile( SessionDTO session ) {
         int sessionTime = session.getEffectiveDuration() ;
         int syllabusTime = todayStudyStats.getSyllabusTime( session.getSyllabusName() ) ;

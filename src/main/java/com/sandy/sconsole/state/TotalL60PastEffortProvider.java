@@ -3,7 +3,7 @@ package com.sandy.sconsole.state;
 import com.sandy.sconsole.SConsole;
 import com.sandy.sconsole.core.util.LastNDayValueProvider;
 import com.sandy.sconsole.dao.session.repo.DayStudyTimeRepo;
-import com.sandy.sconsole.state.manager.TodayStudyStatistics;
+import com.sandy.sconsole.state.manager.TodaySessionStatistics;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -11,13 +11,13 @@ import java.util.Map;
 
 public class TotalL60PastEffortProvider extends LastNDayValueProvider {
     
-    private final DayStudyTimeRepo     studyTimeRepo ;
-    private final TodayStudyStatistics todayStudyStatistics ;
+    private final DayStudyTimeRepo       studyTimeRepo ;
+    private final TodaySessionStatistics todaySessionStatistics;
     
     public TotalL60PastEffortProvider() {
         super( 60 ) ;
         this.studyTimeRepo = SConsole.getBean( DayStudyTimeRepo.class ) ;
-        this.todayStudyStatistics = SConsole.getBean( TodayStudyStatistics.class ) ;
+        this.todaySessionStatistics = SConsole.getBean( TodaySessionStatistics.class ) ;
     }
     
     @Override
@@ -33,6 +33,6 @@ public class TotalL60PastEffortProvider extends LastNDayValueProvider {
     
     @Override
     protected double getTodayValue() {
-        return (double)todayStudyStatistics.getTotalEffectiveTimeInSec()/3600 ;
+        return (double)todaySessionStatistics.getTotalEffectiveTimeInSec()/3600 ;
     }
 }

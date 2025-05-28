@@ -4,6 +4,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.sandy.sconsole.core.bus.Event;
 import com.sandy.sconsole.core.bus.EventBus;
 import com.sandy.sconsole.core.bus.EventSubscriber;
+import com.sandy.sconsole.core.bus.EventTargetMarker;
 import com.sandy.sconsole.core.clock.ClockTickListener;
 import com.sandy.sconsole.core.clock.SConsoleClock;
 import com.sandy.sconsole.core.util.Day;
@@ -28,19 +29,19 @@ import static com.sandy.sconsole.EventCatalog.*;
  * study done today. It maintains a cache of sessions, pauses and total
  * effective time qualified by syllabus.
  *
- * This class emits events whenever the internal state changes. Following
+ * This class emits events whenever the internal state changes. The following
  * events are emitted:
  *
- * TODAY_STUDY_STATS_UPDATED : All aspects of today study stats have been updated.
+ * TODAY_STUDY_STATS_UPDATED: All aspects of today's study stats have been updated.
  * This can happen when the system boots up, a day changes or historic sessions
  * have been updated
  *
- * TODAY_STUDY_TIME_UPDATED : Today study time has been updated. This can happen
- * if session or pause has been started or extended.
+ * TODAY_STUDY_TIME_UPDATED: Today study time has been updated. This can happen
+ * if a session or pause has been started or extended.
  */
 @Slf4j
 @Component
-public class TodayStudyStatistics
+public class TodaySessionStatistics
     implements EventSubscriber, ClockTickListener {
     
     @Autowired private EventBus eventBus ;
@@ -85,31 +86,44 @@ public class TodayStudyStatistics
         // session start event needs to be deterministically done before that.
         // NOTE: SESSION_STARTED and SESSION_ENDED events are not registered
         //       as they are called on this bean directly from the API
-        eventBus.addSyncSubscriber( this,
-                SESSION_EXTENDED,
-                PAUSE_STARTED,
-                PAUSE_EXTENDED ) ;
+        eventBus.addSyncSubscriber( EventBus.HIGH_PRIORITY, this, SESSION_STARTED ) ;
+        eventBus.addSyncSubscriber( EventBus.HIGH_PRIORITY, this, SESSION_ENDED ) ;
+        eventBus.addSyncSubscriber( this, SESSION_EXTENDED ) ;
+        eventBus.addSyncSubscriber( this, PAUSE_STARTED ) ;
+        eventBus.addSyncSubscriber( this, PAUSE_EXTENDED ) ;
         
         eventBus.addAsyncSubscriber( this, HISTORIC_SESSION_UPDATED ) ;
     }
     
     @Override
-    public void handleEvent( Event event ) {
+    public synchronized void handleEvent( Event event ) {
         
         final int eventType = event.getEventId() ;
+        SessionDTO session ;
+        SessionPauseDTO pause ;
+        
         switch( eventType ) {
             case HISTORIC_SESSION_UPDATED:
                 initializeState() ;
                 break ;
-            
+                
+            case SESSION_STARTED:
+                session = ( SessionDTO )event.getValue() ;
+                sessionStarted( session ) ;
+                break ;
+                
             case SESSION_EXTENDED:
-                SessionDTO session = ( SessionDTO )event.getValue() ;
+                session = ( SessionDTO )event.getValue() ;
                 currentSession = updateCachedSession( session, true ) ;
                 break ;
+                
+            case SESSION_ENDED:
+                sessionEnded() ;
             
             case PAUSE_STARTED:
             case PAUSE_EXTENDED:
-                updateCachedPause( (SessionPauseDTO)event.getValue(), true ) ;
+                pause = ( SessionPauseDTO )event.getValue() ;
+                updateCachedPause( pause, true ) ;
                 break ;
         }
     }
@@ -119,6 +133,7 @@ public class TodayStudyStatistics
         initializeState() ;
     }
     
+    @EventTargetMarker( HISTORIC_SESSION_UPDATED )
     private void initializeState() {
         
         today = new Day() ;
@@ -140,29 +155,18 @@ public class TodayStudyStatistics
         eventBus.publishEvent( TODAY_STUDY_STATS_UPDATED ) ;
     }
     
-    public Collection<SessionDTO> getAllSessions() { return allSessions.values() ; }
-    
-    public Collection<SessionPauseDTO> getAllPauses() { return allPauses.values() ; }
-    
-    public int getNumProblemsSolvedToday( int topicId ) {
-        return activeTopicStatsMgr.getTopicStatistics( topicId ).getNumProblemsSolvedToday() ;
-    }
-    
-    public int getSyllabusTime( String syllabusName ) {
-        if( syllabusTimes.containsKey( syllabusName ) ) {
-            return syllabusTimes.get( syllabusName ) ;
-        }
-        return 0 ;
-    }
-    
+    @EventTargetMarker( SESSION_STARTED )
     public void sessionStarted( SessionDTO session ) {
         currentSession = updateCachedSession( session, true ) ;
+        eventBus.publishEvent( TODAY_EFFORT_UPDATED ) ;
     }
     
+    @EventTargetMarker( SESSION_ENDED )
     public void sessionEnded() {
         currentSession = null ;
     }
     
+    @EventTargetMarker( SESSION_EXTENDED )
     public SessionDTO updateCachedSession( @NonNull SessionDTO _session, boolean emitEvents ) {
         
         SessionDTO session = allSessions.computeIfAbsent( _session.getId(), k -> {
@@ -171,7 +175,7 @@ public class TodayStudyStatistics
             return newSession ;
         } ) ;
         
-        session.absorb( _session ) ;
+        session.inheritAttributes( _session ) ;
         
         if( today.startsAfter( session.getStartTime() ) ) {
             session.setStartTime( today.getStartTime() ) ;
@@ -180,10 +184,14 @@ public class TodayStudyStatistics
             session.setEndTime( today.getEndTime() ) ;
         }
         
-        computeTotalEffectiveTimeForToday( emitEvents ) ;
+        computeTotalEffectiveTimeForToday() ;
+        if( emitEvents ) {
+            eventBus.publishEvent( TODAY_EFFORT_UPDATED ) ;
+        }
         return session ;
     }
     
+    @EventTargetMarker( { PAUSE_STARTED, PAUSE_EXTENDED } )
     public void updateCachedPause( @NonNull SessionPauseDTO _pause, boolean emitEvents ) {
         
         SessionPauseDTO pause = allPauses.computeIfAbsent( _pause.getId(), k -> {
@@ -201,10 +209,13 @@ public class TodayStudyStatistics
             pause.setEndTime( today.getEndTime() ) ;
         }
         
-        computeTotalEffectiveTimeForToday( emitEvents ) ;
+        computeTotalEffectiveTimeForToday() ;
+        if( emitEvents ) {
+            eventBus.publishEvent( TODAY_EFFORT_UPDATED ) ;
+        }
     }
     
-    private void computeTotalEffectiveTimeForToday( boolean emitEvents ) {
+    private void computeTotalEffectiveTimeForToday() {
         
         int totalSessionTime = allSessions.values().stream().mapToInt( SessionDTO::getDuration ).sum() ;
         int totalPauseTime = allPauses.values().stream().mapToInt( SessionPauseDTO::getDuration ).sum() ;
@@ -223,9 +234,20 @@ public class TodayStudyStatistics
             }
             syllabusTimes.put( syllabusName, totalSyllabusTime ) ;
         } ) ;
-        
-        if( emitEvents ) {
-            eventBus.publishEvent( TODAY_EFFORT_UPDATED ) ;
+    }
+    
+    public Collection<SessionDTO> getAllSessions() { return allSessions.values() ; }
+    
+    public Collection<SessionPauseDTO> getAllPauses() { return allPauses.values() ; }
+    
+    public int getNumProblemsSolvedToday( int topicId ) {
+        return activeTopicStatsMgr.getTopicStatistics( topicId ).getNumProblemsSolvedToday() ;
+    }
+    
+    public int getSyllabusTime( String syllabusName ) {
+        if( syllabusTimes.containsKey( syllabusName ) ) {
+            return syllabusTimes.get( syllabusName ) ;
         }
+        return 0 ;
     }
 }

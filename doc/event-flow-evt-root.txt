@@ -1,0 +1,142 @@
+ATS_MANAGER_REFRESHED
+	Event Sources:
+		ActiveTopicStatisticsManager : refreshState
+	Event Targets:
+		(~) SyllabusBurnTile : refresh
+
+ATS_REFRESHED
+	Event Sources:
+		ActiveTopicStatisticsManager : handleProblemAttemptEnded
+	Event Targets:
+		(~) SyllabusBurnTile : refreshTopicBurn
+		(~) ThermometerTile : refreshPlot
+		(~) TopicBurnStatTile : refreshBurnInfo
+		(~) TopicBurnChartTile : scheduleReplot
+
+HISTORIC_SESSION_UPDATED
+	Event Sources:
+		[NO EVENT SOURCES FOUND FOR EVENT]
+	Event Targets:
+		(~) TodaySessionStatistics : initializeState
+			  TODAY_STUDY_STATS_UPDATED
+				(~) DayGanttTile : paint
+		(~) PastEffortProviderManager : fullRefresh
+			  PAST_EFFORT_UPDATED
+				(~) SyllabusL30EffortTile : handleEvent
+				(~) TotalL60EffortTile : handleEvent
+
+PAST_EFFORT_UPDATED
+	Event Sources:
+		PastEffortProviderManager : fullRefresh
+		PastEffortProviderManager : updateTodayTime
+	Event Targets:
+		(~) SyllabusL30EffortTile : handleEvent
+		(~) TotalL60EffortTile : handleEvent
+
+PAUSE_EXTENDED
+	Event Sources:
+		SessionAPIs : extendSession
+	Event Targets:
+		(*) [100] TodaySessionStatistics : updateCachedPause
+			  TODAY_EFFORT_UPDATED
+				(~) DayGanttTile : paint
+				(~) PastEffortProviderManager : updateTodayTime
+					  PAST_EFFORT_UPDATED
+						(~) SyllabusL30EffortTile : handleEvent
+						(~) TotalL60EffortTile : handleEvent
+
+PAUSE_STARTED
+	Event Sources:
+		SessionAPIs : createNewPause
+	Event Targets:
+		(*) [100] TodaySessionStatistics : updateCachedPause
+			  TODAY_EFFORT_UPDATED
+				(~) DayGanttTile : paint
+				(~) PastEffortProviderManager : updateTodayTime
+					  PAST_EFFORT_UPDATED
+						(~) SyllabusL30EffortTile : handleEvent
+						(~) TotalL60EffortTile : handleEvent
+
+PROBLEM_ATTEMPT_ENDED
+	Event Sources:
+		SessionAPIs : endProblemAttempt
+		ProblemChangeStateRequest : changeProblemState
+	Event Targets:
+		(*) [200] ActiveTopicStatisticsManager : handleProblemAttemptEnded
+			  ATS_REFRESHED
+				(~) SyllabusBurnTile : refreshTopicBurn
+				(~) ThermometerTile : refreshPlot
+				(~) TopicBurnStatTile : refreshBurnInfo
+				(~) TopicBurnChartTile : scheduleReplot
+		(~) TopicL30BurnTile : handleEvent
+
+PROBLEM_ATTEMPT_EXTENDED
+	Event Sources:
+		SessionAPIs : extendSession
+	Event Targets:
+		[NO EVENT TARGETS FOUND FOR EVENT]
+
+PROBLEM_ATTEMPT_STARTED
+	Event Sources:
+		SessionAPIs : startProblemAttempt
+	Event Targets:
+		[NO EVENT TARGETS FOUND FOR EVENT]
+
+SESSION_ENDED
+	Event Sources:
+		SessionAPIs : endSession
+	Event Targets:
+		(*) [200] TodaySessionStatistics : sessionEnded
+		(~) TopicBurnStatTile : handleEvent
+
+SESSION_EXTENDED
+	Event Sources:
+		SessionAPIs : extendSession
+	Event Targets:
+		(*) [100] TodaySessionStatistics : updateCachedSession
+			  TODAY_EFFORT_UPDATED
+				(~) DayGanttTile : paint
+				(~) PastEffortProviderManager : updateTodayTime
+					  PAST_EFFORT_UPDATED
+						(~) SyllabusL30EffortTile : handleEvent
+						(~) TotalL60EffortTile : handleEvent
+		(~) SessionScreen : refreshTodayEffortTile
+
+SESSION_STARTED
+	Event Sources:
+		SessionAPIs : startSession
+	Event Targets:
+		(*) [200] TodaySessionStatistics : sessionStarted
+			  TODAY_EFFORT_UPDATED
+				(~) DayGanttTile : paint
+				(~) PastEffortProviderManager : updateTodayTime
+					  PAST_EFFORT_UPDATED
+						(~) SyllabusL30EffortTile : handleEvent
+						(~) TotalL60EffortTile : handleEvent
+
+TODAY_EFFORT_UPDATED
+	Event Sources:
+		TodaySessionStatistics : sessionStarted
+		TodaySessionStatistics : updateCachedSession
+		TodaySessionStatistics : updateCachedPause
+	Event Targets:
+		(~) DayGanttTile : paint
+		(~) PastEffortProviderManager : updateTodayTime
+			  PAST_EFFORT_UPDATED
+				(~) SyllabusL30EffortTile : handleEvent
+				(~) TotalL60EffortTile : handleEvent
+
+TODAY_STUDY_STATS_UPDATED
+	Event Sources:
+		TodaySessionStatistics : initializeState
+	Event Targets:
+		(~) DayGanttTile : paint
+
+TRACK_UPDATED
+	Event Sources:
+		TrackAPIs : saveTopicSchedules
+	Event Targets:
+		(~) ActiveTopicStatisticsManager : refreshState
+			  ATS_MANAGER_REFRESHED
+				(~) SyllabusBurnTile : refresh
+

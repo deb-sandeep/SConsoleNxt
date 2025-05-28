@@ -15,6 +15,7 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -27,6 +28,7 @@ import static com.sandy.sconsole.core.api.AR.systemError;
 @Slf4j
 @RestController
 @RequestMapping( "/Problem" )
+@Transactional
 public class AttemptedProblemAPIs {
     
     @Autowired
@@ -128,7 +130,7 @@ public class AttemptedProblemAPIs {
                 ProblemAttempt savedDao = paRepo.save( pa ) ;
                 
                 ProblemAttemptDTO dto = new ProblemAttemptDTO( savedDao ) ;
-                activeTopicStatsMgr.handleProblemAttemptEnded( dto.getTopicId() ) ;
+                // REMOVE: activeTopicStatsMgr.handleProblemAttemptEnded( dto.getTopicId() ) ;
                 eventBus.publishEvent( PROBLEM_ATTEMPT_ENDED, dto ) ;
             }
             return success() ;

@@ -3,6 +3,7 @@ package com.sandy.sconsole.ui.screen.dashboard.tile.burn;
 import com.sandy.sconsole.core.bus.Event;
 import com.sandy.sconsole.core.bus.EventBus;
 import com.sandy.sconsole.core.bus.EventSubscriber;
+import com.sandy.sconsole.core.bus.EventTargetMarker;
 import com.sandy.sconsole.core.ui.screen.Tile;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
 import com.sandy.sconsole.state.ActiveTopicStatistics;
@@ -48,11 +49,6 @@ import static com.sandy.sconsole.EventCatalog.ATS_REFRESHED;
 public class SyllabusBurnTile extends Tile
     implements EventSubscriber {
 
-    private static final int[] SUBSCRIBED_EVENTS = {
-        ATS_MANAGER_REFRESHED,
-        ATS_REFRESHED
-    } ;
-    
     @Autowired private EventBus eventBus ;
     @Autowired private ActiveTopicStatisticsManager atsManager ;
     @Autowired private TopicBurnPanel topBurnPanel ;
@@ -64,7 +60,9 @@ public class SyllabusBurnTile extends Tile
     
     @Override
     public void initialize() {
-        eventBus.addSubscriber( this, true, SUBSCRIBED_EVENTS ) ;
+        eventBus.addAsyncSubscriber( this, ATS_MANAGER_REFRESHED ) ;
+        eventBus.addAsyncSubscriber( this, ATS_REFRESHED ) ;
+
         setBorder( new MatteBorder( 1, 1, 0, 1, UITheme.TILE_BORDER_COLOR ) ) ;
         setLayout( new GridLayout( 2, 1 ) ) ;
         
@@ -82,6 +80,7 @@ public class SyllabusBurnTile extends Tile
         }
     }
     
+    @EventTargetMarker( ATS_MANAGER_REFRESHED )
     private void refresh() {
         burnPanelMap.clear() ;
         topBurnPanel.setTopicStats( null ) ;
@@ -104,6 +103,7 @@ public class SyllabusBurnTile extends Tile
         bottomBurnPanel.refreshUI() ;
     }
     
+    @EventTargetMarker( ATS_REFRESHED )
     private void refreshTopicBurn( int topicId ) {
         TopicBurnPanel topicBurnPanel = burnPanelMap.get( topicId ) ;
         // Can the topic burn panel be null? Yes, note that this instance

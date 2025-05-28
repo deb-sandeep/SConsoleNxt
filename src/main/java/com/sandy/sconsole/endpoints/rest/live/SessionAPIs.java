@@ -19,11 +19,12 @@ import com.sandy.sconsole.dao.session.repo.ProblemAttemptRepo;
 import com.sandy.sconsole.dao.session.repo.SessionPauseRepo;
 import com.sandy.sconsole.dao.session.repo.SessionRepo;
 import com.sandy.sconsole.state.manager.ActiveTopicStatisticsManager;
-import com.sandy.sconsole.state.manager.TodayStudyStatistics;
+import com.sandy.sconsole.state.manager.TodaySessionStatistics;
 import com.sandy.sconsole.ui.screen.session.SessionScreen;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,6 +35,7 @@ import static com.sandy.sconsole.core.api.AR.*;
 @Slf4j
 @RestController
 @RequestMapping( "/Session" )
+@Transactional
 public class SessionAPIs {
     
     @Autowired private SessionTypeRepo    stRepo ;
@@ -46,7 +48,7 @@ public class SessionAPIs {
     
     @Autowired private ScreenManager screenManager ;
     
-    @Autowired private TodayStudyStatistics todayStudyStats ;
+    @Autowired private TodaySessionStatistics       todayStudyStats ;
     @Autowired private ActiveTopicStatisticsManager activeTopicStatsMgr ;
     @Autowired private EventBus eventBus ;
     
@@ -71,10 +73,9 @@ public class SessionAPIs {
             dao.setEndTime( dao.getStartTime() ) ;
             dao.setEffectiveDuration( req.getEffectiveDuration() ) ;
             
-            Session savedDao = sessionRepo.save( dao ) ;
+            Session savedDao = sessionRepo.saveAndFlush( dao ) ;
             SessionDTO sessionDto = new SessionDTO( savedDao ) ;
             
-            todayStudyStats.sessionStarted( sessionDto ) ;
             eventBus.publishEvent( SESSION_STARTED, sessionDto ) ;
             screenManager.scheduleScreenChange( SessionScreen.ID ) ;
             
@@ -88,7 +89,6 @@ public class SessionAPIs {
     @PostMapping( "/{sessionId}/EndSession" )
     public ResponseEntity<AR<String>> endSession(  @PathVariable( "sessionId" ) int sessionId ) {
         try {
-            todayStudyStats.sessionEnded() ;
             eventBus.publishEvent( SESSION_ENDED, sessionId ) ;
             screenManager.showRootScreen() ;
             return success() ;
@@ -112,7 +112,7 @@ public class SessionAPIs {
             pa.setPrevState( req.getPrevState() ) ;
             pa.setTargetState( req.getTargetState() ) ;
             
-            ProblemAttempt savedDao = paRepo.save( pa ) ;
+            ProblemAttempt savedDao = paRepo.saveAndFlush( pa ) ;
             
             eventBus.publishEvent( PROBLEM_ATTEMPT_STARTED, new ProblemAttemptDTO( savedDao ) ) ;
             
@@ -128,10 +128,10 @@ public class SessionAPIs {
         try {
             ProblemAttempt pa = paRepo.findById( req.getId() ).get() ;
             pa.setTargetState( req.getTargetState() ) ;
-            ProblemAttempt savedDao = paRepo.save( pa ) ;
+            ProblemAttempt savedDao = paRepo.saveAndFlush( pa ) ;
             
             ProblemAttemptDTO dto = new ProblemAttemptDTO( savedDao ) ;
-            activeTopicStatsMgr.handleProblemAttemptEnded( dto.getTopicId() ) ;
+            // REMOVE: activeTopicStatsMgr.handleProblemAttemptEnded( dto.getTopicId() ) ;
             eventBus.publishEvent( PROBLEM_ATTEMPT_ENDED, dto ) ;
             
             return success() ;
@@ -149,7 +149,7 @@ public class SessionAPIs {
             dao.setStartTime( req.getStartTime() ) ;
             dao.setEndTime( req.getStartTime() ) ;
             
-            SessionPause savedDao = sessionPauseRepo.save( dao ) ;
+            SessionPause savedDao = sessionPauseRepo.saveAndFlush( dao ) ;
             
             eventBus.publishEvent( PAUSE_STARTED, new SessionPauseDTO( savedDao )  );
             
@@ -168,7 +168,7 @@ public class SessionAPIs {
                 dao.setEndTime( req.getEndTime() ) ;
                 dao.setEffectiveDuration( req.getSessionEffectiveDuration() ) ;
                 
-                Session savedSessionDao = sessionRepo.save( dao ) ;
+                Session savedSessionDao = sessionRepo.saveAndFlush( dao ) ;
                 
                 eventBus.publishEvent( SESSION_EXTENDED, new SessionDTO( savedSessionDao ) ) ;
 
@@ -176,7 +176,7 @@ public class SessionAPIs {
                     SessionPause pauseDao = sessionPauseRepo.findById( req.getPauseId() ).get() ;
                     pauseDao.setEndTime( req.getEndTime() ) ;
                 
-                    SessionPause savedSPDao = sessionPauseRepo.save( pauseDao ) ;
+                    SessionPause savedSPDao = sessionPauseRepo.saveAndFlush( pauseDao ) ;
                     
                     eventBus.publishEvent( PAUSE_EXTENDED, new SessionPauseDTO( savedSPDao )  );
                 }
@@ -186,7 +186,7 @@ public class SessionAPIs {
                     paDao.setEndTime( req.getEndTime() ) ;
                     paDao.setEffectiveDuration( req.getProblemAttemptEffectiveDuration() ) ;
                 
-                    ProblemAttempt savedPADao = paRepo.save( paDao ) ;
+                    ProblemAttempt savedPADao = paRepo.saveAndFlush( paDao ) ;
                     
                     eventBus.publishEvent( PROBLEM_ATTEMPT_EXTENDED, new ProblemAttemptDTO( savedPADao ) ) ;
                 }

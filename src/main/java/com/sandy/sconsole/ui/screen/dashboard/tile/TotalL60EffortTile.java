@@ -3,6 +3,7 @@ package com.sandy.sconsole.ui.screen.dashboard.tile;
 import com.sandy.sconsole.core.bus.Event;
 import com.sandy.sconsole.core.bus.EventBus;
 import com.sandy.sconsole.core.bus.EventSubscriber;
+import com.sandy.sconsole.core.bus.EventTargetMarker;
 import com.sandy.sconsole.core.ui.screen.Tile;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
 import com.sandy.sconsole.core.util.LastNDayValueProvider;
@@ -25,7 +26,7 @@ import static com.sandy.sconsole.EventCatalog.PAST_EFFORT_UPDATED;
 public class TotalL60EffortTile extends Tile
     implements EventSubscriber {
     
-    @Autowired private EventBus                  eventBus ;
+    @Autowired private EventBus eventBus ;
     @Autowired private PastEffortProviderManager pastStudyTimesManager ;
     
     private DayValueChart dayValueChart ;
@@ -57,7 +58,8 @@ public class TotalL60EffortTile extends Tile
     }
     
     @Override
-    public void handleEvent( Event event ) {
+    @EventTargetMarker( PAST_EFFORT_UPDATED )
+    public synchronized void handleEvent( Event event ) {
         dayValueChart.refreshChart() ;
     }
 }

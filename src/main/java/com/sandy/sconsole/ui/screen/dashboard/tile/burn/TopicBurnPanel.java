@@ -176,6 +176,7 @@ public class TopicBurnPanel extends JPanel {
             pigeonPanel.setNumPigeons( 0 ) ;
             currentBurnLabel.setText( "" ) ;
             requiredBurnLabel.setText( "" ) ;
+            overshootLabel.setText( "" ) ;
         }
     }
 }

@@ -22,6 +22,7 @@ import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ import static java.text.MessageFormat.format;
 @Slf4j
 @RestController
 @RequestMapping( "/Master/Book" )
+@Transactional
 public class BookAPIs {
     
     @Autowired private ChapterRepo chapterRepo;

@@ -1,0 +1,125 @@
+TrackAPIs : saveTopicSchedules
+	TRACK_UPDATED
+		(~) ActiveTopicStatisticsManager : refreshState
+			  ATS_MANAGER_REFRESHED
+				(~) SyllabusBurnTile : refresh
+
+SessionAPIs : startSession
+	SESSION_STARTED
+		(*) [200] TodaySessionStatistics : sessionStarted
+			  TODAY_EFFORT_UPDATED
+				(~) DayGanttTile : paint
+				(~) PastEffortProviderManager : updateTodayTime
+					  PAST_EFFORT_UPDATED
+						(~) SyllabusL30EffortTile : handleEvent
+						(~) TotalL60EffortTile : handleEvent
+
+SessionAPIs : endSession
+	SESSION_ENDED
+		(*) [200] TodaySessionStatistics : sessionEnded
+		(~) TopicBurnStatTile : handleEvent
+
+SessionAPIs : startProblemAttempt
+	PROBLEM_ATTEMPT_STARTED
+		[NO EVENT TARGETS FOUND FOR EVENT]
+
+SessionAPIs : endProblemAttempt
+	PROBLEM_ATTEMPT_ENDED
+		(*) [200] ActiveTopicStatisticsManager : handleProblemAttemptEnded
+			  ATS_REFRESHED
+				(~) SyllabusBurnTile : refreshTopicBurn
+				(~) ThermometerTile : refreshPlot
+				(~) TopicBurnStatTile : refreshBurnInfo
+				(~) TopicBurnChartTile : scheduleReplot
+		(~) TopicL30BurnTile : handleEvent
+
+SessionAPIs : createNewPause
+	PAUSE_STARTED
+		(*) [100] TodaySessionStatistics : updateCachedPause
+			  TODAY_EFFORT_UPDATED
+				(~) DayGanttTile : paint
+				(~) PastEffortProviderManager : updateTodayTime
+					  PAST_EFFORT_UPDATED
+						(~) SyllabusL30EffortTile : handleEvent
+						(~) TotalL60EffortTile : handleEvent
+
+SessionAPIs : extendSession
+	SESSION_EXTENDED
+		(*) [100] TodaySessionStatistics : updateCachedSession
+			  TODAY_EFFORT_UPDATED
+				(~) DayGanttTile : paint
+				(~) PastEffortProviderManager : updateTodayTime
+					  PAST_EFFORT_UPDATED
+						(~) SyllabusL30EffortTile : handleEvent
+						(~) TotalL60EffortTile : handleEvent
+		(~) SessionScreen : refreshTodayEffortTile
+	PAUSE_EXTENDED
+		(*) [100] TodaySessionStatistics : updateCachedPause
+			  TODAY_EFFORT_UPDATED
+				(~) DayGanttTile : paint
+				(~) PastEffortProviderManager : updateTodayTime
+					  PAST_EFFORT_UPDATED
+						(~) SyllabusL30EffortTile : handleEvent
+						(~) TotalL60EffortTile : handleEvent
+	PROBLEM_ATTEMPT_EXTENDED
+		[NO EVENT TARGETS FOUND FOR EVENT]
+
+ProblemChangeStateRequest : changeProblemState
+	PROBLEM_ATTEMPT_ENDED
+		(*) [200] ActiveTopicStatisticsManager : handleProblemAttemptEnded
+			  ATS_REFRESHED
+				(~) SyllabusBurnTile : refreshTopicBurn
+				(~) ThermometerTile : refreshPlot
+				(~) TopicBurnStatTile : refreshBurnInfo
+				(~) TopicBurnChartTile : scheduleReplot
+		(~) TopicL30BurnTile : handleEvent
+
+TodaySessionStatistics : initializeState
+	TODAY_STUDY_STATS_UPDATED
+		(~) DayGanttTile : paint
+
+TodaySessionStatistics : sessionStarted
+	TODAY_EFFORT_UPDATED
+		(~) DayGanttTile : paint
+		(~) PastEffortProviderManager : updateTodayTime
+			  PAST_EFFORT_UPDATED
+				(~) SyllabusL30EffortTile : handleEvent
+				(~) TotalL60EffortTile : handleEvent
+
+TodaySessionStatistics : updateCachedSession
+	TODAY_EFFORT_UPDATED
+		(~) DayGanttTile : paint
+		(~) PastEffortProviderManager : updateTodayTime
+			  PAST_EFFORT_UPDATED
+				(~) SyllabusL30EffortTile : handleEvent
+				(~) TotalL60EffortTile : handleEvent
+
+TodaySessionStatistics : updateCachedPause
+	TODAY_EFFORT_UPDATED
+		(~) DayGanttTile : paint
+		(~) PastEffortProviderManager : updateTodayTime
+			  PAST_EFFORT_UPDATED
+				(~) SyllabusL30EffortTile : handleEvent
+				(~) TotalL60EffortTile : handleEvent
+
+PastEffortProviderManager : fullRefresh
+	PAST_EFFORT_UPDATED
+		(~) SyllabusL30EffortTile : handleEvent
+		(~) TotalL60EffortTile : handleEvent
+
+PastEffortProviderManager : updateTodayTime
+	PAST_EFFORT_UPDATED
+		(~) SyllabusL30EffortTile : handleEvent
+		(~) TotalL60EffortTile : handleEvent
+
+ActiveTopicStatisticsManager : refreshState
+	ATS_MANAGER_REFRESHED
+		(~) SyllabusBurnTile : refresh
+
+ActiveTopicStatisticsManager : handleProblemAttemptEnded
+	ATS_REFRESHED
+		(~) SyllabusBurnTile : refreshTopicBurn
+		(~) ThermometerTile : refreshPlot
+		(~) TopicBurnStatTile : refreshBurnInfo
+		(~) TopicBurnChartTile : scheduleReplot
+

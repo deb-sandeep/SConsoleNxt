@@ -3,6 +3,7 @@ package com.sandy.sconsole.ui.screen.dashboard.tile;
 import com.sandy.sconsole.core.bus.Event;
 import com.sandy.sconsole.core.bus.EventBus;
 import com.sandy.sconsole.core.bus.EventSubscriber;
+import com.sandy.sconsole.core.bus.EventTargetMarker;
 import com.sandy.sconsole.core.ui.screen.Tile;
 import com.sandy.sconsole.core.ui.uiutil.SwingUtils;
 import com.sandy.sconsole.state.SyllabusL30EffortProvider;
@@ -62,7 +63,8 @@ public class SyllabusL30EffortTile extends Tile
     }
     
     @Override
-    public void handleEvent( Event event ) {
+    @EventTargetMarker( PAST_EFFORT_UPDATED )
+    public synchronized void handleEvent( Event event ) {
         dayValueChart.refreshChart() ;
     }
 

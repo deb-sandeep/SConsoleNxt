@@ -1,6 +1,5 @@
 package com.sandy.sconsole.endpoints.rest.master;
 
-import com.sandy.sconsole.EventCatalog;
 import com.sandy.sconsole.core.api.AR;
 import com.sandy.sconsole.core.bus.EventBus;
 import com.sandy.sconsole.dao.master.TopicTrackAssignment;
@@ -19,9 +18,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.sandy.sconsole.EventCatalog.TRACK_UPDATED;
+
 @Slf4j
 @RestController
 @RequestMapping( "/Master/Track" )
+@Transactional
 public class TrackAPIs {
     
     @Autowired private EventBus eventBus;
@@ -55,7 +57,6 @@ public class TrackAPIs {
     }
     
     @PostMapping( "/{id}/SaveTopicSchedules" )
-    @Transactional
     public ResponseEntity<AR<List<TopicTrackAssignment>>> saveTopicSchedules(
                             @PathVariable("id") int trackId,
                             @RequestBody List<TopicTrackAssignment> schedules ) {
@@ -83,7 +84,7 @@ public class TrackAPIs {
             log.debug( "Publishing TRACK_UPDATED event for track id {}", trackId ) ;
             
             Track savedTrack = trackRepo.findById( trackId ).get() ;
-            eventBus.publishEvent( EventCatalog.TRACK_UPDATED, trackId ) ;
+            eventBus.publishEvent( TRACK_UPDATED, trackId ) ;
             
             return AR.success( new ArrayList<>( savedTrack.getAssignedTopics() ) ) ;
         }

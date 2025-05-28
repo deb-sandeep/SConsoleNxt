@@ -4,13 +4,14 @@ import com.sandy.sconsole.EventCatalog;
 import com.sandy.sconsole.core.bus.Event;
 import com.sandy.sconsole.core.bus.EventBus;
 import com.sandy.sconsole.core.bus.EventSubscriber;
+import com.sandy.sconsole.core.bus.EventTargetMarker;
 import com.sandy.sconsole.core.ui.screen.Tile;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
 import com.sandy.sconsole.core.util.StringUtil;
 import com.sandy.sconsole.dao.session.dto.SessionDTO;
 import com.sandy.sconsole.state.ActiveTopicStatistics;
 import com.sandy.sconsole.state.manager.ActiveTopicStatisticsManager;
-import com.sandy.sconsole.state.manager.TodayStudyStatistics;
+import com.sandy.sconsole.state.manager.TodaySessionStatistics;
 import info.clearthought.layout.TableLayout;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.text.SimpleDateFormat;
 
+import static com.sandy.sconsole.EventCatalog.ATS_REFRESHED;
+import static com.sandy.sconsole.EventCatalog.SESSION_ENDED;
 import static javax.swing.SwingConstants.CENTER;
 
 @Slf4j
@@ -33,11 +36,6 @@ public class TopicBurnStatTile extends Tile
     
     private static final Font LBL_FONT    = UITheme.BASE_FONT.deriveFont( 20F ) ;
     private static final Font VAL_FONT    = UITheme.BASE_FONT.deriveFont( 23F ) ;
-    
-    private static final int[] SUBSCRIBED_EVENTS = {
-            EventCatalog.ATS_REFRESHED,
-            EventCatalog.SESSION_ENDED
-    } ;
     
     private final JLabel burnEndDtLbl        = createDefaultLabel( "Burn end" ) ;
     private final JLabel burnEndDt           = createDefaultLabel( "" ) ;
@@ -91,7 +89,7 @@ public class TopicBurnStatTile extends Tile
     
     @Autowired private EventBus eventBus ;
     @Autowired private ActiveTopicStatisticsManager atsManager ;
-    @Autowired private TodayStudyStatistics todayStudyStats ;
+    @Autowired private TodaySessionStatistics todayStudyStats ;
 
     public TopicBurnStatTile() {
         setUpUI() ;
@@ -151,7 +149,9 @@ public class TopicBurnStatTile extends Tile
     
     @Override
     public void beforeActivation() {
-        eventBus.addSubscriber( this, true, SUBSCRIBED_EVENTS ) ;
+        
+        eventBus.addAsyncSubscriber( this, ATS_REFRESHED ) ;
+        eventBus.addAsyncSubscriber( this, SESSION_ENDED ) ;
         
         SessionDTO liveSession = todayStudyStats.getCurrentSession() ;
         ats = atsManager.getTopicStatistics( liveSession.getTopicId() ) ;
@@ -164,7 +164,8 @@ public class TopicBurnStatTile extends Tile
     }
     
     @Override
-    public void handleEvent( Event event ) {
+    @EventTargetMarker( SESSION_ENDED )
+    public synchronized void handleEvent( Event event ) {
         final int eventType = event.getEventId() ;
         switch( eventType ) {
             case EventCatalog.ATS_REFRESHED -> refreshBurnInfo() ;
@@ -172,6 +173,7 @@ public class TopicBurnStatTile extends Tile
         }
     }
     
+    @EventTargetMarker( ATS_REFRESHED )
     public void refreshBurnInfo() {
         
         numQ.setText             ( String.valueOf( ats.getNumTotalProblems() ) ) ;

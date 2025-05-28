@@ -3,9 +3,10 @@ package com.sandy.sconsole.ui.screen.dashboard.tile.daygantt;
 import com.sandy.sconsole.core.bus.Event;
 import com.sandy.sconsole.core.bus.EventBus;
 import com.sandy.sconsole.core.bus.EventSubscriber;
+import com.sandy.sconsole.core.bus.EventTargetMarker;
 import com.sandy.sconsole.core.ui.screen.Tile;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
-import com.sandy.sconsole.state.manager.TodayStudyStatistics;
+import com.sandy.sconsole.state.manager.TodaySessionStatistics;
 import com.sandy.sconsole.ui.util.ConfiguredUIAttributes;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,10 +46,6 @@ import static com.sandy.sconsole.core.util.StringUtil.getElapsedTimeLabelHHmm;
 public class DayGanttTile extends Tile
     implements EventSubscriber {
     
-    private static final int[] SUBSCRIBED_EVENTS = {
-            TODAY_STUDY_STATS_UPDATED, TODAY_EFFORT_UPDATED
-    } ;
-    
     private static final Insets INSET = new Insets( 0, 0, 25, 0 ) ;
     private static final Font   TOTAL_TIME_FONT = UITheme.BASE_FONT.deriveFont( 30F ) ;
     
@@ -58,7 +55,7 @@ public class DayGanttTile extends Tile
     
     @Autowired private EventBus eventBus ;
     @Autowired private ConfiguredUIAttributes uiAttributes ;
-    @Autowired private TodayStudyStatistics studyStats ;
+    @Autowired private TodaySessionStatistics studyStats ;
     
     private Dimension tileSize ; // Computed during each paint
     private final Rectangle chartArea = new Rectangle() ; // Populated during each paint
@@ -73,17 +70,18 @@ public class DayGanttTile extends Tile
     
     @Override
     public void beforeActivation() {
-        eventBus.addSubscriber( this, true, SUBSCRIBED_EVENTS) ;
+        eventBus.addAsyncSubscriber( this, TODAY_STUDY_STATS_UPDATED ) ;
+        eventBus.addAsyncSubscriber( this, TODAY_EFFORT_UPDATED ) ;
         super.repaint() ;
     }
     
     @Override
     public void beforeDeactivation() {
-        eventBus.removeSubscriber( this, SUBSCRIBED_EVENTS );
+        eventBus.removeSubscriber( this );
     }
     
     @Override
-    public void handleEvent( Event event ) {
+    public synchronized void handleEvent( Event event ) {
         switch( event.getEventId() ) {
             case TODAY_STUDY_STATS_UPDATED:
             case TODAY_EFFORT_UPDATED:
@@ -93,6 +91,7 @@ public class DayGanttTile extends Tile
     }
     
     @Override
+    @EventTargetMarker( {TODAY_STUDY_STATS_UPDATED, TODAY_EFFORT_UPDATED} )
     public void paint( Graphics gOld ) {
         
         super.paint( gOld ) ;

@@ -3,7 +3,7 @@ package com.sandy.sconsole.state;
 import com.sandy.sconsole.SConsole;
 import com.sandy.sconsole.core.util.LastNDayValueProvider;
 import com.sandy.sconsole.dao.session.repo.DaySyllabusStudyTimeRepo;
-import com.sandy.sconsole.state.manager.TodayStudyStatistics;
+import com.sandy.sconsole.state.manager.TodaySessionStatistics;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -17,13 +17,13 @@ public class SyllabusL30EffortProvider extends LastNDayValueProvider {
     @Getter private final String syllabusName ;
     
     private final DaySyllabusStudyTimeRepo studyTimeRepo ;
-    private final TodayStudyStatistics todayStudyStatistics ;
+    private final TodaySessionStatistics   todaySessionStatistics;
     
     public SyllabusL30EffortProvider( String syllabusName ) {
         super( 30 ) ;
         this.syllabusName = syllabusName ;
         this.studyTimeRepo = SConsole.getBean( DaySyllabusStudyTimeRepo.class ) ;
-        this.todayStudyStatistics = SConsole.getBean( TodayStudyStatistics.class ) ;
+        this.todaySessionStatistics = SConsole.getBean( TodaySessionStatistics.class ) ;
     }
     
     @Override
@@ -39,6 +39,6 @@ public class SyllabusL30EffortProvider extends LastNDayValueProvider {
     
     @Override
     protected double getTodayValue() {
-        return (double)todayStudyStatistics.getSyllabusTime( syllabusName )/3600 ;
+        return (double)todaySessionStatistics.getSyllabusTime( syllabusName )/3600 ;
     }
 }

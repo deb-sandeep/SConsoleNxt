@@ -1,9 +1,9 @@
 package com.sandy.sconsole.ui.screen.session.tile;
 
-import com.sandy.sconsole.EventCatalog;
 import com.sandy.sconsole.core.bus.Event;
 import com.sandy.sconsole.core.bus.EventBus;
 import com.sandy.sconsole.core.bus.EventSubscriber;
+import com.sandy.sconsole.core.bus.EventTargetMarker;
 import com.sandy.sconsole.core.ui.screen.Tile;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
 import com.sandy.sconsole.state.ActiveTopicStatistics;
@@ -21,15 +21,13 @@ import org.springframework.stereotype.Component;
 
 import java.awt.*;
 
+import static com.sandy.sconsole.EventCatalog.ATS_REFRESHED;
+
 @Slf4j
 @Component
 @Scope( "prototype" )
 public class ThermometerTile extends Tile
     implements EventSubscriber {
-    
-    private static final int[] SUBSCRIBED_EVENTS = {
-            EventCatalog.ATS_REFRESHED,
-    } ;
     
     @Autowired private ActiveTopicStatisticsManager atsManager ;
     @Autowired private EventBus eventBus ;
@@ -93,7 +91,7 @@ public class ThermometerTile extends Tile
         if( ats == null ) {
             throw new RuntimeException( "No active topic statistics found" ) ;
         }
-        eventBus.addSubscriber( this, true, SUBSCRIBED_EVENTS ) ;
+        eventBus.addAsyncSubscriber( this, ATS_REFRESHED ) ;
         refreshPlot() ;
     }
     
@@ -103,12 +101,13 @@ public class ThermometerTile extends Tile
     }
     
     @Override
-    public void handleEvent( Event event ) {
-        if( event.getEventId() == EventCatalog.ATS_REFRESHED ) {
+    public synchronized void handleEvent( Event event ) {
+        if( event.getEventId() == ATS_REFRESHED ) {
             refreshPlot() ;
         }
     }
     
+    @EventTargetMarker( ATS_REFRESHED )
     private void refreshPlot() {
         
         int maxValue ;

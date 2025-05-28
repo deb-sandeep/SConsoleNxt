@@ -3,7 +3,7 @@ package com.sandy.sconsole.state;
 import com.sandy.sconsole.SConsole;
 import com.sandy.sconsole.core.util.LastNDayValueProvider;
 import com.sandy.sconsole.dao.session.repo.ProblemAttemptRepo;
-import com.sandy.sconsole.state.manager.TodayStudyStatistics;
+import com.sandy.sconsole.state.manager.TodaySessionStatistics;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -16,14 +16,14 @@ public class TopicL30BurnProvider extends LastNDayValueProvider {
     
     @Getter private final int topicId    ;
     
-    private final TodayStudyStatistics todayStudyStatistics ;
-    private final ProblemAttemptRepo problemAttemptRepo ;
+    private final TodaySessionStatistics todaySessionStatistics;
+    private final ProblemAttemptRepo     problemAttemptRepo ;
     
     public TopicL30BurnProvider( int topicId, ProblemAttemptRepo paRepo ) {
         super( 30 ) ;
         this.topicId = topicId ;
         this.problemAttemptRepo = paRepo ;
-        this.todayStudyStatistics = SConsole.getBean( TodayStudyStatistics.class ) ;
+        this.todaySessionStatistics = SConsole.getBean( TodaySessionStatistics.class ) ;
     }
     
     @Override
@@ -39,6 +39,6 @@ public class TopicL30BurnProvider extends LastNDayValueProvider {
 
     @Override
     protected double getTodayValue() {
-        return todayStudyStatistics.getNumProblemsSolvedToday( topicId ) ;
+        return todaySessionStatistics.getNumProblemsSolvedToday( topicId ) ;
     }
 }

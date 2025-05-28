@@ -37,14 +37,14 @@ public class SessionDTO implements Serializable {
     
     public SessionDTO( SessionDTO session ) {
         this.id = session.id ;
-        this.absorb( session ) ;
+        this.inheritAttributes( session ) ;
     }
     
     public int getDuration() {
         return (int)((endTime.getTime() - startTime.getTime())/1000) ;
     }
     
-    public void absorb( @NonNull SessionDTO session ) {
+    public void inheritAttributes( @NonNull SessionDTO session ) {
         this.startTime = session.startTime ;
         this.endTime = session.endTime ;
         this.sessionType = session.sessionType ;

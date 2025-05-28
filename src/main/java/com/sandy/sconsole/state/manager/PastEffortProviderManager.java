@@ -1,9 +1,9 @@
 package com.sandy.sconsole.state.manager;
 
-import com.sandy.sconsole.EventCatalog;
 import com.sandy.sconsole.core.bus.Event;
 import com.sandy.sconsole.core.bus.EventBus;
 import com.sandy.sconsole.core.bus.EventSubscriber;
+import com.sandy.sconsole.core.bus.EventTargetMarker;
 import com.sandy.sconsole.core.clock.ClockTickListener;
 import com.sandy.sconsole.core.clock.SConsoleClock;
 import com.sandy.sconsole.core.util.DayValue;
@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static com.sandy.sconsole.AppConstants.*;
+import static com.sandy.sconsole.EventCatalog.*;
 
 /**
  * This keeps an in-memory cache of past study times, both at a syllabus level
@@ -55,11 +56,6 @@ import static com.sandy.sconsole.AppConstants.*;
 @DependsOn( {"clock", "eventBus" } )
 public class PastEffortProviderManager implements ClockTickListener, EventSubscriber {
     
-    private static final int[] SUBSCRIBED_EVENTS = {
-            EventCatalog.HISTORIC_SESSION_UPDATED,
-            EventCatalog.TODAY_EFFORT_UPDATED,
-    } ;
-    
     @Autowired private SConsoleClock clock ;
     @Autowired private EventBus eventBus ;
     
@@ -86,7 +82,8 @@ public class PastEffortProviderManager implements ClockTickListener, EventSubscr
     @PostConstruct
     public void init() {
         clock.addTickListener( this, TimeUnit.DAYS ) ;
-        eventBus.addSubscriber( this, true, SUBSCRIBED_EVENTS ) ;
+        eventBus.addAsyncSubscriber( this, HISTORIC_SESSION_UPDATED );
+        eventBus.addAsyncSubscriber( this, TODAY_EFFORT_UPDATED );
         fullRefresh() ;
     }
     
@@ -96,11 +93,11 @@ public class PastEffortProviderManager implements ClockTickListener, EventSubscr
     }
     
     @Override
-    public void handleEvent( Event event ) {
+    public synchronized void handleEvent( Event event ) {
         int eventType = event.getEventId() ;
         switch ( eventType ) {
-            case EventCatalog.HISTORIC_SESSION_UPDATED -> fullRefresh() ;
-            case EventCatalog.TODAY_EFFORT_UPDATED -> updateTodayTime() ;
+            case HISTORIC_SESSION_UPDATED -> fullRefresh() ;
+            case TODAY_EFFORT_UPDATED -> updateTodayTime() ;
         }
     }
     
@@ -112,14 +109,16 @@ public class PastEffortProviderManager implements ClockTickListener, EventSubscr
         return totalPastEffortProvider;
     }
     
+    @EventTargetMarker( HISTORIC_SESSION_UPDATED )
     private void fullRefresh() {
         Arrays.stream( pastEffortProviders ).forEach( LastNDayValueProvider::fullRefresh ) ;
-        eventBus.publishEvent( EventCatalog.PAST_EFFORT_UPDATED ) ;
+        eventBus.publishEvent( PAST_EFFORT_UPDATED ) ;
     }
     
+    @EventTargetMarker( TODAY_EFFORT_UPDATED )
     private void updateTodayTime() {
         Arrays.stream( pastEffortProviders ).forEach( LastNDayValueProvider::updateTodayValue ) ;
-        eventBus.publishEvent( EventCatalog.PAST_EFFORT_UPDATED ) ;
+        eventBus.publishEvent( PAST_EFFORT_UPDATED ) ;
     }
     
     // Returns the max day value across the historic data of all syllabus

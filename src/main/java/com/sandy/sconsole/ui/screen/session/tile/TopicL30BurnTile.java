@@ -1,9 +1,9 @@
 package com.sandy.sconsole.ui.screen.session.tile;
 
-import com.sandy.sconsole.EventCatalog;
 import com.sandy.sconsole.core.bus.Event;
 import com.sandy.sconsole.core.bus.EventBus;
 import com.sandy.sconsole.core.bus.EventSubscriber;
+import com.sandy.sconsole.core.bus.EventTargetMarker;
 import com.sandy.sconsole.core.ui.screen.Tile;
 import com.sandy.sconsole.dao.session.repo.ProblemAttemptRepo;
 import com.sandy.sconsole.state.TopicL30BurnProvider;
@@ -16,6 +16,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.awt.*;
+
+import static com.sandy.sconsole.EventCatalog.PROBLEM_ATTEMPT_ENDED;
 
 @Slf4j
 @Component
@@ -39,7 +41,7 @@ public class TopicL30BurnTile extends Tile
     
     @Override
     public void beforeActivation() {
-        eventBus.addSyncSubscriber( this, EventCatalog.PROBLEM_ATTEMPT_ENDED ) ;
+        eventBus.addAsyncSubscriber( this, PROBLEM_ATTEMPT_ENDED ) ;
         createNewDayValueChart() ;
     }
     
@@ -49,7 +51,8 @@ public class TopicL30BurnTile extends Tile
     }
     
     @Override
-    public void handleEvent( Event event ) {
+    @EventTargetMarker( PROBLEM_ATTEMPT_ENDED )
+    public synchronized void handleEvent( Event event ) {
         pastBurnProvider.updateTodayValue() ;
         dayValueChart.refreshChart() ;
     }

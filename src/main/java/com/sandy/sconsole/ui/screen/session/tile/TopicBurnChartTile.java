@@ -1,9 +1,9 @@
 package com.sandy.sconsole.ui.screen.session.tile;
 
-import com.sandy.sconsole.EventCatalog;
 import com.sandy.sconsole.core.bus.Event;
 import com.sandy.sconsole.core.bus.EventBus;
 import com.sandy.sconsole.core.bus.EventSubscriber;
+import com.sandy.sconsole.core.bus.EventTargetMarker;
 import com.sandy.sconsole.core.ui.screen.Tile;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
 import com.sandy.sconsole.dao.session.repo.ProblemAttemptRepo;
@@ -37,6 +37,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import static com.sandy.sconsole.EventCatalog.ATS_REFRESHED;
+
 @Slf4j
 @Component
 @Scope( "prototype" )
@@ -45,10 +47,6 @@ public class TopicBurnChartTile extends Tile
     
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/M");
 
-    private static final int[] SUBSCRIBED_EVENTS = {
-            EventCatalog.ATS_REFRESHED,
-    } ;
-    
     @Autowired private ActiveTopicStatisticsManager atsManager ;
     @Autowired private EventBus eventBus ;
 
@@ -90,7 +88,7 @@ public class TopicBurnChartTile extends Tile
         attachChartPanel() ;
         scheduleReplot() ;
         
-        eventBus.addSubscriber( this, true, SUBSCRIBED_EVENTS ) ;
+        eventBus.addAsyncSubscriber( this, ATS_REFRESHED ) ;
     }
     
     @Override
@@ -175,12 +173,13 @@ public class TopicBurnChartTile extends Tile
     }
     
     @Override
-    public void handleEvent( Event event ) {
-        if( event.getEventId() == EventCatalog.ATS_REFRESHED ) {
+    public synchronized void handleEvent( Event event ) {
+        if( event.getEventId() == ATS_REFRESHED ) {
             scheduleReplot() ;
         }
     }
 
+    @EventTargetMarker( ATS_REFRESHED )
     private void scheduleReplot() {
         SwingUtilities.invokeLater( () -> {
             try {

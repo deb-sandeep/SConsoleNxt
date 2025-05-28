@@ -1,12 +1,12 @@
 package com.sandy.sconsole.endpoints.rest.master;
 
-import com.sandy.sconsole.endpoints.rest.master.helper.TopicMappingHelper;
-import com.sandy.sconsole.endpoints.rest.master.vo.ChapterProblemsTopicMappingDTO;
 import com.sandy.sconsole.core.api.AR;
 import com.sandy.sconsole.dao.master.*;
 import com.sandy.sconsole.dao.master.repo.ChapterRepo;
 import com.sandy.sconsole.dao.master.repo.ProblemRepo;
 import com.sandy.sconsole.dao.master.repo.SyllabusRepo;
+import com.sandy.sconsole.endpoints.rest.master.helper.TopicMappingHelper;
+import com.sandy.sconsole.endpoints.rest.master.vo.ChapterProblemsTopicMappingDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +22,7 @@ import static com.sandy.sconsole.core.api.AR.systemError;
 @Slf4j
 @RestController
 @RequestMapping( "/Master/ProblemTopicMapping" )
+@Transactional
 public class ProblemTopicMappingAPIs {
     
     @Autowired private ChapterRepo chapterRepo;
