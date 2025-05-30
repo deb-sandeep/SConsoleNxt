@@ -23,6 +23,13 @@ public interface ProblemAttemptRepo extends JpaRepository<ProblemAttempt, Intege
     """)
     List<ProblemAttempt> getProblemAttempts( @Param( "problemId" ) Integer problemId ) ;
     
+    @Query( """
+    select sum(pa.effectiveDuration)
+    from ProblemAttempt pa
+    where pa.problem.id = :problemId
+    """)
+    Integer getTotalAttemptTime( @Param( "problemId" ) Integer problemId ) ;
+    
     @Query( nativeQuery=true, value = """
             select
                 date( start_time ) as date,

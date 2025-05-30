@@ -74,12 +74,12 @@ public class AR<T> {
     }
     
     public static <T> ResponseEntity<AR<T>> functionalError( String message ) {
-        log.error( "Functional error : " + message ) ;
+        log.error( "Functional error : {}", message ) ;
         return ResponseEntity.ok( new AR<>( ExecutionResult.ERROR( message ) ) ) ;
     }
     
     public static <T> ResponseEntity<AR<T>> functionalError( String message, Throwable cause ) {
-        log.error( "Functional error : " + message ) ;
+        log.error( "Functional error : {}", message ) ;
         return ResponseEntity.ok( new AR<>( ExecutionResult.ERROR( message, cause ) ) ) ;
     }
     

@@ -25,6 +25,7 @@ import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.swing.*;
+import java.util.List;
 
 @Slf4j
 @SpringBootApplication
@@ -73,6 +74,13 @@ public class SConsole
         log.debug( "- Initializing EventBus" ) ;
         this.eventBus.setPrintPublishLogs( config.isPrintEventPublishLogs() ) ;
         this.eventBus.setEventCatalogClass( EventCatalog.class ) ;
+        
+        List<Integer> printPublishIgnoredEventIds = this.eventBus.getPrintPublishIgnoredEventIds() ;
+        printPublishIgnoredEventIds.add( EventCatalog.SESSION_EXTENDED ) ;
+        printPublishIgnoredEventIds.add( EventCatalog.PAUSE_EXTENDED ) ;
+        printPublishIgnoredEventIds.add( EventCatalog.PROBLEM_ATTEMPT_EXTENDED ) ;
+        printPublishIgnoredEventIds.add( EventCatalog.TODAY_EFFORT_UPDATED ) ;
+        printPublishIgnoredEventIds.add( EventCatalog.PAST_EFFORT_UPDATED ) ;
 
         log.debug( "- Initializing NVPConfig injector." ) ;
         nvpAnnotationProcessor.processNVPConfigAnnotations() ;

@@ -15,7 +15,7 @@ ATS_REFRESHED
 
 HISTORIC_SESSION_UPDATED
 	Event Sources:
-		[NO EVENT SOURCES FOUND FOR EVENT]
+		[NO EVENT SOURCES FOUND]
 	Event Targets:
 		(~) TodaySessionStatistics : initializeState
 			  TODAY_STUDY_STATS_UPDATED
@@ -74,13 +74,13 @@ PROBLEM_ATTEMPT_EXTENDED
 	Event Sources:
 		SessionAPIs : extendSession
 	Event Targets:
-		[NO EVENT TARGETS FOUND FOR EVENT]
+		[NO EVENT TARGETS FOUND]
 
 PROBLEM_ATTEMPT_STARTED
 	Event Sources:
 		SessionAPIs : startProblemAttempt
 	Event Targets:
-		[NO EVENT TARGETS FOUND FOR EVENT]
+		[NO EVENT TARGETS FOUND]
 
 SESSION_ENDED
 	Event Sources:
@@ -136,7 +136,7 @@ TRACK_UPDATED
 	Event Sources:
 		TrackAPIs : saveTopicSchedules
 	Event Targets:
-		(~) ActiveTopicStatisticsManager : refreshState
+		(*) [100] ActiveTopicStatisticsManager : refreshState
 			  ATS_MANAGER_REFRESHED
 				(~) SyllabusBurnTile : refresh
 

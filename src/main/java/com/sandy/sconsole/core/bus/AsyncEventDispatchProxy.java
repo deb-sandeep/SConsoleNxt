@@ -19,13 +19,16 @@ class AsyncEventDispatchProxy implements EventSubscriber, Runnable {
             .expireAfterWrite( 500, TimeUnit.MILLISECONDS ) // 500ms window
             .build() ;
     
-    private final ExecutorService    executor ;
+    private final ExecutorService executor ;
+    private final EventBus eventBus ;
 
     public AsyncEventDispatchProxy( final EventSubscriber subscriber,
-                                    final ExecutorService executor ) {
+                                    final ExecutorService executor,
+                                    final EventBus eventBus ) {
         
         this.subscriber = subscriber ;
         this.executor = executor ;
+        this.eventBus = eventBus ;
     }
     
     public void handleEvent( final Event event ) {
@@ -36,8 +39,10 @@ class AsyncEventDispatchProxy implements EventSubscriber, Runnable {
             recentEvents.put( event, System.currentTimeMillis() ) ;
         }
         else {
-            log.debug( "Ignoring event : {} to subscriber {} as it was received recently",
-                       event.getEventId(), subscriber );
+            log.debug( "Ignoring event : {} to subscriber {}@{} as it was received recently",
+                       eventBus.getEventName( event.getEventId() ),
+                       subscriber.getClass().getSimpleName(),
+                       subscriber.hashCode() ) ;
         }
     }
     

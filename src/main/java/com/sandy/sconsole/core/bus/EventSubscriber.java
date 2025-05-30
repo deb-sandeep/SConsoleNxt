@@ -26,4 +26,14 @@ public interface EventSubscriber {
      * @param event The event which has been published, never null.
      */
     void handleEvent( final Event event ) ;
+    
+    /**
+     * Subclasses can override this method to return an indentifier which
+     * will be appended to simple class name of the subscriber while printing
+     * publish logs. This can help differentiate different instances of
+     * the same subscriber class. By default it returns an empty string.
+     */
+    default String getId() {
+        return "" ;
+    }
 }

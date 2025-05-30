@@ -50,10 +50,10 @@ public class AttemptedProblemAPIs {
     private ActiveTopicStatisticsManager activeTopicStatsMgr ;
     
     @Autowired
-    private EventBus         eventBus ;
+    private EventBus eventBus ;
+    
     @Autowired
     private TopicProblemRepo topicProblemRepo;
-    
     
     @GetMapping( "/Pigeons" )
     public ResponseEntity<AR<List<TopicProblem>>> getAllPigeonedProblems() {

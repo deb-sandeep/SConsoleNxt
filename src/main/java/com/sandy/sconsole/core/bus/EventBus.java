@@ -29,7 +29,7 @@ public class EventBus {
     // A class which contains public static final int definitions of events
     // This class is introspected to reversely translate the event code to
     // event name for debugging purposes
-    @Setter private Class<?> eventCatalogClass ;
+    @Setter private Class<?> eventCatalogClass = EventCatalog.class ;
     
     @Setter private boolean printPublishLogs = true ;
     @Getter private final ArrayList<Integer> printPublishIgnoredEventIds = new ArrayList<>() ;
@@ -79,7 +79,7 @@ public class EventBus {
         List<EventSubscriber> subscribers = eventIdSubscriberMap.computeIfAbsent( eventId, k -> new ArrayList<>() ) ;
         if( !isSubscriberPresent( subscribers, subscriber ) ) {
             if( asyncDispatch ) {
-                subscribers.add( new AsyncEventDispatchProxy( subscriber, executor ) ) ;
+                subscribers.add( new AsyncEventDispatchProxy( subscriber, executor, this ) ) ;
             }
             else {
                 subscribers.add( new SyncEventDispatchProxy( subscriber, priority ) ) ;
@@ -156,15 +156,7 @@ public class EventBus {
             for( EventSubscriber subscriber : subscribers ) {
                 
                 if( printPublishLogs && qualifiesPrintPublish( eventId )) {
-                    String clsName = subscriber.getClass().getName() ;
-                    boolean async = false ;
-                    if( subscriber instanceof AsyncEventDispatchProxy ) {
-                        async = true ;
-                        clsName = ((AsyncEventDispatchProxy)subscriber).getSubscriber().getClass().getName() ;
-                    }
-                    clsName = clsName.substring( clsName.lastIndexOf('.') + 1 ) ;
-                    clsName += async ? " [Async]" : "" ;
-                    
+                    String clsName = getSubscriberName( subscriber );
                     log.debug( "   Calling event subscriber {} for event {}", clsName, getEventName( eventId ) ) ;
                 }
                 subscriber.handleEvent( event ) ;
@@ -172,15 +164,49 @@ public class EventBus {
         }
     }
     
-    public String getEventName( final int eventType ) {
-        String eventName = "EVENT_NAME_UNKNOWN" ;
+    private static String getSubscriberName( EventSubscriber subscriber ) {
+        
+        String clsName ;
+        String subscriberId ;
+        boolean async = false ;
+        
+        if( subscriber instanceof AsyncEventDispatchProxy proxy ) {
+            async = true ;
+            EventSubscriber rootSubscriber = proxy.getSubscriber() ;
+            
+            clsName = rootSubscriber.getClass().getName() ;
+            subscriberId = rootSubscriber.getId() ;
+        }
+        else if( subscriber instanceof SyncEventDispatchProxy proxy ) {
+            EventSubscriber rootSubscriber = proxy.getSubscriber() ;
+            
+            clsName = rootSubscriber.getClass().getName() ;
+            subscriberId = rootSubscriber.getId() ;
+        }
+        else {
+            clsName = subscriber.getClass().getSimpleName() ;
+            subscriberId = subscriber.getId() ;
+        }
+        
+        clsName = clsName.substring( clsName.lastIndexOf('.') + 1 ) ;
+        clsName = (async ? "(~) " : "(*) ") + clsName ;
+        
+        if( !subscriberId.isBlank() ) {
+            clsName += "( " + subscriberId + " )" ;
+        }
+        
+        return clsName;
+    }
+    
+    public String getEventName( final int eventId ) {
+        String eventName = "EVENT_NAME_UNKNOWN (" + eventId + ")" ;
         if( eventCatalogClass != null ) {
-            if( eventIdVsNameMap.containsKey( eventType ) ) {
-                eventName = eventIdVsNameMap.get( eventType ) ;
+            if( eventIdVsNameMap.containsKey( eventId ) ) {
+                eventName = eventIdVsNameMap.get( eventId ) ;
             }
             else {
-                eventName = extractEventName( eventType ) ;
-                eventIdVsNameMap.put( eventType, eventName ) ;
+                eventName = extractEventName( eventId ) ;
+                eventIdVsNameMap.put( eventId, eventName ) ;
             }
         }
         return eventName ;
@@ -232,18 +258,18 @@ public class EventBus {
         catch( Exception e ) {
             log.error( "Error while getting event name for event code {}", eventId, e ) ;
         }
-        return "EVENT_NAME_UNKNOWN" ;
+        return "EVENT_NAME_UNKNOWN (" + eventId + ")" ;
     }
     
     private boolean qualifiesPrintPublish( int eventId ) {
-        if( printPublishIgnoredEventIds.contains( eventId ) ) {
+        if( !printPublishIgnoredEventIds.isEmpty() &&
+            printPublishIgnoredEventIds.contains( eventId ) ) {
             return false ;
         }
-        else if( printPublishAcceptedEventIds.contains( eventId ) ) {
+        else if( !printPublishAcceptedEventIds.isEmpty() &&
+                 printPublishAcceptedEventIds.contains( eventId ) ) {
             return true ;
         }
-        else {
-            return true ;
-        }
+        return true ;
     }
 }

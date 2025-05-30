@@ -1,6 +1,6 @@
 TrackAPIs : saveTopicSchedules
 	TRACK_UPDATED
-		(~) ActiveTopicStatisticsManager : refreshState
+		(*) [100] ActiveTopicStatisticsManager : refreshState
 			  ATS_MANAGER_REFRESHED
 				(~) SyllabusBurnTile : refresh
 
@@ -21,7 +21,7 @@ SessionAPIs : endSession
 
 SessionAPIs : startProblemAttempt
 	PROBLEM_ATTEMPT_STARTED
-		[NO EVENT TARGETS FOUND FOR EVENT]
+		[NO EVENT TARGETS FOUND]
 
 SessionAPIs : endProblemAttempt
 	PROBLEM_ATTEMPT_ENDED
@@ -62,7 +62,7 @@ SessionAPIs : extendSession
 						(~) SyllabusL30EffortTile : handleEvent
 						(~) TotalL60EffortTile : handleEvent
 	PROBLEM_ATTEMPT_EXTENDED
-		[NO EVENT TARGETS FOUND FOR EVENT]
+		[NO EVENT TARGETS FOUND]
 
 ProblemChangeStateRequest : changeProblemState
 	PROBLEM_ATTEMPT_ENDED

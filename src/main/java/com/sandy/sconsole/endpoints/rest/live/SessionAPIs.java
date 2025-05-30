@@ -27,7 +27,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.sandy.sconsole.EventCatalog.*;
 import static com.sandy.sconsole.core.api.AR.*;
@@ -99,7 +101,7 @@ public class SessionAPIs {
     }
     
     @PostMapping( "/StartProblemAttempt" )
-    public ResponseEntity<AR<Integer>> startProblemAttempt( @RequestBody ProblemAttemptDTO req ) {
+    public ResponseEntity<AR<Map<String, Integer>>> startProblemAttempt( @RequestBody ProblemAttemptDTO req ) {
         try {
             Session session = sessionRepo.findById( req.getSessionId() ).get() ;
             ProblemAttempt pa = new ProblemAttempt() ;
@@ -114,9 +116,15 @@ public class SessionAPIs {
             
             ProblemAttempt savedDao = paRepo.saveAndFlush( pa ) ;
             
-            eventBus.publishEvent( PROBLEM_ATTEMPT_STARTED, new ProblemAttemptDTO( savedDao ) ) ;
+            Integer totalAttemptTime = paRepo.getTotalAttemptTime( req.getProblemId() ) ;
             
-            return success( savedDao.getId() ) ;
+            Map<String, Integer> response = new HashMap<>() ;
+            response.put( "problemAttemptId", savedDao.getId() ) ;
+            response.put( "totalDuration", totalAttemptTime == null ? 0 : totalAttemptTime ) ;
+            
+            eventBus.publishEvent( PROBLEM_ATTEMPT_STARTED, new ProblemAttemptDTO( savedDao ) ) ;
+
+            return success( response ) ;
         }
         catch( Exception e ) {
             return systemError( e ) ;

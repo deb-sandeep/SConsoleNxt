@@ -78,7 +78,10 @@ public class TrackAPIs {
                 // Null the id so that a new entry will be created
                 schedule.setId( null ) ;
                 ttaRepo.save( schedule ) ;
+                log.debug( "Saved track assignment {}", schedule ) ;
             }) ;
+            
+            ttaRepo.flush() ;
             
             log.debug( "New assignment saved for track id {}", trackId ) ;
             log.debug( "Publishing TRACK_UPDATED event for track id {}", trackId ) ;

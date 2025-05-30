@@ -59,6 +59,11 @@ public class SyllabusBurnTile extends Tile
     private final Map<Integer, TopicBurnPanel> burnPanelMap = new HashMap<>() ;
     
     @Override
+    public String getId() {
+        return syllabusName ;
+    }
+    
+    @Override
     public void initialize() {
         eventBus.addAsyncSubscriber( this, ATS_MANAGER_REFRESHED ) ;
         eventBus.addAsyncSubscriber( this, ATS_REFRESHED ) ;

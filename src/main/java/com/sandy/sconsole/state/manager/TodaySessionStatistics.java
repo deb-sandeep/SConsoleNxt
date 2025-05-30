@@ -119,6 +119,7 @@ public class TodaySessionStatistics
                 
             case SESSION_ENDED:
                 sessionEnded() ;
+                break ;
             
             case PAUSE_STARTED:
             case PAUSE_EXTENDED:

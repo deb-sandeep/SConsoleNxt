@@ -63,7 +63,7 @@ public class ActiveTopicStatisticsManager implements ClockTickListener, EventSub
     
     @Autowired private TopicTrackAssignmentRepo ttaRepo ;
     
-    private final Map<Integer, ActiveTopicStatistics> topicStats = new HashMap<>() ; // Key -> Topic Id
+    private final Map<Integer, ActiveTopicStatistics> topicStats = new HashMap<>() ; // Key -> Topic ID
     private final ArrayListMultimap<String, ActiveTopicStatistics> syllabusTopicStats = ArrayListMultimap.create() ; // Key -> Syllabus Name
     
     @PostConstruct
@@ -72,7 +72,7 @@ public class ActiveTopicStatisticsManager implements ClockTickListener, EventSub
         
         clock.addTickListener( this, TimeUnit.DAYS ) ;
         eventBus.addSyncSubscriber( EventBus.HIGH_PRIORITY, this, PROBLEM_ATTEMPT_ENDED ) ;
-        eventBus.addAsyncSubscriber( this, TRACK_UPDATED ) ;
+        eventBus.addSyncSubscriber( this, TRACK_UPDATED ) ;
         
         refreshState( new Date() ) ;
     }
@@ -92,7 +92,7 @@ public class ActiveTopicStatisticsManager implements ClockTickListener, EventSub
     }
     
     @EventTargetMarker( TRACK_UPDATED )
-    private void refreshState( Date date ) {
+    protected void refreshState( Date date ) {
         
         log.debug( "  Refreshing state of ActiveTopicStatisticsManager..." ) ;
         log.debug( "    Using date {}", date ) ;
@@ -107,6 +107,12 @@ public class ActiveTopicStatisticsManager implements ClockTickListener, EventSub
         eventBus.publishEvent( ATS_MANAGER_REFRESHED ) ;
     }
     
+    private void clearState() {
+        topicStats.values().forEach( ActiveTopicStatistics::destroy ) ;
+        syllabusTopicStats.clear() ;
+        topicStats.clear() ;
+    }
+    
     private void initializeActiveTopicStats( TopicTrackAssignment assignment ) {
         
         ActiveTopicStatistics ats = SConsole.getBean( ActiveTopicStatistics.class ) ;
@@ -115,12 +121,6 @@ public class ActiveTopicStatisticsManager implements ClockTickListener, EventSub
         
         syllabusTopicStats.put( ats.getTopic().getSyllabusName(), ats ) ;
         topicStats.put( ats.getTopic().getTopicId(), ats ) ;
-    }
-    
-    private void clearState() {
-        topicStats.values().forEach( ActiveTopicStatistics::destroy ) ;
-        syllabusTopicStats.clear() ;
-        topicStats.clear() ;
     }
     
     @EventTargetMarker( PROBLEM_ATTEMPT_ENDED )
