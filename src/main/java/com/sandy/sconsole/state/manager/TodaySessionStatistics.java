@@ -1,6 +1,7 @@
 package com.sandy.sconsole.state.manager;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.sandy.sconsole.SConsole;
 import com.sandy.sconsole.core.bus.Event;
 import com.sandy.sconsole.core.bus.EventBus;
 import com.sandy.sconsole.core.bus.EventSubscriber;
@@ -8,6 +9,7 @@ import com.sandy.sconsole.core.bus.EventTargetMarker;
 import com.sandy.sconsole.core.clock.ClockTickListener;
 import com.sandy.sconsole.core.clock.SConsoleClock;
 import com.sandy.sconsole.core.util.Day;
+import com.sandy.sconsole.dao.master.repo.TopicProblemRepo;
 import com.sandy.sconsole.dao.session.dto.SessionDTO;
 import com.sandy.sconsole.dao.session.dto.SessionPauseDTO;
 import com.sandy.sconsole.dao.session.repo.SessionPauseRepo;
@@ -25,7 +27,7 @@ import java.util.concurrent.TimeUnit;
 import static com.sandy.sconsole.EventCatalog.*;
 
 /**
- * This is a singleton state object which tracks the statistics regarding the
+ * This is a singleton state object that tracks the statistics regarding the
  * study done today. It maintains a cache of sessions, pauses and total
  * effective time qualified by syllabus.
  *
@@ -34,7 +36,7 @@ import static com.sandy.sconsole.EventCatalog.*;
  *
  * TODAY_STUDY_STATS_UPDATED: All aspects of today's study stats have been updated.
  * This can happen when the system boots up, a day changes or historic sessions
- * have been updated
+ * has been updated
  *
  * TODAY_STUDY_TIME_UPDATED: Today study time has been updated. This can happen
  * if a session or pause has been started or extended.
@@ -48,7 +50,7 @@ public class TodaySessionStatistics
     @Autowired private SConsoleClock clock ;
     @Autowired private SessionRepo sessionRepo ;
     @Autowired private SessionPauseRepo pauseRepo;
-    @Autowired private ActiveTopicStatisticsManager activeTopicStatsMgr;
+    @Autowired private TopicProblemRepo tpRepo;
     
     // Functional state. These need to be reset in initializeFunctionalState method
     private final Map<Integer, SessionDTO>      allSessions = new LinkedHashMap<>() ; // Key = Session ID
@@ -65,13 +67,10 @@ public class TodaySessionStatistics
     
     private Day today = new Day() ;
     
-    @Getter
-    private int totalEffectiveTimeInSec = 0 ;
+    @Getter private int totalEffectiveTimeInSec = 0 ;
     
-    // If a session is ongoing, this will store a reference to that session
-    // else, null.
-    @Getter
-    SessionDTO currentSession ;
+    // If a session is ongoing, this will store a reference to that session else, null.
+    @Getter SessionDTO currentSession ;
     
     @PostConstruct
     public void init() {
@@ -242,6 +241,7 @@ public class TodaySessionStatistics
     public Collection<SessionPauseDTO> getAllPauses() { return allPauses.values() ; }
     
     public int getNumProblemsSolvedToday( int topicId ) {
+        ActiveTopicStatisticsManager activeTopicStatsMgr = SConsole.getBean( ActiveTopicStatisticsManager.class ) ;
         return activeTopicStatsMgr.getTopicStatistics( topicId ).getNumProblemsSolvedToday() ;
     }
     
