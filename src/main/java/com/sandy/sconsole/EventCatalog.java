@@ -26,20 +26,23 @@ public class EventCatalog {
     @PayloadType( SessionPauseDTO.class )
     public static final int PAUSE_STARTED = 204 ;
     
+    @PayloadType( Void.class )
+    public static final int PAUSE_ENDED = 205 ;
+    
     @PayloadType( SessionPauseDTO.class )
-    public static final int PAUSE_EXTENDED = 205 ;
+    public static final int PAUSE_EXTENDED = 206 ;
     
     @PayloadType( ProblemAttemptDTO.class )
-    public static final int PROBLEM_ATTEMPT_STARTED = 206 ;
+    public static final int PROBLEM_ATTEMPT_STARTED = 207 ;
     
     @PayloadType( ProblemAttemptDTO.class )
-    public static final int PROBLEM_ATTEMPT_EXTENDED = 207 ;
+    public static final int PROBLEM_ATTEMPT_EXTENDED = 208 ;
     
     @PayloadType( ProblemAttemptDTO.class )
-    public static final int PROBLEM_ATTEMPT_ENDED = 208 ;
+    public static final int PROBLEM_ATTEMPT_ENDED = 209 ;
     
     @PayloadType( SessionDTO.class )
-    public static final int HISTORIC_SESSION_UPDATED = 209 ;
+    public static final int HISTORIC_SESSION_UPDATED = 210 ;
     
     // =============== Active Topic Statistics Events ==========================
     // Range : 250 - 300
@@ -72,5 +75,4 @@ public class EventCatalog {
     
     @PayloadType( Void.class )
     public static final int PAST_EFFORT_UPDATED = 401 ;
-
 }
