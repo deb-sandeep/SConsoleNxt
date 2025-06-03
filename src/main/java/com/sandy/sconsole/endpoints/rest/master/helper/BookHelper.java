@@ -9,6 +9,7 @@ import com.sandy.sconsole.endpoints.rest.master.vo.BookProblemSummaryVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -93,6 +94,7 @@ public class BookHelper {
         return bps ;
     }
     
+    @Transactional
     public int updateExerciseName( int bookId, int chapterNum,
                                    int exerciseNum, String exerciseName ) {
         

@@ -35,7 +35,6 @@ import static java.text.MessageFormat.format;
 @Slf4j
 @RestController
 @RequestMapping( "/Master/Book" )
-@Transactional
 public class BookAPIs {
     
     @Autowired private ChapterRepo chapterRepo;
@@ -103,6 +102,7 @@ public class BookAPIs {
     }
     
     @PostMapping( "{bookId}/UpdateAttribute" )
+    @Transactional
     public ResponseEntity<AR<String>> updateBookAttribute (
             @PathVariable( "bookId" ) Integer bookId,
             @RequestBody AttrChangeReq request ) {
@@ -127,6 +127,7 @@ public class BookAPIs {
     }
 
     @PostMapping( "{bookId}/{chapterNum}/SaveChapterName" )
+    @Transactional
     public ResponseEntity<AR<ChapterDTO>> saveChapterName (
             @PathVariable( "bookId" ) Integer bookId,
             @PathVariable( "chapterNum" ) Integer chapterNum,

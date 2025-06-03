@@ -9,11 +9,11 @@ import com.sandy.sconsole.core.bus.EventTargetMarker;
 import com.sandy.sconsole.core.clock.ClockTickListener;
 import com.sandy.sconsole.core.clock.SConsoleClock;
 import com.sandy.sconsole.core.util.Day;
-import com.sandy.sconsole.dao.master.repo.TopicProblemRepo;
 import com.sandy.sconsole.dao.session.dto.SessionDTO;
 import com.sandy.sconsole.dao.session.dto.SessionPauseDTO;
 import com.sandy.sconsole.dao.session.repo.SessionPauseRepo;
 import com.sandy.sconsole.dao.session.repo.SessionRepo;
+import com.sandy.sconsole.endpoints.rest.live.SessionExtensionDTO;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.NonNull;
@@ -50,7 +50,6 @@ public class TodaySessionStatistics
     @Autowired private SConsoleClock clock ;
     @Autowired private SessionRepo sessionRepo ;
     @Autowired private SessionPauseRepo pauseRepo;
-    @Autowired private TopicProblemRepo tpRepo;
     
     // Functional state. These need to be reset in initializeFunctionalState method
     private final Map<Integer, SessionDTO>      allSessions = new LinkedHashMap<>() ; // Key = Session ID
@@ -89,7 +88,6 @@ public class TodaySessionStatistics
         eventBus.addSyncSubscriber( EventBus.HIGH_PRIORITY, this, SESSION_ENDED ) ;
         eventBus.addSyncSubscriber( this, SESSION_EXTENDED ) ;
         eventBus.addSyncSubscriber( this, PAUSE_STARTED ) ;
-        eventBus.addSyncSubscriber( this, PAUSE_EXTENDED ) ;
         
         eventBus.addAsyncSubscriber( this, HISTORIC_SESSION_UPDATED ) ;
     }
@@ -100,6 +98,7 @@ public class TodaySessionStatistics
         final int eventType = event.getEventId() ;
         SessionDTO session ;
         SessionPauseDTO pause ;
+        SessionExtensionDTO extension ;
         
         switch( eventType ) {
             case HISTORIC_SESSION_UPDATED:
@@ -112,8 +111,8 @@ public class TodaySessionStatistics
                 break ;
                 
             case SESSION_EXTENDED:
-                session = ( SessionDTO )event.getValue() ;
-                currentSession = updateCachedSession( session, true ) ;
+                extension = ( SessionExtensionDTO )event.getValue() ;
+                currentSession = sessionExtended( extension ) ;
                 break ;
                 
             case SESSION_ENDED:
@@ -121,9 +120,8 @@ public class TodaySessionStatistics
                 break ;
             
             case PAUSE_STARTED:
-            case PAUSE_EXTENDED:
                 pause = ( SessionPauseDTO )event.getValue() ;
-                updateCachedPause( pause, true ) ;
+                pauseStarted( pause ) ;
                 break ;
         }
     }
@@ -147,27 +145,42 @@ public class TodaySessionStatistics
         
         // Load the existing sessions and pauses for today
         sessionRepo.getTodaySessions()
-                   .forEach( s -> updateCachedSession( new SessionDTO( s ), false ) ) ;
+                   .forEach( s -> updateCachedSession( new SessionDTO( s ) ) ) ;
         
         pauseRepo.getTodayPauses()
-                 .forEach( p -> updateCachedPause( new SessionPauseDTO( p ), false ) ) ;
+                 .forEach( p -> updateCachedPause( new SessionPauseDTO( p ) ) ) ;
         
         eventBus.publishEvent( TODAY_STUDY_STATS_UPDATED ) ;
     }
     
     @EventTargetMarker( SESSION_STARTED )
-    public void sessionStarted( SessionDTO session ) {
-        currentSession = updateCachedSession( session, true ) ;
+    private void sessionStarted( SessionDTO session ) {
+        currentSession = updateCachedSession( session ) ;
         eventBus.publishEvent( TODAY_EFFORT_UPDATED ) ;
     }
     
     @EventTargetMarker( SESSION_ENDED )
-    public void sessionEnded() {
+    private void sessionEnded() {
         currentSession = null ;
     }
     
     @EventTargetMarker( SESSION_EXTENDED )
-    public SessionDTO updateCachedSession( @NonNull SessionDTO _session, boolean emitEvents ) {
+    private SessionDTO sessionExtended( SessionExtensionDTO extension ) {
+        SessionDTO sessionDTO = updateCachedSession( extension.getSessionDTO() ) ;
+        if( extension.getPauseDTO() != null ) {
+            updateCachedPause( extension.getPauseDTO() ) ;
+        }
+        eventBus.publishEvent( TODAY_EFFORT_UPDATED ) ;
+        return sessionDTO ;
+    }
+    
+    @EventTargetMarker( PAUSE_STARTED )
+    private void pauseStarted( SessionPauseDTO pause ) {
+        updateCachedPause( pause );
+        eventBus.publishEvent( TODAY_EFFORT_UPDATED ) ;
+    }
+    
+    private SessionDTO updateCachedSession( @NonNull SessionDTO _session ) {
         
         SessionDTO session = allSessions.computeIfAbsent( _session.getId(), k -> {
             SessionDTO newSession = new SessionDTO( _session ) ;
@@ -185,14 +198,11 @@ public class TodaySessionStatistics
         }
         
         computeTotalEffectiveTimeForToday() ;
-        if( emitEvents ) {
-            eventBus.publishEvent( TODAY_EFFORT_UPDATED ) ;
-        }
         return session ;
     }
     
-    @EventTargetMarker( { PAUSE_STARTED, PAUSE_EXTENDED } )
-    public void updateCachedPause( @NonNull SessionPauseDTO _pause, boolean emitEvents ) {
+    @EventTargetMarker( { PAUSE_STARTED } )
+    private void updateCachedPause( @NonNull SessionPauseDTO _pause ) {
         
         SessionPauseDTO pause = allPauses.computeIfAbsent( _pause.getId(), k -> {
             SessionPauseDTO newPause = new SessionPauseDTO( _pause ) ;
@@ -210,9 +220,6 @@ public class TodaySessionStatistics
         }
         
         computeTotalEffectiveTimeForToday() ;
-        if( emitEvents ) {
-            eventBus.publishEvent( TODAY_EFFORT_UPDATED ) ;
-        }
     }
     
     private void computeTotalEffectiveTimeForToday() {

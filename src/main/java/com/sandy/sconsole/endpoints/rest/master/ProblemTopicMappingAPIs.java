@@ -22,7 +22,6 @@ import static com.sandy.sconsole.core.api.AR.systemError;
 @Slf4j
 @RestController
 @RequestMapping( "/Master/ProblemTopicMapping" )
-@Transactional
 public class ProblemTopicMappingAPIs {
     
     @Autowired private ChapterRepo chapterRepo;

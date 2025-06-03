@@ -141,6 +141,34 @@ public class BookUploadHelper {
         }
     }
     
+    @Transactional
+    public List<String> createNewExercise( CreateNewExerciseReq request ) {
+        
+        BookMetaVO.ValidationMessages msgs = new BookMetaVO.ValidationMessages() ;
+        List<BookMetaVO.ProblemCluster> problemClusters = new ArrayList<>() ;
+        
+        if( StringUtil.isEmptyOrNull( request.getProblemClusters() ) ) {
+            msgs.addError( "", "Problem clusters metadata is empty." ) ;
+        }
+        else {
+            String[] clusterMetas = request.getProblemClusters().split( "\\r?\\n" ) ;
+            for( String cluster : clusterMetas ) {
+                problemClusters.add( validator.parseAndValidateProblemCluster( cluster, msgs ) ) ;
+            }
+        }
+        
+        if( msgs.getMessages().isEmpty() ) {
+            
+            ChapterId chapterId = new ChapterId( request.getBookId(), request.getChapterNum() ) ;
+            Chapter chapter = chapterRepo.findById( chapterId ).get() ;
+            
+            int nextExerciseNum = problemRepo.getNextExerciseNum( request.getBookId(), request.getChapterNum() ) ;
+            
+            addProblemsToChapter( chapter, nextExerciseNum, request.getExerciseName(), problemClusters ) ;
+        }
+        return msgs.flattenMessages() ;
+    }
+    
     private int addProblemsToChapter( Chapter chapter,
                                       int exerciseNum,
                                       String exerciseName,
@@ -176,32 +204,5 @@ public class BookUploadHelper {
             }
         }
         return numProblemsCreated ;
-    }
-    
-    public List<String> createNewExercise( CreateNewExerciseReq request ) {
-        
-        BookMetaVO.ValidationMessages msgs = new BookMetaVO.ValidationMessages() ;
-        List<BookMetaVO.ProblemCluster> problemClusters = new ArrayList<>() ;
-        
-        if( StringUtil.isEmptyOrNull( request.getProblemClusters() ) ) {
-            msgs.addError( "", "Problem clusters metadata is empty." ) ;
-        }
-        else {
-            String[] clusterMetas = request.getProblemClusters().split( "\\r?\\n" ) ;
-            for( String cluster : clusterMetas ) {
-                problemClusters.add( validator.parseAndValidateProblemCluster( cluster, msgs ) ) ;
-            }
-        }
-        
-        if( msgs.getMessages().isEmpty() ) {
-            
-            ChapterId chapterId = new ChapterId( request.getBookId(), request.getChapterNum() ) ;
-            Chapter chapter = chapterRepo.findById( chapterId ).get() ;
-            
-            int nextExerciseNum = problemRepo.getNextExerciseNum( request.getBookId(), request.getChapterNum() ) ;
-            
-            addProblemsToChapter( chapter, nextExerciseNum, request.getExerciseName(), problemClusters ) ;
-        }
-        return msgs.flattenMessages() ;
     }
 }

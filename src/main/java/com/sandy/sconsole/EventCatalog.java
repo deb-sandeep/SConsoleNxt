@@ -4,6 +4,7 @@ import com.sandy.sconsole.core.bus.PayloadType;
 import com.sandy.sconsole.dao.session.dto.ProblemAttemptDTO;
 import com.sandy.sconsole.dao.session.dto.SessionDTO;
 import com.sandy.sconsole.dao.session.dto.SessionPauseDTO;
+import com.sandy.sconsole.endpoints.rest.live.SessionExtensionDTO;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -17,7 +18,7 @@ public class EventCatalog {
     @PayloadType( SessionDTO.class )
     public static final int SESSION_STARTED = 201 ;
     
-    @PayloadType( SessionDTO.class )
+    @PayloadType( SessionExtensionDTO.class )
     public static final int SESSION_EXTENDED = 202 ;
     
     @PayloadType( Integer.class ) // Session ID
@@ -29,20 +30,14 @@ public class EventCatalog {
     @PayloadType( Void.class )
     public static final int PAUSE_ENDED = 205 ;
     
-    @PayloadType( SessionPauseDTO.class )
-    public static final int PAUSE_EXTENDED = 206 ;
+    @PayloadType( ProblemAttemptDTO.class )
+    public static final int PROBLEM_ATTEMPT_STARTED = 206 ;
     
     @PayloadType( ProblemAttemptDTO.class )
-    public static final int PROBLEM_ATTEMPT_STARTED = 207 ;
-    
-    @PayloadType( ProblemAttemptDTO.class )
-    public static final int PROBLEM_ATTEMPT_EXTENDED = 208 ;
-    
-    @PayloadType( ProblemAttemptDTO.class )
-    public static final int PROBLEM_ATTEMPT_ENDED = 209 ;
+    public static final int PROBLEM_ATTEMPT_ENDED = 207 ;
     
     @PayloadType( SessionDTO.class )
-    public static final int HISTORIC_SESSION_UPDATED = 210 ;
+    public static final int HISTORIC_SESSION_UPDATED = 208 ;
     
     // =============== Active Topic Statistics Events ==========================
     // Range : 250 - 300

@@ -40,6 +40,7 @@ public class AtomFeedService implements ClockTickListener {
     @Override
     public void dayTicked( Calendar calendar ) {
         events.clear() ;
+        needsFeedGeneration.set( true ) ;
     }
     
     public void addFeedEvent( String msgType, String title, String msgFormat, Object... args ) {

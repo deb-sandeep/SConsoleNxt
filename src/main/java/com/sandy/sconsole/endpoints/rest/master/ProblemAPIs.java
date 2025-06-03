@@ -18,13 +18,13 @@ import static com.sandy.sconsole.core.api.AR.systemError;
 @Slf4j
 @RestController
 @RequestMapping( "/Master/Problem" )
-@Transactional
 public class ProblemAPIs {
     
     @Autowired
     private ProblemRepo problemRepo = null ;
     
     @PostMapping( "/{problemId}/DifficultyLevel/{difficultyLevel}" )
+    @Transactional
     public ResponseEntity<AR<String>> updateDifficultyLevel(
             @PathVariable( "problemId" ) int problemId,
             @PathVariable( "difficultyLevel" ) int difficultyLevel ) {

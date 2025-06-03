@@ -15,6 +15,7 @@ import com.sandy.sconsole.core.ui.uiutil.UITheme;
 import com.sandy.sconsole.dao.master.repo.SessionTypeRepo;
 import com.sandy.sconsole.dao.master.repo.SyllabusRepo;
 import com.sandy.sconsole.dao.session.dto.SessionDTO;
+import com.sandy.sconsole.endpoints.rest.live.SessionExtensionDTO;
 import com.sandy.sconsole.state.manager.TodaySessionStatistics;
 import com.sandy.sconsole.ui.screen.dashboard.tile.SyllabusL30EffortTile;
 import com.sandy.sconsole.ui.screen.dashboard.tile.daygantt.DayGanttTile;
@@ -158,7 +159,7 @@ public class SessionScreen extends Screen
     public synchronized void handleEvent( Event event ) {
         final int eventType = event.getEventId() ;
         switch( eventType ) {
-            case EventCatalog.SESSION_EXTENDED -> refreshTodayEffortTile( ( SessionDTO )event.getValue() ) ;
+            case EventCatalog.SESSION_EXTENDED -> refreshTodayEffortTile( (( SessionExtensionDTO )event.getValue()).getSessionDTO() ) ;
         }
     }
     

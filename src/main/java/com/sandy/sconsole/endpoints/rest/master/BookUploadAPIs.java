@@ -11,7 +11,6 @@ import com.sandy.sconsole.endpoints.rest.master.vo.reqres.SaveBookMetaRes;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,7 +22,6 @@ import static com.sandy.sconsole.core.api.AR.*;
 @Slf4j
 @RestController
 @RequestMapping( "/Master/Book" )
-@Transactional
 public class BookUploadAPIs {
     
     @Autowired private BookUploadHelper bookHelper = null ;

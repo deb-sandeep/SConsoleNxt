@@ -11,11 +11,13 @@ import com.sandy.sconsole.dao.session.dto.ProblemAttemptDTO;
 import com.sandy.sconsole.dao.session.repo.ProblemAttemptRepo;
 import com.sandy.sconsole.dao.session.repo.SessionRepo;
 import com.sandy.sconsole.state.manager.ActiveTopicStatisticsManager;
+import jakarta.annotation.PostConstruct;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -28,7 +30,6 @@ import static com.sandy.sconsole.core.api.AR.systemError;
 @Slf4j
 @RestController
 @RequestMapping( "/Problem" )
-@Transactional
 public class AttemptedProblemAPIs {
     
     @Autowired
@@ -54,6 +55,16 @@ public class AttemptedProblemAPIs {
     
     @Autowired
     private TopicProblemRepo topicProblemRepo;
+    
+    @Autowired
+    private PlatformTransactionManager txnMgr ;
+    
+    private TransactionTemplate txTemplate ;
+    
+    @PostConstruct
+    public void init() {
+        this.txTemplate = new TransactionTemplate( txnMgr ) ;
+    }
     
     @GetMapping( "/Pigeons" )
     public ResponseEntity<AR<List<TopicProblem>>> getAllPigeonedProblems() {
@@ -113,24 +124,8 @@ public class AttemptedProblemAPIs {
     public ResponseEntity<AR<String>> changeProblemState( @RequestBody final ProblemChangeStateRequest req ) {
         
         try {
-            
             for( int problemId : req.getProblemIds() ) {
-                ProblemAttempt pa = new ProblemAttempt() ;
-                pa.setProblem( problemRepo.findById( problemId ).get() ) ;
-                pa.setTopic( topicRepo.findById( req.getTopicId() ).get() ) ;
-                pa.setPrevState( topicProblemRepo.findByProblemId( problemId ).getProblemState() ) ;
-                pa.setTargetState( req.getTargetState() ) ;
-                pa.setStartTime( new Date() ) ;
-                pa.setEndTime( pa.getStartTime() ) ;
-                pa.setEffectiveDuration( 0 ) ;
-                
-                // Session 0 is a special session to imply offline work by coach.
-                pa.setSession( sessionRepo.findById( 0 ).get() ) ;
-                
-                ProblemAttempt savedDao = paRepo.save( pa ) ;
-                
-                ProblemAttemptDTO dto = new ProblemAttemptDTO( savedDao ) ;
-                // REMOVE: activeTopicStatsMgr.handleProblemAttemptEnded( dto.getTopicId() ) ;
+                ProblemAttemptDTO dto = saveProblemAttempt( problemId, req ) ;
                 eventBus.publishEvent( PROBLEM_ATTEMPT_ENDED, dto ) ;
             }
             return success() ;
@@ -138,5 +133,26 @@ public class AttemptedProblemAPIs {
         catch( Exception e ) {
             return systemError( e ) ;
         }
+    }
+    
+    protected ProblemAttemptDTO saveProblemAttempt( int problemId, ProblemChangeStateRequest req ) {
+        
+        return this.txTemplate.execute( status -> {
+            
+            ProblemAttempt pa = new ProblemAttempt() ;
+            pa.setProblem( problemRepo.findById( problemId ).get() ) ;
+            pa.setTopic( topicRepo.findById( req.getTopicId() ).get() ) ;
+            pa.setPrevState( topicProblemRepo.findByProblemId( problemId ).getProblemState() ) ;
+            pa.setTargetState( req.getTargetState() ) ;
+            pa.setStartTime( new Date() ) ;
+            pa.setEndTime( pa.getStartTime() ) ;
+            pa.setEffectiveDuration( 0 ) ;
+            
+            // Session 0 is a special session to imply offline work by coach.
+            pa.setSession( sessionRepo.findById( 0 ).get() ) ;
+            
+            ProblemAttempt savedDao = paRepo.save( pa ) ;
+            return new ProblemAttemptDTO( savedDao ) ;
+        } ) ;
     }
 }

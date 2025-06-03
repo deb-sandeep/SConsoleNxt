@@ -35,17 +35,22 @@ SessionAPIs : endProblemAttempt
 
 SessionAPIs : createNewPause
 	PAUSE_STARTED
-		(*) [100] TodaySessionStatistics : updateCachedPause
+		(~) [100] TodaySessionStatistics : pauseStarted
 			  TODAY_EFFORT_UPDATED
 				(~) DayGanttTile : paint
 				(~) PastEffortProviderManager : updateTodayTime
 					  PAST_EFFORT_UPDATED
 						(~) SyllabusL30EffortTile : handleEvent
 						(~) TotalL60EffortTile : handleEvent
+		(*) [100] TodaySessionStatistics : updateCachedPause
+
+SessionAPIs : endPause
+	PAUSE_ENDED
+		[NO EVENT TARGETS FOUND]
 
 SessionAPIs : extendSession
 	SESSION_EXTENDED
-		(*) [100] TodaySessionStatistics : updateCachedSession
+		(*) [100] TodaySessionStatistics : sessionExtended
 			  TODAY_EFFORT_UPDATED
 				(~) DayGanttTile : paint
 				(~) PastEffortProviderManager : updateTodayTime
@@ -53,16 +58,6 @@ SessionAPIs : extendSession
 						(~) SyllabusL30EffortTile : handleEvent
 						(~) TotalL60EffortTile : handleEvent
 		(~) SessionScreen : refreshTodayEffortTile
-	PAUSE_EXTENDED
-		(*) [100] TodaySessionStatistics : updateCachedPause
-			  TODAY_EFFORT_UPDATED
-				(~) DayGanttTile : paint
-				(~) PastEffortProviderManager : updateTodayTime
-					  PAST_EFFORT_UPDATED
-						(~) SyllabusL30EffortTile : handleEvent
-						(~) TotalL60EffortTile : handleEvent
-	PROBLEM_ATTEMPT_EXTENDED
-		[NO EVENT TARGETS FOUND]
 
 ProblemChangeStateRequest : changeProblemState
 	PROBLEM_ATTEMPT_ENDED
@@ -86,7 +81,7 @@ TodaySessionStatistics : sessionStarted
 				(~) SyllabusL30EffortTile : handleEvent
 				(~) TotalL60EffortTile : handleEvent
 
-TodaySessionStatistics : updateCachedSession
+TodaySessionStatistics : sessionExtended
 	TODAY_EFFORT_UPDATED
 		(~) DayGanttTile : paint
 		(~) PastEffortProviderManager : updateTodayTime
@@ -94,7 +89,7 @@ TodaySessionStatistics : updateCachedSession
 				(~) SyllabusL30EffortTile : handleEvent
 				(~) TotalL60EffortTile : handleEvent
 
-TodaySessionStatistics : updateCachedPause
+TodaySessionStatistics : pauseStarted
 	TODAY_EFFORT_UPDATED
 		(~) DayGanttTile : paint
 		(~) PastEffortProviderManager : updateTodayTime

@@ -8,6 +8,7 @@ import com.sandy.sconsole.endpoints.rest.master.vo.reqres.ChapterTopicMappingReq
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -26,6 +27,7 @@ public class TopicMappingHelper {
     @Autowired private SyllabusBookMapRepo sbmRepo ;
     @Autowired private TopicChapterProblemMapRepo tcpmRepo ;
     
+    @Transactional
     public int saveChapterTopicMapping( ChapterTopicMappingReq req ) {
         
         TopicChapterMap map ;
@@ -126,6 +128,7 @@ public class TopicMappingHelper {
      * deleted by database referential integrity constraint of cascade delete,
      * hence no explicit action is needed in code.
      */
+    @Transactional
     public void deleteTopicChapterMapping( Integer mapId ) {
         tcmRepo.deleteById( mapId ) ;
     }

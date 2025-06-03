@@ -77,8 +77,6 @@ public class SConsole
         
         List<Integer> printPublishIgnoredEventIds = this.eventBus.getPrintPublishIgnoredEventIds() ;
         printPublishIgnoredEventIds.add( EventCatalog.SESSION_EXTENDED ) ;
-        printPublishIgnoredEventIds.add( EventCatalog.PAUSE_EXTENDED ) ;
-        printPublishIgnoredEventIds.add( EventCatalog.PROBLEM_ATTEMPT_EXTENDED ) ;
         printPublishIgnoredEventIds.add( EventCatalog.TODAY_EFFORT_UPDATED ) ;
         printPublishIgnoredEventIds.add( EventCatalog.PAST_EFFORT_UPDATED ) ;
 
