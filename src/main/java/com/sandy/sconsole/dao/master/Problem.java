@@ -17,7 +17,7 @@ public class Problem {
     @Column( name = "id", nullable = false )
     private Integer id;
     
-    @ManyToOne( fetch = FetchType.LAZY, optional = false )
+    @ManyToOne( fetch = FetchType.EAGER, optional = false )
     @JoinColumns( { @JoinColumn( name = "book_id", referencedColumnName = "book_id", nullable = false ), @JoinColumn( name = "chapter_num", referencedColumnName = "chapter_num", nullable = false ) } )
     @OnDelete( action = OnDeleteAction.CASCADE )
     private Chapter chapter;

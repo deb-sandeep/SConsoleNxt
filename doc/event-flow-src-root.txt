@@ -13,15 +13,17 @@ SessionAPIs : startSession
 					  PAST_EFFORT_UPDATED
 						(~) SyllabusL30EffortTile : handleEvent
 						(~) TotalL60EffortTile : handleEvent
+		(~) SessionEventStoreLogger : saveSessionStarted
 
 SessionAPIs : endSession
 	SESSION_ENDED
 		(*) [200] TodaySessionStatistics : sessionEnded
 		(~) TopicBurnStatTile : handleEvent
+		(~) SessionEventStoreLogger : saveSessionEnded
 
 SessionAPIs : startProblemAttempt
 	PROBLEM_ATTEMPT_STARTED
-		[NO EVENT TARGETS FOUND]
+		(~) SessionEventStoreLogger : saveProblemAttemptStarted
 
 SessionAPIs : endProblemAttempt
 	PROBLEM_ATTEMPT_ENDED
@@ -32,6 +34,7 @@ SessionAPIs : endProblemAttempt
 				(~) TopicBurnStatTile : refreshBurnInfo
 				(~) TopicBurnChartTile : scheduleReplot
 		(~) TopicL30BurnTile : handleEvent
+		(~) SessionEventStoreLogger : saveProblemAttemptEnded
 
 SessionAPIs : createNewPause
 	PAUSE_STARTED
@@ -43,10 +46,11 @@ SessionAPIs : createNewPause
 						(~) SyllabusL30EffortTile : handleEvent
 						(~) TotalL60EffortTile : handleEvent
 		(*) [100] TodaySessionStatistics : updateCachedPause
+		(~) SessionEventStoreLogger : savePauseStarted
 
 SessionAPIs : endPause
 	PAUSE_ENDED
-		[NO EVENT TARGETS FOUND]
+		(~) SessionEventStoreLogger : savePauseEnded
 
 SessionAPIs : extendSession
 	SESSION_EXTENDED
@@ -68,6 +72,7 @@ ProblemChangeStateRequest : changeProblemState
 				(~) TopicBurnStatTile : refreshBurnInfo
 				(~) TopicBurnChartTile : scheduleReplot
 		(~) TopicL30BurnTile : handleEvent
+		(~) SessionEventStoreLogger : saveProblemAttemptEnded
 
 TodaySessionStatistics : initializeState
 	TODAY_STUDY_STATS_UPDATED

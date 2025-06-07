@@ -1,7 +1,6 @@
 package com.sandy.sconsole.endpoints.rest.live;
 
 import com.sandy.sconsole.core.api.AR;
-import com.sandy.sconsole.core.atomfeed.AtomFeedService;
 import com.sandy.sconsole.core.bus.EventBus;
 import com.sandy.sconsole.core.ui.screen.ScreenManager;
 import com.sandy.sconsole.dao.master.SessionType;
@@ -19,8 +18,6 @@ import com.sandy.sconsole.dao.session.dto.SessionPauseDTO;
 import com.sandy.sconsole.dao.session.repo.ProblemAttemptRepo;
 import com.sandy.sconsole.dao.session.repo.SessionPauseRepo;
 import com.sandy.sconsole.dao.session.repo.SessionRepo;
-import com.sandy.sconsole.state.manager.ActiveTopicStatisticsManager;
-import com.sandy.sconsole.state.manager.TodaySessionStatistics;
 import com.sandy.sconsole.ui.screen.session.SessionScreen;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +27,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,10 +49,7 @@ public class SessionAPIs {
     
     @Autowired private ScreenManager screenManager ;
     
-    @Autowired private TodaySessionStatistics todayStudyStats ;
-    @Autowired private ActiveTopicStatisticsManager activeTopicStatsMgr ;
     @Autowired private EventBus eventBus ;
-    @Autowired private AtomFeedService atomFeed ;
     
     @Autowired private PlatformTransactionManager txnMgr ;
     
@@ -97,12 +90,6 @@ public class SessionAPIs {
             
             eventBus.publishEvent( SESSION_STARTED, sessionDto ) ;
             
-            atomFeed.addFeedEvent( "text", "Session Started: " + sessionDto.getSessionType(),
-                                   "\n%s: %s\n%tc",
-                                   sessionDto.getSyllabusName(),
-                                   sessionDto.getTopicName(),
-                                   sessionDto.getStartTime() ) ;
-            
             screenManager.scheduleScreenChange( SessionScreen.ID ) ;
             
             return success( savedDao.getId() ) ;
@@ -115,17 +102,7 @@ public class SessionAPIs {
     @PostMapping( "/{sessionId}/EndSession" )
     public ResponseEntity<AR<String>> endSession(  @PathVariable( "sessionId" ) int sessionId ) {
         try {
-            
-            Session session = sessionRepo.findById( sessionId ).get() ;
-            
             eventBus.publishEvent( SESSION_ENDED, sessionId ) ;
-            atomFeed.addFeedEvent( "text", "Session Ended: " + session.getSessionType(),
-                    "\n%s: %s\nDuration: %d minutes\n%tc",
-                    session.getSyllabusName(),
-                    session.getTopic().getTopicName(),
-                    session.getEffectiveDuration()/60,
-                    session.getEndTime() ) ;
-
             screenManager.showRootScreen() ;
             return success() ;
         }
@@ -161,16 +138,6 @@ public class SessionAPIs {
             response.put( "problemAttemptId", savedDao.getId() ) ;
             response.put( "totalDuration", totalAttemptTime == null ? 0 : totalAttemptTime ) ;
             
-            atomFeed.addFeedEvent( "text", "Problem Attempt Started",
-                    "\n%s: %s\n%s\n%d. %s\n%s\n%tc",
-                    session.getSyllabusName(),
-                    session.getTopic().getTopicName(),
-                    pa.getProblem().getChapter().getBook().getBookShortName(),
-                    pa.getProblem().getChapter().getId().getChapterNum(),
-                    pa.getProblem().getChapter().getChapterName(),
-                    pa.getProblem().getProblemKey(),
-                    pa.getStartTime() ) ;
-            
             eventBus.publishEvent( PROBLEM_ATTEMPT_STARTED, new ProblemAttemptDTO( savedDao ) ) ;
 
             return success( response ) ;
@@ -191,11 +158,6 @@ public class SessionAPIs {
             
             eventBus.publishEvent( PROBLEM_ATTEMPT_ENDED, new ProblemAttemptDTO( savedDao ) ) ;
             
-            atomFeed.addFeedEvent( "text", "Problem Attempt Ended: " + pa.getTargetState(),
-                                    "\n%s\n%d minutes\n%tc",
-                                    pa.getProblem().getProblemKey(),
-                                    pa.getEffectiveDuration()/60,
-                                    pa.getEndTime() ) ;
             return success() ;
         }
         catch( Exception e ) {
@@ -216,8 +178,6 @@ public class SessionAPIs {
             
             eventBus.publishEvent( PAUSE_STARTED, new SessionPauseDTO( savedDao )  );
             
-            atomFeed.addFeedEvent( "text", "Pause Started", "\n%tc", savedDao.getStartTime() ) ;
-            
             return success( savedDao.getId() ) ;
         }
         catch( Exception e ) {
@@ -228,9 +188,7 @@ public class SessionAPIs {
     @PostMapping( "/EndPause" )
     public ResponseEntity<AR<String>> endPause( @RequestBody SessionPauseDTO req ) {
         try {
-            eventBus.publishEvent( PAUSE_ENDED );
-            
-            atomFeed.addFeedEvent( "text", "Pause Ended", "\n%tc", new Date() ) ;
+            eventBus.publishEvent( PAUSE_ENDED, req );
             return success() ;
         }
         catch( Exception e ) {

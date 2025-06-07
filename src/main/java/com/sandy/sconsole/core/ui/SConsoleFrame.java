@@ -43,6 +43,8 @@ public class SConsoleFrame extends JFrame
     @Autowired private SConsoleClock clock ;
     
     @Getter private Screen currentScreen = null ;
+    
+    private BufferedImage screenImage = null ;
 
     public SConsoleFrame() {
         super() ;
@@ -144,13 +146,19 @@ public class SConsoleFrame extends JFrame
         File file = new File( dir, DF.format( new Date() ) + ".png" ) ;
         
         SwingUtilities.invokeAndWait( () -> {
-            BufferedImage img = new BufferedImage( getWidth(),
-                                                   getHeight(),
-                                                   BufferedImage.TYPE_INT_RGB ) ;
-            paint( img.getGraphics() ) ;
+            if( screenImage == null ) {
+                // This is a memory heavy instance and takes around 30-40 MB
+                // of RAM. This reuse logic prevents the allocation and GC overheads
+                // every five minutes.
+                screenImage = new BufferedImage( getWidth(),
+                                                getHeight(),
+                                                BufferedImage.TYPE_INT_RGB ) ;
+            }
+            
+            paint( screenImage.getGraphics() ) ;
             
             try {
-                ImageIO.write( img, "png", file ) ;
+                ImageIO.write( screenImage, "png", file ) ;
             }
             catch( IOException e ) {
                 log.error( "Unable to save image - {}", file.getAbsolutePath(), e );

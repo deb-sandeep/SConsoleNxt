@@ -1,15 +1,15 @@
 package com.sandy.sconsole.core.bus;
 
-import com.sandy.sconsole.EventCatalog;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import static com.sandy.sconsole.core.bus.EventUtils.getEventName;
 
 @Slf4j
 @Component( "eventBus" )
@@ -26,16 +26,9 @@ public class EventBus {
     private final Map<Integer, List<EventSubscriber>> eventIdSubscriberMap = new HashMap<>() ;
     private final ExecutorService executor = Executors.newFixedThreadPool( 10 ) ;
     
-    // A class which contains public static final int definitions of events
-    // This class is introspected to reversely translate the event code to
-    // event name for debugging purposes
-    @Setter private Class<?> eventCatalogClass = EventCatalog.class ;
-    
     @Setter private boolean printPublishLogs = true ;
     @Getter private final ArrayList<Integer> printPublishIgnoredEventIds = new ArrayList<>() ;
     @Getter private final ArrayList<Integer> printPublishAcceptedEventIds = new ArrayList<>() ;
-    
-    private final Map<Integer, String> eventIdVsNameMap = new HashMap<>() ;
     
     public void terminateExecutor() {
         this.executor.shutdown() ;
@@ -79,7 +72,7 @@ public class EventBus {
         List<EventSubscriber> subscribers = eventIdSubscriberMap.computeIfAbsent( eventId, k -> new ArrayList<>() ) ;
         if( !isSubscriberPresent( subscribers, subscriber ) ) {
             if( asyncDispatch ) {
-                subscribers.add( new AsyncEventDispatchProxy( subscriber, executor, this ) ) ;
+                subscribers.add( new AsyncEventDispatchProxy( subscriber, executor ) ) ;
             }
             else {
                 subscribers.add( new SyncEventDispatchProxy( subscriber, priority ) ) ;
@@ -198,20 +191,6 @@ public class EventBus {
         return clsName;
     }
     
-    public String getEventName( final int eventId ) {
-        String eventName = "EVENT_NAME_UNKNOWN (" + eventId + ")" ;
-        if( eventCatalogClass != null ) {
-            if( eventIdVsNameMap.containsKey( eventId ) ) {
-                eventName = eventIdVsNameMap.get( eventId ) ;
-            }
-            else {
-                eventName = extractEventName( eventId ) ;
-                eventIdVsNameMap.put( eventId, eventName ) ;
-            }
-        }
-        return eventName ;
-    }
-    
     private synchronized List<EventSubscriber> getSubscribersForEvent( int eventId ) {
         
         List<EventSubscriber> subscribers = new ArrayList<>() ;
@@ -243,33 +222,16 @@ public class EventBus {
         return DEFAULT_PRIORITY;
     }
     
-    private String extractEventName( final int eventId ) {
-        try {
-            Field[] fields = eventCatalogClass.getDeclaredFields() ;
-            for ( Field field : fields ) {
-                if( field.getAnnotation( PayloadType.class ) != null ) {
-                    Integer id = ( Integer )field.get( EventCatalog.class ) ;
-                    if( id == eventId ) {
-                        return field.getName() ;
-                    }
-                }
-            }
-        }
-        catch( Exception e ) {
-            log.error( "Error while getting event name for event code {}", eventId, e ) ;
-        }
-        return "EVENT_NAME_UNKNOWN (" + eventId + ")" ;
-    }
-    
     private boolean qualifiesPrintPublish( int eventId ) {
         if( !printPublishIgnoredEventIds.isEmpty() &&
             printPublishIgnoredEventIds.contains( eventId ) ) {
             return false ;
         }
-        else if( !printPublishAcceptedEventIds.isEmpty() &&
-                 printPublishAcceptedEventIds.contains( eventId ) ) {
-            return true ;
+        
+        if( !printPublishAcceptedEventIds.isEmpty() ) {
+            return printPublishAcceptedEventIds.contains( eventId ) ;
         }
+        
         return true ;
     }
 }

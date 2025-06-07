@@ -27,7 +27,7 @@ public class EventCatalog {
     @PayloadType( SessionPauseDTO.class )
     public static final int PAUSE_STARTED = 204 ;
     
-    @PayloadType( Void.class )
+    @PayloadType( SessionPauseDTO.class )
     public static final int PAUSE_ENDED = 205 ;
     
     @PayloadType( ProblemAttemptDTO.class )

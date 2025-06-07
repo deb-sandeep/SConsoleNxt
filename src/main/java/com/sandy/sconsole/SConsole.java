@@ -27,6 +27,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import javax.swing.*;
 import java.util.List;
 
+import static com.sandy.sconsole.EventCatalog.*;
+
 @Slf4j
 @SpringBootApplication
 public class SConsole
@@ -72,13 +74,7 @@ public class SConsole
         this.clock.initialize() ;
 
         log.debug( "- Initializing EventBus" ) ;
-        this.eventBus.setPrintPublishLogs( config.isPrintEventPublishLogs() ) ;
-        this.eventBus.setEventCatalogClass( EventCatalog.class ) ;
-        
-        List<Integer> printPublishIgnoredEventIds = this.eventBus.getPrintPublishIgnoredEventIds() ;
-        printPublishIgnoredEventIds.add( EventCatalog.SESSION_EXTENDED ) ;
-        printPublishIgnoredEventIds.add( EventCatalog.TODAY_EFFORT_UPDATED ) ;
-        printPublishIgnoredEventIds.add( EventCatalog.PAST_EFFORT_UPDATED ) ;
+        initializeEventBus() ;
 
         log.debug( "- Initializing NVPConfig injector." ) ;
         nvpAnnotationProcessor.processNVPConfigAnnotations() ;
@@ -90,6 +86,16 @@ public class SConsole
         SwingUtilities.invokeLater( () -> this.frame.initialize() ) ;
 
         log.debug( "<< ## SConsole initialization complete" ) ;
+    }
+    
+    private void initializeEventBus() {
+        
+        this.eventBus.setPrintPublishLogs( config.isPrintEventPublishLogs() ) ;
+        
+        List<Integer> printPublishIgnoredEventIds = this.eventBus.getPrintPublishIgnoredEventIds() ;
+        printPublishIgnoredEventIds.add( SESSION_EXTENDED ) ;
+        printPublishIgnoredEventIds.add( TODAY_EFFORT_UPDATED ) ;
+        printPublishIgnoredEventIds.add( PAST_EFFORT_UPDATED ) ;
     }
     
     private void initializeScreenManager() {

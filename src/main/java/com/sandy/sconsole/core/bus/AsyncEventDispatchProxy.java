@@ -20,15 +20,12 @@ class AsyncEventDispatchProxy implements EventSubscriber, Runnable {
             .build() ;
     
     private final ExecutorService executor ;
-    private final EventBus eventBus ;
 
     public AsyncEventDispatchProxy( final EventSubscriber subscriber,
-                                    final ExecutorService executor,
-                                    final EventBus eventBus ) {
+                                    final ExecutorService executor ) {
         
         this.subscriber = subscriber ;
         this.executor = executor ;
-        this.eventBus = eventBus ;
     }
     
     public void handleEvent( final Event event ) {
@@ -40,7 +37,7 @@ class AsyncEventDispatchProxy implements EventSubscriber, Runnable {
         }
         else {
             log.debug( "Ignoring event : {} to subscriber {}@{} as it was received recently",
-                       eventBus.getEventName( event.getEventId() ),
+                       EventUtils.getEventName( event.getEventId() ),
                        subscriber.getClass().getSimpleName(),
                        subscriber.hashCode() ) ;
         }

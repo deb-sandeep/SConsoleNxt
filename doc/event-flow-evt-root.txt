@@ -37,7 +37,7 @@ PAUSE_ENDED
 	Event Sources:
 		SessionAPIs : endPause
 	Event Targets:
-		[NO EVENT TARGETS FOUND]
+		(~) SessionEventStoreLogger : savePauseEnded
 
 PAUSE_STARTED
 	Event Sources:
@@ -51,6 +51,7 @@ PAUSE_STARTED
 						(~) SyllabusL30EffortTile : handleEvent
 						(~) TotalL60EffortTile : handleEvent
 		(*) [100] TodaySessionStatistics : updateCachedPause
+		(~) SessionEventStoreLogger : savePauseStarted
 
 PROBLEM_ATTEMPT_ENDED
 	Event Sources:
@@ -64,12 +65,13 @@ PROBLEM_ATTEMPT_ENDED
 				(~) TopicBurnStatTile : refreshBurnInfo
 				(~) TopicBurnChartTile : scheduleReplot
 		(~) TopicL30BurnTile : handleEvent
+		(~) SessionEventStoreLogger : saveProblemAttemptEnded
 
 PROBLEM_ATTEMPT_STARTED
 	Event Sources:
 		SessionAPIs : startProblemAttempt
 	Event Targets:
-		[NO EVENT TARGETS FOUND]
+		(~) SessionEventStoreLogger : saveProblemAttemptStarted
 
 SESSION_ENDED
 	Event Sources:
@@ -77,6 +79,7 @@ SESSION_ENDED
 	Event Targets:
 		(*) [200] TodaySessionStatistics : sessionEnded
 		(~) TopicBurnStatTile : handleEvent
+		(~) SessionEventStoreLogger : saveSessionEnded
 
 SESSION_EXTENDED
 	Event Sources:
@@ -102,6 +105,7 @@ SESSION_STARTED
 					  PAST_EFFORT_UPDATED
 						(~) SyllabusL30EffortTile : handleEvent
 						(~) TotalL60EffortTile : handleEvent
+		(~) SessionEventStoreLogger : saveSessionStarted
 
 TODAY_EFFORT_UPDATED
 	Event Sources:
