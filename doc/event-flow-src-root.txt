@@ -62,6 +62,7 @@ SessionAPIs : extendSession
 						(~) SyllabusL30EffortTile : handleEvent
 						(~) TotalL60EffortTile : handleEvent
 		(~) SessionScreen : refreshTodayEffortTile
+		(~) SessionEventStoreLogger : notifySessionExtension
 
 ProblemChangeStateRequest : changeProblemState
 	PROBLEM_ATTEMPT_ENDED

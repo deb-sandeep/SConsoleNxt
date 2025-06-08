@@ -93,6 +93,7 @@ SESSION_EXTENDED
 						(~) SyllabusL30EffortTile : handleEvent
 						(~) TotalL60EffortTile : handleEvent
 		(~) SessionScreen : refreshTodayEffortTile
+		(~) SessionEventStoreLogger : notifySessionExtension
 
 SESSION_STARTED
 	Event Sources:
