@@ -12,6 +12,7 @@ import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.MimeTypeUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,7 +23,7 @@ import java.util.List;
 @MessageMapping( "/app-monitor" )
 public class AppMonitorWSController {
     
-    public enum ResponseType { DAY_SESSION_EVENTS, SESSION_EVENT } ;
+    public enum ResponseType { DAY_SESSION_EVENTS, SESSION_EVENT }
     
     @Autowired private SimpMessagingTemplate template ;
     @Autowired private SessionEventRepo sessionEventRepo ;
@@ -34,6 +35,11 @@ public class AppMonitorWSController {
         SimpMessageHeaderAccessor accessor = SimpMessageHeaderAccessor.create() ;
         accessor.setContentType( MimeTypeUtils.APPLICATION_JSON );
         headers = accessor.getMessageHeaders() ;
+    }
+    
+    @RequestMapping(value = { "/apps/jee/monitor/session-events" })
+    public String forwardToIndex() {
+        return "forward:/apps/jee/monitor/index.html";
     }
     
     @MessageMapping( "/todaySessionEvents" )
