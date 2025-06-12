@@ -1,3 +1,15 @@
+ProblemTopicMappingAPIs : attachProblems
+	TOPIC_PROBLEM_ASSOCIATION_UPDATED
+		(*) [100] ActiveTopicStatisticsManager : refreshState
+			  ATS_MANAGER_REFRESHED
+				(~) SyllabusBurnTile : refresh
+
+ProblemTopicMappingAPIs : detachProblems
+	TOPIC_PROBLEM_ASSOCIATION_UPDATED
+		(*) [100] ActiveTopicStatisticsManager : refreshState
+			  ATS_MANAGER_REFRESHED
+				(~) SyllabusBurnTile : refresh
+
 TrackAPIs : saveTopicSchedules
 	TRACK_UPDATED
 		(*) [100] ActiveTopicStatisticsManager : refreshState

@@ -60,6 +60,8 @@ public class AttemptedProblemAPIs {
     private PlatformTransactionManager txnMgr ;
     
     private TransactionTemplate txTemplate ;
+    @Autowired
+    private ProblemAttemptRepo  problemAttemptRepo;
     
     @PostConstruct
     public void init() {
@@ -154,5 +156,18 @@ public class AttemptedProblemAPIs {
             ProblemAttempt savedDao = paRepo.save( pa ) ;
             return new ProblemAttemptDTO( savedDao ) ;
         } ) ;
+    }
+    
+    @GetMapping( "/State/{bookId}/{chapterNum}" )
+    public ResponseEntity<AR<List<ProblemAttemptRepo.ProblemState>>> getProblemStates(
+            @PathVariable( "bookId" ) int bookId,
+            @PathVariable( "chapterNum" ) int chapterNum ) {
+        
+        try {
+            return success( problemAttemptRepo.getProblemState( bookId, chapterNum ) ) ;
+        }
+        catch( Exception e ) {
+            return systemError( e ) ;
+        }
     }
 }

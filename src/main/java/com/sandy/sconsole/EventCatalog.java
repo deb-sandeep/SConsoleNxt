@@ -59,11 +59,14 @@ public class EventCatalog {
     @PayloadType( Void.class )
     public static final int TODAY_EFFORT_UPDATED = 302 ;
     
-    // =============== Track Update Events =====================================
+    // =============== Track and topic-problem mapping update events ===========
     // Range : 351 - 400
     
     @PayloadType( Integer.class ) // track id
     public static final int TRACK_UPDATED = 351 ;
+    
+    @PayloadType( Void.class )
+    public static final int TOPIC_PROBLEM_ASSOCIATION_UPDATED = 352 ;
 
     // =============== Past Study Time Update Events ===========================
     // Range : 401 - 410

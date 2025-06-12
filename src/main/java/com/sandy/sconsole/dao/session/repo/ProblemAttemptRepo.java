@@ -15,6 +15,11 @@ public interface ProblemAttemptRepo extends JpaRepository<ProblemAttempt, Intege
         int getNumQuestionsSolved() ;
     }
     
+    interface ProblemState {
+        int getProblemId() ;
+        String getState() ;
+    }
+    
     @Query( """
     select pa
     from ProblemAttempt pa
@@ -59,4 +64,19 @@ public interface ProblemAttemptRepo extends JpaRepository<ProblemAttempt, Intege
     )
     List<DayBurn> getHistoricBurns( @Param( "startDate" ) Date startDate,
                                     @Param( "topicId" ) Integer topicId ) ;
+    
+    @Query( nativeQuery = true, value = """
+            select
+                p.id as problemId,
+                (IF((lps.state IS NULL), 'Assigned', lps.state)) AS state
+            from
+                latest_problem_state lps
+                right outer join problem_master p
+                    on p.id = lps.problem_id\s
+                where
+                    p.book_id = :bookId and
+                    p.chapter_num = :chapterNum
+    """)
+    List<ProblemState> getProblemState( @Param( "bookId" ) Integer bookId,
+                                        @Param( "chapterNum" ) Integer chapterNum ) ;
 }

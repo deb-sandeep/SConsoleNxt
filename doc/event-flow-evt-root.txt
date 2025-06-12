@@ -126,6 +126,15 @@ TODAY_STUDY_STATS_UPDATED
 	Event Targets:
 		(~) DayGanttTile : paint
 
+TOPIC_PROBLEM_ASSOCIATION_UPDATED
+	Event Sources:
+		ProblemTopicMappingAPIs : attachProblems
+		ProblemTopicMappingAPIs : detachProblems
+	Event Targets:
+		(*) [100] ActiveTopicStatisticsManager : refreshState
+			  ATS_MANAGER_REFRESHED
+				(~) SyllabusBurnTile : refresh
+
 TRACK_UPDATED
 	Event Sources:
 		TrackAPIs : saveTopicSchedules

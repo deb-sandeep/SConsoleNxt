@@ -73,6 +73,7 @@ public class ActiveTopicStatisticsManager implements ClockTickListener, EventSub
         clock.addTickListener( this, TimeUnit.DAYS ) ;
         eventBus.addSyncSubscriber( EventBus.HIGH_PRIORITY, this, PROBLEM_ATTEMPT_ENDED ) ;
         eventBus.addSyncSubscriber( this, TRACK_UPDATED ) ;
+        eventBus.addSyncSubscriber( this, TOPIC_PROBLEM_ASSOCIATION_UPDATED ) ;
         
         refreshState( new Date() ) ;
     }
@@ -86,12 +87,12 @@ public class ActiveTopicStatisticsManager implements ClockTickListener, EventSub
     public synchronized void handleEvent( Event event ) {
         int eventType = event.getEventId() ;
         switch ( eventType ) {
-            case TRACK_UPDATED -> refreshState( new Date() ) ;
+            case TRACK_UPDATED, TOPIC_PROBLEM_ASSOCIATION_UPDATED -> refreshState( new Date() ) ;
             case PROBLEM_ATTEMPT_ENDED -> handleProblemAttemptEnded( (( ProblemAttemptDTO )event.getValue()).getTopicId() ) ;
         }
     }
     
-    @EventTargetMarker( TRACK_UPDATED )
+    @EventTargetMarker( {TRACK_UPDATED, TOPIC_PROBLEM_ASSOCIATION_UPDATED} )
     protected void refreshState( Date date ) {
         
         log.debug( "  Refreshing state of ActiveTopicStatisticsManager..." ) ;
