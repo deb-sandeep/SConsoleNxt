@@ -3,18 +3,21 @@ ProblemTopicMappingAPIs : attachProblems
 		(*) [100] ActiveTopicStatisticsManager : refreshState
 			  ATS_MANAGER_REFRESHED
 				(~) SyllabusBurnTile : refresh
+				(~) AppMonitorWSController : handleEvent
 
 ProblemTopicMappingAPIs : detachProblems
 	TOPIC_PROBLEM_ASSOCIATION_UPDATED
 		(*) [100] ActiveTopicStatisticsManager : refreshState
 			  ATS_MANAGER_REFRESHED
 				(~) SyllabusBurnTile : refresh
+				(~) AppMonitorWSController : handleEvent
 
 TrackAPIs : saveTopicSchedules
 	TRACK_UPDATED
 		(*) [100] ActiveTopicStatisticsManager : refreshState
 			  ATS_MANAGER_REFRESHED
 				(~) SyllabusBurnTile : refresh
+				(~) AppMonitorWSController : handleEvent
 
 SessionAPIs : startSession
 	SESSION_STARTED
@@ -45,6 +48,7 @@ SessionAPIs : endProblemAttempt
 				(~) ThermometerTile : refreshPlot
 				(~) TopicBurnStatTile : refreshBurnInfo
 				(~) TopicBurnChartTile : scheduleReplot
+				(~) AppMonitorWSController : handleEvent
 		(~) TopicL30BurnTile : handleEvent
 		(~) SessionEventStoreLogger : saveProblemAttemptEnded
 
@@ -84,6 +88,7 @@ ProblemChangeStateRequest : changeProblemState
 				(~) ThermometerTile : refreshPlot
 				(~) TopicBurnStatTile : refreshBurnInfo
 				(~) TopicBurnChartTile : scheduleReplot
+				(~) AppMonitorWSController : handleEvent
 		(~) TopicL30BurnTile : handleEvent
 		(~) SessionEventStoreLogger : saveProblemAttemptEnded
 
@@ -128,6 +133,7 @@ PastEffortProviderManager : updateTodayTime
 ActiveTopicStatisticsManager : refreshState
 	ATS_MANAGER_REFRESHED
 		(~) SyllabusBurnTile : refresh
+		(~) AppMonitorWSController : handleEvent
 
 ActiveTopicStatisticsManager : handleProblemAttemptEnded
 	ATS_REFRESHED
@@ -135,4 +141,5 @@ ActiveTopicStatisticsManager : handleProblemAttemptEnded
 		(~) ThermometerTile : refreshPlot
 		(~) TopicBurnStatTile : refreshBurnInfo
 		(~) TopicBurnChartTile : scheduleReplot
+		(~) AppMonitorWSController : handleEvent
 

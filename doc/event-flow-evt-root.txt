@@ -3,6 +3,7 @@ ATS_MANAGER_REFRESHED
 		ActiveTopicStatisticsManager : refreshState
 	Event Targets:
 		(~) SyllabusBurnTile : refresh
+		(~) AppMonitorWSController : handleEvent
 
 ATS_REFRESHED
 	Event Sources:
@@ -12,6 +13,7 @@ ATS_REFRESHED
 		(~) ThermometerTile : refreshPlot
 		(~) TopicBurnStatTile : refreshBurnInfo
 		(~) TopicBurnChartTile : scheduleReplot
+		(~) AppMonitorWSController : handleEvent
 
 HISTORIC_SESSION_UPDATED
 	Event Sources:
@@ -64,6 +66,7 @@ PROBLEM_ATTEMPT_ENDED
 				(~) ThermometerTile : refreshPlot
 				(~) TopicBurnStatTile : refreshBurnInfo
 				(~) TopicBurnChartTile : scheduleReplot
+				(~) AppMonitorWSController : handleEvent
 		(~) TopicL30BurnTile : handleEvent
 		(~) SessionEventStoreLogger : saveProblemAttemptEnded
 
@@ -134,6 +137,7 @@ TOPIC_PROBLEM_ASSOCIATION_UPDATED
 		(*) [100] ActiveTopicStatisticsManager : refreshState
 			  ATS_MANAGER_REFRESHED
 				(~) SyllabusBurnTile : refresh
+				(~) AppMonitorWSController : handleEvent
 
 TRACK_UPDATED
 	Event Sources:
@@ -142,4 +146,5 @@ TRACK_UPDATED
 		(*) [100] ActiveTopicStatisticsManager : refreshState
 			  ATS_MANAGER_REFRESHED
 				(~) SyllabusBurnTile : refresh
+				(~) AppMonitorWSController : handleEvent
 

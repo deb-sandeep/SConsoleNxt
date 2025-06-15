@@ -145,4 +145,8 @@ public class ActiveTopicStatisticsManager implements ClockTickListener, EventSub
         }
         return topicStats.get( topicId ) ;
     }
+    
+    public Collection<String> getActiveSyllabusNames() {
+        return this.syllabusTopicStats.keySet() ;
+    }
 }
