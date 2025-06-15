@@ -21,8 +21,7 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 import java.util.List;
 
-import static com.sandy.sconsole.core.util.SConsoleUtil.durationDays;
-import static com.sandy.sconsole.core.util.SConsoleUtil.isBetween;
+import static com.sandy.sconsole.core.util.SConsoleUtil.*;
 
 @Slf4j
 @Component
@@ -257,5 +256,10 @@ public class ActiveTopicStatistics {
     
     public List<ProblemAttemptRepo.DayBurn> getHistoricBurns() {
         return paRepo.getHistoricBurns( topicId ) ;
+    }
+    
+    public boolean isCurrentlyActive() {
+        Date today = new Date() ;
+        return today.after( startDate ) && today.before( nextDay( endDate ) ) ;
     }
 }

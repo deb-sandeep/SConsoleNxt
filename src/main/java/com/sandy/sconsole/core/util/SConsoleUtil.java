@@ -28,7 +28,7 @@ public class SConsoleUtil {
         return DateUtils.truncate( d, Calendar.DAY_OF_MONTH ) ;
     }
     
-    private static Date nextDay( Date d ) {
+    public static Date nextDay( Date d ) {
         return DateUtils.addDays( d, 1 ) ;
     }
     

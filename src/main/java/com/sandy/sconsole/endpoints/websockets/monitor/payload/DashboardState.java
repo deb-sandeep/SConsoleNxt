@@ -36,7 +36,11 @@ class SyllabusState {
                    int duration ) {
         this.syllabusName = syllabusName ;
         this.duration = duration ;
-        topicStats.forEach( topicStat -> topicStates.add( new TopicState( topicStat ) ) ) ;
+        topicStats.forEach( topicStat -> {
+            if( topicStat.isCurrentlyActive() ) {
+                topicStates.add( new TopicState( topicStat ) ) ;
+            }
+        } ) ;
     }
 }
 
@@ -50,7 +54,7 @@ public class DashboardState {
         
         this.totalDuration = todayStats.getTotalEffectiveTimeInSec() ;
         
-        atsMgr.getActiveSyllabusNames().forEach( syllabusName -> {
+        atsMgr.getSyllabusNames().forEach( syllabusName -> {
             List<ActiveTopicStatistics> atsList = atsMgr.getTopicStatistics( syllabusName ) ;
             int duration = todayStats.getSyllabusTime( syllabusName ) ;
             syllabusStates.add( new SyllabusState( syllabusName, atsList, duration ) ) ;

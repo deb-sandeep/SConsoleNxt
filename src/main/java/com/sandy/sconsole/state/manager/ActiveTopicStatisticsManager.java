@@ -146,7 +146,7 @@ public class ActiveTopicStatisticsManager implements ClockTickListener, EventSub
         return topicStats.get( topicId ) ;
     }
     
-    public Collection<String> getActiveSyllabusNames() {
+    public Collection<String> getSyllabusNames() {
         return this.syllabusTopicStats.keySet() ;
     }
 }
