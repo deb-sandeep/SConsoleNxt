@@ -57,8 +57,8 @@ public class AppMonitorWSController implements EventSubscriber {
         eventBus.addAsyncSubscriber( this, ATS_REFRESHED ) ;
     }
     
-    @RequestMapping(value = { "/apps/jee/monitor/session-events" })
-    public String forwardToIndex() {
+    @RequestMapping(value = { "/apps/jee/monitor/session-events", "/apps/jee/monitor/dashboard" })
+    public String forwardRoutePathsToIndex() {
         return "forward:/apps/jee/monitor/index.html";
     }
     

@@ -71,7 +71,7 @@ public class SessionAPIs {
     }
     
     @PostMapping( "/StartSession" )
-    public ResponseEntity<AR<Integer>> startSession( @RequestBody SessionDTO req ) {
+    public synchronized ResponseEntity<AR<Integer>> startSession( @RequestBody SessionDTO req ) {
         try {
             Session savedDao = this.txTemplate.execute( status -> {
                 Session dao = new Session() ;
@@ -100,7 +100,7 @@ public class SessionAPIs {
     }
     
     @PostMapping( "/{sessionId}/EndSession" )
-    public ResponseEntity<AR<String>> endSession(  @PathVariable( "sessionId" ) int sessionId ) {
+    public synchronized ResponseEntity<AR<String>> endSession(  @PathVariable( "sessionId" ) int sessionId ) {
         try {
             eventBus.publishEvent( SESSION_ENDED, sessionId ) ;
             screenManager.showRootScreen() ;
@@ -112,7 +112,7 @@ public class SessionAPIs {
     }
     
     @PostMapping( "/StartProblemAttempt" )
-    public ResponseEntity<AR<Map<String, Integer>>> startProblemAttempt( @RequestBody ProblemAttemptDTO req ) {
+    public synchronized ResponseEntity<AR<Map<String, Integer>>> startProblemAttempt( @RequestBody ProblemAttemptDTO req ) {
         try {
             
             Session session = sessionRepo.findById( req.getSessionId() ).get() ;
@@ -148,7 +148,7 @@ public class SessionAPIs {
     }
     
     @PostMapping( "/EndProblemAttempt" )
-    public ResponseEntity<AR<String>> endProblemAttempt( @RequestBody ProblemAttemptDTO req ) {
+    public synchronized ResponseEntity<AR<String>> endProblemAttempt( @RequestBody ProblemAttemptDTO req ) {
         try {
             ProblemAttempt pa = paRepo.findById( req.getId() ).get() ;
             pa.setTargetState( req.getTargetState() ) ;
@@ -166,7 +166,7 @@ public class SessionAPIs {
     }
     
     @PostMapping( "/StartPause" )
-    public ResponseEntity<AR<Integer>> createNewPause( @RequestBody SessionPauseDTO req ) {
+    public synchronized ResponseEntity<AR<Integer>> createNewPause( @RequestBody SessionPauseDTO req ) {
         try {
             SessionPause dao = new SessionPause() ;
             dao.setSession( sessionRepo.findById( req.getSessionId() ).get() ) ;
@@ -197,7 +197,7 @@ public class SessionAPIs {
     }
     
     @PostMapping( "/ExtendSession" )
-    public ResponseEntity<AR<String>> extendSession( @RequestBody ExtendSessionReq req ) {
+    public synchronized ResponseEntity<AR<String>> extendSession( @RequestBody ExtendSessionReq req ) {
         try {
             if( sessionRepo.findById( req.getSessionId() ).isPresent() ) {
                 
