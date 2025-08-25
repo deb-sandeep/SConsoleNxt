@@ -224,30 +224,30 @@ public class TopicBurnChartTile extends Tile
     private void plotMilestoneMarker() {
         
         Marker startMarker ;
-        Marker startBufferEndMarker = null;
-        Marker theoryEndMarker = null ;
+        Marker coachingEndMarker = null;
+        Marker selfStudyEndMarker = null ;
         Marker exerciseEndMarker ;
         Marker endMarker = null ;
         
         startMarker = new ValueMarker( ats.getStartDate().getTime() ) ;
         exerciseEndMarker = new ValueMarker( ats.getExerciseEndDate().getTime() ) ;
         
-        if( ats.getNumStartBufferDays() > 0 ) {
-            Date startBufferEndDate = DateUtils.addDays( ats.getStartDate(), ats.getNumStartBufferDays()-1 ) ;
-            startBufferEndMarker = new ValueMarker( startBufferEndDate.getTime() ) ;
+        if( ats.getCoachingNumDays() > 0 ) {
+            Date startBufferEndDate = ats.getCoachingEndDate() ;
+            coachingEndMarker = new ValueMarker( startBufferEndDate.getTime() ) ;
         }
         
-        if( ats.getNumTheoryDays() > 0 ) {
-            Date theoryEndDate = DateUtils.addDays( ats.getStartDate(), ats.getNumTheoryDays() + ats.getNumStartBufferDays() - 1 ) ;
-            theoryEndMarker = new ValueMarker( theoryEndDate.getTime() ) ;
+        if( ats.getSelfStudyNumDays() > 0 ) {
+            Date theoryEndDate = ats.getSelfStudyEndDate() ;
+            selfStudyEndMarker = new ValueMarker( theoryEndDate.getTime() ) ;
         }
         
-        if( ats.getNumEndBufferDays() > 0 ) {
+        if( ats.getConsolidationNumDays() > 0 ) {
             Date endDate = ats.getEndDate() ;
             endMarker = new ValueMarker( endDate.getTime() ) ;
         }
         
-        Marker[] markers = { startMarker, startBufferEndMarker, theoryEndMarker, exerciseEndMarker, endMarker } ;
+        Marker[] markers = { startMarker, coachingEndMarker, selfStudyEndMarker, exerciseEndMarker, endMarker } ;
         Arrays.stream( markers ).forEach( marker -> {
             if( marker != null ) {
                 marker.setPaint( Color.GRAY ) ;
@@ -258,7 +258,7 @@ public class TopicBurnChartTile extends Tile
     
     private void plotBaseMilestoneBurn() {
         
-        final int exerciseStartDayNum = ats.getNumStartBufferDays() + ats.getNumTheoryDays() ;
+        final int exerciseStartDayNum = ats.getCoachingNumDays() + ats.getSelfStudyNumDays() ;
         final int exerciseEndDayNum = exerciseStartDayNum + ats.getNumExerciseDays() ;
         final int topicEndDayNum = ats.getNumTotalDays() ;
         
@@ -281,8 +281,8 @@ public class TopicBurnChartTile extends Tile
     
     private void plotHistoricBurns() {
         
-        int                              numRemainingProblems = ats.getNumTotalProblems() ;
-        List<ProblemAttemptRepo.DayBurn> histBurns            = ats.getHistoricBurns() ;
+        int numRemainingProblems = ats.getNumTotalProblems() ;
+        List<ProblemAttemptRepo.DayBurn> histBurns = ats.getHistoricBurns() ;
         
         if( !histBurns.isEmpty() ) {
             ProblemAttemptRepo.DayBurn firstDayBurnStats = histBurns.get( 0 ) ;

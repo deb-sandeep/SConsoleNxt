@@ -1,4 +1,10 @@
-[Fixed] * The day gantt total time vs the time shown in the effort graphs
-[Fixed] * Thermometer tile ghost border
-[Fixed] * The L30 effort graph in syllabus view does not dynamically update
-[Fixed] * Both session and syllabus time for today needs display on Session screen
+ALTER TABLE sconsolenxt.topic_track_assignment CHANGE start_date start_date date NOT NULL AFTER topic_id;
+ALTER TABLE sconsolenxt.topic_track_assignment CHANGE buffer_left coaching_num_days int DEFAULT 0 NOT NULL;
+ALTER TABLE sconsolenxt.topic_track_assignment CHANGE buffer_right self_study_num_days int DEFAULT 3 NOT NULL;
+ALTER TABLE sconsolenxt.topic_track_assignment CHANGE theory_margin consolidation_num_days int DEFAULT 3 NOT NULL;
+ALTER TABLE sconsolenxt.topic_track_assignment ADD inter_topic_gap_num_days INTEGER DEFAULT 0 NOT NULL;
+
+UI
+-----------
+[] change name of periods to new names
+[] inter topic gap num days functionality

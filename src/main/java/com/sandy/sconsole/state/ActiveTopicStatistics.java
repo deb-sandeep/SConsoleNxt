@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -28,7 +29,9 @@ import static com.sandy.sconsole.core.util.SConsoleUtil.*;
 @Scope( "prototype" )
 public class ActiveTopicStatistics {
     
-    public enum Zone { PRE_START, BUFFER_START, THEORY, EXERCISE, BUFFER_END, POST_END }
+    public static final SimpleDateFormat DF = new SimpleDateFormat( "yyyy-MMM-dd" ) ;
+    
+    public enum Zone { PRE_START, COACHING, SELF_STUDY, EXERCISE, CONSOLIDATiON, POST_END }
     
     @Autowired private TopicRepo topicRepo ;
     @Autowired private TodaySolvedProblemCountRepo tspcRepo ;
@@ -39,17 +42,24 @@ public class ActiveTopicStatistics {
     
     // Static information from the topic plan
     @Getter private int  topicId ;
-    @Getter private int  numStartBufferDays;
-    @Getter private int  numEndBufferDays;
-    @Getter private int  numTheoryDays;
     @Getter private Date startDate ;
+    @Getter private int  coachingNumDays ;
+    @Getter private int  selfStudyNumDays ;
+    @Getter private int  consolidationNumDays ;
     @Getter private Date endDate ;
+    @Getter private int  interTopicGapNumDays ;
     
     // Derived information from the topic plan
     @Getter private int  numTotalDays ;
     @Getter private int  numExerciseDays ;
+    @Getter private Date coachingStartDate ;
+    @Getter private Date coachingEndDate ;
+    @Getter private Date selfStudyStartDate ;
+    @Getter private Date selfStudyEndDate ;
     @Getter private Date exerciseStartDate ;
     @Getter private Date exerciseEndDate ;
+    @Getter private Date consolidationStartDate ;
+    @Getter private Date consolidationEndDate ;
     @Getter private int  numTotalProblems ;
     @Getter private int  originalBurnRate ;
     
@@ -90,12 +100,13 @@ public class ActiveTopicStatistics {
         this.numOvershootDays = 0 ;
         this.numProblemsSolvedToday = 0 ;
 
-        this.topicId            = assignment.getTopicId() ;
-        this.startDate          = assignment.getStartDate() ;
-        this.endDate            = assignment.getEndDate() ; // End time is 23:59:59 of the end date
-        this.numStartBufferDays = assignment.getBufferLeft() ;
-        this.numTheoryDays      = assignment.getTheoryMargin() ;
-        this.numEndBufferDays   = assignment.getBufferRight() ;
+        this.topicId              = assignment.getTopicId() ;
+        this.startDate            = assignment.getStartDate() ;
+        this.endDate              = assignment.getEndDate() ; // End time is 23:59:59 of the end date
+        this.coachingNumDays      = assignment.getCoachingNumDays() ;
+        this.selfStudyNumDays     = assignment.getSelfStudyNumDays() ;
+        this.consolidationNumDays = assignment.getConsolidationNumDays() ;
+        this.interTopicGapNumDays = assignment.getInterTopicGapNumDays() ;
     }
     
     public void init() {
@@ -115,9 +126,17 @@ public class ActiveTopicStatistics {
         
         // Derived information from the topic plan
         numTotalDays      = durationDays( startDate, endDate ) ;
-        numExerciseDays   = numTotalDays - numStartBufferDays - numTheoryDays - numEndBufferDays ;
-        exerciseStartDate = DateUtils.addDays( startDate, numStartBufferDays + numTheoryDays ) ;
-        exerciseEndDate   = DateUtils.addDays( exerciseStartDate, numExerciseDays-1 ) ;
+        numExerciseDays   = numTotalDays - coachingNumDays - selfStudyNumDays - consolidationNumDays ;
+        
+        coachingStartDate      = startDate ;
+        coachingEndDate        = DateUtils.addDays( startDate, coachingNumDays-1 ) ;
+        selfStudyStartDate     = DateUtils.addDays( startDate, coachingNumDays ) ;
+        selfStudyEndDate       = DateUtils.addDays( startDate, coachingNumDays + selfStudyNumDays-1 ) ;
+        exerciseStartDate      = DateUtils.addDays( startDate, coachingNumDays + selfStudyNumDays ) ;
+        exerciseEndDate        = DateUtils.addDays( exerciseStartDate, numExerciseDays-1 ) ;
+        consolidationStartDate = DateUtils.addDays( endDate, -consolidationNumDays ) ;
+        consolidationEndDate   = endDate ;
+        
         numTotalProblems  = topicRepo.getTotalProblemCount( topicId ) ;
         originalBurnRate  = Math.round( (float)numTotalProblems / numExerciseDays ) ;
         
@@ -141,14 +160,20 @@ public class ActiveTopicStatistics {
         this.todayProblemsStateCounter.populateCounts( tpRepo.getProblemStateCountsForToday( topicId ) ) ;
         updateCurrentSessionProblemStates() ;
         
-        //log.debug( "       Start date     - {}", DF.format( startDate ) ) ;
-        //log.debug( "       Exercise start - {}", DF.format( exerciseStartDate ) ) ;
-        //log.debug( "       Exercise end   - {}", DF.format( exerciseEndDate ) ) ;
-        //log.debug( "       End date       - {}", DF.format( endDate ) ) ;
-        //log.debug( "       Total days     - {}", numTotalDays ) ;
-        //log.debug( "       Exercise days  - {}", numExerciseDays ) ;
-        //log.debug( "       Ex days left   - {}", numExerciseDaysLeft ) ;
-        //log.debug( "       Planned burn   - {}", originalBurnRate ) ;
+        log.debug( "       Start date          - {}", DF.format( startDate ) ) ;
+        log.debug( "       Coaching start      - {}", DF.format( coachingStartDate ) ) ;
+        log.debug( "       Coaching end        - {}", DF.format( coachingEndDate ) ) ;
+        log.debug( "       Self study start    - {}", DF.format( selfStudyStartDate ) ) ;
+        log.debug( "       Self study end      - {}", DF.format( selfStudyEndDate ) ) ;
+        log.debug( "       Exercise start      - {}", DF.format( exerciseStartDate ) ) ;
+        log.debug( "       Exercise end        - {}", DF.format( exerciseEndDate ) ) ;
+        log.debug( "       Consolidation start - {}", DF.format( consolidationStartDate ) ) ;
+        log.debug( "       Consolidation end   - {}", DF.format( consolidationEndDate ) ) ;
+        log.debug( "       End date            - {}", DF.format( endDate ) ) ;
+        log.debug( "       Total days          - {}", numTotalDays ) ;
+        log.debug( "       Exercise days       - {}", numExerciseDays ) ;
+        log.debug( "       Ex days left        - {}", numExerciseDaysLeft ) ;
+        log.debug( "       Planned burn        - {}", originalBurnRate ) ;
     }
     
     public void updateCurrentSessionProblemStates() {
@@ -171,8 +196,8 @@ public class ActiveTopicStatistics {
         requiredBurnRate = 0 ;
         
         if( currentZone == Zone.PRE_START ||
-            currentZone == Zone.BUFFER_START ||
-            currentZone == Zone.THEORY ) {
+            currentZone == Zone.COACHING ||
+            currentZone == Zone.SELF_STUDY ) {
 
             // If we are before the exercise start date, the current burn rate is considered zero
             // as there is nothing to track against.
@@ -227,29 +252,21 @@ public class ActiveTopicStatistics {
     
     private Zone computeCurrentZone() {
         
-        Date blStart = startDate ;
-        Date blEnd   = DateUtils.addDays( blStart, numStartBufferDays ) ;
-        Date thEnd   = DateUtils.addDays( blEnd, numTheoryDays ) ;
-        Date exStart = exerciseStartDate ;
-        Date exEnd   = exerciseEndDate ;
-        Date brStart = exerciseStartDate ;
-        Date brEnd   = endDate ;
-        
         Date today = new Date() ;
         if( today.before( startDate ) ) {
             return Zone.PRE_START ;
         }
-        else if( isBetween( blStart, blEnd, today ) ) {
-            return Zone.BUFFER_START ;
+        else if( isBetween( coachingStartDate, coachingEndDate, today ) ) {
+            return Zone.COACHING ;
         }
-        else if( isBetween( blEnd, thEnd, today ) ) {
-            return Zone.THEORY ;
+        else if( isBetween( coachingEndDate, selfStudyEndDate, today ) ) {
+            return Zone.SELF_STUDY ;
         }
-        else if( isBetween( exStart, exEnd, today ) ) {
+        else if( isBetween( exerciseStartDate, exerciseEndDate, today ) ) {
             return Zone.EXERCISE ;
         }
-        else if( isBetween( brStart, brEnd, today ) ) {
-            return Zone.BUFFER_END ;
+        else if( isBetween( consolidationStartDate, consolidationEndDate, today ) ) {
+            return Zone.CONSOLIDATiON ;
         }
         return Zone.POST_END ;
     }

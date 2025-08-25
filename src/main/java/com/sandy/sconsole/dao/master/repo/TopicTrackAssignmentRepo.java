@@ -33,4 +33,6 @@ public interface TopicTrackAssignmentRepo extends JpaRepository<TopicTrackAssign
     List<TopicTrackAssignment> findActiveAssignments( Date date ) ;
     
     TopicTrackAssignment findByTopicId( Integer topicId ) ;
+    
+    List<TopicTrackAssignment> findByTrackId( Integer trackId ) ;
 }

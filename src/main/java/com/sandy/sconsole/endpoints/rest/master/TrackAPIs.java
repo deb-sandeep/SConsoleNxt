@@ -73,6 +73,8 @@ public class TrackAPIs {
         try {
             log.debug( "Saving track assignments for track id {}", trackId ) ;
             
+            ArrayList<TopicTrackAssignment> savedAssignments = new ArrayList<>() ;
+            
             this.txTemplate.executeWithoutResult( status -> {
                 // First we delete all topics belonging to the given track
                 ttaRepo.deleteByTrackId( trackId ) ;
@@ -85,6 +87,16 @@ public class TrackAPIs {
                         .map( TopicTrackAssignment::getTopicId )
                         .collect( Collectors.toList() ) ) ;
                 
+                // If the track start date was changed, we update the track
+                // start date in the database for this track.
+                trackRepo.findById( trackId ).ifPresent( track -> {
+                    Date firstScheduleStartDate = schedules.get( 0 ).getStartDate() ;
+                    if( !track.getStartDate().equals( firstScheduleStartDate ) ) {
+                        track.setStartDate( schedules.get( 0 ).getStartDate() ) ;
+                        trackRepo.save( track ) ;
+                    }
+                }) ;
+                
                 schedules.forEach( schedule -> {
                     // Null the id so that a new entry will be created
                     schedule.setId( null ) ;
@@ -94,12 +106,13 @@ public class TrackAPIs {
                 
                 log.debug( "New assignment saved for track id {}", trackId ) ;
                 log.debug( "Publishing TRACK_UPDATED event for track id {}", trackId ) ;
+
+                Track savedTrack = trackRepo.findById( trackId ).get() ;
+                eventBus.publishEvent( TRACK_UPDATED, trackId ) ;
+                
+                savedAssignments.addAll( ttaRepo.findByTrackId( trackId ) ) ;
             } ) ;
-            
-            Track savedTrack = trackRepo.findById( trackId ).get() ;
-            eventBus.publishEvent( TRACK_UPDATED, trackId ) ;
-            
-            return AR.success( new ArrayList<>( savedTrack.getAssignedTopics() ) ) ;
+            return AR.success( savedAssignments ) ;
         }
         catch( Exception e ) {
             return AR.systemError( e ) ;

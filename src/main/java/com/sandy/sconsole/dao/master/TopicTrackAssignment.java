@@ -28,18 +28,21 @@ public class TopicTrackAssignment {
     @Column( name = "topic_id", nullable = false )
     private Integer topicId ;
     
-    @Column( name = "buffer_left", nullable = false )
-    private Integer bufferLeft ;
-    
-    @Column( name = "buffer_right", nullable = false )
-    private Integer bufferRight ;
-    
-    @Column( name = "theory_margin", nullable = false )
-    private Integer theoryMargin ;
-    
     @Column( name = "start_date", nullable = false )
     private Date startDate ;
     
+    @Column( name = "coaching_num_days", nullable = false )
+    private Integer coachingNumDays ;
+    
+    @Column( name = "self_study_num_days", nullable = false )
+    private Integer selfStudyNumDays ;
+    
+    @Column( name = "consolidation_num_days", nullable = false )
+    private Integer consolidationNumDays ;
+    
     @Column( name = "end_date", nullable = false )
     private Date endDate ;
+    
+    @Column( name = "inter_topic_gap_num_days", nullable = false )
+    private Integer interTopicGapNumDays ;
 }

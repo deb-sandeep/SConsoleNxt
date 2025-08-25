@@ -34,7 +34,7 @@ import static com.sandy.sconsole.core.ui.uiutil.SwingUtils.hideCursor;
 public class SConsoleFrame extends JFrame
     implements ClockTickListener {
     
-    private static final SimpleDateFormat DF = new SimpleDateFormat( "yyyy-MM-dd HHmmss" ) ;
+    public static final SimpleDateFormat DF = new SimpleDateFormat( "yyyy-MM-dd HHmmss" ) ;
     
     private final Container contentPane ;
     

@@ -16,12 +16,14 @@ class TopicState {
     private final int currentBurnRate ;
     private final int requiredBurnRate ;
     private final int numProblemsSolvedToday ;
+    private final int numPigeons ;
     
     TopicState( ActiveTopicStatistics ts ) {
         this.topicName = ts.getTopic().getTopicName() ;
         this.currentBurnRate = ts.getCurrentBurnRate() ;
         this.requiredBurnRate = ts.getRequiredBurnRate() ;
         this.numProblemsSolvedToday = ts.getNumProblemsSolvedToday() ;
+        this.numPigeons = ts.getNumPigeonedProblems() ;
     }
 }
 
