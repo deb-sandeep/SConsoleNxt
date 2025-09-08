@@ -4,6 +4,8 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.awt.image.ByteLookupTable;
+import java.awt.image.LookupOp;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Random;
@@ -84,5 +86,32 @@ public class SwingUtils {
                 Math.max((int)(color.getGreen()*factor), 0),
                 Math.max((int)(color.getBlue() *factor), 0),
                 color.getAlpha());
+    }
+    
+    public static BufferedImage invertColors(BufferedImage src) {
+        BufferedImage argb = toARGB(src);
+        
+        // Build lookup tables: invert for RGB, identity for A
+        byte[] inv = new byte[256];
+        byte[] id  = new byte[256];
+        for (int i = 0; i < 256; i++) {
+            inv[i] = (byte) (255 - i);
+            id[i]  = (byte) i;
+        }
+        ByteLookupTable table = new ByteLookupTable(0, new byte[][]{inv, inv, inv, id});
+        LookupOp op = new LookupOp(table, null);
+        
+        BufferedImage dst = new BufferedImage(argb.getWidth(), argb.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        op.filter(argb, dst);
+        return dst;
+    }
+    
+    private static BufferedImage toARGB(BufferedImage img) {
+        if (img.getType() == BufferedImage.TYPE_INT_ARGB) return img;
+        BufferedImage out = new BufferedImage(img.getWidth(), img.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = out.createGraphics();
+        g.drawImage(img, 0, 0, null);
+        g.dispose();
+        return out;
     }
 }

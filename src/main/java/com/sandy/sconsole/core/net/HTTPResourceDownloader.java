@@ -84,7 +84,7 @@ public class HTTPResourceDownloader {
                                        Map<String, String> cookies )
         throws Exception {
         
-        Request.Builder builder = null ;
+        Request.Builder builder ;
         builder = new Request.Builder()
                              .url( url ) ;
         

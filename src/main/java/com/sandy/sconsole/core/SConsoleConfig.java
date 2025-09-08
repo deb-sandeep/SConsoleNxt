@@ -17,4 +17,7 @@ public class SConsoleConfig {
     private String envType = "dev" ;
     private File workspacePath = null ;
     private boolean printEventPublishLogs = false ;
+    
+    private String chemSpiderApiKey = null ;
+    private File chemCompoundsImgFolder = null ;
 }
