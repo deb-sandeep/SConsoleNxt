@@ -3,7 +3,7 @@
     [x] Store compound in DB
     [x] API checks on DB before invoking ChemSpider
 [x] Test the API with postman
-- Refresh jars on server
-- Check out the native library issue for indigo on Raspberry.
-- Deploy code on server
-- Test ChemSpider client functioning on server with postman
+[x] Refresh jars on server
+[x] Check out the native library issue for indigo on Raspberry.
+[x] Deploy code on server
+[x] Test ChemSpider client functioning on server with postman
