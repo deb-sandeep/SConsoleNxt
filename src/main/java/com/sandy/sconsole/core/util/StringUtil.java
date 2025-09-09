@@ -1,9 +1,12 @@
 package com.sandy.sconsole.core.util;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 
+@Slf4j
 public final class StringUtil {
 
     public static boolean isEmptyOrNull( final String str ) {
@@ -64,5 +67,17 @@ public final class StringUtil {
         }
 
         return enrichedString ;
+    }
+    
+    public static String toJSON( Object obj ) {
+        String retVal ;
+        try {
+            retVal = new ObjectMapper().writeValueAsString( obj ) ;
+        }
+        catch( Exception e ) {
+            log.error( "Error while converting object {} to JSON string", obj, e ) ;
+            retVal = obj.toString() ;
+        }
+        return retVal ;
     }
 }

@@ -1,10 +1,9 @@
-ALTER TABLE sconsolenxt.topic_track_assignment CHANGE start_date start_date date NOT NULL AFTER topic_id;
-ALTER TABLE sconsolenxt.topic_track_assignment CHANGE buffer_left coaching_num_days int DEFAULT 0 NOT NULL;
-ALTER TABLE sconsolenxt.topic_track_assignment CHANGE buffer_right self_study_num_days int DEFAULT 3 NOT NULL;
-ALTER TABLE sconsolenxt.topic_track_assignment CHANGE theory_margin consolidation_num_days int DEFAULT 3 NOT NULL;
-ALTER TABLE sconsolenxt.topic_track_assignment ADD inter_topic_gap_num_days INTEGER DEFAULT 0 NOT NULL;
-
-UI
------------
-[] change name of periods to new names
-[] inter topic gap num days functionality
+[x] Create an API endpoint to invoke ChemSpider fetching
+    [x] DB schema to store compound meta data
+    [x] Store compound in DB
+    [x] API checks on DB before invoking ChemSpider
+[x] Test the API with postman
+- Refresh jars on server
+- Check out the native library issue for indigo on Raspberry.
+- Deploy code on server
+- Test ChemSpider client functioning on server with postman

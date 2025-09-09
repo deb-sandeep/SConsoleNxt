@@ -28,6 +28,9 @@ public class ChemSpiderAPIClient {
     private static final String FILTER_NAME_API =
             "https://api.rsc.org/compounds/v1/filter/name" ;
     
+    private static final String FILTER_SMILES_API =
+            "https://api.rsc.org/compounds/v1/filter/smiles" ;
+    
     private static final String QUERY_STATUS_API =
             "https://api.rsc.org/compounds/v1/filter/${qid}/status" ;
     
@@ -113,6 +116,18 @@ public class ChemSpiderAPIClient {
         return null ;
     }
     
+    public ChemCompound fetchBySmiles( String smiles ) {
+        try {
+            log.debug( "Fetching compound for smiles {}", smiles ) ;
+            String queryId = getQueryId( FILTER_SMILES_API, Map.of( "smiles", smiles ) ) ;
+            return fetchCompound( queryId ) ;
+        }
+        catch( Exception e ) {
+            log.error( "  Error while fetching compound for smiles {}", smiles, e ) ;
+        }
+        return null ;
+    }
+    
     private String getQueryId( String filterUrl, Map<String, String> bodyMap ) throws Exception {
         
         log.debug( "  Fetching query id" ) ;
@@ -141,9 +156,7 @@ public class ChemSpiderAPIClient {
         
         int resultId = getFirstResultId( queryId ) ;
         if( resultId != -1 ) {
-            ChemCompound cc = fetchResultDetails( resultId ) ;
-            renderMol2D( cc ) ;
-            return cc ;
+            return fetchResultDetails( resultId ) ;
         }
         else {
             log.info( "  No compound found for query id {}", queryId ) ;
@@ -212,14 +225,14 @@ public class ChemSpiderAPIClient {
         cc.setCommonName( jsonNode.get( "commonName" ).asText() ) ;
         cc.setSmiles( jsonNode.get( "smiles" ).asText() ) ;
         cc.setFormula( jsonNode.get( "formula" ).asText() ) ;
-        cc.setStdInChiKey( jsonNode.get( "stdinchiKey" ).asText() ) ;
         cc.setMolecularWeight( (float)jsonNode.get( "molecularWeight" ).asDouble() ) ;
         cc.setAverageMass( (float)jsonNode.get( "averageMass" ).asDouble() ) ;
         cc.setMol2D( jsonNode.get( "mol2D" ).asText() ) ;
         cc.setMol3D( jsonNode.get( "mol3D" ).asText() ) ;
         
-        if( cc.getStdInChiKey() != null ) {
-            cc.setIupacName( fetchIUPACName( cc.getStdInChiKey() ) ) ;
+        String stdInchiKey = jsonNode.get( "stdinchiKey" ).asText() ;
+        if( stdInchiKey != null ) {
+            cc.setIupacName( fetchIUPACName( stdInchiKey ) ) ;
         }
         
         return cc ;
