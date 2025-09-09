@@ -49,26 +49,29 @@ public class ChemSpiderAPIClient {
     
     private final APIClient client ;
     
-    public ChemSpiderAPIClient( APIClient client, SConsoleConfig config ) {
+    public ChemSpiderAPIClient( APIClient client, SConsoleConfig config )
+        throws ChemSpiderException {
         this.client = client ;
         this.createApiHeaderMap( config ) ;
         this.createImgFolder( config ) ;
     }
     
-    private void createApiHeaderMap( SConsoleConfig config ) {
+    private void createApiHeaderMap( SConsoleConfig config )
+        throws ChemSpiderException {
         String apiKey = System.getProperty( "sconsole.chemSpiderApiKey" ) ;
         if( apiKey == null ) {
             apiKey = config.getChemSpiderApiKey() ;
         }
         if( apiKey == null ) {
-            throw new IllegalArgumentException( "ChemSpider API key not specified. " +
+            throw new ChemSpiderException( "ChemSpider API key not specified. " +
                     "Please set the system property 'chemspider.api.secret'" ) ;
         }
         this.apiHeader = Map.of( "apiKey", apiKey,
                                  "Content-Type", "application/json" ) ;
     }
     
-    private void createImgFolder( SConsoleConfig config ) {
+    private void createImgFolder( SConsoleConfig config )
+        throws ChemSpiderException {
         File imgDir = config.getChemCompoundsImgFolder() ;
         if( imgDir == null ) {
             File wkspDir = config.getWorkspacePath() ;
@@ -79,7 +82,7 @@ public class ChemSpiderAPIClient {
         }
         
         if( imgDir.exists() && !imgDir.isDirectory() ) {
-            throw new IllegalArgumentException( "ChemCompoundsImgFolder is not a directory" ) ;
+            throw new ChemSpiderException( "ChemCompoundsImgFolder is not a directory" ) ;
         }
         
         if( !imgDir.exists() ) {
@@ -91,50 +94,63 @@ public class ChemSpiderAPIClient {
         this.imgFolder = imgDir ;
     }
     
-    public ChemCompound fetchByName( String name ) {
+    public ChemCompound fetchByName( String name )
+        throws ChemSpiderException {
         try {
             log.debug( "Fetching compound for name {}", name ) ;
             String queryId = getQueryId( FILTER_NAME_API, Map.of( "name", name) ) ;
             return fetchCompound( queryId ) ;
         }
+        catch( ChemSpiderException e ) {
+            throw e ;
+        }
         catch( Exception e ) {
             log.error( "  Error while fetching compound for name {}", name, e ) ;
+            throw new ChemSpiderException( "Error while fetching compound for name " + name, e ) ;
         }
-        return null ;
     }
     
     
-    public ChemCompound fetchByFormula( String formula ) {
+    public ChemCompound fetchByFormula( String formula )
+        throws ChemSpiderException {
         try {
             log.debug( "Fetching compound for formula {}", formula ) ;
             String queryId = getQueryId( FILTER_FORMULA_API, Map.of( "formula", formula ) ) ;
             return fetchCompound( queryId ) ;
         }
+        catch( ChemSpiderException e ) {
+            throw e ;
+        }
         catch( Exception e ) {
             log.error( "  Error while fetching compound for formula {}", formula, e ) ;
+            throw new ChemSpiderException( "Error while fetching compound for formula " + formula, e ) ;
         }
-        return null ;
     }
     
-    public ChemCompound fetchBySmiles( String smiles ) {
+    public ChemCompound fetchBySmiles( String smiles )
+        throws ChemSpiderException {
         try {
             log.debug( "Fetching compound for smiles {}", smiles ) ;
             String queryId = getQueryId( FILTER_SMILES_API, Map.of( "smiles", smiles ) ) ;
             return fetchCompound( queryId ) ;
         }
+        catch( ChemSpiderException e ) {
+            throw e ;
+        }
         catch( Exception e ) {
             log.error( "  Error while fetching compound for smiles {}", smiles, e ) ;
+            throw new ChemSpiderException( "Error while fetching compound for smiles " + smiles, e ) ;
         }
-        return null ;
     }
     
-    private String getQueryId( String filterUrl, Map<String, String> bodyMap ) throws Exception {
+    private String getQueryId( String filterUrl, Map<String, String> bodyMap )
+            throws ChemSpiderException, IOException {
         
         log.debug( "  Fetching query id" ) ;
         APIResponse response = client.post( filterUrl, apiHeader, bodyMap ) ;
         if( response.code() != 200 ) {
             log.error( response.body() ) ;
-            throw new Exception( "Error while getting query id for url " + filterUrl + " with body " + bodyMap ) ;
+            throw new ChemSpiderException( "Error while getting query id for url " + filterUrl + " with body " + bodyMap ) ;
         }
         
         JsonNode jsonNode = response.json() ;
@@ -144,11 +160,12 @@ public class ChemSpiderAPIClient {
         else {
             log.error( "\tResponse does not have queryId" ) ;
             log.error( response.body() ) ;
-            throw new Exception( "Could not obtain queryId" ) ;
+            throw new ChemSpiderException( "Could not obtain queryId" ) ;
         }
     }
     
-    private ChemCompound fetchCompound( String queryId ) throws  Exception {
+    private ChemCompound fetchCompound( String queryId )
+        throws ChemSpiderException, IOException, InterruptedException {
         log.debug( "  Query id = {}", queryId ) ;
         
         waitTillQueryProcessed( queryId ) ;
@@ -165,7 +182,8 @@ public class ChemSpiderAPIClient {
     }
         
     
-    private void waitTillQueryProcessed( String queryId ) throws Exception {
+    private void waitTillQueryProcessed( String queryId )
+            throws ChemSpiderException, InterruptedException, IOException {
         
         log.debug( "  Waiting till query processed on server" ) ;
         
@@ -179,7 +197,7 @@ public class ChemSpiderAPIClient {
             APIResponse response = client.get( url, apiHeader ) ;
             if( response.code() != 200 ) {
                 log.error( response.body() ) ;
-                throw new Exception( "Error while getting query status for query id " + queryId ) ;
+                throw new ChemSpiderException( "Error while getting query status for query id " + queryId ) ;
             }
             
             JsonNode jsonNode = response.json() ;
@@ -197,12 +215,13 @@ public class ChemSpiderAPIClient {
         }
     }
     
-    private int getFirstResultId( String queryId ) throws Exception {
+    private int getFirstResultId( String queryId )
+            throws ChemSpiderException, IOException {
         
         APIResponse response = client.get( QUERY_RESULT_ID_API.replace( "${qid}", queryId ), apiHeader ) ;
         if( response.code() != 200 ) {
             log.error( response.body() ) ;
-            throw new Exception( "Error while getting result id for query id " + queryId ) ;
+            throw new ChemSpiderException( "Error while getting result id for query id " + queryId ) ;
         }
         
         JsonNode resultsNode = response.json().get( "results" ) ;
@@ -212,11 +231,12 @@ public class ChemSpiderAPIClient {
         return -1 ;
     }
     
-    private ChemCompound fetchResultDetails( int resultId ) throws Exception {
+    private ChemCompound fetchResultDetails( int resultId )
+            throws ChemSpiderException, IOException {
         APIResponse response = client.get( QUERY_RESULT_API.replace( "${rid}", Integer.toString( resultId ) ), apiHeader ) ;
         if( response.code() != 200 ) {
             log.error( response.body() ) ;
-            throw new Exception( "Error while getting result details for result id " + resultId ) ;
+            throw new ChemSpiderException( "Error while getting result details for result id " + resultId ) ;
         }
         
         JsonNode jsonNode = response.json() ;
@@ -238,11 +258,12 @@ public class ChemSpiderAPIClient {
         return cc ;
     }
     
-    private String fetchIUPACName( String stdInchiKey ) throws Exception {
+    private String fetchIUPACName( String stdInchiKey )
+            throws ChemSpiderException, IOException {
         APIResponse response = client.get( PUBCHEM_IUPAC_NAME_API.replace( "${SIK}", stdInchiKey ) ) ;
         if( response.code() != 200 ) {
             log.error( response.body() ) ;
-            throw new Exception( "Error while getting IUPAC name for inchi key " + stdInchiKey ) ;
+            throw new ChemSpiderException( "Error while getting IUPAC name for inchi key " + stdInchiKey ) ;
         }
         
         JsonNode jsonNode = response.json() ;

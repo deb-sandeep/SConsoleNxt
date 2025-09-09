@@ -2,6 +2,7 @@ package com.sandy.sconsole.endpoints.rest.master;
 
 import com.sandy.sconsole.core.api.AR;
 import com.sandy.sconsole.core.api.client.chemspider.ChemCompound;
+import com.sandy.sconsole.core.api.client.chemspider.ChemSpiderException;
 import com.sandy.sconsole.endpoints.rest.master.helper.ChemCompoundHelper;
 import com.sandy.sconsole.endpoints.rest.master.vo.reqres.ChemCompoundImportReq;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +34,9 @@ public class ChemCompoundAPIs {
                 return success( cc ) ;
             }
             return functionalError( "No compound found for given name." ) ;
+        }
+        catch( ChemSpiderException cse ) {
+            return functionalError( cse.getMessage(), cse.getCause() ) ;
         }
         catch( Exception e ) {
             return systemError( e );

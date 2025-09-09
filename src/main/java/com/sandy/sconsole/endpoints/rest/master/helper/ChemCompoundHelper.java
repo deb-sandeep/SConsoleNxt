@@ -2,6 +2,7 @@ package com.sandy.sconsole.endpoints.rest.master.helper;
 
 import com.sandy.sconsole.core.api.client.chemspider.ChemCompound;
 import com.sandy.sconsole.core.api.client.chemspider.ChemSpiderAPIClient;
+import com.sandy.sconsole.core.api.client.chemspider.ChemSpiderException;
 import com.sandy.sconsole.dao.chem.ChemCompoundDBO;
 import com.sandy.sconsole.dao.chem.ChemCompoundRepo;
 import com.sandy.sconsole.endpoints.rest.master.vo.reqres.ChemCompoundImportReq;
@@ -22,7 +23,7 @@ public class ChemCompoundHelper {
     @Autowired private ChemSpiderAPIClient csClient ;
     
     public ChemCompound importCompound( ChemCompoundImportReq req )
-        throws IllegalStateException, IOException {
+        throws ChemSpiderException, IOException {
         
         log.debug( "Importing compound: {}", toJSON( req ) ) ;
         ChemCompound cc = fetchCompoundFromAPI( req ) ;
@@ -33,7 +34,7 @@ public class ChemCompoundHelper {
                 log.debug( "Local copy already present." ) ;
                 if( !req.isForceImport() ) {
                     log.debug( "Not importing. ForceImport flag is false." ) ;
-                    throw new IllegalStateException( "Local copy already present. Not importing" );
+                    throw new ChemSpiderException( "Local copy already present. Not importing" );
                 }
                 else {
                     log.debug( "ForceImport flag is true. Overwriting local copy." ) ;
@@ -45,18 +46,21 @@ public class ChemCompoundHelper {
             }
             log.debug( "Rendering molecule." ) ;
             csClient.renderMol2D( cc ) ;
+            
             log.debug( "Persisting local copy." ) ;
-            ccRepo.save( dbo ) ;
+            ChemCompoundDBO savedDBO = ccRepo.save( dbo ) ;
+            cc.setId( savedDBO.getId() ) ;
         }
         return cc ;
     }
     
-    private ChemCompound fetchCompoundFromAPI( ChemCompoundImportReq req ) {
+    private ChemCompound fetchCompoundFromAPI( ChemCompoundImportReq req )
+        throws ChemSpiderException {
         return switch( req.getImportType() ) {
-            case IMPORT_TYPE_FORMULA -> csClient.fetchByFormula( req.getFormula() );
-            case IMPORT_TYPE_NAME -> csClient.fetchByName( req.getName() );
-            case IMPORT_TYPE_SMILES -> csClient.fetchBySmiles( req.getSmiles() );
-            default -> throw new IllegalStateException( "Unexpected import type: " + req.getImportType() ) ;
+            case IMPORT_TYPE_FORMULA -> csClient.fetchByFormula( req.getFilterText() );
+            case IMPORT_TYPE_NAME -> csClient.fetchByName( req.getFilterText() );
+            case IMPORT_TYPE_SMILES -> csClient.fetchBySmiles( req.getFilterText() );
+            default -> throw new ChemSpiderException( "Unexpected import type: " + req.getImportType() ) ;
         };
     }
 }

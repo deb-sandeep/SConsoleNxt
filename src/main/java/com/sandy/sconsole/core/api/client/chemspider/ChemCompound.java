@@ -6,6 +6,7 @@ import lombok.Data;
 @Data
 public class ChemCompound {
 
+    private int id ;
     private int chemSpiderId ;
     private String commonName ;
     private String iupacName ;
@@ -20,6 +21,7 @@ public class ChemCompound {
     public ChemCompound() {}
     
     public ChemCompound( ChemCompoundDBO dbo ) {
+        this.id = dbo.getId() ;
         this.chemSpiderId = dbo.getChemSpiderId() ;
         this.commonName = dbo.getCommonName() ;
         this.iupacName = dbo.getIupacName() ;
