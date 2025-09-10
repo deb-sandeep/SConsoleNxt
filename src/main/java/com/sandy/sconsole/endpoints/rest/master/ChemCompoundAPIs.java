@@ -45,6 +45,31 @@ public class ChemCompoundAPIs {
         }
     }
     
+    @GetMapping( "/{id}" )
+    public ResponseEntity<AR<ChemCompound>> getChemCompound (
+            @PathVariable( "id" ) int id ) {
+        try {
+            return success( new ChemCompound( ccRepo.findById( id ).get() ) ) ;
+        }
+        catch( Exception e ) {
+            return systemError( e ) ;
+        }
+    }
+    
+    @DeleteMapping( "/{id}" )
+    @Transactional
+    public ResponseEntity<AR<String>> deleteChemCompound ( @PathVariable( "id" ) int id ) {
+        try {
+            helper.deleteCompoundFiles( id ) ;
+            ccRepo.deleteById( id ) ;
+            return success( "Success" ) ;
+        }
+        catch( Exception e ) {
+            return systemError( e ) ;
+        }
+    }
+    
+    
     @PostMapping( "/Import" )
     @Transactional
     public ResponseEntity<AR<ChemCompound>> importChemCompound (
@@ -81,4 +106,5 @@ public class ChemCompoundAPIs {
             return systemError( e );
         }
     }
+    
 }

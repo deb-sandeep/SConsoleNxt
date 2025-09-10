@@ -1,5 +1,6 @@
 package com.sandy.sconsole.endpoints.rest.master.helper;
 
+import com.sandy.sconsole.core.SConsoleConfig;
 import com.sandy.sconsole.core.api.client.chemspider.ChemCompound;
 import com.sandy.sconsole.core.api.client.chemspider.ChemSpiderAPIClient;
 import com.sandy.sconsole.core.api.client.chemspider.ChemSpiderException;
@@ -10,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.io.IOException;
 
 import static com.sandy.sconsole.core.util.StringUtil.toJSON;
@@ -21,13 +23,14 @@ public class ChemCompoundHelper {
     
     @Autowired private ChemCompoundRepo ccRepo ;
     @Autowired private ChemSpiderAPIClient csClient ;
+    @Autowired private SConsoleConfig config ;
     
     public ChemCompound importCompound( ChemCompoundImportReq req )
         throws ChemSpiderException, IOException {
         
         log.debug( "Importing compound: {}", toJSON( req ) ) ;
         ChemCompound cc = fetchCompoundFromAPI( req ) ;
-        log.debug( "Fetched compound: {}", toJSON( cc ) ) ;
+        log.debug( "Fetched compound}" ) ;
         if( cc != null ) {
             ChemCompoundDBO dbo = ccRepo.findBySmiles( cc.getSmiles() ) ;
             if( dbo != null ) {
@@ -62,5 +65,27 @@ public class ChemCompoundHelper {
             case IMPORT_TYPE_SMILES -> csClient.fetchBySmiles( req.getFilterText() );
             default -> throw new ChemSpiderException( "Unexpected import type: " + req.getImportType() ) ;
         };
+    }
+    
+    public void deleteCompoundFiles( int id ) {
+        ChemCompoundDBO dbo = ccRepo.findById( id ).get() ;
+        File imgDir = new File( config.getWorkspacePath(), "chem-compound-imgs" ) ;
+        
+        File darkImgFile = new File( imgDir, dbo.getChemSpiderId() + ".dark.png" ) ;
+        File lightImgFile = new File( imgDir, dbo.getChemSpiderId() + ".light.png" ) ;
+        
+        if( darkImgFile.delete() ) {
+            log.debug( "Deleted dark image file: {}", darkImgFile.getAbsolutePath() ) ;
+        }
+        else {
+            log.warn( "Failed to delete dark image file: {}", darkImgFile.getAbsolutePath() ) ;
+        }
+        
+        if( lightImgFile.delete() ) {
+            log.debug( "Deleted light image file: {}", lightImgFile.getAbsolutePath() ) ;
+        }
+        else {
+            log.warn( "Failed to delete light image file: {}", lightImgFile.getAbsolutePath() ) ;
+        }
     }
 }

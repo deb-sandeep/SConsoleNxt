@@ -260,11 +260,11 @@ public class ChemSpiderAPIClient {
     }
     
     private String fetchIUPACName( String stdInchiKey )
-            throws ChemSpiderException, IOException {
+            throws IOException {
         APIResponse response = client.get( PUBCHEM_IUPAC_NAME_API.replace( "${SIK}", stdInchiKey ) ) ;
         if( response.code() != 200 ) {
             log.error( response.body() ) ;
-            throw new ChemSpiderException( "Error while getting IUPAC name for inchi key " + stdInchiKey ) ;
+            return "<NOT FOUND>" ;
         }
         
         JsonNode jsonNode = response.json() ;
