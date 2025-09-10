@@ -57,6 +57,7 @@ public class ChemCompoundDBO {
         this.iupacName = cc.getIupacName();
         this.smiles = cc.getSmiles();
         this.formula = cc.getFormula();
+        this.compactFormula = cc.getCompactFormula();
         this.molecularWeight = cc.getMolecularWeight();
         this.averageMass = cc.getAverageMass();
         this.mol2D = cc.getMol2D();

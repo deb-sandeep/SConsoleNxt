@@ -245,6 +245,7 @@ public class ChemSpiderAPIClient {
         cc.setCommonName( jsonNode.get( "commonName" ).asText() ) ;
         cc.setSmiles( jsonNode.get( "smiles" ).asText() ) ;
         cc.setFormula( jsonNode.get( "formula" ).asText() ) ;
+        cc.setCompactFormula( cc.getFormula() ) ;
         cc.setMolecularWeight( (float)jsonNode.get( "molecularWeight" ).asDouble() ) ;
         cc.setAverageMass( (float)jsonNode.get( "averageMass" ).asDouble() ) ;
         cc.setMol2D( jsonNode.get( "mol2D" ).asText() ) ;
