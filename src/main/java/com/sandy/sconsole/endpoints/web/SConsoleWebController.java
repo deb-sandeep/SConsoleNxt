@@ -23,6 +23,7 @@ public class SConsoleWebController {
         config.setAllowedHeaders( List.of( "*" ) ) ;
         config.setAllowedHeaders( Arrays.asList("Origin", "Content-Type", "Accept") ) ;
         config.setAllowedMethods( Arrays.asList("GET", "POST", "PUT", "OPTIONS", "DELETE", "PATCH") ) ;
+        config.addExposedHeader( "Content-Disposition" ) ;
         
         source.registerCorsConfiguration( "/**", config ) ;
         return new CorsFilter( source ) ;

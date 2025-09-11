@@ -17,6 +17,7 @@ public class ChemCompound {
     private String mol2D ;
     private String mol3D ;
     private String compactFormula ;
+    private boolean cardDownloaded = false;
     
     public ChemCompound() {}
     
@@ -32,5 +33,6 @@ public class ChemCompound {
         this.mol2D = dbo.getMol2D() ;
         this.mol3D = dbo.getMol3D() ;
         this.compactFormula = dbo.getCompactFormula() ;
+        this.cardDownloaded = dbo.getCardDownloaded() ;
     }
 }

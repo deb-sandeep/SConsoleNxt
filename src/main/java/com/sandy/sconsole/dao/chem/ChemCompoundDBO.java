@@ -4,6 +4,7 @@ import com.sandy.sconsole.core.api.client.chemspider.ChemCompound;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
 @Getter
 @Setter
@@ -45,6 +46,10 @@ public class ChemCompoundDBO {
     @Column( name = "compact_formula", length = 256 )
     private String compactFormula;
     
+    @ColumnDefault( "b'0'" )
+    @Column( name = "card_downloaded" )
+    private Boolean cardDownloaded;
+    
     public ChemCompoundDBO() {}
     
     public ChemCompoundDBO( ChemCompound cc ) {
@@ -62,5 +67,6 @@ public class ChemCompoundDBO {
         this.averageMass = cc.getAverageMass();
         this.mol2D = cc.getMol2D();
         this.mol3D = cc.getMol3D();
+        this.cardDownloaded = cc.isCardDownloaded() ;
     }
 }

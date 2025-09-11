@@ -9,10 +9,15 @@ import com.sandy.sconsole.endpoints.rest.master.helper.ChemCompoundHelper;
 import com.sandy.sconsole.endpoints.rest.master.vo.reqres.ChemCompoundImportReq;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -107,4 +112,20 @@ public class ChemCompoundAPIs {
         }
     }
     
+    @PostMapping( "/DownloadCards" )
+    public ResponseEntity<Resource> downloadCards ( @RequestBody List<Integer> ids ) {
+        try {
+            Path path = helper.prepareArchiveForDownload( ids ) ;
+            Resource resource = new UrlResource( path.toUri() ) ;
+            return ResponseEntity.ok()
+                    .header( HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + path.getFileName() + "\"")
+                    .header( HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, "Content-Disposition" )
+                    .contentType( MediaType.APPLICATION_OCTET_STREAM )
+                    .body( resource ) ;
+        }
+        catch( Exception e ) {
+            log.error( "Error while downloading cards.", e ) ;
+            return ResponseEntity.status( 500 ).build() ;
+        }
+    }
 }
