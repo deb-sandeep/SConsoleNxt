@@ -29,7 +29,7 @@ public class TopicAssignmentCalendarHelper {
     private TopicRepo topicRepo = null ;
     
     public TopicAssignmentCalendarHelper() {
-        DT_DF.setTimeZone( java.util.TimeZone.getTimeZone( "UTC" ) ) ;
+        DTSTAMP_DF.setTimeZone( java.util.TimeZone.getTimeZone( "UTC" ) ) ;
     }
     
     public String getCalendarEntries( String syllabusName ) {
