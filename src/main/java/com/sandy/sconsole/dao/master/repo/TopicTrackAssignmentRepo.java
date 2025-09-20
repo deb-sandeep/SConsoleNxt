@@ -32,6 +32,18 @@ public interface TopicTrackAssignmentRepo extends JpaRepository<TopicTrackAssign
     """)
     List<TopicTrackAssignment> findActiveAssignments( Date date ) ;
     
+    @Query( """
+        select tta
+        from TopicTrackAssignment tta
+            left outer join Track  t
+                on tta.trackId = t.id
+        where
+            t.syllabusName = :syllabusName
+        order by
+            tta.startDate
+    """)
+    List<TopicTrackAssignment> findBySyllabus( String syllabusName ) ;
+    
     TopicTrackAssignment findByTopicId( Integer topicId ) ;
     
     List<TopicTrackAssignment> findByTrackId( Integer trackId ) ;

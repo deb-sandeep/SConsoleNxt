@@ -1,15 +1,21 @@
 package com.sandy.sconsole.endpoints.rest.master;
 
+import com.sandy.sconsole.AppConstants;
+import com.sandy.sconsole.SConsole;
 import com.sandy.sconsole.core.api.AR;
 import com.sandy.sconsole.core.bus.EventBus;
 import com.sandy.sconsole.dao.master.TopicTrackAssignment;
 import com.sandy.sconsole.dao.master.Track;
 import com.sandy.sconsole.dao.master.repo.TopicTrackAssignmentRepo;
 import com.sandy.sconsole.dao.master.repo.TrackRepo;
+import com.sandy.sconsole.endpoints.rest.master.helper.TopicAssignmentCalendarHelper;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -117,5 +123,25 @@ public class TrackAPIs {
         catch( Exception e ) {
             return AR.systemError( e ) ;
         }
+    }
+    
+    @GetMapping(value = "/calendar.ics", produces = "text/calendar")
+    public ResponseEntity<String> getCalendar( @RequestParam( value="syllabus" ) String syllabus ) {
+        
+        String syllabusName = AppConstants.IIT_PHY_SYLLABUS_NAME ;
+        switch( syllabus.toLowerCase() ) {
+            case "physics" -> syllabusName = AppConstants.IIT_PHY_SYLLABUS_NAME ;
+            case "chemistry" -> syllabusName = AppConstants.IIT_CHEM_SYLLABUS_NAME ;
+            case "maths" -> syllabusName = AppConstants.IIT_MATHS_SYLLABUS_NAME ;
+        }
+        
+        TopicAssignmentCalendarHelper helper = SConsole.getBean( TopicAssignmentCalendarHelper.class ) ;
+        String icsContents = helper.getCalendarEntries( syllabusName ) ;
+        
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(new MediaType("text", "calendar"));
+        headers.set(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=calendar.ics");
+        
+        return new ResponseEntity<>( icsContents, headers, HttpStatus.OK ) ;
     }
 }
