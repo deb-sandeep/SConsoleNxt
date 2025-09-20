@@ -103,6 +103,7 @@ public class ChemCompoundAPIs {
             dbo.setCommonName( editedCompound.getCommonName() ) ;
             dbo.setIupacName( editedCompound.getIupacName() ) ;
             dbo.setCompactFormula( editedCompound.getCompactFormula() ) ;
+            dbo.setCardDownloaded( false ) ;
             ccRepo.save( dbo ) ;
             
             return success() ;
