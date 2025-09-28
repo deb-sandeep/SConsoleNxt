@@ -129,9 +129,21 @@ public class ActiveTopicStatistics {
         numExerciseDays   = numTotalDays - coachingNumDays - selfStudyNumDays - consolidationNumDays ;
         
         coachingStartDate      = startDate ;
-        coachingEndDate        = DateUtils.addDays( startDate, coachingNumDays-1 ) ;
-        selfStudyStartDate     = DateUtils.addDays( startDate, coachingNumDays ) ;
-        selfStudyEndDate       = DateUtils.addDays( startDate, coachingNumDays + selfStudyNumDays-1 ) ;
+        if( coachingNumDays > 0 ) {
+            coachingEndDate = DateUtils.addDays( startDate, coachingNumDays-1 ) ;
+        }
+        else {
+            coachingEndDate = startDate ;
+        }
+        
+        selfStudyStartDate = DateUtils.addDays( startDate, coachingNumDays ) ;
+        if( selfStudyNumDays > 0 ) {
+            selfStudyEndDate = DateUtils.addDays( startDate, coachingNumDays + selfStudyNumDays-1 ) ;
+        }
+        else {
+            selfStudyEndDate = selfStudyStartDate ;
+        }
+        
         exerciseStartDate      = DateUtils.addDays( startDate, coachingNumDays + selfStudyNumDays ) ;
         exerciseEndDate        = DateUtils.addDays( exerciseStartDate, numExerciseDays-1 ) ;
         consolidationStartDate = DateUtils.addDays( endDate, -consolidationNumDays ) ;
@@ -160,20 +172,20 @@ public class ActiveTopicStatistics {
         this.todayProblemsStateCounter.populateCounts( tpRepo.getProblemStateCountsForToday( topicId ) ) ;
         updateCurrentSessionProblemStates() ;
         
-//        log.debug( "       Start date          - {}", DF.format( startDate ) ) ;
-//        log.debug( "       Coaching start      - {}", DF.format( coachingStartDate ) ) ;
-//        log.debug( "       Coaching end        - {}", DF.format( coachingEndDate ) ) ;
-//        log.debug( "       Self study start    - {}", DF.format( selfStudyStartDate ) ) ;
-//        log.debug( "       Self study end      - {}", DF.format( selfStudyEndDate ) ) ;
-//        log.debug( "       Exercise start      - {}", DF.format( exerciseStartDate ) ) ;
-//        log.debug( "       Exercise end        - {}", DF.format( exerciseEndDate ) ) ;
-//        log.debug( "       Consolidation start - {}", DF.format( consolidationStartDate ) ) ;
-//        log.debug( "       Consolidation end   - {}", DF.format( consolidationEndDate ) ) ;
-//        log.debug( "       End date            - {}", DF.format( endDate ) ) ;
-//        log.debug( "       Total days          - {}", numTotalDays ) ;
-//        log.debug( "       Exercise days       - {}", numExerciseDays ) ;
-//        log.debug( "       Ex days left        - {}", numExerciseDaysLeft ) ;
-//        log.debug( "       Planned burn        - {}", originalBurnRate ) ;
+        log.debug( "       Start date          - {}", DF.format( startDate ) ) ;
+        log.debug( "       Coaching start      - {}", DF.format( coachingStartDate ) ) ;
+        log.debug( "       Coaching end        - {}", DF.format( coachingEndDate ) ) ;
+        log.debug( "       Self study start    - {}", DF.format( selfStudyStartDate ) ) ;
+        log.debug( "       Self study end      - {}", DF.format( selfStudyEndDate ) ) ;
+        log.debug( "       Exercise start      - {}", DF.format( exerciseStartDate ) ) ;
+        log.debug( "       Exercise end        - {}", DF.format( exerciseEndDate ) ) ;
+        log.debug( "       Consolidation start - {}", DF.format( consolidationStartDate ) ) ;
+        log.debug( "       Consolidation end   - {}", DF.format( consolidationEndDate ) ) ;
+        log.debug( "       End date            - {}", DF.format( endDate ) ) ;
+        log.debug( "       Total days          - {}", numTotalDays ) ;
+        log.debug( "       Exercise days       - {}", numExerciseDays ) ;
+        log.debug( "       Ex days left        - {}", numExerciseDaysLeft ) ;
+        log.debug( "       Planned burn        - {}", originalBurnRate ) ;
     }
     
     public void updateCurrentSessionProblemStates() {
@@ -259,7 +271,7 @@ public class ActiveTopicStatistics {
         else if( isBetween( coachingStartDate, coachingEndDate, today ) ) {
             return Zone.COACHING ;
         }
-        else if( isBetween( coachingEndDate, selfStudyEndDate, today ) ) {
+        else if( isBetween( selfStudyStartDate, selfStudyEndDate, today ) ) {
             return Zone.SELF_STUDY ;
         }
         else if( isBetween( exerciseStartDate, exerciseEndDate, today ) ) {

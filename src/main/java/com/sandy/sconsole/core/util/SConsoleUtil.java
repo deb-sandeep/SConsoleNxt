@@ -17,7 +17,7 @@ public class SConsoleUtil {
     }
     
     public static boolean isBetween( Date start, Date end, Date date ) {
-        return date.after( start ) && date.before( end ) ;
+        return date.after( start ) && date.before( nextDay( end ) ) ;
     }
     
     public static int duration( Date start, Date end ) {
