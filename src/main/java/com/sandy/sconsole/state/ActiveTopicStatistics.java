@@ -125,10 +125,10 @@ public class ActiveTopicStatistics {
     public void refreshState() {
         
         // Derived information from the topic plan
-        numTotalDays      = durationDays( startDate, endDate ) ;
-        numExerciseDays   = numTotalDays - coachingNumDays - selfStudyNumDays - consolidationNumDays ;
+        numTotalDays = durationDays( startDate, endDate ) ;
+        numExerciseDays = numTotalDays - coachingNumDays - selfStudyNumDays - consolidationNumDays ;
         
-        coachingStartDate      = startDate ;
+        coachingStartDate = startDate ;
         if( coachingNumDays > 0 ) {
             coachingEndDate = DateUtils.addDays( startDate, coachingNumDays-1 ) ;
         }

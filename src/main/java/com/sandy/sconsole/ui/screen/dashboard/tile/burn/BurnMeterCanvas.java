@@ -56,11 +56,8 @@ class BurnMeterCanvas extends JPanel {
         todayBurn = 0 ;
         
         if( topicStats != null ) {
-            maxValue = NumberUtils.max( new int[]{
-                    topicStats.getRequiredBurnRate(),
-                    topicStats.getOriginalBurnRate(),
-                    topicStats.getNumProblemsSolvedToday()
-            } ) + 2 ;
+            maxValue = NumberUtils.max( topicStats.getRequiredBurnRate(),
+                                        topicStats.getNumProblemsSolvedToday() ) + 2 ;
             
             currentBurnRate = topicStats.getCurrentBurnRate() ;
             requiredBurnRate = topicStats.getRequiredBurnRate() ;
