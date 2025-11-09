@@ -298,9 +298,15 @@ public class TopicBurnChartTile extends Tile
                 numRemainingProblems -= hb.getNumQuestionsSolved() ;
                 addPlotPoint( historicBurn, date, numRemainingProblems ) ;
             }
+
+            Date lastBurnDate = histBurns.get( histBurns.size()-1 ).getDate() ;
+            if( ats.isCurrentlyActive() ) {
+                if( lastBurnDate.getTime() < new Day( new Date() ).getFirstMillisecond() ) {
+                    historicBurn.add( new Day( new Date() ), numRemainingProblems, false ) ;
+                }
+            }
             
             NumberAxis yAxis = ( NumberAxis )plot.getRangeAxis() ;
-            
             if( historicBurn.getItemCount() > 0 ) {
                 yAxis.setRange( 0, (1.05*historicBurn.getDataItem( 0 ).getValue().intValue() ) ) ;
             }

@@ -231,6 +231,10 @@ public class ActiveTopicStatistics {
         
         this.currentBurnRate = 0 ;
         this.numOvershootDays = 0 ;
+        
+        // If we are visiting this topic after its end date, there is no point
+        // in computing the current burn and overshoot.
+        if( currentZone == Zone.POST_END ) return ;
     
         List<ProblemAttemptRepo.DayBurn> dayBurns = paRepo.getHistoricBurns( topicId ) ;
         if( dayBurns.isEmpty() ) return ;
