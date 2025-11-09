@@ -253,7 +253,20 @@ public class ActiveTopicStatistics {
         data[data.length-1][0] = new Date().getTime() ;
         data[data.length-1][1] = remainingProblems ;
         
-        double[] coefficients = Regression.getOLSRegression( data ) ;
+        // Instead of taking the full history for computing the current burn rate,
+        // take the last one week burn. This forgives any past hiccups and focuses
+        // on the current situation.
+        final int NUM_PAST_DAYS = 8 ;
+        double[][] recentBurnData ;
+        if( data.length <= NUM_PAST_DAYS ) {
+            recentBurnData = data ;
+        }
+        else {
+            recentBurnData = new double[NUM_PAST_DAYS][2] ;
+            System.arraycopy( data, data.length-NUM_PAST_DAYS, recentBurnData, 0, NUM_PAST_DAYS ) ;
+        }
+        
+        double[] coefficients = Regression.getOLSRegression( recentBurnData ) ;
         
         long xIntercept = (long)(-coefficients[0]/coefficients[1]) ;
         Date projectedCompletionDate = new Date( xIntercept ) ;

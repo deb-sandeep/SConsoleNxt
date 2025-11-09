@@ -20,9 +20,8 @@ import org.jfree.chart.plot.Marker;
 import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.AbstractRenderer;
-import org.jfree.data.function.LineFunction2D;
-import org.jfree.data.statistics.Regression;
 import org.jfree.data.time.Day;
+import org.jfree.data.time.RegularTimePeriod;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -199,10 +198,10 @@ public class TopicBurnChartTile extends Tile
         {
             clearChartData() ;
             
-            plotMilestoneMarker() ;
-            plotBaseMilestoneBurn() ;
             plotHistoricBurns() ;
             plotHistoricBurnRegression() ;
+            plotMilestoneMarker() ;
+            plotBaseMilestoneBurn() ;
             
             historicBurn.fireSeriesChanged() ;
             baseBurnProjection.fireSeriesChanged() ;
@@ -262,16 +261,21 @@ public class TopicBurnChartTile extends Tile
         final int exerciseEndDayNum = exerciseStartDayNum + ats.getNumExerciseDays() ;
         final int topicEndDayNum = ats.getNumTotalDays() ;
         
-        int numRemainingProblems = ats.getNumTotalProblems() ;
+        double numRemainingProblems = ats.getNumTotalProblems() ;
+        double idealExerciseBurn = ats.getOriginalBurnRate() ;
+        if( historicBurn.getItemCount() > 0 ) {
+            numRemainingProblems = historicBurn.getDataItem( 0 ).getValue().intValue() ;
+            idealExerciseBurn = (float)numRemainingProblems / ats.getNumExerciseDays() ;
+        }
         
         for( int dayCount = 0; dayCount < topicEndDayNum; dayCount++ ) {
             Day day = new Day( DateUtils.addDays( ats.getStartDate(), dayCount ) ) ;
             
-            int plannedDayBurn = 0 ;
+            double plannedDayBurn = 0 ;
             if( dayCount >= exerciseStartDayNum && dayCount < exerciseEndDayNum ) {
-                plannedDayBurn = ats.getOriginalBurnRate() ;
+                plannedDayBurn = idealExerciseBurn ;
             }
-            
+
             numRemainingProblems -= plannedDayBurn ;
             numRemainingProblems = Math.max( numRemainingProblems, 0 ) ;
             
@@ -285,17 +289,24 @@ public class TopicBurnChartTile extends Tile
         List<ProblemAttemptRepo.DayBurn> histBurns = ats.getHistoricBurns() ;
         
         if( !histBurns.isEmpty() ) {
+            
             ProblemAttemptRepo.DayBurn firstDayBurnStats = histBurns.get( 0 ) ;
-            historicBurn.add( new Day( firstDayBurnStats.getDate() ).previous(), numRemainingProblems ) ;
+            addPlotPoint( historicBurn, new Day( firstDayBurnStats.getDate() ).previous(), numRemainingProblems ) ;
 
-            for( ProblemAttemptRepo.DayBurn hb : ats.getHistoricBurns() ) {
+            for( ProblemAttemptRepo.DayBurn hb : histBurns ) {
                 Date date = hb.getDate() ;
                 numRemainingProblems -= hb.getNumQuestionsSolved() ;
-                historicBurn.add( new Day( date ), numRemainingProblems, false ) ;
+                addPlotPoint( historicBurn, date, numRemainingProblems ) ;
             }
             
             NumberAxis yAxis = ( NumberAxis )plot.getRangeAxis() ;
-            yAxis.setRange( 0, (1.05*ats.getNumTotalProblems()) ) ;
+            
+            if( historicBurn.getItemCount() > 0 ) {
+                yAxis.setRange( 0, (1.05*historicBurn.getDataItem( 0 ).getValue().intValue() ) ) ;
+            }
+            else {
+                yAxis.setRange( 0, (1.05*ats.getNumTotalProblems()) ) ;
+            }
         }
     }
     
@@ -305,16 +316,34 @@ public class TopicBurnChartTile extends Tile
         // a regression line can't be plotted
         if( historicBurn.getItemCount() < 2 ) return ;
         
-        double[] coefficients = Regression.getOLSRegression( this.seriesColl, 0 ) ;
-        LineFunction2D line = new LineFunction2D( coefficients[0], coefficients[1] ) ;
+        // If we have crossed the end date marker, no point in showing a projection line
+        if( ats.getEndDate().before( new Date() ) ) return ;
         
-        Day startDay = (Day)historicBurn.getDataItem( historicBurn.getItemCount()-1 ).getPeriod() ;
-        Day endDay = (Day)baseBurnProjection.getDataItem( baseBurnProjection.getItemCount()-1 ).getPeriod() ;
-        Day day = startDay ;
+        Day projectionStartDay = (Day)historicBurn.getDataItem( historicBurn.getItemCount()-1 ).getPeriod() ;
         
-        while( day.getFirstMillisecond() <= endDay.getFirstMillisecond() ) {
-            historicBurnRegression.add( day, line.getValue( day.getFirstMillisecond() ) ) ;
-            day = (Day)day.next() ;
+        int numProblemsLeft = ats.getNumProblemsLeft() ;
+        addPlotPoint( historicBurnRegression, projectionStartDay, numProblemsLeft ) ;
+        Day nextDay = (Day)projectionStartDay.next() ;
+        
+        while( nextDay.getFirstMillisecond() <= ats.getEndDate().getTime() ) {
+            numProblemsLeft -= ats.getCurrentBurnRate() ;
+            addPlotPoint( historicBurnRegression, nextDay.getEnd(), numProblemsLeft ) ;
+            nextDay = (Day)nextDay.next() ;
         }
+    }
+    
+    private void addPlotPoint( TimeSeries series, Date date, int numProblems ) {
+        if( date.after( ats.getStartDate() ) ) {
+            series.add( new Day( date ), numProblems, false ) ;
+        }
+        else {
+            if( new Date().getTime() > ats.getEndDate().getTime() ) {
+                series.add( new Day( date ), numProblems, false ) ;
+            }
+        }
+    }
+    
+    private void addPlotPoint( TimeSeries series, RegularTimePeriod date, int numProblems ) {
+        addPlotPoint( series, date.getStart(), numProblems ) ;
     }
 }

@@ -36,31 +36,45 @@ public interface ProblemAttemptRepo extends JpaRepository<ProblemAttempt, Intege
     Integer getTotalAttemptTime( @Param( "problemId" ) Integer problemId ) ;
     
     @Query( nativeQuery=true, value = """
+        with last_attempts as (
             select
-                date( start_time ) as date,
-                count( problem_id ) as num_questions_solved
+                problem_id,
+                max(start_time) as start_time
             from problem_attempt
             where
                 topic_id = :topicId and
-                target_state in ( 'Incorrect', 'Correct', 'Pigeon Explained', 'Purge' )
-            group by date
-            order by date
-            """
+                target_state in ('Incorrect', 'Correct', 'Pigeon Explained', 'Purge')
+            group by problem_id
+        )
+        select
+            date(start_time) as date,
+            count(problem_id) as num_questions_solved
+        from last_attempts
+        group by date
+        order by date
+        """
     )
     List<DayBurn> getHistoricBurns( @Param( "topicId" ) Integer topicId ) ;
 
     @Query( nativeQuery=true, value = """
+        with last_attempts as (
             select
-                date( start_time ) as date,
-                count( problem_id ) as num_questions_solved
+                problem_id,
+                max(start_time) as start_time
             from problem_attempt
             where
                 topic_id = :topicId and
                 end_time > :startDate and
-                target_state in ( 'Incorrect', 'Correct', 'Pigeon Explained', 'Purge' )
-            group by date
-            order by date
-            """
+                target_state in ('Incorrect', 'Correct', 'Pigeon Explained', 'Purge')
+            group by problem_id
+        )
+        select
+            date(start_time) as date,
+            count(problem_id) as num_questions_solved
+        from last_attempts
+        group by date
+        order by date
+        """
     )
     List<DayBurn> getHistoricBurns( @Param( "startDate" ) Date startDate,
                                     @Param( "topicId" ) Integer topicId ) ;

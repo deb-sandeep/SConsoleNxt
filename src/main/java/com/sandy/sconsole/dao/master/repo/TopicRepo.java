@@ -74,14 +74,4 @@ public interface TopicRepo extends CrudRepository<Topic, Integer> {
             problem_state in ( 'Assigned', 'Later', 'Pigeon', 'Pigeon Solved', 'Redo' )
     """ )
     int getRemainingProblemCount( @Param( "topicId" ) int topicId ) ;
-    
-    @Query( nativeQuery = true, value = """
-        select count( problem_id )
-        from topic_problems
-        where
-            topic_id = :topicId and
-            problem_state not in ( 'Assigned', 'Later', 'Pigeon', 'Pigeon Solved', 'Redo' )
-    """ )
-    int getCompletedProblemCount( @Param( "topicId" ) int topicId ) ;
-    
 }
