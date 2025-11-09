@@ -2,6 +2,9 @@ package com.sandy.sconsole.endpoints.rest.master.helper;
 
 import com.sandy.sconsole.dao.master.*;
 import com.sandy.sconsole.dao.master.repo.*;
+import com.sandy.sconsole.dao.session.ProblemAttempt;
+import com.sandy.sconsole.dao.session.repo.ProblemAttemptRepo;
+import com.sandy.sconsole.dao.session.repo.SessionRepo;
 import com.sandy.sconsole.endpoints.rest.master.vo.BookTopicMappingVO;
 import com.sandy.sconsole.endpoints.rest.master.vo.TopicChapterMappingVO;
 import com.sandy.sconsole.endpoints.rest.master.vo.reqres.ChapterTopicMappingReq;
@@ -26,6 +29,8 @@ public class TopicMappingHelper {
     @Autowired private TopicChapterMapRepo tcmRepo ;
     @Autowired private SyllabusBookMapRepo sbmRepo ;
     @Autowired private TopicChapterProblemMapRepo tcpmRepo ;
+    @Autowired private ProblemAttemptRepo problemAttemptRepo;
+    @Autowired private SessionRepo sessionRepo ;
     
     @Transactional
     public int saveChapterTopicMapping( ChapterTopicMappingReq req ) {
@@ -77,6 +82,26 @@ public class TopicMappingHelper {
             tcpm.setProblem( p ) ;
             tcpm.setTopicChapterMap( tcm ) ;
             tcpmList.add( tcpm ) ;
+            
+            // If we already have a problem history, add another record
+            // for assigned.
+            List<ProblemAttempt> attempts = problemAttemptRepo.getProblemAttempts( p.getId() ) ;
+            if( attempts != null && !attempts.isEmpty() ) {
+                ProblemAttempt lastProblemAttempt = attempts.get( attempts.size()-1 ) ;
+                ProblemAttempt pa = new ProblemAttempt() ;
+                pa.setProblem( p ) ;
+                pa.setTopic( tcm.getTopic() ) ;
+                pa.setPrevState( lastProblemAttempt.getTargetState() ) ;
+                pa.setTargetState( "Assigned" ) ;
+                pa.setStartTime( new Date() ) ;
+                pa.setEndTime( pa.getStartTime() ) ;
+                pa.setEffectiveDuration( 0 ) ;
+                
+                // Session 0 is a special session to imply offline work by coach.
+                pa.setSession( sessionRepo.findById( 0 ).get() ) ;
+                
+                problemAttemptRepo.save( pa ) ;
+            }
         }
         
         Map<Integer, Integer> problemMappingIds = new LinkedHashMap<>() ;
@@ -86,6 +111,8 @@ public class TopicMappingHelper {
         
         return problemMappingIds ;
     }
+    
+    
     
     public void unlinkProblems( Integer[] problemIds ) {
         tcpmRepo.deleteProblemMappings( problemIds ) ;
