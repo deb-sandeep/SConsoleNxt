@@ -239,6 +239,9 @@ public class ActiveTopicStatistics {
         List<ProblemAttemptRepo.DayBurn> dayBurns = paRepo.getHistoricBurns( topicId ) ;
         if( dayBurns.isEmpty() ) return ;
         
+        // Why historic burn + 2 data points? We take the first point as the total
+        // problems pegged to the day before the first burn and the last element
+        // is the current date and the remaining problems
         double[][] data = new double[dayBurns.size()+2][2] ;
         int remainingProblems = numTotalProblems ;
         

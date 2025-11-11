@@ -339,7 +339,7 @@ public class TopicBurnChartTile extends Tile
     }
     
     private void addPlotPoint( TimeSeries series, Date date, int numProblems ) {
-        if( date.after( ats.getStartDate() ) ) {
+        if( !date.before( ats.getStartDate() ) ) {
             series.add( new Day( date ), numProblems, false ) ;
         }
         else {
