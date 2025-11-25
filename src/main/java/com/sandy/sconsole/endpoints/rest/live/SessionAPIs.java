@@ -22,6 +22,7 @@ import com.sandy.sconsole.ui.screen.session.SessionScreen;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -235,7 +236,16 @@ public class SessionAPIs {
                 } ) ;
                 
                 eventBus.publishEvent( SESSION_EXTENDED, extensionDTO ) ;
-                return success() ;
+
+                // This is to ensure that Safari does not randomly decide to stop
+                // sending the polling requests. Later on - implement the extend session
+                // feature on websockets
+                HttpHeaders headers  = new HttpHeaders();
+                headers.add( "Cache-Control", "no-cache, no-store, must-revalidate" ) ;
+                headers.add( "Pragma", "no-cache") ;
+                headers.add( "Expires", "0") ;
+                
+                return ResponseEntity.ok().headers( headers ).body( new AR<>( "Success" ) ) ;
             }
             return success( "No active session" ) ;
         }

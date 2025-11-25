@@ -4167,7 +4167,7 @@
 				},
 				{
 					"id": "bd3f38ed-1689-4f41-a557-3c9c4649df6e",
-					"name": "image_width",
+					"name": "img_width",
 					"datatype": "INT",
 					"param": "",
 					"pk": false,
@@ -4188,7 +4188,7 @@
 				},
 				{
 					"id": "64f6dc7d-2d05-4793-9a16-af0cb2aa94a4",
-					"name": "image_height",
+					"name": "img_height",
 					"datatype": "INT",
 					"param": "",
 					"pk": false,
@@ -5413,7 +5413,7 @@
 		},
 		"laststoredin": {
 			"major": 12,
-			"minor": 1,
+			"minor": 3,
 			"extra": 0
 		},
 		"writeFileParam": true,
@@ -5448,7 +5448,7 @@
 			"includeWarnings": "yes",
 			"includeCreationSql": "no"
 		},
-		"lastSaved": 1757394661462,
+		"lastSaved": 1763298905589,
 		"connectionId": "7af83ebc-4655-4802-a6d0-2c6890f3e1ce",
 		"modelHTMLReportDir": "/Users/sandeep/temp"
 	},

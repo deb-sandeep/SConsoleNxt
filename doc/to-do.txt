@@ -1,9 +1,35 @@
-[x] Create an API endpoint to invoke ChemSpider fetching
-    [x] DB schema to store compound meta data
-    [x] Store compound in DB
-    [x] API checks on DB before invoking ChemSpider
-[x] Test the API with postman
-[x] Refresh jars on server
-[x] Check out the native library issue for indigo on Raspberry.
-[x] Deploy code on server
-[x] Test ChemSpider client functioning on server with postman
+CREATE TABLE sconsolenxt.question (
+	id INT auto_increment NOT NULL,
+	syllabus_name VARCHAR(64) NOT NULL,
+	topic_id INT NOT NULL,
+	source_id varchar(128) NOT NULL,
+	problem_type varchar(8) NOT NULL,
+	lct_sequence INT NULL,
+	question_number INT NOT NULL,
+	answer varchar(128) NOT NULL,
+	server_sync_time DATETIME NOT NULL,
+	CONSTRAINT pk_question PRIMARY KEY (id),
+	CONSTRAINT fk_question_syllabus FOREIGN KEY (syllabus_name) REFERENCES sconsolenxt.syllabus_master(syllabus_name) ON DELETE RESTRICT ON UPDATE CASCADE,
+	CONSTRAINT fk_question_topic FOREIGN KEY (topic_id) REFERENCES sconsolenxt.topic_master(id) ON DELETE RESTRICT ON UPDATE CASCADE,
+	CONSTRAINT fk_question_problem_type FOREIGN KEY (problem_type) REFERENCES sconsolenxt.problem_type_master(problem_type) ON DELETE RESTRICT ON UPDATE CASCADE
+)
+ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE sconsolenxt.question_images (
+	id INT auto_increment NOT NULL,
+	question_id INT NOT NULL,
+	`sequence` INT NOT NULL,
+	page_number INT NOT NULL,
+	file_name varchar(128) NOT NULL,
+	lct_ctx_image BIT NULL,
+	part_number INT NULL,
+	img_width INT NULL,
+	img_height INT NULL,
+	CONSTRAINT pk_question_images PRIMARY KEY (id),
+	CONSTRAINT fk_question_images_question FOREIGN KEY (question_id) REFERENCES sconsolenxt.question(id) ON DELETE RESTRICT ON UPDATE CASCADE
+)
+ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_unicode_ci;

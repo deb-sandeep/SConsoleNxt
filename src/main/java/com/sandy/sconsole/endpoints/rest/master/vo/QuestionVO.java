@@ -1,0 +1,22 @@
+package com.sandy.sconsole.endpoints.rest.master.vo;
+
+import lombok.Data;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+@Data
+public class QuestionVO {
+    
+    private Integer id;
+    private String  syllabusName;
+    private Integer topicId;
+    private String  sourceId;
+    private String  problemType;
+    private Integer lctSequence;
+    private Integer questionNumber;
+    private String  answer;
+    private Date    serverSyncTime;
+    private List<QuestionImageVO> questionImages = new ArrayList<>();
+}
