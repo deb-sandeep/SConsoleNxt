@@ -22,14 +22,14 @@ public interface TopicTrackAssignmentRepo extends JpaRepository<TopicTrackAssign
     """)
     void deleteByTopicId( List<Integer> topicIds ) ;
     
-    @Query( """
-        select tta
-        from TopicTrackAssignment tta
+    @Query( nativeQuery = true, value = """
+        select *
+        from topic_track_assignment tta
         where
-            :date between tta.startDate and tta.endDate
-        order by
-            tta.topicId
-    """)
+            :date >= tta.start_date
+            and :date < DATE_ADD(tta.end_date, INTERVAL 1 DAY)
+        order by tta.topic_id
+    """ )
     List<TopicTrackAssignment> findActiveAssignments( Date date ) ;
     
     @Query( """
