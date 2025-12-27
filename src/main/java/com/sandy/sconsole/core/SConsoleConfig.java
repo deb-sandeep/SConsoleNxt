@@ -20,4 +20,6 @@ public class SConsoleConfig {
     
     private String chemSpiderApiKey = null ;
     private File chemCompoundsImgFolder = null ;
+    
+    private File questionImgsFolder = null ;
 }

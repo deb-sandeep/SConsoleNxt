@@ -21,9 +21,12 @@ public class Question {
     @Column( name = "id", nullable = false )
     private Integer id;
     
+    @Column( name = "question_id", nullable = false, length = 100 )
+    private String questionId;
+    
     @ManyToOne( fetch = FetchType.LAZY, optional = false )
     @JoinColumn( name = "syllabus_name", nullable = false )
-    private Syllabus syllabusName;
+    private Syllabus syllabus ;
     
     @ManyToOne( fetch = FetchType.LAZY, optional = false )
     @JoinColumn( name = "topic_id", nullable = false )
@@ -48,7 +51,6 @@ public class Question {
     @Column( name = "server_sync_time", nullable = false )
     private Instant serverSyncTime;
     
-    @OneToMany( mappedBy = "question" )
+    @OneToMany( mappedBy = "question", fetch = FetchType.EAGER )
     private Set<QuestionImage> questionImages = new LinkedHashSet<>();
-    
 }
