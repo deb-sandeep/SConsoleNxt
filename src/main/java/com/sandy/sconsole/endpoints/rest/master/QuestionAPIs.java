@@ -6,15 +6,13 @@ import com.sandy.sconsole.core.api.AR;
 import com.sandy.sconsole.dao.test.repo.QuestionRepo;
 import com.sandy.sconsole.endpoints.rest.master.helper.QuestionHelper;
 import com.sandy.sconsole.endpoints.rest.master.vo.QuestionVO;
+import com.sandy.sconsole.endpoints.rest.master.vo.reqres.QuestionRepoStatus;
 import com.sandy.sconsole.endpoints.rest.master.vo.reqres.SaveQuestionRes;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import static com.sandy.sconsole.core.api.AR.systemError;
 
@@ -39,6 +37,20 @@ public class QuestionAPIs {
             QuestionHelper helper = SConsole.getBean( QuestionHelper.class ) ;
             int questionId = helper.saveQuestion( question ) ;
             return AR.success( SaveQuestionRes.success( questionId ) ) ;
+        }
+        catch( Exception e ) {
+            return systemError( e ) ;
+        }
+    }
+    
+    @GetMapping( "/RepoStatus" )
+    public ResponseEntity<AR<QuestionRepoStatus>> getRepositoryStatus() {
+    
+        log.debug( "Getting question repository status" ) ;
+        try {
+            QuestionHelper     helper = SConsole.getBean( QuestionHelper.class ) ;
+            QuestionRepoStatus status = helper.getRepositoryStatus() ;
+            return AR.success( status ) ;
         }
         catch( Exception e ) {
             return systemError( e ) ;

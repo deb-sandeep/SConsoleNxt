@@ -11,6 +11,7 @@ import com.sandy.sconsole.dao.test.repo.QuestionImageRepo;
 import com.sandy.sconsole.dao.test.repo.QuestionRepo;
 import com.sandy.sconsole.endpoints.rest.master.vo.QuestionImageVO;
 import com.sandy.sconsole.endpoints.rest.master.vo.QuestionVO;
+import com.sandy.sconsole.endpoints.rest.master.vo.reqres.QuestionRepoStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +20,17 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.time.Instant;
+import java.util.List;
 
 @Slf4j
 @Component
 @Scope( "prototype" )
 public class QuestionHelper {
+    
+    public static final String STATE_UNASSIGNED = "unassigned" ;
+    public static final String STATE_ASSIGNED = "assigned" ;
+    public static final String STATE_ATTEMPTED = "attempted" ;
+    public static final String STATE_BURIED = "buried" ;
     
     @Autowired
     private QuestionRepo qRepo;
@@ -55,6 +62,8 @@ public class QuestionHelper {
         else {
             log.debug( "  No existing question found. Creating new question." ) ;
             question = new Question();
+            question.setState( STATE_UNASSIGNED ) ;
+            question.setRating( 0 ) ;
         }
 
         log.debug( "  Saving image files." ) ;
@@ -120,5 +129,14 @@ public class QuestionHelper {
             byte[] imgData = Base64.decode( imgVO.getImgData().getBytes() ) ;
             FileUtils.writeByteArrayToFile( imgFile, imgData ) ;
         }
+    }
+    
+    public QuestionRepoStatus getRepositoryStatus() {
+        QuestionRepoStatus status = new QuestionRepoStatus() ;
+        List<QuestionRepo.RepoStatusRow> statusRows = qRepo.getRepoStatus() ;
+        for( QuestionRepo.RepoStatusRow s : statusRows ) {
+            status.build( s ) ;
+        }
+        return status ;
     }
 }

@@ -6,6 +6,7 @@ import com.sandy.sconsole.dao.master.Topic;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.time.Instant;
 import java.util.LinkedHashSet;
@@ -53,4 +54,12 @@ public class Question {
     
     @OneToMany( mappedBy = "question", fetch = FetchType.EAGER )
     private Set<QuestionImage> questionImages = new LinkedHashSet<>();
+    
+    @ColumnDefault( "'unassigned'" )
+    @Column( name = "state", nullable = false, length = 12 )
+    private String state;
+    
+    @ColumnDefault( "0" )
+    @Column( name = "rating", nullable = false )
+    private Integer rating;
 }
