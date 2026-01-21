@@ -43,7 +43,7 @@ public class QuestionRepoStatus {
         private String topicName ;
         private int numQuestions ;
         
-        private Map<String, QTypeStatus> qTypeStaus = new HashMap<>() ;
+        private Map<String, QTypeStatus> questionTypeStats = new HashMap<>() ;
         
         public TopicStatus( int topicId, String name ) {
             this.topicId = topicId ;
@@ -51,8 +51,8 @@ public class QuestionRepoStatus {
         }
         
         public void build( QuestionRepo.RepoStatusRow s ) {
-            QTypeStatus qTypeStatus = qTypeStaus.computeIfAbsent( s.getProblemType(), QTypeStatus::new ) ;
-            qTypeStatus.build( s ) ;
+            QTypeStatus status = questionTypeStats.computeIfAbsent( s.getProblemType(), QTypeStatus::new ) ;
+            status.build( s ) ;
             numQuestions += s.getCount() ;
         }
     }
