@@ -1,6 +1,8 @@
 package com.sandy.sconsole.endpoints.rest.master.vo.reqres;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sandy.sconsole.dao.master.Syllabus;
+import com.sandy.sconsole.dao.master.repo.SyllabusRepo;
 import com.sandy.sconsole.dao.test.repo.QuestionRepo;
 import lombok.Data;
 
@@ -17,6 +19,8 @@ public class QuestionRepoStatus {
         private String syllabusName ;
         private List<TopicStatus> topicStats = new ArrayList<>() ;
         private int numQuestions ;
+        private String color ;
+        private String iconName ;
         
         @JsonIgnore
         private Map<Integer, TopicStatus> topicStatusMap = new HashMap<>() ;
@@ -82,8 +86,21 @@ public class QuestionRepoStatus {
     private Map<String, SyllabusStatus> syllabusStatusMap = new HashMap<>() ;
     private int numQuestions ;
     
+    @JsonIgnore
+    private final SyllabusRepo syllabusRepo ;
+    
+    public QuestionRepoStatus( SyllabusRepo syllabusRepo ) {
+        this.syllabusRepo = syllabusRepo ;
+    }
+    
     public void build( QuestionRepo.RepoStatusRow s ) {
-        SyllabusStatus syllabusStatus = syllabusStatusMap.computeIfAbsent( s.getSyllabusName(), SyllabusStatus::new ) ;
+        SyllabusStatus syllabusStatus = syllabusStatusMap.computeIfAbsent( s.getSyllabusName(), name -> {
+            Syllabus syllabus = syllabusRepo.findById( name ).get() ;
+            SyllabusStatus status = new SyllabusStatus( name ) ;
+            status.setColor( syllabus.getColor() ) ;
+            status.setIconName( syllabus.getIconName() ) ;
+            return status ;
+        } ) ;
         syllabusStatus.build( s ) ;
         numQuestions += s.getCount() ;
     }

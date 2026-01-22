@@ -132,7 +132,7 @@ public class QuestionHelper {
     }
     
     public QuestionRepoStatus getRepositoryStatus() {
-        QuestionRepoStatus status = new QuestionRepoStatus() ;
+        QuestionRepoStatus status = new QuestionRepoStatus( syllabusRepo ) ;
         List<QuestionRepo.RepoStatusRow> statusRows = qRepo.getRepoStatus() ;
         for( QuestionRepo.RepoStatusRow s : statusRows ) {
             status.build( s ) ;
