@@ -2,11 +2,14 @@ package com.sandy.sconsole.dao.test.repo;
 
 import com.sandy.sconsole.dao.test.Question;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
-public interface QuestionRepo extends JpaRepository<Question, Integer> {
+public interface QuestionRepo
+        extends JpaRepository<Question, Integer>,
+                JpaSpecificationExecutor<Question> {
     
     interface RepoStatusRow {
         String getSyllabusName() ;
