@@ -15,5 +15,8 @@ public class WebConfig implements WebMvcConfigurer {
     public void addResourceHandlers( ResourceHandlerRegistry registry) {
         registry.addResourceHandler( "/chem-compound-img/**" ) // URL path
                 .addResourceLocations( "file:" + config.getChemCompoundsImgFolder().getAbsolutePath() ) ;
+        
+        registry.addResourceHandler( "/question-img/**" ) // URL path
+                .addResourceLocations( "file:" + config.getQuestionImgsFolder().getAbsolutePath() ) ;
     }
 }

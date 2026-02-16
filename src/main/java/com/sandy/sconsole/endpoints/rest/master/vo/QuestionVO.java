@@ -14,6 +14,7 @@ public class QuestionVO {
     private Integer id;
     private String  questionId;
     private String  syllabusName;
+    private String  topicName;
     private Integer topicId;
     private String  sourceId;
     private String  problemType;
@@ -31,6 +32,7 @@ public class QuestionVO {
         this.setQuestionId( entity.getQuestionId() ) ;
         this.setSyllabusName( entity.getSyllabus().getSyllabusName() ) ;
         this.setTopicId( entity.getTopic().getId() ) ;
+        this.setTopicName( entity.getTopic().getTopicName() ); ;
         this.setSourceId( entity.getSourceId() ) ;
         this.setProblemType( entity.getProblemType().getProblemType() ) ;
         this.setLctSequence( entity.getLctSequence() ) ;
