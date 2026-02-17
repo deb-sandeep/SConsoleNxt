@@ -62,7 +62,6 @@ public class QuestionHelper {
         else {
             log.debug( "  No existing question found. Creating new question." ) ;
             question = new Question();
-            question.setState( STATE_UNASSIGNED ) ;
             question.setRating( 0 ) ;
         }
 

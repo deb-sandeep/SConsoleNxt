@@ -55,10 +55,6 @@ public class Question {
     @OneToMany( mappedBy = "question", fetch = FetchType.EAGER )
     private Set<QuestionImage> questionImages = new LinkedHashSet<>();
     
-    @ColumnDefault( "'unassigned'" )
-    @Column( name = "state", nullable = false, length = 12 )
-    private String state;
-    
     @ColumnDefault( "0" )
     @Column( name = "rating", nullable = false )
     private Integer rating;
