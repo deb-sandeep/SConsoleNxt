@@ -2,13 +2,13 @@ package com.sandy.sconsole.endpoints.rest.master.helper;
 
 import com.rometools.rome.io.impl.Base64;
 import com.sandy.sconsole.core.SConsoleConfig;
+import com.sandy.sconsole.dao.exam.Question;
+import com.sandy.sconsole.dao.exam.QuestionImage;
+import com.sandy.sconsole.dao.exam.repo.QuestionImageRepo;
+import com.sandy.sconsole.dao.exam.repo.QuestionRepo;
 import com.sandy.sconsole.dao.master.repo.ProblemTypeRepo;
 import com.sandy.sconsole.dao.master.repo.SyllabusRepo;
 import com.sandy.sconsole.dao.master.repo.TopicRepo;
-import com.sandy.sconsole.dao.test.Question;
-import com.sandy.sconsole.dao.test.QuestionImage;
-import com.sandy.sconsole.dao.test.repo.QuestionImageRepo;
-import com.sandy.sconsole.dao.test.repo.QuestionRepo;
 import com.sandy.sconsole.endpoints.rest.master.vo.QuestionImageVO;
 import com.sandy.sconsole.endpoints.rest.master.vo.QuestionVO;
 import com.sandy.sconsole.endpoints.rest.master.vo.reqres.QuestionRepoStatus;

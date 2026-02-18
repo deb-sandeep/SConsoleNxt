@@ -1,7 +1,7 @@
 package com.sandy.sconsole.endpoints.rest.master.helper;
 
-import com.sandy.sconsole.dao.test.Question;
-import com.sandy.sconsole.dao.test.repo.QuestionRepo;
+import com.sandy.sconsole.dao.exam.Question;
+import com.sandy.sconsole.dao.exam.repo.QuestionRepo;
 import com.sandy.sconsole.endpoints.rest.master.vo.reqres.QuestionSearchReq;
 import com.sandy.sconsole.endpoints.rest.master.vo.reqres.QuestionSearchRes;
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +44,7 @@ public class QuestionSearchHelper {
     }
     
     private Sort.Order parseSearchOrder( String s ) {
-        String[] parts = s.split( ",", 2 ) ;
+        String[] parts = s.split( ":", 2 ) ;
         String field = parts[0].trim() ;
         String dir = (parts.length == 2) ? parts[1].trim().toLowerCase() : "asc" ;
         return "desc".equals( dir ) ? Sort.Order.desc( field ) : Sort.Order.asc( field ) ;

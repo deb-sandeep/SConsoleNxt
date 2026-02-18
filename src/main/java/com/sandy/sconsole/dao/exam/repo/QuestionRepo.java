@@ -1,6 +1,6 @@
-package com.sandy.sconsole.dao.test.repo;
+package com.sandy.sconsole.dao.exam.repo;
 
-import com.sandy.sconsole.dao.test.Question;
+import com.sandy.sconsole.dao.exam.Question;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -24,27 +24,18 @@ public interface QuestionRepo
     
     @Query( nativeQuery=true, value = """
         select
-            q.syllabus_name,
-            q.topic_id,
-            t.topic_name,
-            q.problem_type,
-            q.state,
-            count(q.id) as count
+            syllabus_name,
+            topic_id,
+            topic_name,
+            problem_type,
+            question_status as state,
+            count
         from
-            question q
-            left outer join
-                topic_master t
-                on q.topic_id = t.id
-        group by
-            q.syllabus_name,
-            q.topic_id,
-            q.problem_type,
-            q.state
+            question_repo_status s
         order by
-            q.syllabus_name,
-            q.topic_id,
-            q.problem_type,
-            q.state
+            syllabus_name,
+            topic_id,
+            problem_type
         """
     )
     List<RepoStatusRow> getRepoStatus() ;

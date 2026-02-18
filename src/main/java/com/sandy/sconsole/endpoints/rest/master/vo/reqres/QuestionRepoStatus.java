@@ -1,9 +1,9 @@
 package com.sandy.sconsole.endpoints.rest.master.vo.reqres;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sandy.sconsole.dao.exam.repo.QuestionRepo;
 import com.sandy.sconsole.dao.master.Syllabus;
 import com.sandy.sconsole.dao.master.repo.SyllabusRepo;
-import com.sandy.sconsole.dao.test.repo.QuestionRepo;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -75,9 +75,9 @@ public class QuestionRepoStatus {
         
         public void build( QuestionRepo.RepoStatusRow s ) {
             switch( s.getState() ) {
-                case "unassigned" -> numUnassigned += s.getCount() ;
-                case "assigned" -> numAssigned += s.getCount() ;
-                case "attempted" -> numAttempted += s.getCount() ;
+                case "UNASSIGNED" -> numUnassigned += s.getCount() ;
+                case "ASSIGNED" -> numAssigned += s.getCount() ;
+                case "ATTEMPTED" -> numAttempted += s.getCount() ;
             }
             numQuestions += s.getCount() ;
         }

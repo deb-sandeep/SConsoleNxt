@@ -1,7 +1,7 @@
 package com.sandy.sconsole.endpoints.rest.master.vo;
 
-import com.sandy.sconsole.dao.test.Question;
-import com.sandy.sconsole.dao.test.QuestionImage;
+import com.sandy.sconsole.dao.exam.Question;
+import com.sandy.sconsole.dao.exam.QuestionImage;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -32,7 +32,7 @@ public class QuestionVO {
         this.setQuestionId( entity.getQuestionId() ) ;
         this.setSyllabusName( entity.getSyllabus().getSyllabusName() ) ;
         this.setTopicId( entity.getTopic().getId() ) ;
-        this.setTopicName( entity.getTopic().getTopicName() ); ;
+        this.setTopicName( entity.getTopic().getTopicName() );
         this.setSourceId( entity.getSourceId() ) ;
         this.setProblemType( entity.getProblemType().getProblemType() ) ;
         this.setLctSequence( entity.getLctSequence() ) ;

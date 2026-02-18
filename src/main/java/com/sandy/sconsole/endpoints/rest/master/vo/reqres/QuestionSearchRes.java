@@ -1,6 +1,6 @@
 package com.sandy.sconsole.endpoints.rest.master.vo.reqres;
 
-import com.sandy.sconsole.dao.test.Question;
+import com.sandy.sconsole.dao.exam.Question;
 import com.sandy.sconsole.endpoints.rest.master.vo.QuestionVO;
 import org.springframework.data.domain.Page;
 

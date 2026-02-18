@@ -1,4 +1,4 @@
-package com.sandy.sconsole.dao.test;
+package com.sandy.sconsole.dao.exam;
 
 import jakarta.persistence.*;
 import lombok.Getter;

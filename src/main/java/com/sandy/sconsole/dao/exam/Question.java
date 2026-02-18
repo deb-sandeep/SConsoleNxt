@@ -1,4 +1,4 @@
-package com.sandy.sconsole.dao.test;
+package com.sandy.sconsole.dao.exam;
 
 import com.sandy.sconsole.dao.master.ProblemType;
 import com.sandy.sconsole.dao.master.Syllabus;
