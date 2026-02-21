@@ -7,10 +7,10 @@ import lombok.Data;
 public class ExamQuestionVO {
     
     private Integer id ;
-    private Integer questionId ;
-    private QuestionVO question ;
-    private Integer sectionId ;
     private Integer sequence ;
+    private Integer questionId ;
+    private Integer sectionId ;
+    private QuestionVO question ;
     
     public ExamQuestionVO(){}
     

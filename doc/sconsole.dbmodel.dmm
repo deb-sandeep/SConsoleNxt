@@ -663,7 +663,8 @@
 			"name": "exam",
 			"relations": [
 				"0af8d403-cf01-4e74-8ea0-66dd36ce36b5",
-				"2381477f-3489-4022-9769-973e03ab8476"
+				"2381477f-3489-4022-9769-973e03ab8476",
+				"ac189cd9-e143-4b17-9e5a-df624bcfefdc"
 			],
 			"rowformat": "Dynamic",
 			"tabletype": "InnoDB",
@@ -3772,7 +3773,8 @@
 				"cb070c98-64fa-485d-9592-0cfc62f79320",
 				"24bfd54f-313e-434c-b881-38ff6ba023e6",
 				"e8fcea1d-98c1-43de-a544-819d0b10aa33",
-				"47e3f340-e9ee-4971-ba69-7c0b7202eef0"
+				"47e3f340-e9ee-4971-ba69-7c0b7202eef0",
+				"9bf66bc8-b81a-4d9d-9ca3-1b8ef45032aa"
 			],
 			"rowformat": "Dynamic",
 			"tabletype": "InnoDB",
@@ -4220,7 +4222,8 @@
 				"f6637333-7fe9-42ab-8922-340d830260e0",
 				"6fd8104d-6f77-478d-b00a-b2749ea49ba9",
 				"e8fcea1d-98c1-43de-a544-819d0b10aa33",
-				"b55efe8f-b570-4f30-a879-e6ab22102f34"
+				"b55efe8f-b570-4f30-a879-e6ab22102f34",
+				"ca888c99-63dd-4148-9e05-d80be30eaa27"
 			],
 			"rowformat": "Dynamic",
 			"tabletype": "InnoDB",
@@ -6286,6 +6289,131 @@
 			"initautoinc": "",
 			"temporary": false,
 			"ifnotexists": false
+		},
+		"c5b50d51-ddb7-4b9e-875e-292a12742a36": {
+			"id": "c5b50d51-ddb7-4b9e-875e-292a12742a36",
+			"visible": false,
+			"name": "exam_topics",
+			"desc": "",
+			"estimatedSize": "",
+			"cols": [
+				{
+					"id": "caefb46c-1699-491d-b456-48296d85f48d",
+					"name": "id",
+					"datatype": "INT",
+					"param": "",
+					"pk": true,
+					"nn": true,
+					"fk": false,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"after": "",
+					"autoinc": false,
+					"collation": "",
+					"charset": "",
+					"binary": false,
+					"zerofill": false,
+					"unsigned": false,
+					"enum": "",
+					"estimatedSize": ""
+				},
+				{
+					"after": "",
+					"autoinc": false,
+					"charset": "",
+					"collation": "",
+					"comment": "",
+					"datatype": "INT",
+					"defaultvalue": "",
+					"enum": "",
+					"fk": true,
+					"id": "a139ba3b-7afc-42fe-8255-878349097a0d",
+					"name": "exam_id",
+					"nn": true,
+					"param": "",
+					"pk": false,
+					"unsigned": false,
+					"zerofill": false,
+					"estimatedSize": "",
+					"data": "",
+					"binary": false
+				},
+				{
+					"after": "",
+					"autoinc": false,
+					"charset": "",
+					"collation": "",
+					"comment": "",
+					"datatype": "VARCHAR",
+					"defaultvalue": "",
+					"enum": "",
+					"fk": true,
+					"id": "b72deb4b-093a-4c7a-81f3-a7fb28f59d2b",
+					"name": "syllabus_name",
+					"nn": true,
+					"param": "64",
+					"pk": false,
+					"unsigned": false,
+					"zerofill": false,
+					"estimatedSize": "",
+					"data": "",
+					"binary": false
+				},
+				{
+					"after": "",
+					"autoinc": false,
+					"charset": "",
+					"collation": "",
+					"comment": "",
+					"datatype": "INT",
+					"defaultvalue": "",
+					"enum": "",
+					"fk": true,
+					"id": "9251c7e4-e327-433c-8bb1-8f70bb534df5",
+					"name": "topic_id",
+					"nn": true,
+					"param": "",
+					"pk": false,
+					"unsigned": false,
+					"zerofill": false,
+					"estimatedSize": "",
+					"data": "",
+					"binary": false
+				}
+			],
+			"relations": [
+				"ac189cd9-e143-4b17-9e5a-df624bcfefdc",
+				"9bf66bc8-b81a-4d9d-9ca3-1b8ef45032aa",
+				"ca888c99-63dd-4148-9e05-d80be30eaa27"
+			],
+			"lines": [],
+			"keys": [
+				{
+					"id": "c96fd58e-271c-4547-b7ab-09cf5846cef0",
+					"name": "PRIMARY",
+					"isPk": true,
+					"cols": [
+						{
+							"id": "354c1002-b99b-40f5-8d6b-21949b5f908f",
+							"colid": "caefb46c-1699-491d-b456-48296d85f48d"
+						}
+					]
+				}
+			],
+			"indexes": [],
+			"embeddable": false,
+			"generate": true,
+			"generateCustomCode": true,
+			"customCode": "",
+			"tabletype": "",
+			"collation": "",
+			"charset": "",
+			"rowformat": "",
+			"database": "",
+			"initautoinc": "",
+			"temporary": false,
+			"ifnotexists": false
 		}
 	},
 	"relations": {
@@ -7573,6 +7701,93 @@
 			"linegraphics": "default",
 			"ri_pd": "Restrict",
 			"ri_pu": "Cascade"
+		},
+		"ac189cd9-e143-4b17-9e5a-df624bcfefdc": {
+			"id": "ac189cd9-e143-4b17-9e5a-df624bcfefdc",
+			"name": "exam_exam_topics",
+			"desc": "",
+			"type": "identifying",
+			"parent_key": "7d61475c-f8ae-49ee-a796-c0c1b4d959af",
+			"parent": "e6482e90-9ef5-42e0-adea-78221d525c42",
+			"child": "c5b50d51-ddb7-4b9e-875e-292a12742a36",
+			"c_mp": "true",
+			"c_mch": "true",
+			"c_p": "one",
+			"c_ch": "many",
+			"c_cp": "",
+			"c_cch": "",
+			"cols": [
+				{
+					"id": "9c5a823f-4fbf-4df4-8964-0a5e0e1f1765",
+					"parentcol": "526bbeb0-f34f-4690-b548-3860a85fcfc7",
+					"childcol": "a139ba3b-7afc-42fe-8255-878349097a0d"
+				}
+			],
+			"generate": true,
+			"generateCustomCode": true,
+			"customCode": "",
+			"relationColor": "transparent",
+			"linegraphics": "default",
+			"ri_pd": "Cascade",
+			"ri_pu": "Cascade"
+		},
+		"9bf66bc8-b81a-4d9d-9ca3-1b8ef45032aa": {
+			"id": "9bf66bc8-b81a-4d9d-9ca3-1b8ef45032aa",
+			"name": "syllabus_master_exam_topics",
+			"desc": "",
+			"type": "identifying",
+			"parent_key": "e9c28f90-a6f5-45b0-91fa-36580ccb169e",
+			"parent": "af87fb32-ca82-4d55-975a-a59d21bb572c",
+			"child": "c5b50d51-ddb7-4b9e-875e-292a12742a36",
+			"c_mp": "true",
+			"c_mch": "true",
+			"c_p": "one",
+			"c_ch": "many",
+			"c_cp": "",
+			"c_cch": "",
+			"cols": [
+				{
+					"id": "cd6d28ca-1736-401f-8e99-4837a3cb363a",
+					"parentcol": "1ca9641b-ccdb-47f8-8d0b-10440a10501a",
+					"childcol": "b72deb4b-093a-4c7a-81f3-a7fb28f59d2b"
+				}
+			],
+			"generate": true,
+			"generateCustomCode": true,
+			"customCode": "",
+			"relationColor": "transparent",
+			"linegraphics": "default",
+			"ri_pd": "Restrict",
+			"ri_pu": "Cascade"
+		},
+		"ca888c99-63dd-4148-9e05-d80be30eaa27": {
+			"id": "ca888c99-63dd-4148-9e05-d80be30eaa27",
+			"name": "topic_master_exam_topics",
+			"desc": "",
+			"type": "identifying",
+			"parent_key": "d8c58e9a-e1ad-4ae5-b4d6-b4ad4099e493",
+			"parent": "c17be34e-081a-4590-becf-6e0ac4ff6b06",
+			"child": "c5b50d51-ddb7-4b9e-875e-292a12742a36",
+			"c_mp": "true",
+			"c_mch": "true",
+			"c_p": "one",
+			"c_ch": "many",
+			"c_cp": "",
+			"c_cch": "",
+			"cols": [
+				{
+					"id": "30a21e00-fbfc-4f0b-848b-1867e3fbe632",
+					"parentcol": "8831cdc7-7d52-4be4-aa52-cdf8f61aa8a2",
+					"childcol": "9251c7e4-e327-433c-8bb1-8f70bb534df5"
+				}
+			],
+			"generate": true,
+			"generateCustomCode": true,
+			"customCode": "",
+			"relationColor": "transparent",
+			"linegraphics": "default",
+			"ri_pd": "Restrict",
+			"ri_pu": "Cascade"
 		}
 	},
 	"notes": {},
@@ -7590,7 +7805,7 @@
 		"replaceSpace": "_",
 		"color": "transparent",
 		"sideSelections": true,
-		"isDirty": true,
+		"isDirty": false,
 		"storedin": {
 			"major": 12,
 			"minor": 3,
@@ -7633,7 +7848,7 @@
 			"includeWarnings": "yes",
 			"includeCreationSql": "no"
 		},
-		"lastSaved": 1771405782588,
+		"lastSaved": 1771647429925,
 		"connectionId": "7af83ebc-4655-4802-a6d0-2c6890f3e1ce",
 		"modelHTMLReportDir": "/Users/sandeep/temp"
 	},
@@ -8237,6 +8452,19 @@
 					"autoExpand": true,
 					"backgroundOpacity": "10",
 					"collapsed": false
+				},
+				"c5b50d51-ddb7-4b9e-875e-292a12742a36": {
+					"referencedItemId": "c5b50d51-ddb7-4b9e-875e-292a12742a36",
+					"x": 1263,
+					"y": 419,
+					"gHeight": 60,
+					"gWidth": 200,
+					"color": "#ffffff",
+					"background": "#03a9f4",
+					"resized": false,
+					"autoExpand": true,
+					"backgroundOpacity": "10",
+					"collapsed": false
 				}
 			},
 			"scroll": {
@@ -8830,7 +9058,7 @@
 			"id": "73e505ea-9f8d-4541-b83b-9084a728f495",
 			"keysgraphics": true,
 			"linegraphics": "detailed",
-			"zoom": 1.1,
+			"zoom": 0.9,
 			"background": "transparent",
 			"lineColor": "transparent",
 			"isOpen": true,
@@ -8877,8 +9105,8 @@
 				},
 				"df847d92-a927-4fb6-9c29-2ed71ae443b9": {
 					"referencedItemId": "df847d92-a927-4fb6-9c29-2ed71ae443b9",
-					"x": 479,
-					"y": 124,
+					"x": 485,
+					"y": 42,
 					"gHeight": 225,
 					"gWidth": 246,
 					"color": "#ffffff",
@@ -8890,8 +9118,8 @@
 				},
 				"3095a18c-f590-436c-be84-a06fd089c00f": {
 					"referencedItemId": "3095a18c-f590-436c-be84-a06fd089c00f",
-					"x": 879,
-					"y": 124,
+					"x": 878,
+					"y": 46,
 					"gHeight": 201,
 					"gWidth": 249,
 					"color": "#ffffff",
@@ -8903,8 +9131,8 @@
 				},
 				"e6482e90-9ef5-42e0-adea-78221d525c42": {
 					"referencedItemId": "e6482e90-9ef5-42e0-adea-78221d525c42",
-					"x": 87,
-					"y": 418,
+					"x": 88,
+					"y": 484,
 					"gHeight": 189,
 					"gWidth": 235,
 					"color": "#ffffff",
@@ -8916,8 +9144,8 @@
 				},
 				"ad4579d4-9923-4cbe-88a5-ec20337f001f": {
 					"referencedItemId": "ad4579d4-9923-4cbe-88a5-ec20337f001f",
-					"x": 879,
-					"y": 418,
+					"x": 880,
+					"y": 484,
 					"gHeight": 108,
 					"gWidth": 247,
 					"color": "#ffffff",
@@ -8929,8 +9157,8 @@
 				},
 				"cf3b736d-d5fc-4381-80b9-0d34d9a16abc": {
 					"referencedItemId": "cf3b736d-d5fc-4381-80b9-0d34d9a16abc",
-					"x": 479,
-					"y": 418,
+					"x": 480,
+					"y": 484,
 					"gHeight": 225,
 					"gWidth": 270,
 					"color": "#ffffff",
@@ -8942,8 +9170,8 @@
 				},
 				"a429d89a-0ce8-4f02-8ee1-91126bfc08f2": {
 					"referencedItemId": "a429d89a-0ce8-4f02-8ee1-91126bfc08f2",
-					"x": 84,
-					"y": 679,
+					"x": 87,
+					"y": 764,
 					"gHeight": 181,
 					"gWidth": 243,
 					"color": "#ffffff",
@@ -8955,8 +9183,8 @@
 				},
 				"3071891b-31dc-4bbd-ba07-53b0e9057c52": {
 					"referencedItemId": "3071891b-31dc-4bbd-ba07-53b0e9057c52",
-					"x": 479,
-					"y": 679,
+					"x": 482,
+					"y": 764,
 					"gHeight": 172,
 					"gWidth": 267,
 					"color": "#ffffff",
@@ -8968,8 +9196,8 @@
 				},
 				"82399bce-f64f-410a-87fb-7e9dbb3ea4f4": {
 					"referencedItemId": "82399bce-f64f-410a-87fb-7e9dbb3ea4f4",
-					"x": 882,
-					"y": 679,
+					"x": 885,
+					"y": 764,
 					"gHeight": 169,
 					"gWidth": 285,
 					"color": "#ffffff",
@@ -8981,8 +9209,8 @@
 				},
 				"5fdbb07d-d8cf-416a-a443-9042f0483ce9": {
 					"referencedItemId": "5fdbb07d-d8cf-416a-a443-9042f0483ce9",
-					"x": 480,
-					"y": 906,
+					"x": 485,
+					"y": 981,
 					"gHeight": 136,
 					"gWidth": 263,
 					"color": "#ffffff",
@@ -8994,8 +9222,8 @@
 				},
 				"1d709a96-1de0-4e38-a8b1-c9a694d3b449": {
 					"referencedItemId": "1d709a96-1de0-4e38-a8b1-c9a694d3b449",
-					"x": 85,
-					"y": 906,
+					"x": 90,
+					"y": 974,
 					"gHeight": 159,
 					"gWidth": 238,
 					"color": "#ffffff",
@@ -9007,13 +9235,26 @@
 				},
 				"0cc650eb-ebb9-4e77-b936-04f23a962624": {
 					"referencedItemId": "0cc650eb-ebb9-4e77-b936-04f23a962624",
-					"x": 882,
-					"y": 906,
+					"x": 888,
+					"y": 980,
 					"gHeight": 63,
 					"gWidth": 196,
 					"color": "#ffffff",
 					"background": "#03a9f4",
 					"resized": false,
+					"autoExpand": true,
+					"backgroundOpacity": "10",
+					"collapsed": false
+				},
+				"c5b50d51-ddb7-4b9e-875e-292a12742a36": {
+					"referencedItemId": "c5b50d51-ddb7-4b9e-875e-292a12742a36",
+					"x": 487,
+					"y": 322,
+					"gHeight": 108,
+					"gWidth": 267,
+					"color": "#ffffff",
+					"background": "#03a9f4",
+					"resized": true,
 					"autoExpand": true,
 					"backgroundOpacity": "10",
 					"collapsed": false
@@ -9167,6 +9408,7 @@
 		"5fdbb07d-d8cf-416a-a443-9042f0483ce9",
 		"1d709a96-1de0-4e38-a8b1-c9a694d3b449",
 		"0cc650eb-ebb9-4e77-b936-04f23a962624",
+		"c5b50d51-ddb7-4b9e-875e-292a12742a36",
 		"c9889e60-3f92-49f6-a274-ca9d023bf7c9",
 		"10898ae7-34a4-4697-ba4c-96869007b8b3",
 		"0af8d403-cf01-4e74-8ea0-66dd36ce36b5",
@@ -9211,6 +9453,9 @@
 		"c081c08b-8c64-44cd-b757-d1fb0d0c9237",
 		"a7459937-abca-4eac-b805-58e49ad0c039",
 		"d01fbbba-0922-47f5-a87d-f4dc5d3edaf9",
+		"ac189cd9-e143-4b17-9e5a-df624bcfefdc",
+		"9bf66bc8-b81a-4d9d-9ca3-1b8ef45032aa",
+		"ca888c99-63dd-4148-9e05-d80be30eaa27",
 		"3e5908c2-2832-4fab-abaf-266952aa60ba",
 		"5fd34dc8-b1f2-47c4-90bf-3ed356cf57e3",
 		"d47e6e55-ef57-4e2b-b39a-dc6dce1c7d95",

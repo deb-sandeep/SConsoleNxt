@@ -11,16 +11,16 @@ import java.util.List;
 public class ExamSectionVO {
     
     private Integer id ;
+    private Integer examId ;
+    private Integer examSequence ;
     private String syllabusName ;
     private String problemType ;
-    private Integer examId ;
     private String title ;
     private Integer correctMarks ;
-    private Integer examSequence ;
     private Integer wrongPenalty ;
     private Integer numQuestions ;
     private Integer numCompulsoryQuestions ;
-    private String instructions ;
+    private List<String> instructions ;
     private List<ExamQuestionVO> questions = new ArrayList<>() ;
     
     public ExamSectionVO(){}
@@ -36,7 +36,7 @@ public class ExamSectionVO {
         this.setWrongPenalty( entity.getWrongPenalty() ) ;
         this.setNumQuestions( entity.getNumQuestions() ) ;
         this.setNumCompulsoryQuestions( entity.getNumCompulsoryQuestions() ) ;
-        this.setInstructions( entity.getInstructions() ) ;
+        this.setInstructions( List.of( entity.getInstructions().split( "\n" ) ) ) ;
         
         for( ExamQuestion question : entity.getQuestions() ) {
             this.getQuestions().add( new ExamQuestionVO( question ) ) ;

@@ -55,4 +55,7 @@ public class Exam {
     
     @OneToMany( mappedBy = "exam" )
     private Set<ExamSection> sections = new LinkedHashSet<>();
+    
+    @OneToMany( mappedBy = "exam" )
+    private Set<ExamTopic> topics = new LinkedHashSet<>();
 }

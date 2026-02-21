@@ -2,11 +2,11 @@ package com.sandy.sconsole.endpoints.rest.master.vo;
 
 import com.sandy.sconsole.dao.exam.Exam;
 import com.sandy.sconsole.dao.exam.ExamSection;
+import com.sandy.sconsole.dao.exam.ExamTopic;
+import com.sandy.sconsole.dao.master.dto.TopicVO;
 import lombok.Data;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Data
 public class ExamVO {
@@ -21,6 +21,7 @@ public class ExamVO {
     private Integer duration ;
     private Date creationDate ;
     private List<ExamSectionVO> sections = new ArrayList<>() ;
+    private Map<String, List<TopicVO>> topics = new HashMap<>() ;
     
     public ExamVO(){}
     
@@ -37,6 +38,12 @@ public class ExamVO {
         
         for( ExamSection section : entity.getSections() ) {
             this.getSections().add( new ExamSectionVO( section ) ) ;
+        }
+        
+        for( ExamTopic t : entity.getTopics() ) {
+            String syllabusName = t.getTopic().getSyllabus().getSyllabusName() ;
+            List<TopicVO> topicList = topics.computeIfAbsent( syllabusName, k -> new ArrayList<>() ) ;
+            topicList.add( new TopicVO( t.getTopic() ) ) ;
         }
     }
 }

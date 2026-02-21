@@ -121,7 +121,7 @@ public class ActiveTopicStatisticsManager implements ClockTickListener, EventSub
         ats.init() ;
         
         syllabusTopicStats.put( ats.getTopic().getSyllabusName(), ats ) ;
-        topicStats.put( ats.getTopic().getTopicId(), ats ) ;
+        topicStats.put( ats.getTopic().getId(), ats ) ;
     }
     
     @EventTargetMarker( PROBLEM_ATTEMPT_ENDED )
@@ -129,7 +129,7 @@ public class ActiveTopicStatisticsManager implements ClockTickListener, EventSub
         ActiveTopicStatistics ats = topicStats.get( topicId ) ;
         if( ats != null ) {
             ats.refreshState() ;
-            eventBus.publishEvent( ATS_REFRESHED, ats.getTopic().getTopicId() ) ;
+            eventBus.publishEvent( ATS_REFRESHED, ats.getTopic().getId() ) ;
         }
     }
     

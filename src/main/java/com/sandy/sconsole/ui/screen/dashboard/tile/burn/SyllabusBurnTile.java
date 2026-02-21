@@ -95,13 +95,13 @@ public class SyllabusBurnTile extends Tile
         if( !topicStats.isEmpty() ) {
             ActiveTopicStatistics stat = topicStats.get( 0 ) ;
             topBurnPanel.setTopicStats( stat ) ;
-            burnPanelMap.put( stat.getTopic().getTopicId(), topBurnPanel ) ;
+            burnPanelMap.put( stat.getTopic().getId(), topBurnPanel ) ;
         }
         
         if( topicStats.size() > 1 ) {
             ActiveTopicStatistics stat = topicStats.get( 1 ) ;
             bottomBurnPanel.setTopicStats( stat ) ;
-            burnPanelMap.put( stat.getTopic().getTopicId(), bottomBurnPanel ) ;
+            burnPanelMap.put( stat.getTopic().getId(), bottomBurnPanel ) ;
         }
         
         topBurnPanel.refreshUI() ;

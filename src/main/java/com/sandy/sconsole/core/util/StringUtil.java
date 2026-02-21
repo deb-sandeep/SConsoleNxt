@@ -72,7 +72,7 @@ public final class StringUtil {
     public static String toJSON( Object obj ) {
         String retVal ;
         try {
-            retVal = new ObjectMapper().writeValueAsString( obj ) ;
+            retVal = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString( obj ) ;
         }
         catch( Exception e ) {
             log.error( "Error while converting object {} to JSON string", obj, e ) ;
