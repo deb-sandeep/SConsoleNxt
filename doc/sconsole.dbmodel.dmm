@@ -712,6 +712,27 @@
 					"binary": false
 				},
 				{
+					"id": "6ff84f11-c45f-4716-b50e-d1cec7ff6043",
+					"name": "state",
+					"datatype": "ENUM",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"fk": false,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"after": "",
+					"autoinc": false,
+					"collation": "",
+					"charset": "",
+					"binary": false,
+					"zerofill": false,
+					"unsigned": false,
+					"enum": "'DRAFT','PUBLISHED','ATTEMPTED'",
+					"estimatedSize": ""
+				},
+				{
 					"after": "",
 					"autoinc": false,
 					"charset": "",
@@ -7805,7 +7826,7 @@
 		"replaceSpace": "_",
 		"color": "transparent",
 		"sideSelections": true,
-		"isDirty": false,
+		"isDirty": true,
 		"storedin": {
 			"major": 12,
 			"minor": 3,
@@ -7848,7 +7869,7 @@
 			"includeWarnings": "yes",
 			"includeCreationSql": "no"
 		},
-		"lastSaved": 1771647429925,
+		"lastSaved": 1771647626834,
 		"connectionId": "7af83ebc-4655-4802-a6d0-2c6890f3e1ce",
 		"modelHTMLReportDir": "/Users/sandeep/temp"
 	},
@@ -9133,7 +9154,7 @@
 					"referencedItemId": "e6482e90-9ef5-42e0-adea-78221d525c42",
 					"x": 88,
 					"y": 484,
-					"gHeight": 189,
+					"gHeight": 207,
 					"gWidth": 235,
 					"color": "#ffffff",
 					"background": "#03a9f4",

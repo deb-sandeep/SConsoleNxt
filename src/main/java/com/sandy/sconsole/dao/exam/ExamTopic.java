@@ -14,8 +14,10 @@ import org.hibernate.annotations.OnDeleteAction;
 @Entity
 @Table( name = "exam_topics" )
 public class ExamTopic {
+    
     @Id
     @Column( name = "id", nullable = false )
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     
     @NotNull
@@ -27,10 +29,17 @@ public class ExamTopic {
     @NotNull
     @ManyToOne( fetch = FetchType.LAZY, optional = false )
     @JoinColumn( name = "syllabus_name", nullable = false )
-    private Syllabus syllabusName;
+    private Syllabus syllabus;
     
     @NotNull
     @ManyToOne( fetch = FetchType.LAZY, optional = false )
     @JoinColumn( name = "topic_id", nullable = false )
-    private Topic topic;
+    private Topic topic ;
+    
+    public ExamTopic() {}
+    
+    public ExamTopic( Topic topic ) {
+        this.syllabus = topic.getSyllabus() ;
+        this.topic = topic;
+    }
 }

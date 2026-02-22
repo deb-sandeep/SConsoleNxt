@@ -12,6 +12,7 @@ import java.util.*;
 public class ExamVO {
     
     private Integer id ;
+    private String state ;
     private String type ;
     private String note ;
     private Integer numPhyQuestions ;
@@ -27,6 +28,7 @@ public class ExamVO {
     
     public ExamVO( Exam entity ) {
         this.setId( entity.getId() ) ;
+        this.setState( entity.getState() ) ;
         this.setType( entity.getType() ) ;
         this.setNote( entity.getNote() ) ;
         this.setNumPhyQuestions( entity.getNumPhyQuestions() ) ;

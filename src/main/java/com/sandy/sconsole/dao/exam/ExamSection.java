@@ -2,6 +2,7 @@ package com.sandy.sconsole.dao.exam;
 
 import com.sandy.sconsole.dao.master.ProblemType;
 import com.sandy.sconsole.dao.master.Syllabus;
+import com.sandy.sconsole.endpoints.rest.master.vo.ExamSectionVO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -26,7 +27,7 @@ public class ExamSection {
     @NotNull
     @ManyToOne( fetch = FetchType.LAZY, optional = false )
     @JoinColumn( name = "syllabus_name", nullable = false )
-    private Syllabus syllabusName;
+    private Syllabus syllabus;
     
     @NotNull
     @ManyToOne( fetch = FetchType.LAZY, optional = false )
@@ -72,5 +73,20 @@ public class ExamSection {
     @OneToMany( mappedBy = "section" )
     private Set<ExamQuestion> questions = new LinkedHashSet<>();
     
+    public ExamSection() {}
     
+    public ExamSection( ExamSectionVO vo, Syllabus syllabus, ProblemType problemType ) {
+        this.id = null ;
+        this.syllabus = syllabus ;
+        this.problemType = problemType ;
+        this.title = vo.getTitle() ;
+        this.correctMarks = vo.getCorrectMarks() ;
+        this.examSequence = vo.getExamSequence() ;
+        this.wrongPenalty = vo.getWrongPenalty() ;
+        this.numQuestions = vo.getNumQuestions() ;
+        this.numCompulsoryQuestions = vo.getNumCompulsoryQuestions() ;
+        this.instructions = vo.getInstructions() == null
+                            ? ""
+                            : String.join( "\n", vo.getInstructions() ) ;
+    }
 }

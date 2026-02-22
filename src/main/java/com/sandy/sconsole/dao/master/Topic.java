@@ -1,6 +1,9 @@
 package com.sandy.sconsole.dao.master;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sandy.sconsole.SConsole;
+import com.sandy.sconsole.dao.master.dto.TopicVO;
+import com.sandy.sconsole.dao.master.repo.SyllabusRepo;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,4 +31,13 @@ public class Topic {
     
     @Column( name = "topic_name", nullable = false, length = 256 )
     private String topicName;
+    
+    public Topic() {}
+    
+    public Topic( TopicVO vo ) {
+        this.id = vo.getId() ;
+        this.syllabus = SConsole.getBean( SyllabusRepo.class ).findById( vo.getSyllabusName() ).get() ;
+        this.sectionName = vo.getSectionName() ;
+        this.topicName = vo.getTopicName() ;
+    }
 }

@@ -27,7 +27,7 @@ public class ExamSectionVO {
     
     public ExamSectionVO( ExamSection entity ) {
         this.setId( entity.getId() ) ;
-        this.setSyllabusName( entity.getSyllabusName().getSyllabusName() ) ;
+        this.setSyllabusName( entity.getSyllabus().getSyllabusName() ) ;
         this.setProblemType( entity.getProblemType().getProblemType() ) ;
         this.setExamId( entity.getExam().getId() ) ;
         this.setTitle( entity.getTitle() ) ;
