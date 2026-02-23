@@ -69,10 +69,10 @@ public class Exam {
     @Column( name = "creation_date", nullable = false )
     private Instant creationDate;
     
-    @OneToMany( mappedBy = "exam", cascade = CascadeType.ALL, orphanRemoval = true )
+    @OneToMany( mappedBy = "exam", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true )
     private Set<ExamSection> sections = new LinkedHashSet<>();
     
-    @OneToMany( mappedBy = "exam", cascade = CascadeType.ALL, orphanRemoval = true )
+    @OneToMany( mappedBy = "exam", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true )
     private Set<ExamTopic> topics = new LinkedHashSet<>();
     
     public Exam() {}

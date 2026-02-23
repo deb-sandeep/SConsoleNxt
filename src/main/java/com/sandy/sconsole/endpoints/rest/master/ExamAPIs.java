@@ -8,10 +8,9 @@ import com.sandy.sconsole.endpoints.rest.master.vo.ExamVO;
 import com.sandy.sconsole.endpoints.rest.master.vo.reqres.SaveExamRes;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static com.sandy.sconsole.core.api.AR.systemError;
 
@@ -19,6 +18,22 @@ import static com.sandy.sconsole.core.api.AR.systemError;
 @RestController
 @RequestMapping( "/Master/Exam" )
 public class ExamAPIs {
+    
+    @GetMapping( "/" )
+    public ResponseEntity<AR<List<ExamVO>>> getListOfExams() {
+        
+        try {
+            ExamHelper helper = SConsole.getBean( ExamHelper.class ) ;
+            List<ExamVO> examList = helper.getListOfExams() ;
+            return AR.success( examList ) ;
+        }
+        catch( IllegalArgumentException e ) {
+            return AR.badRequest( e.getMessage() ) ;
+        }
+        catch( Exception e ) {
+            return systemError( e ) ;
+        }
+    }
     
     @PostMapping( "/" )
     public ResponseEntity<AR<SaveExamRes>> saveExam( @RequestBody ExamVO exam ) {

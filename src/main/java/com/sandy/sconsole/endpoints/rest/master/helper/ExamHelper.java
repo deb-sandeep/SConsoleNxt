@@ -9,6 +9,9 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Slf4j
 @Component
 @Scope( "prototype" )
@@ -19,9 +22,15 @@ public class ExamHelper {
     
     @Transactional
     public int saveExam( ExamVO examVO ) {
-        
         Exam exam = new Exam( examVO ) ;
         Exam savedExam = examRepo.saveAndFlush( exam ) ;
         return savedExam.getId() ;
+    }
+    
+    public List<ExamVO> getListOfExams() {
+        List<Exam> exams = examRepo.findAll() ;
+        List<ExamVO> examVoList = new ArrayList<>() ;
+        exams.forEach( e -> examVoList.add( new ExamVO( e, false ) ) ) ;
+        return examVoList ;
     }
 }

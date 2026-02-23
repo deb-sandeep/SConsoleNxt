@@ -27,6 +27,10 @@ public class ExamVO {
     public ExamVO(){}
     
     public ExamVO( Exam entity ) {
+        this( entity, true ) ;
+    }
+
+    public ExamVO( Exam entity, boolean deep ) {
         this.setId( entity.getId() ) ;
         this.setState( entity.getState() ) ;
         this.setType( entity.getType() ) ;
@@ -37,15 +41,17 @@ public class ExamVO {
         this.setTotalMarks( entity.getTotalMarks() ) ;
         this.setDuration( entity.getDuration() ) ;
         this.setCreationDate( Date.from( entity.getCreationDate() ) ) ;
-        
-        for( ExamSection section : entity.getSections() ) {
-            this.getSections().add( new ExamSectionVO( section ) ) ;
-        }
-        
-        for( ExamTopic t : entity.getTopics() ) {
-            String syllabusName = t.getTopic().getSyllabus().getSyllabusName() ;
-            List<TopicVO> topicList = topics.computeIfAbsent( syllabusName, k -> new ArrayList<>() ) ;
-            topicList.add( new TopicVO( t.getTopic() ) ) ;
+
+        if( deep ) {
+            for( ExamSection section : entity.getSections() ) {
+                this.getSections().add( new ExamSectionVO( section ) ) ;
+            }
+            
+            for( ExamTopic t : entity.getTopics() ) {
+                String syllabusName = t.getTopic().getSyllabus().getSyllabusName() ;
+                List<TopicVO> topicList = topics.computeIfAbsent( syllabusName, k -> new ArrayList<>() ) ;
+                topicList.add( new TopicVO( t.getTopic() ) ) ;
+            }
         }
     }
 }
