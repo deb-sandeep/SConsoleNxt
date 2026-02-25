@@ -35,6 +35,24 @@ public class ExamAPIs {
         }
     }
     
+    @GetMapping( "/{examId}" )
+    public ResponseEntity<AR<ExamVO>> getExamConfig(
+            @PathVariable( "examId" ) int examId
+    ) {
+        
+        try {
+            ExamHelper helper = SConsole.getBean( ExamHelper.class ) ;
+            ExamVO examVO = helper.getExamConfig( examId ) ;
+            return AR.success( examVO ) ;
+        }
+        catch( IllegalArgumentException e ) {
+            return AR.badRequest( e.getMessage() ) ;
+        }
+        catch( Exception e ) {
+            return systemError( e ) ;
+        }
+    }
+    
     @PostMapping( "/" )
     public ResponseEntity<AR<SaveExamRes>> saveExam( @RequestBody ExamVO exam ) {
         

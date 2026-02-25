@@ -1,7 +1,10 @@
 package com.sandy.sconsole.dao.exam;
 
+import com.sandy.sconsole.SConsole;
+import com.sandy.sconsole.dao.exam.repo.QuestionRepo;
 import com.sandy.sconsole.dao.master.ProblemType;
 import com.sandy.sconsole.dao.master.Syllabus;
+import com.sandy.sconsole.endpoints.rest.master.vo.ExamQuestionVO;
 import com.sandy.sconsole.endpoints.rest.master.vo.ExamSectionVO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -70,7 +73,7 @@ public class ExamSection {
     @Column( name = "instructions", nullable = false, length = 1024 )
     private String instructions;
     
-    @OneToMany( mappedBy = "section" )
+    @OneToMany( mappedBy = "section", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true )
     private Set<ExamQuestion> questions = new LinkedHashSet<>();
     
     public ExamSection() {}
@@ -88,5 +91,12 @@ public class ExamSection {
         this.instructions = vo.getInstructions() == null
                             ? ""
                             : String.join( "\n", vo.getInstructions() ) ;
+        
+        QuestionRepo qRepo = SConsole.getBean( QuestionRepo.class ) ;
+        int sequence = 1 ;
+        for( ExamQuestionVO q : vo.getQuestions() ) {
+            Question question = qRepo.findById( q.getQuestionId() ).get() ;
+            this.questions.add( new ExamQuestion( q.getId(), question, this, sequence++ ) ) ;
+        }
     }
 }

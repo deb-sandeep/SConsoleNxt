@@ -33,4 +33,9 @@ public class ExamHelper {
         exams.forEach( e -> examVoList.add( new ExamVO( e, false ) ) ) ;
         return examVoList ;
     }
+    
+    public ExamVO getExamConfig( int examId ) {
+        Exam exam = examRepo.findById( examId ).get() ;
+        return new ExamVO( exam, true ) ;
+    }
 }

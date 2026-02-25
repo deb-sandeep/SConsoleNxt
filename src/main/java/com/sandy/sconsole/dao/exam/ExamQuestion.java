@@ -10,6 +10,7 @@ import lombok.Setter;
 @Entity
 @Table( name = "exam_question" )
 public class ExamQuestion {
+    
     @Id
     @GeneratedValue( strategy = GenerationType.IDENTITY )
     @Column( name = "id", nullable = false )
@@ -29,5 +30,13 @@ public class ExamQuestion {
     @Column( name = "sequence", nullable = false )
     private Integer sequence;
     
+    public ExamQuestion() {}
     
+    public ExamQuestion( Integer id, Question question,
+                         ExamSection examSection, int sequence ) {
+        this.id = id;
+        this.question = question;
+        this.section = examSection;
+        this.sequence = sequence;
+    }
 }
