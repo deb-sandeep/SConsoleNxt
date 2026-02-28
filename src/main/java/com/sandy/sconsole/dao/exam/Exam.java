@@ -70,6 +70,7 @@ public class Exam {
     private Instant creationDate;
     
     @OneToMany( mappedBy = "exam", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true )
+    @OrderBy( "examSequence" )
     private Set<ExamSection> sections = new LinkedHashSet<>();
     
     @OneToMany( mappedBy = "exam", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true )
