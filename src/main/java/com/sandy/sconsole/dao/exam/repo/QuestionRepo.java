@@ -39,4 +39,19 @@ public interface QuestionRepo
         """
     )
     List<RepoStatusRow> getRepoStatus() ;
+    
+    @Query( """
+        SELECT q
+        FROM Question q
+             LEFT JOIN ExamQuestion eq
+                  ON eq.question.id = q.id
+        WHERE
+             q.topic.id = :topicId AND
+             q.problemType.problemType IN :problemTypes AND
+             eq.id IS NULL
+        ORDER BY
+             q.id ASC,
+             q.problemType.problemType ASC
+     """ )
+    List<Question> getAvailableQuestions( Integer topicId, String[] problemTypes ) ;
 }

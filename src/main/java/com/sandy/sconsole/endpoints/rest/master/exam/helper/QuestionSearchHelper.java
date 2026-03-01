@@ -2,6 +2,7 @@ package com.sandy.sconsole.endpoints.rest.master.exam.helper;
 
 import com.sandy.sconsole.dao.exam.Question;
 import com.sandy.sconsole.dao.exam.repo.QuestionRepo;
+import com.sandy.sconsole.endpoints.rest.master.exam.vo.QuestionVO;
 import com.sandy.sconsole.endpoints.rest.master.exam.vo.reqres.AvailableQuestionRes;
 import com.sandy.sconsole.endpoints.rest.master.exam.vo.reqres.QuestionSearchReq;
 import com.sandy.sconsole.endpoints.rest.master.exam.vo.reqres.QuestionSearchRes;
@@ -15,8 +16,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Component
@@ -64,6 +67,20 @@ public class QuestionSearchHelper {
     }
     
     public AvailableQuestionRes getAvailableQuestions( int topicId, String[] problemTypes ) {
-        return new AvailableQuestionRes( topicId, new HashMap<>() ) ;
+        
+        List<Question> questions = questionRepo.getAvailableQuestions( topicId, problemTypes ) ;
+        Map<String, List<QuestionVO>> questionMap = new HashMap<>() ;
+        
+        for( String problemType : problemTypes ) {
+            questionMap.put( problemType, new ArrayList<>() ) ;
+        }
+        
+        for( Question q : questions ) {
+            String problemType = q.getProblemType().getProblemType() ;
+            List<QuestionVO> qList = questionMap.get( problemType ) ;
+            qList.add( new QuestionVO( q, false ) ) ;
+        }
+        
+        return new AvailableQuestionRes( topicId, questionMap ) ;
     }
 }

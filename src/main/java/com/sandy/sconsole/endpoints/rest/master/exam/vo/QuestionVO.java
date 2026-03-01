@@ -27,6 +27,10 @@ public class QuestionVO {
     public QuestionVO(){}
     
     public QuestionVO( Question entity ) {
+        this( entity, true ) ;
+    }
+    
+    public QuestionVO( Question entity, boolean deep ) {
         
         this.setId( entity.getId() ) ;
         this.setQuestionId( entity.getQuestionId() ) ;
@@ -39,18 +43,20 @@ public class QuestionVO {
         this.setQuestionNumber( entity.getQuestionNumber() ) ;
         this.setAnswer( entity.getAnswer() ) ;
         this.setServerSyncTime( Date.from( entity.getServerSyncTime() ) ) ;
-        
-        for( QuestionImage img : entity.getQuestionImages() ) {
-            QuestionImageVO qImgVO = new QuestionImageVO() ;
-            qImgVO.setSequence( img.getSequence() ) ;
-            qImgVO.setPageNumber( img.getPageNumber() ) ;
-            qImgVO.setFileName( img.getFileName() ) ;
-            qImgVO.setLctCtxImage( img.getLctCtxImage() ) ;
-            qImgVO.setPartNumber( img.getPartNumber() ) ;
-            qImgVO.setImgWidth( img.getImgWidth() ) ;
-            qImgVO.setImgHeight( img.getImgHeight() ) ;
-            
-            this.getQuestionImages().add( qImgVO ) ;
+
+        if( deep ) {
+            for( QuestionImage img : entity.getQuestionImages() ) {
+                QuestionImageVO qImgVO = new QuestionImageVO() ;
+                qImgVO.setSequence( img.getSequence() ) ;
+                qImgVO.setPageNumber( img.getPageNumber() ) ;
+                qImgVO.setFileName( img.getFileName() ) ;
+                qImgVO.setLctCtxImage( img.getLctCtxImage() ) ;
+                qImgVO.setPartNumber( img.getPartNumber() ) ;
+                qImgVO.setImgWidth( img.getImgWidth() ) ;
+                qImgVO.setImgHeight( img.getImgHeight() ) ;
+                
+                this.getQuestionImages().add( qImgVO ) ;
+            }
         }
     }
 }
