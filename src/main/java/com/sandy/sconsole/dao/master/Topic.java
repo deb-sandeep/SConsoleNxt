@@ -2,8 +2,8 @@ package com.sandy.sconsole.dao.master;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sandy.sconsole.SConsole;
-import com.sandy.sconsole.dao.master.dto.TopicVO;
 import com.sandy.sconsole.dao.master.repo.SyllabusRepo;
+import com.sandy.sconsole.endpoints.rest.master.core.vo.TopicVO;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

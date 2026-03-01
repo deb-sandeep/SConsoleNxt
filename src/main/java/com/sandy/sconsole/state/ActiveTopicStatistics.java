@@ -2,12 +2,12 @@ package com.sandy.sconsole.state;
 
 import com.sandy.sconsole.SConsole;
 import com.sandy.sconsole.dao.master.TopicTrackAssignment;
-import com.sandy.sconsole.dao.master.dto.TopicVO;
 import com.sandy.sconsole.dao.master.repo.TopicProblemRepo;
 import com.sandy.sconsole.dao.master.repo.TopicRepo;
 import com.sandy.sconsole.dao.session.dto.SessionDTO;
 import com.sandy.sconsole.dao.session.repo.ProblemAttemptRepo;
 import com.sandy.sconsole.dao.session.repo.TodaySolvedProblemCountRepo;
+import com.sandy.sconsole.endpoints.rest.master.core.vo.TopicVO;
 import com.sandy.sconsole.state.manager.ProblemStateCounter;
 import com.sandy.sconsole.state.manager.TodaySessionStatistics;
 import lombok.Getter;
