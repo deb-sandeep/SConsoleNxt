@@ -5,6 +5,7 @@ import com.sandy.sconsole.core.api.AR;
 import com.sandy.sconsole.core.util.StringUtil;
 import com.sandy.sconsole.dao.exam.repo.ExamRepo;
 import com.sandy.sconsole.endpoints.rest.master.exam.helper.ExamHelper;
+import com.sandy.sconsole.endpoints.rest.master.exam.helper.ExamUpdateHelper;
 import com.sandy.sconsole.endpoints.rest.master.exam.vo.ExamVO;
 import com.sandy.sconsole.endpoints.rest.master.exam.vo.reqres.SaveExamRes;
 import lombok.extern.slf4j.Slf4j;
@@ -79,7 +80,7 @@ public class ExamAPIs {
 
         log.debug( "Updating Exam: {}", StringUtil.toJSON( exam ) ) ;
         try {
-            ExamHelper helper = SConsole.getBean( ExamHelper.class ) ;
+            ExamUpdateHelper helper = SConsole.getBean( ExamUpdateHelper.class ) ;
             int examId = helper.updateExam( exam ) ;
             return AR.success( SaveExamRes.success( examId ) ) ;
         }
