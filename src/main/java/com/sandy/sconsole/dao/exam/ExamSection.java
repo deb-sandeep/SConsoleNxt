@@ -71,6 +71,7 @@ public class ExamSection {
     private String instructions;
     
     @OneToMany( mappedBy = "section", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true )
+    @OrderBy( "sequence" )
     private Set<ExamQuestion> questions = new LinkedHashSet<>();
     
     public ExamSection() {}
