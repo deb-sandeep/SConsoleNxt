@@ -3,11 +3,14 @@ package com.sandy.sconsole.endpoints.rest.master.exam;
 import com.sandy.sconsole.SConsole;
 import com.sandy.sconsole.core.api.AR;
 import com.sandy.sconsole.core.util.StringUtil;
+import com.sandy.sconsole.dao.exam.repo.ExamRepo;
 import com.sandy.sconsole.endpoints.rest.master.exam.helper.ExamHelper;
 import com.sandy.sconsole.endpoints.rest.master.exam.vo.ExamVO;
 import com.sandy.sconsole.endpoints.rest.master.exam.vo.reqres.SaveExamRes;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,6 +21,9 @@ import static com.sandy.sconsole.core.api.AR.systemError;
 @RestController
 @RequestMapping( "/Master/Exam" )
 public class ExamAPIs {
+    
+    @Autowired
+    private ExamRepo examRepo = null ;
     
     @GetMapping( "/" )
     public ResponseEntity<AR<List<ExamVO>>> getListOfExams() {
@@ -36,9 +42,7 @@ public class ExamAPIs {
     }
     
     @GetMapping( "/{examId}" )
-    public ResponseEntity<AR<ExamVO>> getExamConfig(
-            @PathVariable( "examId" ) int examId
-    ) {
+    public ResponseEntity<AR<ExamVO>> getExamConfig( @PathVariable int examId ) {
         
         try {
             ExamHelper helper = SConsole.getBean( ExamHelper.class ) ;
@@ -54,12 +58,12 @@ public class ExamAPIs {
     }
     
     @PostMapping( "/" )
-    public ResponseEntity<AR<SaveExamRes>> saveExam( @RequestBody ExamVO exam ) {
+    public ResponseEntity<AR<SaveExamRes>> createExam( @RequestBody ExamVO exam ) {
         
         log.debug( "Saving Exam: {}", StringUtil.toJSON( exam ) ) ;
         try {
             ExamHelper helper = SConsole.getBean( ExamHelper.class ) ;
-            int examId = helper.saveExam( exam ) ;
+            int examId = helper.createExam( exam ) ;
             return AR.success( SaveExamRes.success( examId ) ) ;
         }
         catch( IllegalArgumentException e ) {
@@ -69,4 +73,39 @@ public class ExamAPIs {
             return systemError( e ) ;
         }
     }
+    
+    @PutMapping( "/" )
+    public ResponseEntity<AR<SaveExamRes>> updateExam( @RequestBody ExamVO exam ) {
+
+        log.debug( "Updating Exam: {}", StringUtil.toJSON( exam ) ) ;
+        try {
+            ExamHelper helper = SConsole.getBean( ExamHelper.class ) ;
+            int examId = helper.updateExam( exam ) ;
+            return AR.success( SaveExamRes.success( examId ) ) ;
+        }
+        catch( IllegalArgumentException e ) {
+            return AR.badRequest( e.getMessage() ) ;
+        }
+        catch( Exception e ) {
+            return systemError( e ) ;
+        }
+    }
+    
+    @DeleteMapping( "/{examId}" )
+    @Transactional
+    public ResponseEntity<AR<String>> deleteExamConfig( @PathVariable int examId ) {
+        
+        try {
+            log.debug( "Deleting Exam: {}", examId ) ;
+            this.examRepo.deleteById( examId ) ;
+            return AR.success() ;
+        }
+        catch( IllegalArgumentException e ) {
+            return AR.badRequest( e.getMessage() ) ;
+        }
+        catch( Exception e ) {
+            return systemError( e ) ;
+        }
+    }
+    
 }

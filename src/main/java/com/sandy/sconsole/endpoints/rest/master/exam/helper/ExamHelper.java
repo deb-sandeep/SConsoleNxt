@@ -21,12 +21,18 @@ public class ExamHelper {
     private ExamRepo examRepo ;
     
     @Transactional
-    public int saveExam( ExamVO examVO ) {
+    public int createExam( ExamVO examVO ) {
         Exam exam = new Exam( examVO ) ;
         Exam savedExam = examRepo.saveAndFlush( exam ) ;
         return savedExam.getId() ;
     }
-    
+
+    @Transactional
+    public int updateExam( ExamVO examVO ) {
+        
+        return 0 ;
+    }
+
     public List<ExamVO> getListOfExams() {
         List<Exam> exams = examRepo.findAll() ;
         List<ExamVO> examVoList = new ArrayList<>() ;
@@ -38,4 +44,5 @@ public class ExamHelper {
         Exam exam = examRepo.findById( examId ).get() ;
         return new ExamVO( exam, true ) ;
     }
+    
 }

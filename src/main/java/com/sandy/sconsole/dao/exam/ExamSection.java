@@ -1,10 +1,7 @@
 package com.sandy.sconsole.dao.exam;
 
-import com.sandy.sconsole.SConsole;
-import com.sandy.sconsole.dao.exam.repo.QuestionRepo;
 import com.sandy.sconsole.dao.master.ProblemType;
 import com.sandy.sconsole.dao.master.Syllabus;
-import com.sandy.sconsole.endpoints.rest.master.exam.vo.ExamQuestionVO;
 import com.sandy.sconsole.endpoints.rest.master.exam.vo.ExamSectionVO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -91,12 +88,9 @@ public class ExamSection {
         this.instructions = vo.getInstructions() == null
                             ? ""
                             : String.join( "\n", vo.getInstructions() ) ;
-        
-        QuestionRepo qRepo = SConsole.getBean( QuestionRepo.class ) ;
-        int sequence = 1 ;
-        for( ExamQuestionVO q : vo.getQuestions() ) {
-            Question question = qRepo.findById( q.getQuestionId() ).get() ;
-            this.questions.add( new ExamQuestion( q.getId(), question, this, sequence++ ) ) ;
-        }
+
+        // While creating an exam section, there are no questions.
+        // Questions are added to an exam section only during update. Hence
+        // the questions array is not being populated.
     }
 }
