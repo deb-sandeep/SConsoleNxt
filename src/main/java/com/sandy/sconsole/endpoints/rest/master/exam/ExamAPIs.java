@@ -2,7 +2,6 @@ package com.sandy.sconsole.endpoints.rest.master.exam;
 
 import com.sandy.sconsole.SConsole;
 import com.sandy.sconsole.core.api.AR;
-import com.sandy.sconsole.core.util.StringUtil;
 import com.sandy.sconsole.dao.exam.repo.ExamRepo;
 import com.sandy.sconsole.endpoints.rest.master.exam.helper.ExamHelper;
 import com.sandy.sconsole.endpoints.rest.master.exam.helper.ExamUpdateHelper;
@@ -61,7 +60,6 @@ public class ExamAPIs {
     @PostMapping( "/" )
     public ResponseEntity<AR<SaveExamRes>> createExam( @RequestBody ExamVO exam ) {
         
-        log.debug( "Saving Exam: {}", StringUtil.toJSON( exam ) ) ;
         try {
             ExamHelper helper = SConsole.getBean( ExamHelper.class ) ;
             int examId = helper.createExam( exam ) ;
@@ -78,7 +76,6 @@ public class ExamAPIs {
     @PutMapping( "/" )
     public ResponseEntity<AR<SaveExamRes>> updateExam( @RequestBody ExamVO exam ) {
 
-        log.debug( "Updating Exam: {}", StringUtil.toJSON( exam ) ) ;
         try {
             ExamUpdateHelper helper = SConsole.getBean( ExamUpdateHelper.class ) ;
             int examId = helper.updateExam( exam ) ;
@@ -97,7 +94,6 @@ public class ExamAPIs {
     public ResponseEntity<AR<String>> deleteExamConfig( @PathVariable int examId ) {
         
         try {
-            log.debug( "Deleting Exam: {}", examId ) ;
             this.examRepo.deleteById( examId ) ;
             return AR.success() ;
         }
