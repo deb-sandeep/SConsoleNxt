@@ -26,7 +26,6 @@ public class ExamEvaluationHelper {
     @Autowired
     private ExamQuestionAttemptRepo examQuestionAttemptRepo ;
     
-
     public void evaluateExam( int examId ) {
         log.debug( "Evaluating exam: {}", examId ) ;
     }
