@@ -13,7 +13,7 @@ import com.sandy.sconsole.dao.session.dto.SessionDTO;
 import com.sandy.sconsole.dao.session.dto.SessionPauseDTO;
 import com.sandy.sconsole.dao.session.repo.SessionPauseRepo;
 import com.sandy.sconsole.dao.session.repo.SessionRepo;
-import com.sandy.sconsole.endpoints.rest.live.SessionExtensionDTO;
+import com.sandy.sconsole.endpoints.rest.live.vo.SessionExtensionVO;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.NonNull;
@@ -97,8 +97,8 @@ public class TodaySessionStatistics
         
         final int eventType = event.getEventId() ;
         SessionDTO session ;
-        SessionPauseDTO pause ;
-        SessionExtensionDTO extension ;
+        SessionPauseDTO    pause ;
+        SessionExtensionVO extension ;
         
         switch( eventType ) {
             case HISTORIC_SESSION_UPDATED:
@@ -111,7 +111,7 @@ public class TodaySessionStatistics
                 break ;
                 
             case SESSION_EXTENDED:
-                extension = ( SessionExtensionDTO )event.getValue() ;
+                extension = ( SessionExtensionVO )event.getValue() ;
                 currentSession = sessionExtended( extension ) ;
                 break ;
                 
@@ -165,7 +165,7 @@ public class TodaySessionStatistics
     }
     
     @EventTargetMarker( SESSION_EXTENDED )
-    private SessionDTO sessionExtended( SessionExtensionDTO extension ) {
+    private SessionDTO sessionExtended( SessionExtensionVO extension ) {
         SessionDTO sessionDTO = updateCachedSession( extension.getSessionDTO() ) ;
         if( extension.getPauseDTO() != null ) {
             updateCachedPause( extension.getPauseDTO() ) ;

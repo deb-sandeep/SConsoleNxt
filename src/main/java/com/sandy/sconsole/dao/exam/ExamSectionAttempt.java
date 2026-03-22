@@ -11,6 +11,7 @@ import lombok.Setter;
 @Table( name = "exam_section_attempt" )
 public class ExamSectionAttempt {
     @Id
+    @GeneratedValue( strategy = GenerationType.IDENTITY )
     @Column( name = "id", nullable = false )
     private Integer id;
     
@@ -35,6 +36,4 @@ public class ExamSectionAttempt {
     @NotNull
     @Column( name = "unavoidable_loss_pct", nullable = false )
     private Float unavoidableLossPct;
-    
-    
 }

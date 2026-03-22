@@ -18,6 +18,7 @@ import com.sandy.sconsole.dao.session.dto.SessionPauseDTO;
 import com.sandy.sconsole.dao.session.repo.ProblemAttemptRepo;
 import com.sandy.sconsole.dao.session.repo.SessionPauseRepo;
 import com.sandy.sconsole.dao.session.repo.SessionRepo;
+import com.sandy.sconsole.endpoints.rest.live.vo.SessionExtensionVO;
 import com.sandy.sconsole.ui.screen.session.SessionScreen;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
@@ -202,7 +203,7 @@ public class SessionAPIs {
         try {
             if( sessionRepo.findById( req.getSessionId() ).isPresent() ) {
                 
-                SessionExtensionDTO extensionDTO = this.txTemplate.execute( status -> {
+                SessionExtensionVO extensionDTO = this.txTemplate.execute( status -> {
                     
                     Session dao = sessionRepo.findById( req.getSessionId() ).get() ;
                     dao.setEndTime( req.getEndTime() ) ;
@@ -232,7 +233,7 @@ public class SessionAPIs {
                         paDTO = new ProblemAttemptDTO( savedPADao ) ;
                     }
 
-                    return new SessionExtensionDTO( sessionDto, pauseDTO, paDTO ) ;
+                    return new SessionExtensionVO( sessionDto, pauseDTO, paDTO ) ;
                 } ) ;
                 
                 eventBus.publishEvent( SESSION_EXTENDED, extensionDTO ) ;

@@ -14,7 +14,7 @@ import com.sandy.sconsole.dao.session.dto.ProblemAttemptDTO;
 import com.sandy.sconsole.dao.session.dto.SessionDTO;
 import com.sandy.sconsole.dao.session.dto.SessionPauseDTO;
 import com.sandy.sconsole.dao.session.repo.SessionRepo;
-import com.sandy.sconsole.endpoints.rest.live.SessionExtensionDTO;
+import com.sandy.sconsole.endpoints.rest.live.vo.SessionExtensionVO;
 import com.sandy.sconsole.endpoints.websockets.monitor.payload.*;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
@@ -60,7 +60,7 @@ public class SessionEventStoreLogger implements EventSubscriber {
             case PROBLEM_ATTEMPT_ENDED -> saveProblemAttemptEnded( ( ProblemAttemptDTO )event.getValue() ) ;
             case PAUSE_STARTED -> savePauseStarted( ( SessionPauseDTO )event.getValue() ) ;
             case PAUSE_ENDED -> savePauseEnded( ( SessionPauseDTO )event.getValue() ) ;
-            case SESSION_EXTENDED -> notifySessionExtension( ( SessionExtensionDTO )event.getValue() ) ;
+            case SESSION_EXTENDED -> notifySessionExtension( ( SessionExtensionVO )event.getValue() ) ;
         }
     }
     
@@ -163,7 +163,7 @@ public class SessionEventStoreLogger implements EventSubscriber {
     }
     
     @EventTargetMarker( SESSION_EXTENDED )
-    private void notifySessionExtension( SessionExtensionDTO sessionEx ) {
+    private void notifySessionExtension( SessionExtensionVO sessionEx ) {
         
         Map<String, Integer> payload = new HashMap<>() ;
         payload.put( "sessionId", sessionEx.getSessionDTO().getId() ) ;

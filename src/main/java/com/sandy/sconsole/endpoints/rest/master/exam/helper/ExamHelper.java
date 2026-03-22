@@ -1,7 +1,10 @@
 package com.sandy.sconsole.endpoints.rest.master.exam.helper;
 
 import com.sandy.sconsole.dao.exam.Exam;
+import com.sandy.sconsole.dao.exam.ExamQuestionAttemptRepo;
+import com.sandy.sconsole.dao.exam.repo.ExamAttemptRepo;
 import com.sandy.sconsole.dao.exam.repo.ExamRepo;
+import com.sandy.sconsole.dao.exam.repo.ExamSectionAttemptRepo;
 import com.sandy.sconsole.dao.exam.repo.QuestionRepo;
 import com.sandy.sconsole.endpoints.rest.master.exam.vo.ExamVO;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +26,15 @@ public class ExamHelper {
 
     @Autowired
     private QuestionRepo questionRepo ;
+    
+    @Autowired
+    private ExamAttemptRepo examAttemptRepo ;
+    
+    @Autowired
+    private ExamSectionAttemptRepo examSectionAttemptRepo ;
+    
+    @Autowired
+    private ExamQuestionAttemptRepo examQuestionAttemptRepo ;
     
     @Transactional
     public int createExam( ExamVO examVO ) {

@@ -12,6 +12,7 @@ import lombok.Setter;
 @Table( name = "exam_question_attempt" )
 public class ExamQuestionAttempt {
     @Id
+    @GeneratedValue( strategy = GenerationType.IDENTITY )
     @Column( name = "id", nullable = false )
     private Integer id;
     
@@ -19,6 +20,11 @@ public class ExamQuestionAttempt {
     @ManyToOne( fetch = FetchType.LAZY, optional = false )
     @JoinColumn( name = "exam_question_id", nullable = false )
     private ExamQuestion examQuestion;
+    
+    @NotNull
+    @ManyToOne( fetch = FetchType.LAZY, optional = false )
+    @JoinColumn( name = "exam_section_attempt_id", nullable = false )
+    private ExamSectionAttempt examSectionAttempt;
     
     @NotNull
     @Column( name = "time_spent", nullable = false )
@@ -32,5 +38,13 @@ public class ExamQuestionAttempt {
     @Column( name = "answer_provided", length = 128 )
     private String answerProvided;
     
-    
+    @NotNull
+    @Lob
+    @Column( name = "answer_submit_status", nullable = false )
+    private String answerSubmitStatus;
+
+    @NotNull
+    @ManyToOne( fetch = FetchType.LAZY )
+    @JoinColumn( name = "root_cause" )
+    private RootCauseMaster rootCause;
 }

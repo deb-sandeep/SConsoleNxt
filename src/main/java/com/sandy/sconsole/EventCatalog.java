@@ -4,7 +4,7 @@ import com.sandy.sconsole.core.bus.PayloadType;
 import com.sandy.sconsole.dao.session.dto.ProblemAttemptDTO;
 import com.sandy.sconsole.dao.session.dto.SessionDTO;
 import com.sandy.sconsole.dao.session.dto.SessionPauseDTO;
-import com.sandy.sconsole.endpoints.rest.live.SessionExtensionDTO;
+import com.sandy.sconsole.endpoints.rest.live.vo.SessionExtensionVO;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -18,7 +18,7 @@ public class EventCatalog {
     @PayloadType( SessionDTO.class )
     public static final int SESSION_STARTED = 201 ;
     
-    @PayloadType( SessionExtensionDTO.class )
+    @PayloadType( SessionExtensionVO.class )
     public static final int SESSION_EXTENDED = 202 ;
     
     @PayloadType( Integer.class ) // Session ID

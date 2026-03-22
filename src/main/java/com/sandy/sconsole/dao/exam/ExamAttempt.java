@@ -14,6 +14,7 @@ import java.time.Instant;
 @Table( name = "exam_attempt" )
 public class ExamAttempt {
     @Id
+    @GeneratedValue( strategy = GenerationType.IDENTITY )
     @Column( name = "id", nullable = false )
     private Integer id;
     
@@ -42,6 +43,4 @@ public class ExamAttempt {
     @Lob
     @Column( name = "status" )
     private String status;
-    
-    
 }

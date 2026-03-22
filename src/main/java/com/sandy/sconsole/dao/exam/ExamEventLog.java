@@ -16,17 +16,18 @@ import java.time.Instant;
 @Table( name = "exam_event_log" )
 public class ExamEventLog {
     @Id
+    @GeneratedValue( strategy = GenerationType.IDENTITY )
     @Column( name = "id", nullable = false )
     private Integer id;
-    
-    @NotNull
-    @Column( name = "sequence", nullable = false )
-    private Integer sequence;
     
     @NotNull
     @ManyToOne( fetch = FetchType.LAZY, optional = false )
     @JoinColumn( name = "exam_attempt_id", nullable = false )
     private ExamAttempt examAttempt;
+    
+    @NotNull
+    @Column( name = "sequence", nullable = false )
+    private Integer sequence;
     
     @Size( max = 32 )
     @NotNull
@@ -44,7 +45,5 @@ public class ExamEventLog {
     
     @NotNull
     @Column( name = "time_marker", nullable = false )
-    private Integer timeMarker;
-    
-    
+    private Long timeMarker;
 }
