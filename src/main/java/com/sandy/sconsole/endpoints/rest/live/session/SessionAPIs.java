@@ -1,4 +1,4 @@
-package com.sandy.sconsole.endpoints.rest.live;
+package com.sandy.sconsole.endpoints.rest.live.session;
 
 import com.sandy.sconsole.core.api.AR;
 import com.sandy.sconsole.core.bus.EventBus;
@@ -18,7 +18,8 @@ import com.sandy.sconsole.dao.session.dto.SessionPauseDTO;
 import com.sandy.sconsole.dao.session.repo.ProblemAttemptRepo;
 import com.sandy.sconsole.dao.session.repo.SessionPauseRepo;
 import com.sandy.sconsole.dao.session.repo.SessionRepo;
-import com.sandy.sconsole.endpoints.rest.live.vo.SessionExtensionVO;
+import com.sandy.sconsole.endpoints.rest.live.session.vo.ExtendSessionReq;
+import com.sandy.sconsole.endpoints.rest.live.session.vo.SessionExtensionVO;
 import com.sandy.sconsole.ui.screen.session.SessionScreen;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;

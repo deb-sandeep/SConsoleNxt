@@ -1,4 +1,4 @@
-package com.sandy.sconsole.endpoints.rest.live;
+package com.sandy.sconsole.endpoints.rest.live.problem;
 
 import com.sandy.sconsole.core.api.AR;
 import com.sandy.sconsole.dao.master.TopicProblem;
@@ -20,7 +20,7 @@ import static com.sandy.sconsole.core.api.AR.systemError;
 @Slf4j
 @RestController
 @RequestMapping( "/Topic" )
-public class ActiveTopicAPIs {
+public class ActiveTopicProblemAPIs {
     
     @Autowired private TopicProblemRepo tpRepo ;
     @Autowired private TopicRepo topicRepo ;

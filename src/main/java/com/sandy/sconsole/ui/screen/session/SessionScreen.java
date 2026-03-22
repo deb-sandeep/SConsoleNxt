@@ -15,7 +15,7 @@ import com.sandy.sconsole.core.ui.uiutil.UITheme;
 import com.sandy.sconsole.dao.master.repo.SessionTypeRepo;
 import com.sandy.sconsole.dao.master.repo.SyllabusRepo;
 import com.sandy.sconsole.dao.session.dto.SessionDTO;
-import com.sandy.sconsole.endpoints.rest.live.vo.SessionExtensionVO;
+import com.sandy.sconsole.endpoints.rest.live.session.vo.SessionExtensionVO;
 import com.sandy.sconsole.state.manager.TodaySessionStatistics;
 import com.sandy.sconsole.ui.screen.dashboard.tile.SyllabusL30EffortTile;
 import com.sandy.sconsole.ui.screen.dashboard.tile.daygantt.DayGanttTile;

@@ -14,7 +14,7 @@ import com.sandy.sconsole.dao.session.dto.ProblemAttemptDTO;
 import com.sandy.sconsole.dao.session.dto.SessionDTO;
 import com.sandy.sconsole.dao.session.dto.SessionPauseDTO;
 import com.sandy.sconsole.dao.session.repo.SessionRepo;
-import com.sandy.sconsole.endpoints.rest.live.vo.SessionExtensionVO;
+import com.sandy.sconsole.endpoints.rest.live.session.vo.SessionExtensionVO;
 import com.sandy.sconsole.endpoints.websockets.monitor.payload.*;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;

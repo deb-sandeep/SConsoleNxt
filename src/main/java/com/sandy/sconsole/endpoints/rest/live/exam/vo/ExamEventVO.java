@@ -1,4 +1,4 @@
-package com.sandy.sconsole.endpoints.rest.live.vo;
+package com.sandy.sconsole.endpoints.rest.live.exam.vo;
 
 import com.sandy.sconsole.dao.exam.ExamEventLog;
 import lombok.Data;

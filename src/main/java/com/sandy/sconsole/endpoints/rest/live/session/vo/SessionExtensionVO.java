@@ -1,4 +1,4 @@
-package com.sandy.sconsole.endpoints.rest.live.vo;
+package com.sandy.sconsole.endpoints.rest.live.session.vo;
 
 import com.sandy.sconsole.dao.session.dto.ProblemAttemptDTO;
 import com.sandy.sconsole.dao.session.dto.SessionDTO;

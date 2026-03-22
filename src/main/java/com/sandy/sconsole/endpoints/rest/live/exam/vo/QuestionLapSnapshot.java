@@ -1,4 +1,4 @@
-package com.sandy.sconsole.endpoints.rest.live.vo;
+package com.sandy.sconsole.endpoints.rest.live.exam.vo;
 
 public record QuestionLapSnapshot(
     int examQuestionId,

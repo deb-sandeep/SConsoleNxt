@@ -1,4 +1,4 @@
-package com.sandy.sconsole.endpoints.rest.live;
+package com.sandy.sconsole.endpoints.rest.live.exam;
 
 import com.sandy.sconsole.SConsole;
 import com.sandy.sconsole.core.api.AR;
@@ -9,10 +9,11 @@ import com.sandy.sconsole.dao.exam.ExamQuestionAttemptRepo;
 import com.sandy.sconsole.dao.exam.repo.ExamAttemptRepo;
 import com.sandy.sconsole.dao.exam.repo.ExamEventLogRepo;
 import com.sandy.sconsole.dao.exam.repo.ExamRepo;
-import com.sandy.sconsole.endpoints.rest.live.helper.ExamAttemptHelper;
-import com.sandy.sconsole.endpoints.rest.live.vo.AnswerUpdateReq;
-import com.sandy.sconsole.endpoints.rest.live.vo.ExamEventVO;
-import com.sandy.sconsole.endpoints.rest.live.vo.LapSnapshotReq;
+import com.sandy.sconsole.endpoints.rest.live.exam.helper.ExamAttemptHelper;
+import com.sandy.sconsole.endpoints.rest.live.exam.helper.ExamEvaluationHelper;
+import com.sandy.sconsole.endpoints.rest.live.exam.vo.AnswerUpdateReq;
+import com.sandy.sconsole.endpoints.rest.live.exam.vo.ExamEventVO;
+import com.sandy.sconsole.endpoints.rest.live.exam.vo.LapSnapshotReq;
 import com.sandy.sconsole.endpoints.rest.master.exam.vo.reqres.CreateExamAttemptRes;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +44,7 @@ public class ExamAttemptAPIs {
     @Autowired
     private JdbcTemplate jdbcTemplate = null ;
     
-    @PostMapping( "/Attempt/{examId}" )
+    @PostMapping( "/{examId}/Attempt" )
     @Transactional
     public ResponseEntity<AR<CreateExamAttemptRes>> createExamAttempt(
             @PathVariable int examId ) {
@@ -135,6 +136,24 @@ public class ExamAttemptAPIs {
                     ps.setString( 5, snapshot.attemptState() ) ;
                 }
             ) ;
+            return AR.success() ;
+        }
+        catch( IllegalArgumentException e ) {
+            return AR.badRequest( e.getMessage() ) ;
+        }
+        catch( Exception e ) {
+            return systemError( e ) ;
+        }
+    }
+    
+    @PostMapping( "/{examId}/Submit" )
+    @Transactional
+    public ResponseEntity<AR<String>> submitExamAttempt( @PathVariable int examId ) {
+        
+        try {
+            log.debug( "Submitting exam {}", examId ) ;
+            ExamEvaluationHelper helper = SConsole.getBean( ExamEvaluationHelper.class ) ;
+            helper.evaluateExam( examId ) ;
             return AR.success() ;
         }
         catch( IllegalArgumentException e ) {

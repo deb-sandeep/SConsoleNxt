@@ -1,4 +1,4 @@
-package com.sandy.sconsole.endpoints.rest.live.helper;
+package com.sandy.sconsole.endpoints.rest.live.exam.helper;
 
 import com.sandy.sconsole.dao.exam.*;
 import com.sandy.sconsole.dao.exam.repo.ExamAttemptRepo;

@@ -1,4 +1,4 @@
-package com.sandy.sconsole.endpoints.rest.live;
+package com.sandy.sconsole.endpoints.rest.live.problem;
 
 import com.sandy.sconsole.core.api.AR;
 import com.sandy.sconsole.core.bus.EventBus;
