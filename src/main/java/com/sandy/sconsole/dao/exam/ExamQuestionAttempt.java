@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
 @Getter
 @Setter
@@ -42,6 +43,11 @@ public class ExamQuestionAttempt {
     @Lob
     @Column( name = "answer_submit_status", nullable = false )
     private String answerSubmitStatus;
+    
+    @NotNull
+    @ColumnDefault( "0" )
+    @Column( name = "score", nullable = false )
+    private Integer score;
 
     @NotNull
     @ManyToOne( fetch = FetchType.LAZY )

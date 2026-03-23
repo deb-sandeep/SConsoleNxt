@@ -1,13 +1,19 @@
 package com.sandy.sconsole.endpoints.rest.live.exam.helper;
 
-import com.sandy.sconsole.dao.exam.ExamQuestionAttemptRepo;
+import com.sandy.sconsole.SConsole;
+import com.sandy.sconsole.dao.exam.*;
 import com.sandy.sconsole.dao.exam.repo.ExamAttemptRepo;
 import com.sandy.sconsole.dao.exam.repo.ExamRepo;
 import com.sandy.sconsole.dao.exam.repo.ExamSectionAttemptRepo;
+import com.sandy.sconsole.endpoints.rest.live.exam.helper.evaluators.SCAEvaluator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 @Slf4j
 @Component
@@ -21,12 +27,79 @@ public class ExamEvaluationHelper {
     private ExamAttemptRepo examAttemptRepo ;
     
     @Autowired
-    private ExamSectionAttemptRepo examSectionAttemptRepo ;
+    private ExamSectionAttemptRepo sectionAttemptRepo ;
     
     @Autowired
-    private ExamQuestionAttemptRepo examQuestionAttemptRepo ;
+    private ExamQuestionAttemptRepo questionAttemptRepo ;
     
-    public void evaluateExam( int examId ) {
-        log.debug( "Evaluating exam: {}", examId ) ;
+    // - Mark the exam as attempted
+    // - Mark the exam attempt as 'COMPLETED'
+    //
+    public void evaluateExamAttempt( int examAttemptId ) {
+        
+        ExamAttempt attempt = examAttemptRepo.findById( examAttemptId ).get() ;
+        Exam exam = attempt.getExam() ;
+        
+        Set<ExamSection> sections = exam.getSections() ;
+        List<ExamSectionAttempt> sectionAttempts = sectionAttemptRepo.findAllByExamAttempt( attempt ) ;
+        
+        int totalScore = 0 ;
+        
+        for( ExamSection section : sections ) {
+            ExamSectionAttempt sectionAttempt = findSectionAttempt( section, sectionAttempts ) ;
+            if( sectionAttempt != null ) {
+                totalScore += evaluateExamSection( section, sectionAttempt ) ;
+            }
+            else {
+                throw new IllegalStateException( "Section attempt not found for section " +
+                                                 section.getId() );
+            }
+        }
+        
+        attempt.setScore( totalScore ) ;
+        attempt.setStatus( "COMPLETED" ) ;
+        examRepo.save( exam ) ;
+        
+        log.debug( "Exam attempt evaluated: {}", examAttemptId ) ;
+    }
+    
+    private ExamSectionAttempt findSectionAttempt( ExamSection section,
+                                                   List<ExamSectionAttempt> sectionAttempts ) {
+        for( ExamSectionAttempt sectionAttempt : sectionAttempts ) {
+            if( Objects.equals( sectionAttempt.getExamSection().getId(), section.getId() ) ) {
+                return sectionAttempt ;
+            }
+        }
+        return null ;
+    }
+
+    private int evaluateExamSection( ExamSection section,
+                                     ExamSectionAttempt sectionAttempt ) {
+        
+        String examType = section.getExam().getType() ;
+        String problemType = section.getProblemType().getProblemType() ;
+        
+        SectionEvaluator evaluator = getSectionEvaluator( examType, problemType ) ;
+        
+        if( evaluator != null ) {
+            List<ExamQuestionAttempt> qAttempts = questionAttemptRepo.findAllByExamSectionAttempt( sectionAttempt ) ;
+            int score = evaluator.evaluateSectionAttempt( section, qAttempts ) ;
+            
+            sectionAttempt.setScore( score ) ;
+            sectionAttemptRepo.save( sectionAttempt ) ;
+            
+            return score ;
+        }
+        else {
+            throw new IllegalStateException( "Section " + problemType +
+                                             " does not have an evaluator." ) ;
+        }
+    }
+    
+    private SectionEvaluator getSectionEvaluator( String examType, String problemType ) {
+        if( "SCA".equals( problemType ) ) {
+            return SConsole.getBean( SCAEvaluator.class ) ;
+        }
+        return null ;
     }
 }

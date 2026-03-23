@@ -8,7 +8,6 @@ import com.sandy.sconsole.dao.exam.ExamQuestionAttempt;
 import com.sandy.sconsole.dao.exam.ExamQuestionAttemptRepo;
 import com.sandy.sconsole.dao.exam.repo.ExamAttemptRepo;
 import com.sandy.sconsole.dao.exam.repo.ExamEventLogRepo;
-import com.sandy.sconsole.dao.exam.repo.ExamRepo;
 import com.sandy.sconsole.endpoints.rest.live.exam.helper.ExamAttemptHelper;
 import com.sandy.sconsole.endpoints.rest.live.exam.helper.ExamEvaluationHelper;
 import com.sandy.sconsole.endpoints.rest.live.exam.vo.AnswerUpdateReq;
@@ -28,9 +27,6 @@ import static com.sandy.sconsole.core.api.AR.systemError;
 @RestController
 @RequestMapping( "/Exam" )
 public class ExamAttemptAPIs {
-    
-    @Autowired
-    private ExamRepo examRepo = null ;
     
     @Autowired
     private ExamAttemptRepo attemptRepo = null ;
@@ -146,14 +142,14 @@ public class ExamAttemptAPIs {
         }
     }
     
-    @PostMapping( "/{examId}/Submit" )
+    @PostMapping( "/{examAttemptId}/Submit" )
     @Transactional
-    public ResponseEntity<AR<String>> submitExamAttempt( @PathVariable int examId ) {
+    public ResponseEntity<AR<String>> submitExamAttempt( @PathVariable int examAttemptId ) {
         
         try {
-            log.debug( "Submitting exam {}", examId ) ;
+            log.debug( "Submitting exam attempt {}", examAttemptId ) ;
             ExamEvaluationHelper helper = SConsole.getBean( ExamEvaluationHelper.class ) ;
-            helper.evaluateExam( examId ) ;
+            helper.evaluateExamAttempt( examAttemptId ) ;
             return AR.success() ;
         }
         catch( IllegalArgumentException e ) {
