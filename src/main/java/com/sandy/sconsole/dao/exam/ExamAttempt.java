@@ -7,6 +7,8 @@ import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.time.Instant;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -43,4 +45,6 @@ public class ExamAttempt {
     @Lob
     @Column( name = "status" )
     private String status;
+    @OneToMany( mappedBy = "examAttempt", fetch = FetchType.EAGER )
+    private Set<ExamSectionAttempt> sectionAttempts = new LinkedHashSet<>();
 }

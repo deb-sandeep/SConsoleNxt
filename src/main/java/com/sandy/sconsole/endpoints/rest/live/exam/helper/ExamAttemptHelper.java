@@ -38,12 +38,17 @@ public class ExamAttemptHelper {
         Map<Integer, Integer> questionAttemptIds = new HashMap<>() ;
         
         ExamAttempt examAttempt = createExamAttempt( exam ) ;
+        
         log.debug( "Exam attempt created: {}", examAttempt.getId() ) ;
         for( ExamSection section : exam.getSections() ) {
             ExamSectionAttempt esAttempt = createExamSectionAttempt( examAttempt, section ) ;
+            examAttempt.getSectionAttempts().add( esAttempt ) ;
+            
             log.debug( "Exam section attempt created: {}", esAttempt.getId() ) ;
             for( ExamQuestion question : section.getQuestions() ) {
                 ExamQuestionAttempt questionAttempt = createExamQuestionAttempt( question, esAttempt ) ;
+                esAttempt.getQuestionAttempts().add( questionAttempt ) ;
+                
                 questionAttemptIds.put( question.getId(), questionAttempt.getId() ) ;
                 log.debug( "Exam question attempt created: {}", questionAttempt.getId() ) ;
             }
@@ -90,6 +95,7 @@ public class ExamAttemptHelper {
         questionAttempt.setAnswerProvided( null ) ;
         questionAttempt.setAnswerSubmitStatus( "NOT_VISITED" ) ;
         questionAttempt.setRootCause( null ) ;
+        questionAttempt.setScore( 0 ) ;
         return examQuestionAttemptRepo.saveAndFlush( questionAttempt ) ;
     }
 }

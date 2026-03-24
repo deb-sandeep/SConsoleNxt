@@ -78,7 +78,7 @@ public class QuestionSearchHelper {
         for( Question q : questions ) {
             String problemType = q.getProblemType().getProblemType() ;
             List<QuestionVO> qList = questionMap.get( problemType ) ;
-            qList.add( new QuestionVO( q, true ) ) ;
+            qList.add( new QuestionVO( q ) ) ;
         }
         
         return new AvailableQuestionRes( topicId, questionMap ) ;

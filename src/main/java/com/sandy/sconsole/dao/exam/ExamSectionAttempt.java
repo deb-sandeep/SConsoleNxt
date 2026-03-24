@@ -5,6 +5,9 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 @Getter
 @Setter
 @Entity
@@ -36,4 +39,7 @@ public class ExamSectionAttempt {
     @NotNull
     @Column( name = "unavoidable_loss_pct", nullable = false )
     private Float unavoidableLossPct;
+    
+    @OneToMany( mappedBy = "examSectionAttempt", fetch = FetchType.EAGER )
+    private Set<ExamQuestionAttempt> questionAttempts = new LinkedHashSet<>();
 }

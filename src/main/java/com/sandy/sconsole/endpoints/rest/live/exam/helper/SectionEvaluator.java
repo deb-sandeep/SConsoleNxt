@@ -2,33 +2,26 @@ package com.sandy.sconsole.endpoints.rest.live.exam.helper;
 
 import com.sandy.sconsole.dao.exam.ExamQuestion;
 import com.sandy.sconsole.dao.exam.ExamQuestionAttempt;
-import com.sandy.sconsole.dao.exam.ExamQuestionAttemptRepo;
 import com.sandy.sconsole.dao.exam.ExamSection;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 public abstract class SectionEvaluator {
     
-    @Autowired
-    protected ExamQuestionAttemptRepo eqaRepo ;
-    
     public final int evaluateSectionAttempt( ExamSection section,
-                                             List<ExamQuestionAttempt> questionAttempts ) {
+                                             Set<ExamQuestionAttempt> questionAttempts ) {
         
         int totalScore = 0 ;
         for( ExamQuestion question : section.getQuestions() ) {
             ExamQuestionAttempt questionAttempt = findQuestionAttempt( question, questionAttempts ) ;
             totalScore += evaluateQuestionAttempt( section, question, questionAttempt ) ;
-            
-            eqaRepo.save( questionAttempt ) ;
         }
         return totalScore ;
     }
     
     private ExamQuestionAttempt findQuestionAttempt( ExamQuestion question,
-                                                     List<ExamQuestionAttempt> attempts ) {
+                                                     Set<ExamQuestionAttempt> attempts ) {
         
         for( ExamQuestionAttempt attempt : attempts ) {
             if( Objects.equals( attempt.getExamQuestion().getId(),

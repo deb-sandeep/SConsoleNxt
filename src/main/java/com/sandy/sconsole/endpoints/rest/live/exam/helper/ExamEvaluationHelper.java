@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -32,16 +31,13 @@ public class ExamEvaluationHelper {
     @Autowired
     private ExamQuestionAttemptRepo questionAttemptRepo ;
     
-    // - Mark the exam as attempted
-    // - Mark the exam attempt as 'COMPLETED'
-    //
     public void evaluateExamAttempt( int examAttemptId ) {
         
         ExamAttempt attempt = examAttemptRepo.findById( examAttemptId ).get() ;
         Exam exam = attempt.getExam() ;
         
         Set<ExamSection> sections = exam.getSections() ;
-        List<ExamSectionAttempt> sectionAttempts = sectionAttemptRepo.findAllByExamAttempt( attempt ) ;
+        Set<ExamSectionAttempt> sectionAttempts = attempt.getSectionAttempts() ;
         
         int totalScore = 0 ;
         
@@ -64,7 +60,7 @@ public class ExamEvaluationHelper {
     }
     
     private ExamSectionAttempt findSectionAttempt( ExamSection section,
-                                                   List<ExamSectionAttempt> sectionAttempts ) {
+                                                   Set<ExamSectionAttempt> sectionAttempts ) {
         for( ExamSectionAttempt sectionAttempt : sectionAttempts ) {
             if( Objects.equals( sectionAttempt.getExamSection().getId(), section.getId() ) ) {
                 return sectionAttempt ;
@@ -82,12 +78,10 @@ public class ExamEvaluationHelper {
         SectionEvaluator evaluator = getSectionEvaluator( examType, problemType ) ;
         
         if( evaluator != null ) {
-            List<ExamQuestionAttempt> qAttempts = questionAttemptRepo.findAllByExamSectionAttempt( sectionAttempt ) ;
+            Set<ExamQuestionAttempt> qAttempts = sectionAttempt.getQuestionAttempts() ;
             int score = evaluator.evaluateSectionAttempt( section, qAttempts ) ;
             
             sectionAttempt.setScore( score ) ;
-            sectionAttemptRepo.save( sectionAttempt ) ;
-            
             return score ;
         }
         else {
