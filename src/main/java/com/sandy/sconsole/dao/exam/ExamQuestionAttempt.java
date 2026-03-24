@@ -39,6 +39,10 @@ public class ExamQuestionAttempt {
     @Column( name = "answer_provided", length = 128 )
     private String answerProvided;
     
+    @Size( max = 8 )
+    @Column( name = "answer_submit_lap", length = 8 )
+    private String answerSubmitLap;
+
     @NotNull
     @Lob
     @Column( name = "answer_submit_status", nullable = false )
@@ -48,7 +52,7 @@ public class ExamQuestionAttempt {
     @ColumnDefault( "0" )
     @Column( name = "score", nullable = false )
     private Integer score;
-
+    
     @NotNull
     @ManyToOne( fetch = FetchType.LAZY )
     @JoinColumn( name = "root_cause" )

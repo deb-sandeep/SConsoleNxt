@@ -26,6 +26,10 @@ public class ExamSectionVO {
     public ExamSectionVO(){}
     
     public ExamSectionVO( ExamSection entity ) {
+        this( entity, true ) ;
+    }
+    
+    public ExamSectionVO( ExamSection entity, boolean deep ) {
         this.setId( entity.getId() ) ;
         this.setSyllabusName( entity.getSyllabus().getSyllabusName() ) ;
         this.setProblemType( entity.getProblemType().getProblemType() ) ;
@@ -38,8 +42,10 @@ public class ExamSectionVO {
         this.setNumCompulsoryQuestions( entity.getNumCompulsoryQuestions() ) ;
         this.setInstructions( List.of( entity.getInstructions().split( "\n" ) ) ) ;
         
-        for( ExamQuestion question : entity.getQuestions() ) {
-            this.getQuestions().add( new ExamQuestionVO( question ) ) ;
+        if( deep ) {
+            for( ExamQuestion question : entity.getQuestions() ) {
+                this.getQuestions().add( new ExamQuestionVO( question ) ) ;
+            }
         }
     }
 }

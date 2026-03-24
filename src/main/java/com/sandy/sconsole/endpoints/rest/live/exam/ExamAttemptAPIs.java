@@ -11,6 +11,7 @@ import com.sandy.sconsole.dao.exam.repo.ExamEventLogRepo;
 import com.sandy.sconsole.endpoints.rest.live.exam.helper.ExamAttemptHelper;
 import com.sandy.sconsole.endpoints.rest.live.exam.helper.ExamEvaluationHelper;
 import com.sandy.sconsole.endpoints.rest.live.exam.vo.AnswerUpdateReq;
+import com.sandy.sconsole.endpoints.rest.live.exam.vo.ExamAttemptVO;
 import com.sandy.sconsole.endpoints.rest.live.exam.vo.ExamEventVO;
 import com.sandy.sconsole.endpoints.rest.live.exam.vo.LapSnapshotReq;
 import com.sandy.sconsole.endpoints.rest.master.exam.vo.reqres.CreateExamAttemptRes;
@@ -68,13 +69,14 @@ public class ExamAttemptAPIs {
             ExamEventLog event = new ExamEventLog() ;
             event.setExamAttempt( examAttempt ) ;
             event.setSequence( vo.getSequence() ) ;
-            event.setEventId( vo.getEventId() ) ;
+            event.setEventType( vo.getEventType() ) ;
+            event.setEventName( vo.getEventName() ) ;
             event.setPayload( vo.getPayload() ) ;
             event.setCreationTime( vo.getCreationTime() ) ;
             event.setTimeMarker( vo.getTimeMarker() ) ;
             
             eventLogRepo.save( event ) ;
-            log.debug( "Event Logged: {}", event.getEventId() );
+            log.debug( "Event Logged: {}", event.getEventName() );
             
             return AR.success() ;
         }
@@ -96,6 +98,7 @@ public class ExamAttemptAPIs {
 
             eqa.setAnswerSubmitStatus( req.submitStatus() ) ;
             eqa.setAnswerProvided( req.answerProvided() ) ;
+            eqa.setAnswerSubmitLap( req.answerSubmitLap() ) ;
             eqa.setTimeSpent( req.timeSpent() ) ;
             
             eqaRepo.save( eqa ) ;
@@ -144,13 +147,13 @@ public class ExamAttemptAPIs {
     
     @PostMapping( "/{examAttemptId}/Submit" )
     @Transactional
-    public ResponseEntity<AR<String>> submitExamAttempt( @PathVariable int examAttemptId ) {
+    public ResponseEntity<AR<ExamAttemptVO>> submitExamAttempt( @PathVariable int examAttemptId ) {
         
         try {
             log.debug( "Submitting exam attempt {}", examAttemptId ) ;
             ExamEvaluationHelper helper = SConsole.getBean( ExamEvaluationHelper.class ) ;
-            helper.evaluateExamAttempt( examAttemptId ) ;
-            return AR.success() ;
+            ExamAttemptVO res = helper.evaluateExamAttempt( examAttemptId ) ;
+            return AR.success( res ) ;
         }
         catch( IllegalArgumentException e ) {
             return AR.badRequest( e.getMessage() ) ;

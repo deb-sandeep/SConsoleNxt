@@ -6,6 +6,7 @@ import com.sandy.sconsole.dao.exam.repo.ExamAttemptRepo;
 import com.sandy.sconsole.dao.exam.repo.ExamRepo;
 import com.sandy.sconsole.dao.exam.repo.ExamSectionAttemptRepo;
 import com.sandy.sconsole.endpoints.rest.live.exam.helper.evaluators.SCAEvaluator;
+import com.sandy.sconsole.endpoints.rest.live.exam.vo.ExamAttemptVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -31,7 +32,7 @@ public class ExamEvaluationHelper {
     @Autowired
     private ExamQuestionAttemptRepo questionAttemptRepo ;
     
-    public void evaluateExamAttempt( int examAttemptId ) {
+    public ExamAttemptVO evaluateExamAttempt( int examAttemptId ) {
         
         ExamAttempt attempt = examAttemptRepo.findById( examAttemptId ).get() ;
         Exam exam = attempt.getExam() ;
@@ -54,9 +55,11 @@ public class ExamEvaluationHelper {
         
         attempt.setScore( totalScore ) ;
         attempt.setStatus( "COMPLETED" ) ;
-        examRepo.save( exam ) ;
+        ExamAttempt savedAttempt = examAttemptRepo.save( attempt ) ;
         
         log.debug( "Exam attempt evaluated: {}", examAttemptId ) ;
+        
+        return new ExamAttemptVO( savedAttempt ) ;
     }
     
     private ExamSectionAttempt findSectionAttempt( ExamSection section,

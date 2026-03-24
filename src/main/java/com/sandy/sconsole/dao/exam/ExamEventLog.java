@@ -29,10 +29,15 @@ public class ExamEventLog {
     @Column( name = "sequence", nullable = false )
     private Integer sequence;
     
+    @Size( max = 20 )
+    @NotNull
+    @Column( name = "event_type", nullable = false, length = 20 )
+    private String eventType;
+
     @Size( max = 32 )
     @NotNull
-    @Column( name = "event_id", nullable = false, length = 32 )
-    private String eventId;
+    @Column( name = "event_name", nullable = false, length = 32 )
+    private String eventName;
     
     @NotNull
     @JdbcTypeCode( SqlTypes.JSON )
