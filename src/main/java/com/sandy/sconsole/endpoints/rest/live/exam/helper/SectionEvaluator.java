@@ -15,7 +15,9 @@ public abstract class SectionEvaluator {
         int totalScore = 0 ;
         for( ExamQuestion question : section.getQuestions() ) {
             ExamQuestionAttempt questionAttempt = findQuestionAttempt( question, questionAttempts ) ;
-            totalScore += evaluateQuestionAttempt( section, question, questionAttempt ) ;
+            int score = evaluateQuestionAttempt( section, question, questionAttempt ) ;
+            questionAttempt.setScore( score ) ;
+            totalScore += score ;
         }
         return totalScore ;
     }

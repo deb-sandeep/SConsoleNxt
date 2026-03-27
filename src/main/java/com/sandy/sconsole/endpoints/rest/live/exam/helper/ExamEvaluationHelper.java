@@ -3,15 +3,19 @@ package com.sandy.sconsole.endpoints.rest.live.exam.helper;
 import com.sandy.sconsole.SConsole;
 import com.sandy.sconsole.dao.exam.*;
 import com.sandy.sconsole.dao.exam.repo.ExamAttemptRepo;
+import com.sandy.sconsole.dao.exam.repo.ExamEventLogRepo;
 import com.sandy.sconsole.dao.exam.repo.ExamRepo;
 import com.sandy.sconsole.dao.exam.repo.ExamSectionAttemptRepo;
 import com.sandy.sconsole.endpoints.rest.live.exam.helper.evaluators.SCAEvaluator;
 import com.sandy.sconsole.endpoints.rest.live.exam.vo.ExamAttemptVO;
+import com.sandy.sconsole.endpoints.rest.live.exam.vo.ExamEventVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -31,6 +35,9 @@ public class ExamEvaluationHelper {
     
     @Autowired
     private ExamQuestionAttemptRepo questionAttemptRepo ;
+    
+    @Autowired
+    private ExamEventLogRepo eventLogRepo ;
     
     public ExamAttemptVO evaluateExamAttempt( int examAttemptId ) {
         
@@ -59,7 +66,22 @@ public class ExamEvaluationHelper {
         
         log.debug( "Exam attempt evaluated: {}", examAttemptId ) ;
         
-        return new ExamAttemptVO( savedAttempt ) ;
+        return new ExamAttemptVO( savedAttempt, getExamEvents( examAttemptId ) ) ;
+    }
+    
+    public ExamAttemptVO getScaffoldResponse() {
+        ExamAttempt attempt = examAttemptRepo.findById( 7 ).get() ;
+        return new ExamAttemptVO( attempt, getExamEvents( 7 ) ) ;
+    }
+    
+    private List<ExamEventVO> getExamEvents( int examAttemptId ) {
+        List<ExamEventLog> events = eventLogRepo.findByExamAttemptIdOrderBySequenceAsc( examAttemptId ) ;
+        List<ExamEventVO> eventVOList = new ArrayList<>() ;
+        
+        for( ExamEventLog event : events ) {
+            eventVOList.add( new ExamEventVO( event ) ) ;
+        }
+        return eventVOList ;
     }
     
     private ExamSectionAttempt findSectionAttempt( ExamSection section,

@@ -23,10 +23,11 @@ public class ExamAttemptVO {
     private String  status ;
     
     private List<ExamSectionAttemptVO> sectionAttempts = new ArrayList<>() ;
+    private List<ExamEventVO> events = new ArrayList<>() ;
     
     public ExamAttemptVO(){}
     
-    public ExamAttemptVO( ExamAttempt entity ) {
+    public ExamAttemptVO( ExamAttempt entity, List<ExamEventVO> events ) {
         this.setId( entity.getId() ) ;
         this.setExam( new ExamVO( entity.getExam(), false ) ) ;
         this.setAttemptDate( Date.from( entity.getAttemptDate() ) ) ;
@@ -40,5 +41,6 @@ public class ExamAttemptVO {
         }
         
         sectionAttempts.sort( comparingInt( s -> s.getExamSection().getExamSequence() ) ) ;
+        this.events.addAll( events ) ;
     }
 }

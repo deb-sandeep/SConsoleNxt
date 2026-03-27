@@ -23,6 +23,7 @@ public class QuestionVO {
     private String  answer;
     private Date    serverSyncTime;
     private List<QuestionImageVO> questionImages = new ArrayList<>() ;
+    private Integer rating ;
     
     public QuestionVO(){}
     
@@ -39,6 +40,7 @@ public class QuestionVO {
         this.setQuestionNumber( entity.getQuestionNumber() ) ;
         this.setAnswer( entity.getAnswer() ) ;
         this.setServerSyncTime( Date.from( entity.getServerSyncTime() ) ) ;
+        this.rating = entity.getRating() ;
         
         for( QuestionImage img : entity.getQuestionImages() ) {
             QuestionImageVO qImgVO = new QuestionImageVO() ;

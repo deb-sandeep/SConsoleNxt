@@ -2,11 +2,14 @@ package com.sandy.sconsole.endpoints.rest.master.exam;
 
 import com.sandy.sconsole.SConsole;
 import com.sandy.sconsole.core.api.AR;
+import com.sandy.sconsole.dao.exam.Question;
+import com.sandy.sconsole.dao.exam.repo.QuestionRepo;
 import com.sandy.sconsole.endpoints.rest.master.exam.helper.QuestionHelper;
 import com.sandy.sconsole.endpoints.rest.master.exam.helper.QuestionSearchHelper;
 import com.sandy.sconsole.endpoints.rest.master.exam.vo.QuestionVO;
 import com.sandy.sconsole.endpoints.rest.master.exam.vo.reqres.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +20,9 @@ import static com.sandy.sconsole.core.api.AR.systemError;
 @RestController
 @RequestMapping( "/Master/Question" )
 public class QuestionAPIs {
+    
+    @Autowired
+    private QuestionRepo questionRepo = null ;
     
     @PostMapping( "/" )
     @Transactional
@@ -73,6 +79,26 @@ public class QuestionAPIs {
             QuestionSearchHelper helper = SConsole.getBean( QuestionSearchHelper.class ) ;
             AvailableQuestionRes response = helper.getAvailableQuestions( topicId, problemTypes ) ;
             return AR.success( response ) ;
+        }
+        catch( Exception e ) {
+            return systemError( e ) ;
+        }
+    }
+    
+    @PostMapping( "/Rating/{questionId}/{rating}" )
+    public ResponseEntity<AR<String>> changeRating(
+            @PathVariable Integer questionId,
+            @PathVariable Integer rating
+    ) {
+        
+        log.debug( "Changing exam question rating. Question - {}, Rating - {}",
+                   questionId, rating ) ;
+        try {
+            Question q = questionRepo.findById( questionId ).get() ;
+            q.setRating( rating ) ;
+            questionRepo.save( q ) ;
+            
+            return AR.success() ;
         }
         catch( Exception e ) {
             return systemError( e ) ;

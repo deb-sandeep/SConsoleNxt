@@ -150,10 +150,14 @@ public class ExamAttemptAPIs {
     public ResponseEntity<AR<ExamAttemptVO>> submitExamAttempt( @PathVariable int examAttemptId ) {
         
         try {
-            log.debug( "Submitting exam attempt {}", examAttemptId ) ;
             ExamEvaluationHelper helper = SConsole.getBean( ExamEvaluationHelper.class ) ;
-            ExamAttemptVO res = helper.evaluateExamAttempt( examAttemptId ) ;
-            return AR.success( res ) ;
+            
+            log.debug( "Returning dummy exam attempt as UI scaffold." ) ;
+            ExamAttemptVO scaffold = helper.getScaffoldResponse() ;
+            return AR.success( scaffold ) ;
+//            log.debug( "Submitting exam attempt {}", examAttemptId ) ;
+//            ExamAttemptVO res = helper.evaluateExamAttempt( examAttemptId ) ;
+//            return AR.success( res ) ;
         }
         catch( IllegalArgumentException e ) {
             return AR.badRequest( e.getMessage() ) ;

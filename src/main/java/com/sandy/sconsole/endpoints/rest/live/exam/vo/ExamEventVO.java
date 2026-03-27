@@ -15,7 +15,7 @@ public class ExamEventVO {
     private String eventName ;
     private String  payload ;
     private Instant creationTime ;
-    private long    timeMarker ;
+    private long timeMarker ;
     
     public ExamEventVO() {}
     
