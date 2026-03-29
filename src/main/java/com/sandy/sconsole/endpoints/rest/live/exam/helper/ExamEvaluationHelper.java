@@ -73,9 +73,9 @@ public class ExamEvaluationHelper {
         return new ExamAttemptVO( savedAttempt, getExamEvents( examAttemptId ) ) ;
     }
     
-    public ExamAttemptVO getScaffoldResponse() {
-        ExamAttempt attempt = examAttemptRepo.findById( 7 ).get() ;
-        return new ExamAttemptVO( attempt, getExamEvents( 7 ) ) ;
+    public ExamAttemptVO getExamAttempt( int examAttemptId ) {
+        ExamAttempt attempt = examAttemptRepo.findById( examAttemptId ).get() ;
+        return new ExamAttemptVO( attempt, getExamEvents( examAttemptId ) ) ;
     }
     
     private List<ExamEventVO> getExamEvents( int examAttemptId ) {

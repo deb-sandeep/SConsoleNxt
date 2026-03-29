@@ -68,6 +68,21 @@ public class ExamAttemptAPIs {
         }
     }
     
+    @GetMapping( "/Attempt/{examAttemptId}" )
+    public ResponseEntity<AR<ExamAttemptVO>> getExamAttempt( @PathVariable int examAttemptId ) {
+        try {
+            ExamEvaluationHelper helper = SConsole.getBean( ExamEvaluationHelper.class ) ;
+            ExamAttemptVO attempt = helper.getExamAttempt( examAttemptId ) ;
+            return AR.success( attempt ) ;
+        }
+        catch( IllegalArgumentException e ) {
+            return AR.badRequest( e.getMessage() ) ;
+        }
+        catch( Exception e ) {
+            return systemError( e ) ;
+        }
+    }
+    
     @PostMapping( "/{examId}/Attempt" )
     @Transactional
     public ResponseEntity<AR<CreateExamAttemptRes>> createExamAttempt(
@@ -179,12 +194,9 @@ public class ExamAttemptAPIs {
         try {
             ExamEvaluationHelper helper = SConsole.getBean( ExamEvaluationHelper.class ) ;
             
-            log.debug( "***SCAFFOLD*** Returning dummy exam attempt as UI scaffold." ) ;
-            ExamAttemptVO scaffold = helper.getScaffoldResponse() ;
-            return AR.success( scaffold ) ;
-//            log.debug( "Submitting exam attempt {}", examAttemptId ) ;
-//            ExamAttemptVO res = helper.evaluateExamAttempt( examAttemptId ) ;
-//            return AR.success( res ) ;
+            log.debug( "Submitting exam attempt {}", examAttemptId ) ;
+            ExamAttemptVO res = helper.evaluateExamAttempt( examAttemptId ) ;
+            return AR.success( res ) ;
         }
         catch( IllegalArgumentException e ) {
             return AR.badRequest( e.getMessage() ) ;
