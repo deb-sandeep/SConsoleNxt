@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table( name = "root_cause_master" )
-public class RootCauseMaster {
+public class RootCause {
     @Id
     @Size( max = 32 )
     @Column( name = "cause", nullable = false, length = 32 )
@@ -20,6 +20,4 @@ public class RootCauseMaster {
     @Lob
     @Column( name = "`group`", nullable = false )
     private String group;
-    
-    
 }

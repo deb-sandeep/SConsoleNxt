@@ -8,6 +8,7 @@ import com.sandy.sconsole.dao.exam.ExamQuestionAttempt;
 import com.sandy.sconsole.dao.exam.ExamQuestionAttemptRepo;
 import com.sandy.sconsole.dao.exam.repo.ExamAttemptRepo;
 import com.sandy.sconsole.dao.exam.repo.ExamEventLogRepo;
+import com.sandy.sconsole.dao.exam.repo.RootCauseRepo;
 import com.sandy.sconsole.endpoints.rest.live.exam.helper.ExamAttemptHelper;
 import com.sandy.sconsole.endpoints.rest.live.exam.helper.ExamEvaluationHelper;
 import com.sandy.sconsole.endpoints.rest.live.exam.vo.AnswerUpdateReq;
@@ -37,6 +38,9 @@ public class ExamAttemptAPIs {
     
     @Autowired
     private ExamQuestionAttemptRepo eqaRepo = null ;
+    
+    @Autowired
+    private RootCauseRepo rootCauseRepo = null ;
     
     @Autowired
     private JdbcTemplate jdbcTemplate = null ;
@@ -152,7 +156,7 @@ public class ExamAttemptAPIs {
         try {
             ExamEvaluationHelper helper = SConsole.getBean( ExamEvaluationHelper.class ) ;
             
-            log.debug( "Returning dummy exam attempt as UI scaffold." ) ;
+            log.debug( "***SCAFFOLD*** Returning dummy exam attempt as UI scaffold." ) ;
             ExamAttemptVO scaffold = helper.getScaffoldResponse() ;
             return AR.success( scaffold ) ;
 //            log.debug( "Submitting exam attempt {}", examAttemptId ) ;
@@ -166,4 +170,24 @@ public class ExamAttemptAPIs {
             return systemError( e ) ;
         }
     }
+    
+    @PostMapping( "/RootCauseUpdate/{qAttemptId}/{rootCause}" )
+    public ResponseEntity<AR<String>> updateRootCause(
+            @PathVariable Integer qAttemptId,
+            @PathVariable String rootCause
+    ) {
+        
+        try {
+            ExamEvaluationHelper helper = SConsole.getBean( ExamEvaluationHelper.class ) ;
+            helper.updateQuestionAttemptRootCause( qAttemptId, rootCause ) ;
+            return AR.success() ;
+        }
+        catch( IllegalArgumentException e ) {
+            return AR.badRequest( e.getMessage() ) ;
+        }
+        catch( Exception e ) {
+            return systemError( e ) ;
+        }
+    }
+    
 }

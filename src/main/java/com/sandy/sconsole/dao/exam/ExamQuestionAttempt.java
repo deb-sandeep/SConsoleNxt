@@ -56,5 +56,5 @@ public class ExamQuestionAttempt {
     @NotNull
     @ManyToOne( fetch = FetchType.LAZY )
     @JoinColumn( name = "root_cause" )
-    private RootCauseMaster rootCause;
+    private RootCause rootCause;
 }

@@ -2,10 +2,7 @@ package com.sandy.sconsole.endpoints.rest.live.exam.helper;
 
 import com.sandy.sconsole.SConsole;
 import com.sandy.sconsole.dao.exam.*;
-import com.sandy.sconsole.dao.exam.repo.ExamAttemptRepo;
-import com.sandy.sconsole.dao.exam.repo.ExamEventLogRepo;
-import com.sandy.sconsole.dao.exam.repo.ExamRepo;
-import com.sandy.sconsole.dao.exam.repo.ExamSectionAttemptRepo;
+import com.sandy.sconsole.dao.exam.repo.*;
 import com.sandy.sconsole.endpoints.rest.live.exam.helper.evaluators.SCAEvaluator;
 import com.sandy.sconsole.endpoints.rest.live.exam.vo.ExamAttemptVO;
 import com.sandy.sconsole.endpoints.rest.live.exam.vo.ExamEventVO;
@@ -38,6 +35,12 @@ public class ExamEvaluationHelper {
     
     @Autowired
     private ExamEventLogRepo eventLogRepo ;
+    
+    @Autowired
+    private ExamQuestionAttemptRepo eqaRepo = null ;
+    
+    @Autowired
+    private RootCauseRepo rootCauseRepo = null ;
     
     public ExamAttemptVO evaluateExamAttempt( int examAttemptId ) {
         
@@ -120,5 +123,18 @@ public class ExamEvaluationHelper {
             return SConsole.getBean( SCAEvaluator.class ) ;
         }
         return null ;
+    }
+    
+    public void updateQuestionAttemptRootCause( Integer qAttemptId, String rootCause ) {
+        ExamQuestionAttempt eqa = eqaRepo.findById( qAttemptId ).get() ;
+        RootCause rc  = rootCauseRepo.findById( rootCause ).get() ;
+        eqa.setRootCause( rc ) ;
+        eqaRepo.save( eqa ) ;
+        
+        recomputeLossAttributionPct( eqa ) ;
+    }
+    
+    private void recomputeLossAttributionPct( ExamQuestionAttempt eqa ) {
+    
     }
 }
