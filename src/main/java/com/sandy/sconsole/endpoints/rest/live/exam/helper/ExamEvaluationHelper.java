@@ -2,10 +2,7 @@ package com.sandy.sconsole.endpoints.rest.live.exam.helper;
 
 import com.sandy.sconsole.SConsole;
 import com.sandy.sconsole.dao.exam.*;
-import com.sandy.sconsole.dao.exam.repo.ExamAttemptRepo;
-import com.sandy.sconsole.dao.exam.repo.ExamEventLogRepo;
-import com.sandy.sconsole.dao.exam.repo.ExamSectionAttemptRepo;
-import com.sandy.sconsole.dao.exam.repo.RootCauseRepo;
+import com.sandy.sconsole.dao.exam.repo.*;
 import com.sandy.sconsole.endpoints.rest.live.exam.helper.evaluators.SCAEvaluator;
 import com.sandy.sconsole.endpoints.rest.live.exam.vo.ExamAttemptVO;
 import com.sandy.sconsole.endpoints.rest.live.exam.vo.ExamEventVO;
@@ -24,6 +21,9 @@ import java.util.Set;
 @Component
 @Scope( "prototype" )
 public class ExamEvaluationHelper {
+    
+    @Autowired
+    private ExamRepo examRepo ;
     
     @Autowired
     private ExamAttemptRepo examAttemptRepo ;
@@ -64,6 +64,9 @@ public class ExamEvaluationHelper {
         attempt.setScore( totalScore ) ;
         attempt.setStatus( "COMPLETED" ) ;
         ExamAttempt savedAttempt = examAttemptRepo.save( attempt ) ;
+        
+        exam.setState( "COMPLETED" ) ;
+        examRepo.save( exam ) ;
         
         log.debug( "Exam attempt evaluated: {}", examAttemptId ) ;
         
