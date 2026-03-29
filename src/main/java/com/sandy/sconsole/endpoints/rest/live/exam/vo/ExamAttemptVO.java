@@ -28,6 +28,10 @@ public class ExamAttemptVO {
     public ExamAttemptVO(){}
     
     public ExamAttemptVO( ExamAttempt entity, List<ExamEventVO> events ) {
+        this( entity, events, true ) ;
+    }
+    
+    public ExamAttemptVO( ExamAttempt entity, List<ExamEventVO> events, boolean getSectionAttempts ) {
         this.setId( entity.getId() ) ;
         this.setExam( new ExamVO( entity.getExam(), false ) ) ;
         this.setAttemptDate( Date.from( entity.getAttemptDate() ) ) ;
@@ -36,11 +40,15 @@ public class ExamAttemptVO {
         this.setUnavoidableLossPct( entity.getUnavoidableLossPct() ) ;
         this.setStatus( entity.getStatus() ) ;
         
-        for( ExamSectionAttempt sectionAttempt : entity.getSectionAttempts() ) {
-            this.getSectionAttempts().add( new ExamSectionAttemptVO( sectionAttempt ) ) ;
+        if( getSectionAttempts ) {
+            for( ExamSectionAttempt sectionAttempt : entity.getSectionAttempts() ) {
+                this.getSectionAttempts().add( new ExamSectionAttemptVO( sectionAttempt ) ) ;
+            }
+            sectionAttempts.sort( comparingInt( s -> s.getExamSection().getExamSequence() ) ) ;
         }
         
-        sectionAttempts.sort( comparingInt( s -> s.getExamSection().getExamSequence() ) ) ;
-        this.events.addAll( events ) ;
+        if( events != null && !events.isEmpty() ) {
+            this.events.addAll( events ) ;
+        }
     }
 }

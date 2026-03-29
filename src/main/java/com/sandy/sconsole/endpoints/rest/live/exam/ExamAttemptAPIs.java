@@ -23,6 +23,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
 import static com.sandy.sconsole.core.api.AR.systemError;
 
 @Slf4j
@@ -44,6 +48,25 @@ public class ExamAttemptAPIs {
     
     @Autowired
     private JdbcTemplate jdbcTemplate = null ;
+    
+    @GetMapping( "/Attempts" )
+    public ResponseEntity<AR<List<ExamAttemptVO>>> getExamAttempts() {
+        
+        try {
+            List<ExamAttemptVO> res = new ArrayList<>() ;
+            for( ExamAttempt attempt : attemptRepo.findAll() ) {
+                res.add( new ExamAttemptVO( attempt, null, false ) ) ;
+            }
+            res.sort( Comparator.comparing( ExamAttemptVO::getAttemptDate ).reversed() ) ;
+            return AR.success( res ) ;
+        }
+        catch( IllegalArgumentException e ) {
+            return AR.badRequest( e.getMessage() ) ;
+        }
+        catch( Exception e ) {
+            return systemError( e ) ;
+        }
+    }
     
     @PostMapping( "/{examId}/Attempt" )
     @Transactional
