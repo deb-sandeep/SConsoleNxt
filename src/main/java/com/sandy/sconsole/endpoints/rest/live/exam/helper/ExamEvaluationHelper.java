@@ -2,7 +2,10 @@ package com.sandy.sconsole.endpoints.rest.live.exam.helper;
 
 import com.sandy.sconsole.SConsole;
 import com.sandy.sconsole.dao.exam.*;
-import com.sandy.sconsole.dao.exam.repo.*;
+import com.sandy.sconsole.dao.exam.repo.ExamAttemptRepo;
+import com.sandy.sconsole.dao.exam.repo.ExamEventLogRepo;
+import com.sandy.sconsole.dao.exam.repo.ExamSectionAttemptRepo;
+import com.sandy.sconsole.dao.exam.repo.RootCauseRepo;
 import com.sandy.sconsole.endpoints.rest.live.exam.helper.evaluators.SCAEvaluator;
 import com.sandy.sconsole.endpoints.rest.live.exam.vo.ExamAttemptVO;
 import com.sandy.sconsole.endpoints.rest.live.exam.vo.ExamEventVO;
@@ -10,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,16 +26,10 @@ import java.util.Set;
 public class ExamEvaluationHelper {
     
     @Autowired
-    private ExamRepo examRepo ;
-
-    @Autowired
     private ExamAttemptRepo examAttemptRepo ;
     
     @Autowired
     private ExamSectionAttemptRepo sectionAttemptRepo ;
-    
-    @Autowired
-    private ExamQuestionAttemptRepo questionAttemptRepo ;
     
     @Autowired
     private ExamEventLogRepo eventLogRepo ;
@@ -125,6 +123,7 @@ public class ExamEvaluationHelper {
         return null ;
     }
     
+    @Transactional
     public void updateQuestionAttemptRootCause( Integer qAttemptId, String rootCause ) {
         ExamQuestionAttempt eqa = eqaRepo.findById( qAttemptId ).get() ;
         RootCause rc  = rootCauseRepo.findById( rootCause ).get() ;
@@ -135,6 +134,114 @@ public class ExamEvaluationHelper {
     }
     
     private void recomputeLossAttributionPct( ExamQuestionAttempt eqa ) {
+        
+        ExamAttempt examAttempt = eqa.getExamSectionAttempt().getExamAttempt() ;
+        int totalLostMarks = examAttempt.getExam().getTotalMarks() - examAttempt.getScore() ;
+        int totalAvoidableLossMarks = 0 ;
+        float avoidableLossPct ;
+        
+        examAttempt.setAvoidableLossPct( 0F ) ;
+        examAttempt.setUnavoidableLossPct( 0F ) ;
+        
+        for( ExamSectionAttempt sectionAttempt : examAttempt.getSectionAttempts() ) {
+            
+            sectionAttempt.setAvoidableLossPct( 0F ) ;
+            sectionAttempt.setUnavoidableLossPct( 0F ) ;
+
+            int sectionLostMarks = computeSectionLostMarks( sectionAttempt ) ;
+            float sectionAvoidableLossPct ;
+            
+            if( sectionLostMarks != 0 ) {
+                int sectionAvoidableLossMarks = computeSectionAvoidableLossMarks( sectionAttempt ) ;
+                
+                totalAvoidableLossMarks += sectionAvoidableLossMarks ;
+                sectionAvoidableLossPct = ( sectionAvoidableLossMarks * 100F ) / sectionLostMarks ;
+
+                sectionAttempt.setAvoidableLossPct( sectionAvoidableLossPct ) ;
+                sectionAttempt.setUnavoidableLossPct( 100F - sectionAvoidableLossPct ) ;
+            }
+        
+            sectionAttemptRepo.save( sectionAttempt ) ;
+        }
+
+        if( totalLostMarks != 0 ) {
+            avoidableLossPct = ( totalAvoidableLossMarks * 100F ) / totalLostMarks ;
+            examAttempt.setAvoidableLossPct( avoidableLossPct ) ;
+            examAttempt.setUnavoidableLossPct( 100F - avoidableLossPct ) ;
+        }
+        
+        examAttemptRepo.save( examAttempt ) ;
+    }
+
+    private int computeSectionAvoidableLossMarks( ExamSectionAttempt sectionAttempt ) {
+        int avoidableLoss = 0 ;
+        for( ExamQuestionAttempt qAttempt : sectionAttempt.getQuestionAttempts() ) {
+            if( !hasAttributableLoss( qAttempt ) ) continue ;
+            
+            RootCause rootCause = qAttempt.getRootCause() ;
+            boolean isAvoidableLoss = rootCause == null ||
+                                      !"UNAVOIDABLE".equals( rootCause.getGroup() ) ;
+            
+            if( isAvoidableLoss ) {
+                avoidableLoss += sectionAttempt.getExamSection().getCorrectMarks() -
+                                 qAttempt.getScore() ;
+            }
+        }
+        return avoidableLoss ;
+    }
+
+    private boolean hasAttributableLoss( ExamQuestionAttempt qAttempt ) {
+        String evalStatus = qAttempt.getEvaluationStatus() ;
+        return "INCORRECT".equals( evalStatus ) ||
+               "PARTIAL".equals( evalStatus ) ||
+               "UNANSWERED".equals( evalStatus ) ;
+    }
+
+    private int computeSectionLostMarks( ExamSectionAttempt sectionAttempt ) {
+        ExamSection section = sectionAttempt.getExamSection() ;
+        int sectionTotalMarks = section.getCorrectMarks() * section.getNumCompulsoryQuestions() ;
+        return sectionTotalMarks - sectionAttempt.getScore() ;
+    }
+
+    @Transactional
+    public void overrideScore( Integer qAttemptId, int score ) {
+        
+        ExamQuestionAttempt eqa = eqaRepo.findById( qAttemptId ).get() ;
+        ExamSectionAttempt sectionAttempt = eqa.getExamSectionAttempt() ;
+        ExamAttempt examAttempt = sectionAttempt.getExamAttempt() ;
+        
+        eqa.setScore( score ) ;
+        if( score == sectionAttempt.getExamSection().getCorrectMarks() ) {
+            eqa.setEvaluationStatus( "CORRECT" ) ;
+            eqa.setRootCause( null ) ;
+        }
+        else if( score == sectionAttempt.getExamSection().getWrongPenalty() ) {
+            eqa.setEvaluationStatus( "INCORRECT" ) ;
+        }
+        else {
+            eqa.setEvaluationStatus( "PARTIAL" ) ;
+        }
+        eqaRepo.save( eqa ) ;
+        
+        recomputeScore( examAttempt ) ;
+        recomputeLossAttributionPct( eqa ) ;
+    }
     
+    private void recomputeScore( ExamAttempt examAttempt ) {
+        int totalScore = 0 ;
+        for( ExamSectionAttempt sectionAttempt : examAttempt.getSectionAttempts() ) {
+            int sectionScore = 0 ;
+
+            for( ExamQuestionAttempt qAttempt : sectionAttempt.getQuestionAttempts() ) {
+                sectionScore += qAttempt.getScore() ;
+            }
+            
+            sectionAttempt.setScore( sectionScore ) ;
+            sectionAttemptRepo.save( sectionAttempt ) ;
+            totalScore += sectionScore ;
+        }
+
+        examAttempt.setScore( totalScore ) ;
+        examAttemptRepo.save( examAttempt ) ;
     }
 }

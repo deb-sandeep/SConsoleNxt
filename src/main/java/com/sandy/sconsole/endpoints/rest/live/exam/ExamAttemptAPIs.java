@@ -190,4 +190,21 @@ public class ExamAttemptAPIs {
         }
     }
     
+    @PostMapping( "/ScoreOverride/{qAttemptId}/{score}" )
+    public ResponseEntity<AR<String>> overrideScore(
+            @PathVariable Integer qAttemptId,
+            @PathVariable Integer score
+    ) {
+        try {
+            ExamEvaluationHelper helper = SConsole.getBean( ExamEvaluationHelper.class ) ;
+            helper.overrideScore( qAttemptId, score ) ;
+            return AR.success() ;
+        }
+        catch( IllegalArgumentException e ) {
+            return AR.badRequest( e.getMessage() ) ;
+        }
+        catch( Exception e ) {
+            return systemError( e ) ;
+        }
+    }
 }
