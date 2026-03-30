@@ -5,9 +5,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
-
 import java.time.Instant;
 
 @Getter
@@ -40,7 +37,6 @@ public class ExamEventLog {
     private String eventName;
     
     @NotNull
-    @JdbcTypeCode( SqlTypes.JSON )
     @Column( name = "payload", nullable = false )
     private String payload;
     
