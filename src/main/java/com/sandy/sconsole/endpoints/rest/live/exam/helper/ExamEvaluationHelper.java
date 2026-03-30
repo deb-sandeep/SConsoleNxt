@@ -65,10 +65,8 @@ public class ExamEvaluationHelper {
         attempt.setStatus( "COMPLETED" ) ;
         ExamAttempt savedAttempt = examAttemptRepo.save( attempt ) ;
         
-        exam.setState( "COMPLETED" ) ;
+        exam.setState( "ATTEMPTED" ) ;
         examRepo.save( exam ) ;
-        
-        log.debug( "Exam attempt evaluated: {}", examAttemptId ) ;
         
         return new ExamAttemptVO( savedAttempt, getExamEvents( examAttemptId ) ) ;
     }
@@ -88,8 +86,10 @@ public class ExamEvaluationHelper {
         return eventVOList ;
     }
     
-    private ExamSectionAttempt findSectionAttempt( ExamSection section,
-                                                   Set<ExamSectionAttempt> sectionAttempts ) {
+    private ExamSectionAttempt findSectionAttempt(
+            ExamSection section,
+            Set<ExamSectionAttempt> sectionAttempts
+    ) {
         for( ExamSectionAttempt sectionAttempt : sectionAttempts ) {
             if( Objects.equals( sectionAttempt.getExamSection().getId(), section.getId() ) ) {
                 return sectionAttempt ;
@@ -119,7 +119,10 @@ public class ExamEvaluationHelper {
         }
     }
     
-    private SectionEvaluator getSectionEvaluator( String examType, String problemType ) {
+    private SectionEvaluator getSectionEvaluator(
+            String examType,
+            String problemType
+    ) {
         if( "SCA".equals( problemType ) ) {
             return SConsole.getBean( SCAEvaluator.class ) ;
         }
@@ -127,7 +130,10 @@ public class ExamEvaluationHelper {
     }
     
     @Transactional
-    public void updateQuestionAttemptRootCause( Integer qAttemptId, String rootCause ) {
+    public void updateQuestionAttemptRootCause(
+            Integer qAttemptId,
+            String rootCause
+    ) {
         ExamQuestionAttempt eqa = eqaRepo.findById( qAttemptId ).get() ;
         RootCause rc  = rootCauseRepo.findById( rootCause ).get() ;
         eqa.setRootCause( rc ) ;

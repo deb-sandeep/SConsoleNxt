@@ -42,8 +42,7 @@ public class ExamAttempt {
     @Column( name = "unavoidable_loss_pct", nullable = false )
     private Float unavoidableLossPct;
     
-    @Lob
-    @Column( name = "status" )
+    @Column( name = "status", length = 16 )
     private String status;
     
     @OneToMany( mappedBy = "examAttempt", fetch = FetchType.EAGER )

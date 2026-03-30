@@ -118,7 +118,6 @@ public class ExamAttemptAPIs {
             event.setTimeMarker( vo.getTimeMarker() ) ;
             
             eventLogRepo.save( event ) ;
-            log.debug( "Event Logged: {}", event.getEventName() );
             
             return AR.success() ;
         }
@@ -160,7 +159,6 @@ public class ExamAttemptAPIs {
             @RequestBody LapSnapshotReq req ) {
         
         try {
-            log.debug( "Inserting lap snapshot" ) ;
             jdbcTemplate.batchUpdate(
                 """
                 insert into exam_attempt_lap_snapshot
@@ -194,7 +192,6 @@ public class ExamAttemptAPIs {
         try {
             ExamEvaluationHelper helper = SConsole.getBean( ExamEvaluationHelper.class ) ;
             
-            log.debug( "Submitting exam attempt {}", examAttemptId ) ;
             ExamAttemptVO res = helper.evaluateExamAttempt( examAttemptId ) ;
             return AR.success( res ) ;
         }

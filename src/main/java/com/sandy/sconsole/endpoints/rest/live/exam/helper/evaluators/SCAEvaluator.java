@@ -28,9 +28,6 @@ public class SCAEvaluator extends SectionEvaluator {
             String answer = attempt.getAnswerProvided() ;
             String correctAnswer = question.getQuestion().getAnswer() ;
             
-            log.debug( "Evaluating question attempt: {}", attempt.getId() ) ;
-            log.debug( "Answer: {}, Correct answer: {}", answer, correctAnswer ) ;
-            
             if( answer.equalsIgnoreCase( correctAnswer ) ) {
                 attempt.setEvaluationStatus( "CORRECT" ) ;
                 return correctMarks ;

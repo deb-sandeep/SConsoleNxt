@@ -26,9 +26,8 @@ public class QuestionAPIs {
     
     @PostMapping( "/" )
     @Transactional
-    public ResponseEntity<AR<SaveQuestionRes>> saveQuestion( @RequestBody QuestionVO question ) {
-        
-        log.debug( "Saving Question: {}", question.getQuestionId() ) ;
+    public ResponseEntity<AR<SaveQuestionRes>> saveQuestion(
+            @RequestBody QuestionVO question ) {
         
         try {
             QuestionHelper helper = SConsole.getBean( QuestionHelper.class ) ;
@@ -43,7 +42,6 @@ public class QuestionAPIs {
     @GetMapping( "/RepoStatus" )
     public ResponseEntity<AR<QuestionRepoStatus>> getRepositoryStatus() {
     
-        log.debug( "Getting question repository status" ) ;
         try {
             QuestionHelper     helper = SConsole.getBean( QuestionHelper.class ) ;
             QuestionRepoStatus status = helper.getRepositoryStatus() ;
@@ -57,7 +55,6 @@ public class QuestionAPIs {
     @PostMapping( "/Search" )
     public ResponseEntity<AR<QuestionSearchRes>> search( @RequestBody QuestionSearchReq req ) {
         
-        log.debug( "Searching questions" ) ;
         try {
             QuestionSearchHelper helper = SConsole.getBean( QuestionSearchHelper.class ) ;
             QuestionSearchRes response = helper.search( req ) ;
@@ -73,8 +70,6 @@ public class QuestionAPIs {
             @RequestParam( "topicId" ) int topicId,
             @RequestParam( "problemTypes" ) String[] problemTypes ) {
         
-        log.debug( "Getting available questions for topic: {} and problem types: {}",
-                    topicId, problemTypes ) ;
         try {
             QuestionSearchHelper helper = SConsole.getBean( QuestionSearchHelper.class ) ;
             AvailableQuestionRes response = helper.getAvailableQuestions( topicId, problemTypes ) ;
@@ -91,8 +86,6 @@ public class QuestionAPIs {
             @PathVariable Integer rating
     ) {
         
-        log.debug( "Changing exam question rating. Question - {}, Rating - {}",
-                   questionId, rating ) ;
         try {
             Question q = questionRepo.findById( questionId ).get() ;
             q.setRating( rating ) ;

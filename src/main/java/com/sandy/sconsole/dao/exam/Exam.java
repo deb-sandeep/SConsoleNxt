@@ -31,9 +31,9 @@ public class Exam {
     @Column( name = "id", nullable = false )
     private Integer id;
     
+    @Size( max = 16 )
     @NotNull
-    @Lob
-    @Column( name = "state", nullable = false )
+    @Column( name = "state", nullable = false, length = 16 )
     private String state;
 
     @Size( max = 8 )
