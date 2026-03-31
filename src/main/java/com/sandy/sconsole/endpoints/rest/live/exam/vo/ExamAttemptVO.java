@@ -18,8 +18,9 @@ public class ExamAttemptVO {
     private ExamVO  exam ;
     private Date    attemptDate ;
     private Integer score ;
+    private Integer loss ;
+    private Integer avoidableLoss ;
     private Float   avoidableLossPct ;
-    private Float   unavoidableLossPct ;
     private String  status ;
     
     private List<ExamSectionAttemptVO> sectionAttempts = new ArrayList<>() ;
@@ -36,8 +37,9 @@ public class ExamAttemptVO {
         this.setExam( new ExamVO( entity.getExam(), false ) ) ;
         this.setAttemptDate( Date.from( entity.getAttemptDate() ) ) ;
         this.setScore( entity.getScore() ) ;
+        this.setLoss( entity.getLoss() ) ;
+        this.setAvoidableLoss( entity.getAvoidableLoss() ) ;
         this.setAvoidableLossPct( entity.getAvoidableLossPct() ) ;
-        this.setUnavoidableLossPct( entity.getUnavoidableLossPct() ) ;
         this.setStatus( entity.getStatus() ) ;
         
         if( getSectionAttempts ) {

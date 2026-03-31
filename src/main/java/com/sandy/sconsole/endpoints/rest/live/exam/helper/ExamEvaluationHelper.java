@@ -32,44 +32,13 @@ public class ExamEvaluationHelper {
     private ExamSectionAttemptRepo sectionAttemptRepo ;
     
     @Autowired
+    private ExamQuestionAttemptRepo questionAttemptRepo = null ;
+    
+    @Autowired
     private ExamEventLogRepo eventLogRepo ;
     
     @Autowired
-    private ExamQuestionAttemptRepo eqaRepo = null ;
-    
-    @Autowired
     private RootCauseRepo rootCauseRepo = null ;
-    
-    public ExamAttemptVO evaluateExamAttempt( int examAttemptId ) {
-        
-        ExamAttempt attempt = examAttemptRepo.findById( examAttemptId ).get() ;
-        Exam exam = attempt.getExam() ;
-        
-        Set<ExamSection> sections = exam.getSections() ;
-        Set<ExamSectionAttempt> sectionAttempts = attempt.getSectionAttempts() ;
-        
-        int totalScore = 0 ;
-        
-        for( ExamSection section : sections ) {
-            ExamSectionAttempt sectionAttempt = findSectionAttempt( section, sectionAttempts ) ;
-            if( sectionAttempt != null ) {
-                totalScore += evaluateExamSection( section, sectionAttempt ) ;
-            }
-            else {
-                throw new IllegalStateException( "Section attempt not found for section " +
-                                                 section.getId() );
-            }
-        }
-        
-        attempt.setScore( totalScore ) ;
-        attempt.setStatus( "COMPLETED" ) ;
-        ExamAttempt savedAttempt = examAttemptRepo.save( attempt ) ;
-        
-        exam.setState( "ATTEMPTED" ) ;
-        examRepo.save( exam ) ;
-        
-        return new ExamAttemptVO( savedAttempt, getExamEvents( examAttemptId ) ) ;
-    }
     
     public ExamAttemptVO getExamAttempt( int examAttemptId ) {
         ExamAttempt attempt = examAttemptRepo.findById( examAttemptId ).get() ;
@@ -86,10 +55,62 @@ public class ExamEvaluationHelper {
         return eventVOList ;
     }
     
+    /**
+     * This method is called when an exam attempt is submitted for evaluation.
+     *
+     * This method populates the score and loss attributes in the
+     * ExamAttempt, ExamSectionAttempt, and ExamQuestionAttempt entities.
+     *
+     * Each section in the exam is associated with a specific evaluator which
+     * is decided based on exam-type and section.
+     *
+     * The section evaluator computes the score and loss for each question
+     * in that section and returns the total score for the section. Based
+     * on this, the loss for the section is computed. The section score
+     * is then aggregated to compute the total score for the exam attempt.
+     */
+    @Transactional
+    public ExamAttemptVO evaluateExamAttempt( int examAttemptId ) {
+        
+        ExamAttempt attempt = examAttemptRepo.findById( examAttemptId ).get() ;
+        Exam exam = attempt.getExam() ;
+        
+        Set<ExamSection> sections = exam.getSections() ;
+        Set<ExamSectionAttempt> sectionAttempts = attempt.getSectionAttempts() ;
+        
+        int totalExamScore = 0 ;
+        
+        for( ExamSection section : sections ) {
+            ExamSectionAttempt sectionAttempt = findSectionAttempt( section, sectionAttempts ) ;
+            if( sectionAttempt != null ) {
+                // The section evaluation also populates the score and loss
+                // in the section attempt entity.
+                totalExamScore += evaluateExamSection( section, sectionAttempt ) ;
+            }
+            else {
+                throw new IllegalStateException( "Section attempt not found for section " +
+                                                 section.getId() );
+            }
+        }
+        
+        // Change the state of the exam so that it is no longer available for tests
+        exam.setState( "ATTEMPTED" ) ;
+        examRepo.save( exam ) ;
+
+        // Set the score and loss for the exam attempt.
+        attempt.setScore( totalExamScore ) ;
+        attempt.setLoss( exam.getTotalMarks() - totalExamScore ) ;
+        attempt.setStatus( "COMPLETED" ) ;
+        
+        ExamAttempt savedAttempt = examAttemptRepo.save( attempt ) ;
+        
+        return new ExamAttemptVO( savedAttempt, getExamEvents( examAttemptId ) ) ;
+    }
+    
     private ExamSectionAttempt findSectionAttempt(
             ExamSection section,
-            Set<ExamSectionAttempt> sectionAttempts
-    ) {
+            Set<ExamSectionAttempt> sectionAttempts ) {
+        
         for( ExamSectionAttempt sectionAttempt : sectionAttempts ) {
             if( Objects.equals( sectionAttempt.getExamSection().getId(), section.getId() ) ) {
                 return sectionAttempt ;
@@ -105,13 +126,23 @@ public class ExamEvaluationHelper {
         String problemType = section.getProblemType().getProblemType() ;
         
         SectionEvaluator evaluator = getSectionEvaluator( examType, problemType ) ;
+        final int totalSectionMarks = section.getCorrectMarks() * section.getNumCompulsoryQuestions() ;
         
         if( evaluator != null ) {
             Set<ExamQuestionAttempt> qAttempts = sectionAttempt.getQuestionAttempts() ;
-            int score = evaluator.evaluateSectionAttempt( section, qAttempts ) ;
+            int sectionScore = evaluator.evaluateSectionAttempt( section, qAttempts ) ;
+            int sectionLoss = totalSectionMarks - sectionScore ;
             
-            sectionAttempt.setScore( score ) ;
-            return score ;
+            sectionAttempt.setScore( sectionScore ) ;
+            sectionAttempt.setLoss( sectionLoss ) ;
+            sectionAttempt.setAvoidableLoss( sectionLoss ) ;
+            sectionAttempt.setAvoidableLossPct( 0F ) ;
+            
+            if( sectionLoss > 0 ) {
+                sectionAttempt.setAvoidableLossPct( 100F ) ;
+            }
+            
+            return sectionScore ;
         }
         else {
             throw new IllegalStateException( "Section " + problemType +
@@ -119,138 +150,222 @@ public class ExamEvaluationHelper {
         }
     }
     
-    private SectionEvaluator getSectionEvaluator(
-            String examType,
-            String problemType
-    ) {
+    private SectionEvaluator getSectionEvaluator( String examType, String problemType ) {
         if( "SCA".equals( problemType ) ) {
             return SConsole.getBean( SCAEvaluator.class ) ;
         }
         return null ;
     }
     
+    /**
+     * This method recomputes the avoidable loss for a question attempt based
+     * on the root cause of the loss provided. A root cause cannot be set if
+     * the answer is marked as correct or if the evaluation is skipped due
+     * to this question being a non-compulsory question.
+     *
+     * Once the root cause is set, the avoidable loss is recomputed recursively
+     * for the exam attempt.
+     */
     @Transactional
-    public void updateQuestionAttemptRootCause(
-            Integer qAttemptId,
-            String rootCause
-    ) {
-        ExamQuestionAttempt eqa = eqaRepo.findById( qAttemptId ).get() ;
-        RootCause rc  = rootCauseRepo.findById( rootCause ).get() ;
-        eqa.setRootCause( rc ) ;
-        eqaRepo.save( eqa ) ;
+    public ExamAttemptVO updateQuestionAttemptRootCause( Integer qAttemptId, String rootCause ) {
         
-        recomputeLossAttributionPct( eqa ) ;
+        ExamQuestionAttempt eqa = questionAttemptRepo.findById( qAttemptId ).get() ;
+        RootCause rc  = rootCauseRepo.findById( rootCause ).get() ;
+        
+        if( eqa.getEvaluationStatus().equals( "CORRECT" ) ||
+            eqa.getEvaluationStatus().equals( "EVALUATION_SKIPPED" ) ) {
+            throw new IllegalStateException( "Cannot set root cause for a correct answer " +
+               "or an answer whose evaluation is skipped." ) ;
+        }
+        else {
+            eqa.setRootCause( rc ) ;
+            questionAttemptRepo.save( eqa ) ;
+            
+            return computeAvoidableLossForExam( eqa.getExamSectionAttempt().getExamAttempt() ) ;
+        }
     }
     
-    private void recomputeLossAttributionPct( ExamQuestionAttempt eqa ) {
+    /**
+     * This method is called after the root cause for a question attempt is set.
+     * Based on the avoidable or unavoidable nature of the root cause, the
+     * avoidable loss is computed/recomputed. The avoidable loss of the parent
+     * section attempt and exam attempt are recomputed.
+     *
+     * Note that this method computes only the avoidable loss and its percentage.
+     * The loss is assumed to be precomputed during either evaluation or
+     * marks override.
+     *
+     * Only questions attempts which have been evaluated as INCORRECT, PARTIAL,
+     * and UNANSWERED are considered for avoidable loss computation.
+     */
+    private ExamAttemptVO computeAvoidableLossForExam( ExamAttempt examAttempt ) {
         
-        ExamAttempt examAttempt = eqa.getExamSectionAttempt().getExamAttempt() ;
-        int totalLostMarks = examAttempt.getExam().getTotalMarks() - examAttempt.getScore() ;
-        int totalAvoidableLossMarks = 0 ;
-        float avoidableLossPct ;
+        int totalLoss = examAttempt.getExam().getTotalMarks() - examAttempt.getScore() ;
+        int totalAvoidableLoss = 0 ;
         
+        // Set these quantities to zero. They will be freshly populated at the
+        // end of this method.
+        examAttempt.setAvoidableLoss( 0 ) ;
         examAttempt.setAvoidableLossPct( 0F ) ;
-        examAttempt.setUnavoidableLossPct( 0F ) ;
         
         for( ExamSectionAttempt sectionAttempt : examAttempt.getSectionAttempts() ) {
             
+            sectionAttempt.setAvoidableLoss( 0 ) ;
             sectionAttempt.setAvoidableLossPct( 0F ) ;
-            sectionAttempt.setUnavoidableLossPct( 0F ) ;
 
-            int sectionLostMarks = computeSectionLostMarks( sectionAttempt ) ;
-            float sectionAvoidableLossPct ;
+            int sectionTotalLoss =  sectionAttempt.getLoss() ;
             
-            if( sectionLostMarks != 0 ) {
-                int sectionAvoidableLossMarks = computeSectionAvoidableLossMarks( sectionAttempt ) ;
+            if( sectionTotalLoss != 0 ) {
+                int sectionAvoidableLoss = computeSectionAvoidableLoss( sectionAttempt ) ;
+                float sectionAvoidableLossPct = ( sectionAvoidableLoss * 100F ) / sectionTotalLoss ;
                 
-                totalAvoidableLossMarks += sectionAvoidableLossMarks ;
-                sectionAvoidableLossPct = ( sectionAvoidableLossMarks * 100F ) / sectionLostMarks ;
-
+                sectionAttempt.setAvoidableLoss( sectionAvoidableLoss ) ;
                 sectionAttempt.setAvoidableLossPct( sectionAvoidableLossPct ) ;
-                sectionAttempt.setUnavoidableLossPct( 100F - sectionAvoidableLossPct ) ;
+                
+                totalAvoidableLoss += sectionAvoidableLoss ;
             }
-        
             sectionAttemptRepo.save( sectionAttempt ) ;
         }
 
-        if( totalLostMarks != 0 ) {
-            avoidableLossPct = ( totalAvoidableLossMarks * 100F ) / totalLostMarks ;
+        if( totalLoss != 0 ) {
+            float avoidableLossPct = ( totalAvoidableLoss * 100F ) / totalLoss ;
+            
+            examAttempt.setAvoidableLoss( totalAvoidableLoss ) ;
             examAttempt.setAvoidableLossPct( avoidableLossPct ) ;
-            examAttempt.setUnavoidableLossPct( 100F - avoidableLossPct ) ;
         }
         
-        examAttemptRepo.save( examAttempt ) ;
+        ExamAttempt savedAttempt = examAttemptRepo.save( examAttempt ) ;
+        return new ExamAttemptVO( savedAttempt, null ) ;
     }
 
-    private int computeSectionAvoidableLossMarks( ExamSectionAttempt sectionAttempt ) {
-        int avoidableLoss = 0 ;
+    private int computeSectionAvoidableLoss( ExamSectionAttempt sectionAttempt ) {
+        
+        int secAvoidableLoss = 0 ;
+        
         for( ExamQuestionAttempt qAttempt : sectionAttempt.getQuestionAttempts() ) {
-            if( !hasAttributableLoss( qAttempt ) ) continue ;
             
-            RootCause rootCause = qAttempt.getRootCause() ;
-            boolean isAvoidableLoss = rootCause == null ||
-                                      !"UNAVOIDABLE".equals( rootCause.getGroup() ) ;
-            
-            if( isAvoidableLoss ) {
-                avoidableLoss += sectionAttempt.getExamSection().getCorrectMarks() -
-                                 qAttempt.getScore() ;
+            // Only if the evaluation status is not correct or the evaluation is
+            // not skipped, there is a loss that needs to be checked for avoidable or not.
+            String evaluationStatus = qAttempt.getEvaluationStatus() ;
+            if( "INCORRECT".equals( evaluationStatus ) ||
+                "PARTIAL".equals( evaluationStatus ) ||
+                "UNANSWERED".equals( evaluationStatus ) ) {
+                
+                RootCause rootCause = qAttempt.getRootCause() ;
+                boolean isAvoidableLoss = rootCause == null ||
+                                          "AVOIDABLE".equals( rootCause.getGroup() ) ;
+                
+                int avoidableLoss = 0 ;
+                if( isAvoidableLoss ) {
+                    avoidableLoss = qAttempt.getLoss() ;
+                }
+                else {
+                    // If the loss was unavoidable, and we have got negative marks,
+                    // then the negative marks could have been avoided.
+                    if( qAttempt.getScore() < 0 ) {
+                        avoidableLoss = -qAttempt.getScore() ;
+                    }
+                }
+                
+                qAttempt.setAvoidableLoss( avoidableLoss ) ;
+                secAvoidableLoss += avoidableLoss ;
             }
+            else {
+                qAttempt.setAvoidableLoss( 0 ) ;
+            }
+            
+            questionAttemptRepo.save( qAttempt ) ;
         }
-        return avoidableLoss ;
+        return secAvoidableLoss ;
     }
-
-    private boolean hasAttributableLoss( ExamQuestionAttempt qAttempt ) {
-        String evalStatus = qAttempt.getEvaluationStatus() ;
-        return "INCORRECT".equals( evalStatus ) ||
-               "PARTIAL".equals( evalStatus ) ||
-               "UNANSWERED".equals( evalStatus ) ;
-    }
-
-    private int computeSectionLostMarks( ExamSectionAttempt sectionAttempt ) {
-        ExamSection section = sectionAttempt.getExamSection() ;
-        int sectionTotalMarks = section.getCorrectMarks() * section.getNumCompulsoryQuestions() ;
-        return sectionTotalMarks - sectionAttempt.getScore() ;
-    }
-
+    
+    /**
+     * This method is called in rare cases when the exam has set an answer wrong
+     * or the examiner decides that the answer provided by the student is valid
+     * in the context of assumptions taken. In these cases, the examiner can
+     * specifically override the marks from anywhere between the min mark possible
+     * to the max mark possible.
+     *
+     * If such a situation happens, the following logic is applied:
+     *
+     * - If the overridden score is:
+     *   - equal to full marks, then
+     *      - any assigned root cause is removed
+     *      - the evaluation status is set to CORRECT
+     *   - equal to minium marks
+     *      - any assigned root cause is left as is
+     *      - the evaluation status is set to INCORRECT
+     *   - else if the score is somewhere in between
+     *      - any assigned root cause is left as is
+     *      - the evaluation status is set to PARTIAL
+     *
+     * - The score of the exam is recomputed recursively.
+     * - The avoidable loss of the exam is recomputed recursively.
+     */
     @Transactional
-    public void overrideScore( Integer qAttemptId, int score ) {
+    public ExamAttemptVO overrideScore( Integer qAttemptId, int score ) {
         
-        ExamQuestionAttempt eqa = eqaRepo.findById( qAttemptId ).get() ;
+        ExamQuestionAttempt eqa = questionAttemptRepo.findById( qAttemptId ).get() ;
         ExamSectionAttempt sectionAttempt = eqa.getExamSectionAttempt() ;
         ExamAttempt examAttempt = sectionAttempt.getExamAttempt() ;
+        ExamSection section = sectionAttempt.getExamSection() ;
+        
+        if( score > section.getCorrectMarks() ||
+            score < section.getWrongPenalty() ) {
+            throw new IllegalArgumentException( "Overridden score can't be " +
+                    "more than max score or less than min score." ) ;
+        }
+        else if( "EVALUATION_SKIPPED".equals( eqa.getEvaluationStatus() ) ) {
+            throw new IllegalArgumentException( "Score can't be overridden " +
+                    "for a question whose evaluation is skipped." ) ;
+        }
         
         eqa.setScore( score ) ;
-        if( score == sectionAttempt.getExamSection().getCorrectMarks() ) {
+        eqa.setLoss( section.getCorrectMarks() - score ) ;
+        
+        if( score == section.getCorrectMarks() ) {
             eqa.setEvaluationStatus( "CORRECT" ) ;
             eqa.setRootCause( null ) ;
         }
-        else if( score == sectionAttempt.getExamSection().getWrongPenalty() ) {
+        else if( score == section.getWrongPenalty() ) {
             eqa.setEvaluationStatus( "INCORRECT" ) ;
         }
         else {
             eqa.setEvaluationStatus( "PARTIAL" ) ;
         }
-        eqaRepo.save( eqa ) ;
+        questionAttemptRepo.save( eqa ) ;
         
-        recomputeScore( examAttempt ) ;
-        recomputeLossAttributionPct( eqa ) ;
+        recomputeExamScoreAndLoss( examAttempt ) ;
+        return computeAvoidableLossForExam( examAttempt ) ;
     }
     
-    private void recomputeScore( ExamAttempt examAttempt ) {
-        int totalScore = 0 ;
+    private void recomputeExamScoreAndLoss( ExamAttempt examAttempt ) {
+        
+        int totalExamScore = 0 ;
+        
         for( ExamSectionAttempt sectionAttempt : examAttempt.getSectionAttempts() ) {
-            int sectionScore = 0 ;
+            
+            ExamSection section = sectionAttempt.getExamSection() ;
+            
+            final int correctMarks = section.getCorrectMarks() ;
+            final int totalSectionMarks = correctMarks * section.getNumCompulsoryQuestions() ;
+            
+            int totalSectionScore = 0 ;
 
             for( ExamQuestionAttempt qAttempt : sectionAttempt.getQuestionAttempts() ) {
-                sectionScore += qAttempt.getScore() ;
+                totalSectionScore += qAttempt.getScore() ;
             }
             
-            sectionAttempt.setScore( sectionScore ) ;
+            sectionAttempt.setScore( totalSectionScore ) ;
+            sectionAttempt.setLoss( totalSectionMarks - totalSectionScore ) ;
+            
             sectionAttemptRepo.save( sectionAttempt ) ;
-            totalScore += sectionScore ;
+            totalExamScore += totalSectionScore ;
         }
 
-        examAttempt.setScore( totalScore ) ;
+        examAttempt.setScore( totalExamScore ) ;
+        examAttempt.setLoss( examAttempt.getExam().getTotalMarks() - totalExamScore ) ;
+        
         examAttemptRepo.save( examAttempt ) ;
     }
 }

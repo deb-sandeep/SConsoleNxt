@@ -16,6 +16,8 @@ public class ExamQuestionAttemptVO {
     private String answerSubmitLap ;
     private String answerSubmitStatus ;
     private Integer score ;
+    private Integer loss ;
+    private Integer avoidableLoss ;
     private String rootCause ;
     
     public ExamQuestionAttemptVO(){}
@@ -30,6 +32,8 @@ public class ExamQuestionAttemptVO {
         this.setAnswerSubmitLap( entity.getAnswerSubmitLap() ) ;
         this.setAnswerSubmitStatus( entity.getAnswerSubmitStatus() ) ;
         this.setScore( entity.getScore() ) ;
+        this.setLoss( entity.getLoss() ) ;
+        this.setAvoidableLoss( entity.getAvoidableLoss() ) ;
         this.setRootCause( entity.getRootCause() == null ? null : entity.getRootCause().getCause() ) ;
     }
 }

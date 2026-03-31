@@ -63,8 +63,9 @@ public class ExamAttemptHelper {
         examAttempt.setExam( exam ) ;
         examAttempt.setAttemptDate( new Date().toInstant() ) ;
         examAttempt.setScore( 0 ) ;
+        examAttempt.setLoss( 0 ) ;
+        examAttempt.setAvoidableLoss( 0 ) ;
         examAttempt.setAvoidableLossPct( 0F ) ;
-        examAttempt.setUnavoidableLossPct( 0F ) ;
         examAttempt.setStatus( "IN_PROGRESS" ) ;
         return examAttemptRepo.saveAndFlush( examAttempt ) ;
     }
@@ -76,8 +77,9 @@ public class ExamAttemptHelper {
         esAttempt.setExamSection( section ) ;
         esAttempt.setExamAttempt( examAttempt ) ;
         esAttempt.setScore( 0 ) ;
+        esAttempt.setLoss( 0 ) ;
+        esAttempt.setAvoidableLoss( 0 ) ;
         esAttempt.setAvoidableLossPct( 0F ) ;
-        esAttempt.setUnavoidableLossPct( 0F ) ;
         return examSectionAttemptRepo.saveAndFlush( esAttempt ) ;
     }
     
@@ -93,6 +95,8 @@ public class ExamAttemptHelper {
         questionAttempt.setAnswerSubmitStatus( "NOT_VISITED" ) ;
         questionAttempt.setRootCause( null ) ;
         questionAttempt.setScore( 0 ) ;
+        questionAttempt.setLoss( 0 ) ;
+        questionAttempt.setAvoidableLoss( 0 ) ;
         return examQuestionAttemptRepo.saveAndFlush( questionAttempt ) ;
     }
 }

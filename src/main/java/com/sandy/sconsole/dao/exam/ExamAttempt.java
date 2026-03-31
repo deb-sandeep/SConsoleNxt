@@ -34,13 +34,15 @@ public class ExamAttempt {
     @Column( name = "score", nullable = false )
     private Integer score;
     
+    @Column( name = "loss" )
+    private Integer loss;
+    
+    @Column( name = "avoidable_loss" )
+    private Integer avoidableLoss;
+
     @NotNull
     @Column( name = "avoidable_loss_pct", nullable = false )
     private Float avoidableLossPct;
-    
-    @NotNull
-    @Column( name = "unavoidable_loss_pct", nullable = false )
-    private Float unavoidableLossPct;
     
     @Column( name = "status", length = 16 )
     private String status;

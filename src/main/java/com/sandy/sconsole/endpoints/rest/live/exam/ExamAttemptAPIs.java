@@ -8,7 +8,6 @@ import com.sandy.sconsole.dao.exam.ExamQuestionAttempt;
 import com.sandy.sconsole.dao.exam.ExamQuestionAttemptRepo;
 import com.sandy.sconsole.dao.exam.repo.ExamAttemptRepo;
 import com.sandy.sconsole.dao.exam.repo.ExamEventLogRepo;
-import com.sandy.sconsole.dao.exam.repo.RootCauseRepo;
 import com.sandy.sconsole.endpoints.rest.live.exam.helper.ExamAttemptHelper;
 import com.sandy.sconsole.endpoints.rest.live.exam.helper.ExamEvaluationHelper;
 import com.sandy.sconsole.endpoints.rest.live.exam.vo.AnswerUpdateReq;
@@ -42,9 +41,6 @@ public class ExamAttemptAPIs {
     
     @Autowired
     private ExamQuestionAttemptRepo eqaRepo = null ;
-    
-    @Autowired
-    private RootCauseRepo rootCauseRepo = null ;
     
     @Autowired
     private JdbcTemplate jdbcTemplate = null ;
@@ -204,15 +200,14 @@ public class ExamAttemptAPIs {
     }
     
     @PostMapping( "/RootCauseUpdate/{qAttemptId}/{rootCause}" )
-    public ResponseEntity<AR<String>> updateRootCause(
+    public ResponseEntity<AR<ExamAttemptVO>> updateRootCause(
             @PathVariable Integer qAttemptId,
-            @PathVariable String rootCause
-    ) {
+            @PathVariable String rootCause ) {
         
         try {
             ExamEvaluationHelper helper = SConsole.getBean( ExamEvaluationHelper.class ) ;
-            helper.updateQuestionAttemptRootCause( qAttemptId, rootCause ) ;
-            return AR.success() ;
+            ExamAttemptVO res = helper.updateQuestionAttemptRootCause( qAttemptId, rootCause ) ;
+            return AR.success( res ) ;
         }
         catch( IllegalArgumentException e ) {
             return AR.badRequest( e.getMessage() ) ;
@@ -223,14 +218,13 @@ public class ExamAttemptAPIs {
     }
     
     @PostMapping( "/ScoreOverride/{qAttemptId}/{score}" )
-    public ResponseEntity<AR<String>> overrideScore(
+    public ResponseEntity<AR<ExamAttemptVO>> overrideScore(
             @PathVariable Integer qAttemptId,
-            @PathVariable Integer score
-    ) {
+            @PathVariable Integer score ) {
         try {
             ExamEvaluationHelper helper = SConsole.getBean( ExamEvaluationHelper.class ) ;
-            helper.overrideScore( qAttemptId, score ) ;
-            return AR.success() ;
+            ExamAttemptVO res = helper.overrideScore( qAttemptId, score ) ;
+            return AR.success( res ) ;
         }
         catch( IllegalArgumentException e ) {
             return AR.badRequest( e.getMessage() ) ;

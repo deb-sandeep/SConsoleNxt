@@ -32,13 +32,15 @@ public class ExamSectionAttempt {
     @Column( name = "score", nullable = false )
     private Integer score;
     
+    @Column( name = "loss" )
+    private Integer loss;
+    
+    @Column( name = "avoidable_loss" )
+    private Integer avoidableLoss;
+    
     @NotNull
     @Column( name = "avoidable_loss_pct", nullable = false )
     private Float avoidableLossPct;
-    
-    @NotNull
-    @Column( name = "unavoidable_loss_pct", nullable = false )
-    private Float unavoidableLossPct;
     
     @OneToMany( mappedBy = "examSectionAttempt", fetch = FetchType.EAGER )
     private Set<ExamQuestionAttempt> questionAttempts = new LinkedHashSet<>();

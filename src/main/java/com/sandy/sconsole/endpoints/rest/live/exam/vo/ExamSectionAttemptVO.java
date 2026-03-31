@@ -13,12 +13,13 @@ import static java.util.Comparator.comparingInt;
 @Data
 public class ExamSectionAttemptVO {
     
-    private Integer       id ;
+    private Integer id ;
     private ExamSectionVO examSection ;
-    private Integer       examAttemptId ;
+    private Integer examAttemptId ;
     private Integer score ;
+    private Integer loss ;
+    private Integer avoidableLoss ;
     private Float avoidableLossPct ;
-    private Float unavoidableLossPct ;
     private List<ExamQuestionAttemptVO> questionAttempts = new ArrayList<>() ;
     
     public ExamSectionAttemptVO(){}
@@ -28,8 +29,9 @@ public class ExamSectionAttemptVO {
         this.setExamSection( new ExamSectionVO( entity.getExamSection(), false ) ) ;
         this.setExamAttemptId( entity.getExamAttempt().getId() ) ;
         this.setScore( entity.getScore() ) ;
+        this.setLoss( entity.getLoss() ) ;
+        this.setAvoidableLoss( entity.getAvoidableLoss() ) ;
         this.setAvoidableLossPct( entity.getAvoidableLossPct() ) ;
-        this.setUnavoidableLossPct( entity.getUnavoidableLossPct() ) ;
         
         for( ExamQuestionAttempt questionAttempt : entity.getQuestionAttempts() ) {
             this.getQuestionAttempts().add( new ExamQuestionAttemptVO( questionAttempt ) ) ;

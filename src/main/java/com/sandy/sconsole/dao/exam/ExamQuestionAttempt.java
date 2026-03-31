@@ -53,6 +53,12 @@ public class ExamQuestionAttempt {
     @Column( name = "score", nullable = false )
     private Integer score;
     
+    @Column( name = "loss" )
+    private Integer loss;
+    
+    @Column( name = "avoidable_loss" )
+    private Integer avoidableLoss;
+
     @NotNull
     @ManyToOne( fetch = FetchType.LAZY )
     @JoinColumn( name = "root_cause" )

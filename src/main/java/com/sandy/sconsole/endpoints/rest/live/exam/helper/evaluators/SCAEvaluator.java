@@ -13,30 +13,29 @@ import org.springframework.stereotype.Component;
 @Scope( "prototype" )
 public class SCAEvaluator extends SectionEvaluator {
     
+    /**
+     * This method is called only if the question questionAttempt is either ANSWERED
+     * or ANS_AND_MARKED_FOR_REVIEW, so a provided answer is guaranteed to
+     * be present.
+     */
     @Override
     protected int evaluateQuestionAttempt( ExamSection section,
                                            ExamQuestion question,
-                                           ExamQuestionAttempt attempt ) {
+                                           ExamQuestionAttempt questionAttempt ) {
         
         int correctMarks = section.getCorrectMarks() ;
         int wrongPenalty = section.getWrongPenalty() ;
-        String submitStatus = attempt.getAnswerSubmitStatus() ;
         
-        if( submitStatus.equals( "ANSWERED" ) ||
-            submitStatus.equals( "ANS_AND_MARKED_FOR_REVIEW" ) ) {
+        String answer = questionAttempt.getAnswerProvided() ;
+        String correctAnswer = question.getQuestion().getAnswer() ;
         
-            String answer = attempt.getAnswerProvided() ;
-            String correctAnswer = question.getQuestion().getAnswer() ;
-            
-            if( answer.equalsIgnoreCase( correctAnswer ) ) {
-                attempt.setEvaluationStatus( "CORRECT" ) ;
-                return correctMarks ;
-            }
-            else {
-                attempt.setEvaluationStatus( "INCORRECT" ) ;
-                return wrongPenalty ;
-            }
+        if( answer.equalsIgnoreCase( correctAnswer ) ) {
+            questionAttempt.setEvaluationStatus( "CORRECT" ) ;
+            return correctMarks ;
         }
-        return 0 ;
+        else {
+            questionAttempt.setEvaluationStatus( "INCORRECT" ) ;
+            return wrongPenalty ;
+        }
     }
 }
