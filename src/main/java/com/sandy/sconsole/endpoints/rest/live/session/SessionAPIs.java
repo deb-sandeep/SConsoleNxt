@@ -31,6 +31,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,6 +73,19 @@ public class SessionAPIs {
         catch( Exception e ) {
             return systemError( e ) ;
         }
+    }
+    
+    @PostMapping( "/StartExamSession" )
+    public synchronized ResponseEntity<AR<Integer>> startExamSession() {
+        
+        SessionDTO req = new SessionDTO() ;
+        req.setSessionType( "Exam" ) ;
+        req.setTopicId( topicRepo.findTopics( "Exam" ).get( 0 ).getId() ) ;
+        req.setSyllabusName( "Exam" ) ;
+        req.setStartTime( new Date() ) ;
+        req.setEffectiveDuration( 0 ) ;
+        
+        return this.startSession( req ) ;
     }
     
     @PostMapping( "/StartSession" )
