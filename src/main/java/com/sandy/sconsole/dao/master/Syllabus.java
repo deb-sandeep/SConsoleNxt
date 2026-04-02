@@ -1,6 +1,7 @@
 package com.sandy.sconsole.dao.master;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -28,4 +29,8 @@ public class Syllabus {
     @OneToMany( mappedBy = "syllabus" )
     @OrderBy( "id" )
     private Set<Topic> topics = new LinkedHashSet<>();
+    
+    @NotNull
+    @Column( name = "automated", nullable = false )
+    private Boolean automated = false ;
 }

@@ -20,6 +20,7 @@ import com.sandy.sconsole.dao.session.repo.SessionPauseRepo;
 import com.sandy.sconsole.dao.session.repo.SessionRepo;
 import com.sandy.sconsole.endpoints.rest.live.session.vo.ExtendSessionReq;
 import com.sandy.sconsole.endpoints.rest.live.session.vo.SessionExtensionVO;
+import com.sandy.sconsole.ui.screen.session.ExamSessionScreen;
 import com.sandy.sconsole.ui.screen.session.SessionScreen;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
@@ -66,7 +67,7 @@ public class SessionAPIs {
     @GetMapping( "/Types" )
     public ResponseEntity<AR<List<SessionType>>> getAllSessionTypes() {
         try {
-            return success( stRepo.findAll() ) ;
+            return success( stRepo.findAllNonAutomated() ) ;
         }
         catch( Exception e ) {
             return systemError( e ) ;
@@ -93,7 +94,14 @@ public class SessionAPIs {
             
             eventBus.publishEvent( SESSION_STARTED, sessionDto ) ;
             
-            screenManager.scheduleScreenChange( SessionScreen.ID ) ;
+            final String sessionType = req.getSessionType() ;
+            if( "Analysis".equals( sessionType ) ||
+                "Exam".equals( sessionType ) ) {
+                screenManager.scheduleScreenChange( ExamSessionScreen.ID ) ;
+            }
+            else {
+                screenManager.scheduleScreenChange( SessionScreen.ID ) ;
+            }
             
             return success( savedDao.getId() ) ;
         }

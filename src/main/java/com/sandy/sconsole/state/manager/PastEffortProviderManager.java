@@ -66,6 +66,7 @@ public class PastEffortProviderManager implements ClockTickListener, EventSubscr
        new SyllabusL30EffortProvider( IIT_CHEM_SYLLABUS_NAME ),
        new SyllabusL30EffortProvider( IIT_MATHS_SYLLABUS_NAME ),
        new SyllabusL30EffortProvider( REASONING_SYLLABUS_NAME ),
+       new SyllabusL30EffortProvider( EXAM_SYLLABUS_NAME ),
        totalPastEffortProvider
     } ;
     

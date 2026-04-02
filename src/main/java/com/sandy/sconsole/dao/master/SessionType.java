@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,4 +28,8 @@ public class SessionType {
     
     @Column( name = "icon_name", nullable = false, length = 45 )
     private String iconName;
+    
+    @NotNull
+    @Column( name = "automated", nullable = false )
+    private Boolean automated = false ;
 }
