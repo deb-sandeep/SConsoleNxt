@@ -1,6 +1,6 @@
 package com.sandy.sconsole.endpoints.rest.live.exam.vo;
 
-public record AnswerUpdateReq(
+public record QuestionAttemptUpdateReq(
    int questionAttemptId,
    String submitStatus,
    String answerProvided,

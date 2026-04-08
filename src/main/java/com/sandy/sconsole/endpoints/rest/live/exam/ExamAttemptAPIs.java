@@ -10,10 +10,10 @@ import com.sandy.sconsole.dao.exam.repo.ExamAttemptRepo;
 import com.sandy.sconsole.dao.exam.repo.ExamEventLogRepo;
 import com.sandy.sconsole.endpoints.rest.live.exam.helper.ExamAttemptHelper;
 import com.sandy.sconsole.endpoints.rest.live.exam.helper.ExamEvaluationHelper;
-import com.sandy.sconsole.endpoints.rest.live.exam.vo.AnswerUpdateReq;
 import com.sandy.sconsole.endpoints.rest.live.exam.vo.ExamAttemptVO;
 import com.sandy.sconsole.endpoints.rest.live.exam.vo.ExamEventVO;
 import com.sandy.sconsole.endpoints.rest.live.exam.vo.LapSnapshotReq;
+import com.sandy.sconsole.endpoints.rest.live.exam.vo.QuestionAttemptUpdateReq;
 import com.sandy.sconsole.endpoints.rest.master.exam.vo.reqres.CreateExamAttemptRes;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -125,10 +125,29 @@ public class ExamAttemptAPIs {
         }
     }
     
+    @PostMapping( "/TimeUpdate" )
+    @Transactional
+    public ResponseEntity<AR<String>> updateTimeSpent(
+            @RequestBody QuestionAttemptUpdateReq req ) {
+        
+        try {
+            ExamQuestionAttempt eqa = eqaRepo.findById( req.questionAttemptId() ).get() ;
+            eqa.setTimeSpent( req.timeSpent() ) ;
+            eqaRepo.save( eqa ) ;
+            return AR.success() ;
+        }
+        catch( IllegalArgumentException e ) {
+            return AR.badRequest( e.getMessage() ) ;
+        }
+        catch( Exception e ) {
+            return systemError( e ) ;
+        }
+    }
+    
     @PostMapping( "/AnswerUpdate" )
     @Transactional
     public ResponseEntity<AR<String>> updateAnswerStatus(
-            @RequestBody AnswerUpdateReq req ) {
+            @RequestBody QuestionAttemptUpdateReq req ) {
         
         try {
             ExamQuestionAttempt eqa = eqaRepo.findById( req.questionAttemptId() ).get() ;

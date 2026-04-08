@@ -102,6 +102,10 @@ public class ExamEvaluationHelper {
         attempt.setScore( totalExamScore ) ;
         attempt.setLoss( exam.getTotalMarks() - totalExamScore ) ;
         attempt.setStatus( "COMPLETED" ) ;
+        attempt.setAvoidableLoss( attempt.getLoss() ) ;
+        if( attempt.getLoss() > 0 ) {
+            attempt.setAvoidableLossPct( 100F ) ;
+        }
         
         ExamAttempt savedAttempt = examAttemptRepo.save( attempt ) ;
         
