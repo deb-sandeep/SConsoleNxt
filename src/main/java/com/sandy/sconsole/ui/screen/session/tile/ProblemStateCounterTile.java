@@ -4,6 +4,7 @@ import com.sandy.sconsole.core.bus.Event;
 import com.sandy.sconsole.core.bus.EventBus;
 import com.sandy.sconsole.core.bus.EventSubscriber;
 import com.sandy.sconsole.core.ui.screen.Tile;
+import com.sandy.sconsole.core.ui.uiutil.UITheme;
 import com.sandy.sconsole.state.ActiveTopicStatistics;
 import com.sandy.sconsole.state.manager.ActiveTopicStatisticsManager;
 import com.sandy.sconsole.state.manager.ProblemStateCounter;
@@ -44,8 +45,6 @@ public class ProblemStateCounterTile extends Tile
     public static final Font VALUE_FONT  = new Font( Font.MONOSPACED, Font.PLAIN, 27 ) ;
     
     public static final Color GRID_COLOR      = new Color( 21, 21, 21 ) ;
-    public static final Color HEADER_BG_COLOR = new Color( 0, 0, 0 ) ;
-    public static final Color VALUE_BG_COLOR  = new Color( 0, 0, 0 ) ;
     public static final Color LABEL_FG_COLOR  = Color.WHITE ;
     public static final Color HDR_FG_COLOR    = Color.DARK_GRAY ;
     
@@ -179,7 +178,7 @@ public class ProblemStateCounterTile extends Tile
         label.setVerticalAlignment( CENTER ) ;
         label.setOpaque( true ) ;
         label.setForeground( LABEL_FG_COLOR ) ;
-        label.setBackground( isHeader ? HEADER_BG_COLOR : VALUE_BG_COLOR ) ;
+        label.setBackground( UITheme.BG_COLOR ) ;
         label.setFont( isHeader ? HEADER_FONT : VALUE_FONT ) ;
         label.setBorder(
             BorderFactory.createCompoundBorder(

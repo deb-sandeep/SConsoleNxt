@@ -91,7 +91,7 @@ public class ExerciseTileFace extends Tile
         setLayout( layout ) ;
         
         add( createSessionCounterPanel(), "0,0" ) ;
-        add( configureDetailLabel( bookNameLabel, BOOK_FONT, BOOK_NAME_COLOR ), "0,1" ) ;
+        add( configureLabel( bookNameLabel, BOOK_FONT, BOOK_NAME_COLOR ), "0,1" ) ;
         add( createChapterDetailPanel(), "0,2" ) ;
         add( createCurrentProblemInsightPanel(), "0,3" ) ;
     }
@@ -125,7 +125,7 @@ public class ExerciseTileFace extends Tile
         label.setVerticalAlignment( CENTER ) ;
         label.setOpaque( true ) ;
         label.setForeground( HDR_FG_COLOR ) ;
-        label.setBackground( ProblemStateCounterTile.HEADER_BG_COLOR ) ;
+        label.setBackground( BG_COLOR ) ;
         label.setFont( HEADER_FONT ) ;
         label.setBorder( BorderFactory.createCompoundBorder(
                 new MatteBorder( 0, 1, 1, 1, GRID_COLOR ),
@@ -141,7 +141,7 @@ public class ExerciseTileFace extends Tile
         label.setVerticalAlignment( CENTER ) ;
         label.setOpaque( true ) ;
         label.setForeground( HDR_FG_COLOR ) ;
-        label.setBackground( ProblemStateCounterTile.VALUE_BG_COLOR ) ;
+        label.setBackground( BG_COLOR ) ;
         label.setFont( COUNTER_VALUE_FONT ) ;
         label.setBorder( BorderFactory.createCompoundBorder(
                 new MatteBorder( 0, 1, 1, 1, GRID_COLOR ),
@@ -155,8 +155,8 @@ public class ExerciseTileFace extends Tile
         JPanel panel = new JPanel( new FlowLayout( FlowLayout.CENTER, 10, 10 ) ) ;
         panel.setBackground( BG_COLOR ) ;
 
-        panel.add( configureDetailLabel( chapterNameLabel, CHAPTER_FONT, CHP_NAME_COLOR ) ) ;
-        panel.add( configureDetailLabel( problemKeyLabel, PROBLEM_FONT, PROBLEM_KEY_COLOR ) ) ;
+        panel.add( configureLabel( chapterNameLabel, CHAPTER_FONT, CHP_NAME_COLOR ) ) ;
+        panel.add( configureLabel( problemKeyLabel, PROBLEM_FONT, PROBLEM_KEY_COLOR ) ) ;
         return panel ;
     }
 
@@ -172,33 +172,22 @@ public class ExerciseTileFace extends Tile
         layout.insertColumn( 2, 0.33 ) ;
         panel.setLayout( layout ) ;
 
-        panel.add( configureInsightLabel( currentStateBadgeLabel,
-                                          STATE_BADGE_FONT,
-                                          LABEL_FG_COLOR ),
+        panel.add( configureLabel( currentStateBadgeLabel,
+                                   STATE_BADGE_FONT,
+                                   LABEL_FG_COLOR ),
                    "0,0" ) ;
-        panel.add( configureInsightLabel( currentProblemTimerLabel,
-                                          PROBLEM_TIMER_FONT,
-                                          PROBLEM_TIMER_FG_COLOR ),
+        panel.add( configureLabel( currentProblemTimerLabel,
+                                   PROBLEM_TIMER_FONT,
+                                   PROBLEM_TIMER_FG_COLOR ),
                    "1,0" ) ;
-        panel.add( configureInsightLabel( totalTimeSpentLabel,
-                                          PROBLEM_INSIGHT_FONT,
-                                          TOTAL_TIME_SPENT_FG_COLOR ),
+        panel.add( configureLabel( totalTimeSpentLabel,
+                                   PROBLEM_INSIGHT_FONT,
+                                   TOTAL_TIME_SPENT_FG_COLOR ),
                    "2,0" ) ;
         return panel ;
     }
 
-    private JLabel configureDetailLabel( JLabel label, Font font, Color fgColor ) {
-
-        label.setHorizontalAlignment( CENTER ) ;
-        label.setVerticalAlignment( CENTER ) ;
-        label.setOpaque( true ) ;
-        label.setForeground( fgColor ) ;
-        label.setBackground( BG_COLOR ) ;
-        label.setFont( font ) ;
-        return label ;
-    }
-
-    private JLabel configureInsightLabel( JLabel label, Font font, Color fgColor ) {
+    private JLabel configureLabel( JLabel label, Font font, Color fgColor ) {
 
         label.setHorizontalAlignment( CENTER ) ;
         label.setVerticalAlignment( CENTER ) ;
@@ -216,6 +205,7 @@ public class ExerciseTileFace extends Tile
         this.ats = atsManager.getTopicStatistics( todaySessionStats.getCurrentSession().getTopicId() ) ;
 
         eventBus.addAsyncSubscriber( this, ATS_REFRESHED ) ;
+        eventBus.addAsyncSubscriber( this, PROBLEM_ATTEMPT_ENDED ) ;
         eventBus.addAsyncSubscriber( this, PROBLEM_ATTEMPT_STARTED ) ;
         eventBus.addAsyncSubscriber( this, SESSION_EXTENDED ) ;
 
@@ -236,6 +226,7 @@ public class ExerciseTileFace extends Tile
 
         switch( event.getEventId() ) {
             case ATS_REFRESHED -> handleATSRefreshed( event ) ;
+            case PROBLEM_ATTEMPT_ENDED -> clearProblemDetails() ;
             case PROBLEM_ATTEMPT_STARTED -> handleProblemAttemptStarted( event ) ;
             case SESSION_EXTENDED -> handleSessionExtended( event ) ;
         }
@@ -253,30 +244,15 @@ public class ExerciseTileFace extends Tile
 
     private void handleProblemAttemptStarted( Event event ) {
 
-        if( currentSessionId == null ) return ;
-
         ProblemAttemptDTO attempt = ( ProblemAttemptDTO )event.getValue() ;
-        if( attempt.getSessionId() == null || !currentSessionId.equals( attempt.getSessionId() ) ) {
-            return ;
-        }
-
         Problem problem = problemRepo.findById( attempt.getProblemId() ).orElse( null ) ;
         loadCurrentProblemContext( problem, attempt ) ;
     }
 
     private void handleSessionExtended( Event event ) {
 
-        if( currentSessionId == null ) return ;
-
         SessionExtensionVO extension = ( SessionExtensionVO )event.getValue() ;
-        if( extension == null || extension.getProblemAttemptDTO() == null ) {
-            return ;
-        }
-
         ProblemAttemptDTO attempt = extension.getProblemAttemptDTO() ;
-        if( attempt.getSessionId() == null || !currentSessionId.equals( attempt.getSessionId() ) ) {
-            return ;
-        }
 
         if( currentProblem == null ||
             currentProblemAttempt == null ||
