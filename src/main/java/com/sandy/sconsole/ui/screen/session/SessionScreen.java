@@ -76,7 +76,7 @@ public class SessionScreen extends Screen
         super( ID, "Session Screen" ) ;
         super.asPerpetual() ;
         
-        // Initialize only the non autowired tiles
+        // Initialize only the non-autowired tiles
         this.dateTile = new DateTile( 25, "dd MMM, EEE" ) ;
         this.timeTile = new TimeTile( 40 ) ;
         this.syllabusTile = new StringTile( 50 ) ;
