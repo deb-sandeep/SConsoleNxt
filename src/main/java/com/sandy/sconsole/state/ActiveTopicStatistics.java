@@ -69,18 +69,6 @@ public class ActiveTopicStatistics {
     @Getter private int numExerciseDaysLeft;
     @Getter private int currentBurnRate ;
     
-    // The aggregated counts of problems in the topic by their state
-    @Getter private int numAssignedProblems ;
-    @Getter private int numCorrectProblems ;
-    @Getter private int numIncorrectProblems ;
-    @Getter private int numLaterProblems ;
-    @Getter private int numPigeonedProblems ;
-    @Getter private int numPigeonExplainedProblems ;
-    @Getter private int numPigeonSolvedProblems ;
-    @Getter private int numPurgedProblems ;
-    @Getter private int numReassignedProblems ;
-    @Getter private int numRedoProblems ;
-    
     // Today data
     @Getter private int numProblemsSolvedToday = 0 ;
     
@@ -104,16 +92,6 @@ public class ActiveTopicStatistics {
         this.numExerciseDaysLeft = 0 ;
         this.numTotalProblems = 0 ;
         this.numProblemsLeft = 0 ;
-        this.numAssignedProblems = 0 ;
-        this.numCorrectProblems = 0 ;
-        this.numIncorrectProblems = 0 ;
-        this.numLaterProblems = 0 ;
-        this.numPigeonedProblems = 0 ;
-        this.numPigeonExplainedProblems = 0 ;
-        this.numPigeonSolvedProblems = 0 ;
-        this.numPurgedProblems = 0 ;
-        this.numReassignedProblems = 0 ;
-        this.numRedoProblems = 0 ;
         this.originalBurnRate = 0 ;
         this.currentBurnRate = 0 ;
         this.requiredBurnRate = 0 ;
@@ -177,9 +155,6 @@ public class ActiveTopicStatistics {
         numProblemsLeft     = topicRepo.getRemainingProblemCount( topicId ) ;
         numExerciseDaysLeft = durationDays( new Date(), exerciseEndDate ) ;
         
-        List<TopicProblemRepo.ProblemStateCount> problemStateCounts = tpRepo.getProblemStateCounts( topicId ) ;
-        populateProblemStateCounts( problemStateCounts ) ;
-        
         // Today data
         Integer tempInt = tspcRepo.getNumSolvedProblems( topicId ) ;
         numProblemsSolvedToday = tempInt == null ? 0 : tempInt ;
@@ -188,6 +163,7 @@ public class ActiveTopicStatistics {
         computeCurrentBurnAndOvershoot() ;
         
         // Populate the problem state counters
+        List<TopicProblemRepo.ProblemStateCount> problemStateCounts = tpRepo.getProblemStateCounts( topicId ) ;
         this.allProblemsStateCounter.populateCounts( problemStateCounts ) ;
         this.todayProblemsStateCounter.populateCounts( tpRepo.getProblemStateCountsForToday( topicId ) ) ;
         updateCurrentSessionProblemStates() ;
@@ -208,35 +184,6 @@ public class ActiveTopicStatistics {
         log.debug( "       Planned burn        - {}", originalBurnRate ) ;
     }
 
-    private void populateProblemStateCounts( List<TopicProblemRepo.ProblemStateCount> stateCounts ) {
-
-        this.numAssignedProblems = 0 ;
-        this.numCorrectProblems = 0 ;
-        this.numIncorrectProblems = 0 ;
-        this.numLaterProblems = 0 ;
-        this.numPigeonedProblems = 0 ;
-        this.numPigeonExplainedProblems = 0 ;
-        this.numPigeonSolvedProblems = 0 ;
-        this.numPurgedProblems = 0 ;
-        this.numReassignedProblems = 0 ;
-        this.numRedoProblems = 0 ;
-
-        stateCounts.forEach( stateCount -> {
-            switch( stateCount.getState() ) {
-                case "Assigned"         -> this.numAssignedProblems = stateCount.getNumProblems() ;
-                case "Correct"          -> this.numCorrectProblems = stateCount.getNumProblems() ;
-                case "Incorrect"        -> this.numIncorrectProblems = stateCount.getNumProblems() ;
-                case "Later"            -> this.numLaterProblems = stateCount.getNumProblems() ;
-                case "Pigeon"           -> this.numPigeonedProblems = stateCount.getNumProblems() ;
-                case "Pigeon Explained" -> this.numPigeonExplainedProblems = stateCount.getNumProblems() ;
-                case "Pigeon Solved"    -> this.numPigeonSolvedProblems = stateCount.getNumProblems() ;
-                case "Purge", "Purged"  -> this.numPurgedProblems = stateCount.getNumProblems() ;
-                case "Reassign"         -> this.numReassignedProblems = stateCount.getNumProblems() ;
-                case "Redo"             -> this.numRedoProblems = stateCount.getNumProblems() ;
-            }
-        } ) ;
-    }
-    
     public void updateCurrentSessionProblemStates() {
         TodaySessionStatistics todaySessionStatistics = SConsole.getBean( TodaySessionStatistics.class ) ;
         SessionDTO currentSession = todaySessionStatistics.getCurrentSession() ;
@@ -359,5 +306,10 @@ public class ActiveTopicStatistics {
     public boolean isCurrentlyActive() {
         Date today = new Date() ;
         return today.after( startDate ) && today.before( nextDay( endDate ) ) ;
+    }
+    
+    public int getNumPigeonedProblems() {
+        return this.allProblemsStateCounter.getNumPigeons() +
+                this.allProblemsStateCounter.getNumPigeonsSolved() ;
     }
 }

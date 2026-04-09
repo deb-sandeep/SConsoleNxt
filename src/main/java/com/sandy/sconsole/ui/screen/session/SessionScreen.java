@@ -115,7 +115,7 @@ public class SessionScreen extends Screen
         addTile( thermometerTile,       0,   5,  0, 31 ) ;
         addTile( topicBurnStatTile,     1,   5,  3, 17 ) ;
         addTile( topicTile,             4,   5, 11,  6 ) ;
-        addTile( sessionCenterTile,     4,   7, 11, 17 ) ;
+        addTile( sessionCenterTile,     4,  12, 11, 17 ) ;
         addTile( fragmentationTile,    12,   5, 15, 17 ) ;
         addTile( sylL30EffortTile,      9,  18, 15, 24 ) ;
         addTile( burnChartTile,         1,  18,  8, 31 ) ;
