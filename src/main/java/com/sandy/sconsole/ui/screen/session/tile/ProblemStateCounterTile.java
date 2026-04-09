@@ -4,7 +4,6 @@ import com.sandy.sconsole.core.bus.Event;
 import com.sandy.sconsole.core.bus.EventBus;
 import com.sandy.sconsole.core.bus.EventSubscriber;
 import com.sandy.sconsole.core.ui.screen.Tile;
-import com.sandy.sconsole.core.ui.uiutil.UITheme;
 import com.sandy.sconsole.state.ActiveTopicStatistics;
 import com.sandy.sconsole.state.manager.ActiveTopicStatisticsManager;
 import com.sandy.sconsole.state.manager.ProblemStateCounter;
@@ -14,12 +13,9 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
-import javax.swing.border.MatteBorder;
 import java.awt.*;
 
 import static com.sandy.sconsole.EventCatalog.ATS_REFRESHED;
-import static javax.swing.SwingConstants.CENTER;
-import static javax.swing.SwingConstants.RIGHT;
 
 @Component
 @Scope( "prototype" )
@@ -50,10 +46,7 @@ public class ProblemStateCounterTile extends Tile
     
     public static final int COUNTER_CELL_RIGHT_INSET = 15 ;
     
-    private static final String ALL_SCOPE_LABEL = "All" ;
-    private static final String TODAY_SCOPE_LABEL = "Today" ;
-    
-    private static final String[] COLUMN_HEADERS = {
+    static final String[] COLUMN_HEADERS = {
         "Scope", "Total", "Correct", "Wrong", "Later",
         "Redo", "Pigeon", "Purged", "Reassign"
     } ;
@@ -90,9 +83,12 @@ public class ProblemStateCounterTile extends Tile
     private EventBus eventBus ;
     
     private ActiveTopicStatistics ats = null ;
+
+    private final ProblemStateCounterRowPanel allCountRowPanel =
+            new ProblemStateCounterRowPanel( "All", 1 ) ;
     
-    private final JLabel[] allCountLabels = new JLabel[COUNTER_VALUE_PROVIDERS.length] ;
-    private final JLabel[] todayCountLabels = new JLabel[COUNTER_VALUE_PROVIDERS.length] ;
+    private final ProblemStateCounterRowPanel todayCountRowPanel =
+            new ProblemStateCounterRowPanel( "Today", 1 ) ;
     
     public ProblemStateCounterTile() {
         setUpUI() ;
@@ -101,33 +97,15 @@ public class ProblemStateCounterTile extends Tile
     private void setUpUI() {
         
         TableLayout layout = new TableLayout() ;
+        layout.insertColumn( 0, TableLayout.FILL ) ;
         layout.insertRow( 0, HEADER_ROW_HEIGHT ) ;
         layout.insertRow( 1, BODY_ROW_HEIGHT ) ;
         layout.insertRow( 2, BODY_ROW_HEIGHT ) ;
-        
-        for( int i=0; i<COLUMN_HEADERS.length; i++ ) {
-            layout.insertColumn( i, COUNTER_COL_WIDTH ) ;
-        }
         setLayout( layout ) ;
-        
-        for( int col=0; col<COLUMN_HEADERS.length; col++ ) {
-            JLabel headerLabel = createCellLabel( COLUMN_HEADERS[col], true ) ;
-            add( headerLabel, col + ",0" ) ;
-        }
-        
-        add( createScopeLabel( ALL_SCOPE_LABEL ), "0,1" ) ;
-        add( createScopeLabel( TODAY_SCOPE_LABEL ), "0,2" ) ;
-        
-        for( int i=0; i<COUNTER_VALUE_PROVIDERS.length; i++ ) {
-            JLabel allCountLabel = createCellLabel( "", false ) ;
-            JLabel todayCountLabel = createCellLabel( "", false ) ;
-            
-            allCountLabels[i] = allCountLabel ;
-            todayCountLabels[i] = todayCountLabel ;
-            
-            add( allCountLabel, ( i+1 ) + ",1" ) ;
-            add( todayCountLabel, ( i+1 ) + ",2" ) ;
-        }
+
+        add( ProblemStateCounterRowPanel.createHeaderPanel(), "0,0" ) ;
+        add( allCountRowPanel, "0,1" ) ;
+        add( todayCountRowPanel, "0,2" ) ;
     }
     
     public void setTopicId( int topicId ) {
@@ -158,54 +136,13 @@ public class ProblemStateCounterTile extends Tile
     private void refreshCounts() {
         SwingUtilities.invokeLater( () -> {
             if( ats == null ) {
-                clearCountLabels() ;
+                allCountRowPanel.setCounter( null ) ;
+                todayCountRowPanel.setCounter( null ) ;
             }
             else {
-                updateCountLabels( allCountLabels, ats.getAllProblemsStateCounter() ) ;
-                updateCountLabels( todayCountLabels, ats.getTodayProblemsStateCounter() ) ;
+                allCountRowPanel.setCounter( ats.getAllProblemsStateCounter() ) ;
+                todayCountRowPanel.setCounter( ats.getTodayProblemsStateCounter() ) ;
             }
         } ) ;
-    }
-    
-    private JLabel createScopeLabel( String text ) {
-        return createCellLabel( text, true ) ;
-    }
-    
-    private JLabel createCellLabel( String text, boolean isHeader ) {
-        
-        JLabel label = new JLabel( text ) ;
-        label.setHorizontalAlignment( RIGHT ) ;
-        label.setVerticalAlignment( CENTER ) ;
-        label.setOpaque( true ) ;
-        label.setForeground( LABEL_FG_COLOR ) ;
-        label.setBackground( UITheme.BG_COLOR ) ;
-        label.setFont( isHeader ? HEADER_FONT : VALUE_FONT ) ;
-        label.setBorder(
-            BorderFactory.createCompoundBorder(
-                new MatteBorder( 1, 1, 1, 1, GRID_COLOR ),
-                BorderFactory.createEmptyBorder( 0, 0, 0, COUNTER_CELL_RIGHT_INSET )
-            )
-        ) ;
-        label.setForeground( isHeader ? HDR_FG_COLOR : LABEL_FG_COLOR ) ;
-        return label ;
-    }
-    
-    private void clearCountLabels() {
-        updateCountLabels( allCountLabels, null ) ;
-        updateCountLabels( todayCountLabels, null ) ;
-    }
-    
-    private void updateCountLabels( JLabel[] labels, ProblemStateCounter counter ) {
-        for( int i=0; i<COUNTER_VALUE_PROVIDERS.length; i++ ) {
-            if( counter == null ) {
-                labels[i].setText( "" ) ;
-                labels[i].setForeground( HDR_FG_COLOR ) ;
-            }
-            else {
-                int value = COUNTER_VALUE_PROVIDERS[i].getValue( counter ) ;
-                labels[i].setText( String.valueOf( value ) ) ;
-                labels[i].setForeground( value == 0 ? HDR_FG_COLOR : COLUMN_VALUE_COLORS[i] ) ;
-            }
-        }
     }
 }
