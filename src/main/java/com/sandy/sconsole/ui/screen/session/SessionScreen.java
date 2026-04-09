@@ -20,6 +20,7 @@ import com.sandy.sconsole.state.manager.TodaySessionStatistics;
 import com.sandy.sconsole.ui.screen.dashboard.tile.SyllabusL30EffortTile;
 import com.sandy.sconsole.ui.screen.dashboard.tile.daygantt.DayGanttTile;
 import com.sandy.sconsole.ui.screen.session.tile.*;
+import com.sandy.sconsole.ui.screen.session.tile.center.SessionCenterTile;
 import com.sandy.sconsole.ui.util.ConfiguredUIAttributes;
 import com.sandy.sconsole.ui.util.DateTile;
 import com.sandy.sconsole.ui.util.TimeTile;
@@ -63,7 +64,8 @@ public class SessionScreen extends Screen
     @Autowired private SyllabusL30EffortTile sylL30EffortTile;
     @Autowired private TopicBurnChartTile burnChartTile;
     @Autowired private ThermometerTile thermometerTile ;
-    @Autowired private TopicL30BurnTile l30BurnTile ;
+    @Autowired private TopicL30BurnTile  l30BurnTile ;
+    @Autowired private SessionCenterTile sessionCenterTile ;
     
     private String sessionType ;
     private String syllabusName ;
@@ -113,6 +115,7 @@ public class SessionScreen extends Screen
         addTile( thermometerTile,       0,   5,  0, 31 ) ;
         addTile( topicBurnStatTile,     1,   5,  3, 17 ) ;
         addTile( topicTile,             4,   5, 11,  6 ) ;
+        addTile( sessionCenterTile,     4,   7, 11, 17 ) ;
         addTile( fragmentationTile,    12,   5, 15, 17 ) ;
         addTile( sylL30EffortTile,      9,  18, 15, 24 ) ;
         addTile( burnChartTile,         1,  18,  8, 31 ) ;
@@ -176,6 +179,7 @@ public class SessionScreen extends Screen
         this.burnChartTile.setTopicId( session.getTopicId() ) ;
         this.thermometerTile.setTopicId( session.getTopicId() ) ;
         this.l30BurnTile.setTopicId( session.getTopicId() ) ;
+        this.sessionCenterTile.activateFace( this.sessionType ) ;
         
         setTileForegroundToSyllabusColor() ;
         setSyllabusAndTopicNames() ;
