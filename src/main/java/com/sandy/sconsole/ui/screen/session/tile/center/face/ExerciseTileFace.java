@@ -33,6 +33,8 @@ import static javax.swing.SwingConstants.CENTER;
 public class ExerciseTileFace extends Tile
     implements EventSubscriber {
 
+    private static final int TIMER_REFRESH_INTERVAL_MS = 1000 ;
+
     private static final Font BOOK_FONT            = new Font( Font.MONOSPACED, Font.PLAIN, 33 ) ;
     private static final Font CHAPTER_FONT         = new Font( Font.MONOSPACED, Font.PLAIN, 20 ) ;
     private static final Font PROBLEM_FONT         = new Font( Font.MONOSPACED, Font.PLAIN, 26 ) ;
@@ -53,7 +55,7 @@ public class ExerciseTileFace extends Tile
     @Autowired private ActiveTopicStatisticsManager atsManager ;
 
     private ActiveTopicStatistics ats = null ;
-    private CurrentProblemContext currentProblemContext = null ;
+    private volatile CurrentProblemContext currentProblemContext = null ;
     
     private final ProblemStateCounterRowPanel sessionCountRowPanel =
             new ProblemStateCounterRowPanel( "Session", 0 ) ;
@@ -64,11 +66,13 @@ public class ExerciseTileFace extends Tile
     private final JLabel currentStateBadgeLabel = new JLabel() ;
     private final JLabel currentProblemTimerLabel = new JLabel() ;
     private final JLabel totalTimeSpentLabel = new JLabel() ;
-
+    
     public ExerciseTileFace() {
         setUpUI() ;
+        Thread timerThread = createTimerThread();
+        timerThread.start() ;
     }
-
+    
     private void setUpUI() {
 
         setBackground( BG_COLOR ) ;
@@ -89,7 +93,7 @@ public class ExerciseTileFace extends Tile
 
     private JPanel createChapterDetailPanel() {
 
-        JPanel panel = new JPanel( new FlowLayout( FlowLayout.CENTER, 10, 10 ) ) ;
+        JPanel panel = new JPanel( new FlowLayout( FlowLayout.CENTER, 10, 0 ) ) ;
         panel.setBackground( BG_COLOR ) ;
 
         panel.add( configureLabel( chapterNameLabel, CHAPTER_FONT, CHP_NAME_COLOR ) ) ;
@@ -134,7 +138,31 @@ public class ExerciseTileFace extends Tile
         label.setFont( font ) ;
         return label ;
     }
-
+    
+    private Thread createTimerThread() {
+        Thread thread = new Thread( this::runTimerLoop, "TimeSpentUpdateDaemon" ) ;
+        thread.setDaemon( true ) ;
+        return thread ;
+    }
+    
+    private void runTimerLoop() {
+        
+        while( !Thread.currentThread().isInterrupted() ) {
+            try {
+                Thread.sleep( TIMER_REFRESH_INTERVAL_MS ) ;
+            }
+            catch( InterruptedException e ) {
+                Thread.currentThread().interrupt() ;
+                return ;
+            }
+            
+            CurrentProblemContext context = currentProblemContext ;
+            if( context != null ) {
+                refreshProblemTimers( context ) ;
+            }
+        }
+    }
+    
     @Override
     public void beforeActivation() {
 
@@ -160,12 +188,21 @@ public class ExerciseTileFace extends Tile
     public synchronized void handleEvent( Event event ) {
 
         switch( event.getEventId() ) {
-            case ATS_REFRESHED -> handleATSRefreshed( event ) ;
-            case PROBLEM_ATTEMPT_ENDED -> clearProblemDetails() ;
-            case PROBLEM_ATTEMPT_STARTED -> handleProblemAttemptUpdated( ( ProblemAttemptDTO )event.getValue() ) ;
-            case SESSION_EXTENDED -> handleProblemAttemptUpdated(
-                    (( SessionExtensionVO )event.getValue()).getProblemAttemptDTO()
-            ) ;
+            case ATS_REFRESHED ->
+                    handleATSRefreshed( event ) ;
+            
+            case PROBLEM_ATTEMPT_ENDED ->
+                    clearProblemDetails() ;
+            
+            case PROBLEM_ATTEMPT_STARTED ->
+                    handleProblemAttemptUpdated(
+                            ( ProblemAttemptDTO )event.getValue()
+                    ) ;
+            
+            case SESSION_EXTENDED ->
+                    handleProblemAttemptUpdated(
+                        (( SessionExtensionVO )event.getValue()).getProblemAttemptDTO()
+                    ) ;
         }
     }
 
@@ -188,14 +225,16 @@ public class ExerciseTileFace extends Tile
         }
 
         if( currentProblemContext != null && currentProblemContext.isForAttempt( attempt ) ) {
-            currentProblemContext = currentProblemContext.updateAttempt( attempt ) ;
+            synchronized( this ) {
+                currentProblemContext = currentProblemContext.updateAttempt( attempt ) ;
+                refreshProblemTimers( currentProblemContext ) ;
+            }
         }
         else {
             Problem problem = problemRepo.findById( attempt.getProblemId() ).orElse( null ) ;
             currentProblemContext = createCurrentProblemContext( problem, attempt ) ;
+            refreshProblemDetails() ;
         }
-
-        refreshProblemDetails() ;
     }
 
     private void refreshSessionCounts() {
@@ -221,7 +260,8 @@ public class ExerciseTileFace extends Tile
         return new CurrentProblemContext( problem,
                                           attempt,
                                           numAttempts == null ? 0 : numAttempts,
-                                          totalTimeBeforeCurrent ) ;
+                                          totalTimeBeforeCurrent,
+                                          System.currentTimeMillis() ) ;
     }
 
     private void refreshProblemDetails() {
@@ -230,6 +270,10 @@ public class ExerciseTileFace extends Tile
 
         SwingUtilities.invokeLater( () -> {
             
+            if( context != currentProblemContext ) {
+                return ;
+            }
+
             if( context == null ) {
                 clearProblemDetailLabels() ;
                 return ;
@@ -250,18 +294,31 @@ public class ExerciseTileFace extends Tile
             
             currentStateBadgeLabel.setForeground(
                     getStateForegroundColor( context.attempt.getPrevState() ) ) ;
-            
-            currentProblemTimerLabel.setText(
-                    getElapsedTimeLabelMMss( context.getCurrentAttemptTime() ) ) ;
-            
-            totalTimeSpentLabel.setText(
-                    getElapsedTimeLabelMMss( context.getTotalAttemptTime() ) ) ;
+
+            refreshProblemTimerLabels( context ) ;
         } ) ;
+    }
+
+    private void refreshProblemTimers( CurrentProblemContext context ) {
+        SwingUtilities.invokeLater( () -> {
+            if( context == null || context != currentProblemContext ) {
+                return ;
+            }
+            refreshProblemTimerLabels( context ) ;
+        } ) ;
+    }
+
+    private void refreshProblemTimerLabels( CurrentProblemContext context ) {
+        currentProblemTimerLabel.setText(
+                getElapsedTimeLabelMMss( context.getCurrentAttemptTimeNow() ) ) ;
+
+        totalTimeSpentLabel.setText(
+                getElapsedTimeLabelMMss( context.getTotalAttemptTimeNow() ) ) ;
     }
 
     private void clearProblemDetails() {
         this.currentProblemContext = null ;
-        refreshProblemDetails() ;
+        SwingUtilities.invokeLater( this::clearProblemDetailLabels ) ;
     }
 
     private void clearProblemDetailLabels() {
@@ -300,7 +357,8 @@ public class ExerciseTileFace extends Tile
             Problem problem,
             ProblemAttemptDTO attempt,
             int totalAttempts,
-            int totalAttemptTimeBeforeCurrent ) {
+            int totalAttemptTimeBeforeCurrent,
+            long syncTimeMillis ) {
         
         private boolean isForAttempt( ProblemAttemptDTO attempt ) {
             return this.attempt != null &&
@@ -311,15 +369,17 @@ public class ExerciseTileFace extends Tile
         
         private CurrentProblemContext updateAttempt( ProblemAttemptDTO attempt ) {
             return new CurrentProblemContext( problem, attempt, totalAttempts,
-                                              totalAttemptTimeBeforeCurrent );
+                                              totalAttemptTimeBeforeCurrent,
+                                              System.currentTimeMillis() );
         }
         
-        private int getCurrentAttemptTime() {
-            return getEffectiveDuration( attempt );
+        private int getCurrentAttemptTimeNow() {
+            long elapsedTimeMillis = Math.max( 0, System.currentTimeMillis() - syncTimeMillis ) ;
+            return getEffectiveDuration( attempt ) + ( int )( elapsedTimeMillis / 1000 ) ;
         }
         
-        private int getTotalAttemptTime() {
-            return totalAttemptTimeBeforeCurrent + getCurrentAttemptTime();
+        private int getTotalAttemptTimeNow() {
+            return totalAttemptTimeBeforeCurrent + getCurrentAttemptTimeNow() ;
         }
         
         private static int getEffectiveDuration( ProblemAttemptDTO attempt ) {
