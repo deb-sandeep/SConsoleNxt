@@ -41,7 +41,7 @@ public class ProblemStateCounterTile extends Tile
     private static final float BODY_ROW_HEIGHT = ( 1.0F - HEADER_ROW_HEIGHT ) / 2.0F ;
     
     private static final Font HEADER_FONT = new Font( Font.MONOSPACED, Font.PLAIN, 12 ) ;
-    private static final Font VALUE_FONT = new Font( Font.MONOSPACED, Font.PLAIN, 22 ) ;
+    private static final Font VALUE_FONT = new Font( Font.MONOSPACED, Font.PLAIN, 27 ) ;
     
     private static final Color GRID_COLOR = new Color( 21, 21, 21 ) ;
     private static final Color HEADER_BG_COLOR = new Color( 0, 0, 0 ) ;
@@ -53,24 +53,30 @@ public class ProblemStateCounterTile extends Tile
     private static final String TODAY_SCOPE_LABEL = "Today" ;
     
     private static final String[] COLUMN_HEADERS = {
-        "Scope", "Total", "Left", "Correct", "Wrong", "Later",
+        "Scope", "Total", "Correct", "Wrong", "Later",
         "Redo", "Pigeon", "Purged", "Reassign"
     } ;
     
     private static final Color[] COLUMN_VALUE_COLORS = {
-    
+        new Color( 106, 106, 106 ),    // Total
+        new Color( 0x7C, 0xE3, 0x8B ), // Correct
+        new Color( 255, 61, 28 ),      // Wrong
+        new Color( 0x8E, 0xB8, 0xFF ), // Later
+        new Color( 175, 122, 62 ),     // Redo
+        new Color( 255, 220, 74 ),     // Pigeon
+        new Color( 87, 87, 87 ),       // Purged
+        new Color( 251, 18, 145 ),     // Reassign
     } ;
     
     private static final CounterValueProvider[] COUNTER_VALUE_PROVIDERS = {
-            ProblemStateCounter::getTotalCount,
-            ProblemStateCounter::getNumAssigned,
-            ProblemStateCounter::getNumCorrect,
-            ProblemStateCounterTile::getNumIncorrect,
-            ProblemStateCounter::getNumLater,
-            ProblemStateCounter::getNumRedo,
-            ProblemStateCounterTile::getNumPigeons,
-            ProblemStateCounter::getNumPurged,
-            ProblemStateCounter::getNumReassign,
+        ProblemStateCounter::getTotalCount,
+        ProblemStateCounter::getNumCorrect,
+        ProblemStateCounterTile::getNumIncorrect,
+        ProblemStateCounter::getNumLater,
+        ProblemStateCounter::getNumRedo,
+        ProblemStateCounterTile::getNumPigeons,
+        ProblemStateCounter::getNumPurged,
+        ProblemStateCounter::getNumReassign,
     } ;
     
     @Autowired
@@ -174,7 +180,7 @@ public class ProblemStateCounterTile extends Tile
         label.setBorder(
             BorderFactory.createCompoundBorder(
                 new MatteBorder( 1, 1, 1, 1, GRID_COLOR ),
-                BorderFactory.createEmptyBorder( 0, 0, 0, 10 )
+                BorderFactory.createEmptyBorder( 0, 0, 0, 15 )
             )
         ) ;
         label.setForeground( isHeader ? HDR_FG_COLOR : LABEL_FG_COLOR ) ;
@@ -187,13 +193,15 @@ public class ProblemStateCounterTile extends Tile
     }
     
     private void updateCountLabels( JLabel[] labels, ProblemStateCounter counter ) {
-        
         for( int i=0; i<COUNTER_VALUE_PROVIDERS.length; i++ ) {
             if( counter == null ) {
                 labels[i].setText( "" ) ;
+                labels[i].setForeground( HDR_FG_COLOR ) ;
             }
             else {
-                labels[i].setText( String.valueOf( COUNTER_VALUE_PROVIDERS[i].getValue( counter ) ) ) ;
+                int value = COUNTER_VALUE_PROVIDERS[i].getValue( counter ) ;
+                labels[i].setText( String.valueOf( value ) ) ;
+                labels[i].setForeground( value == 0 ? HDR_FG_COLOR : COLUMN_VALUE_COLORS[i] ) ;
             }
         }
     }
