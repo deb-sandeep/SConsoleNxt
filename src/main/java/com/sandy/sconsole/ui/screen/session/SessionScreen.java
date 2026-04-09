@@ -59,8 +59,9 @@ public class SessionScreen extends Screen
     private Color syllabusColor ;
     
     @Autowired private DayGanttTile dayGanttTile ;
-    @Autowired private TopicBurnStatTile topicBurnStatTile ;
-    @Autowired private FragmentationTile fragmentationTile ;
+    @Autowired private TopicBurnStatTile       topicBurnStatTile ;
+    @Autowired private ProblemStateCounterTile problemStateCounterTile;
+    @Autowired private FragmentationTile       fragmentationTile ;
     @Autowired private SyllabusL30EffortTile sylL30EffortTile;
     @Autowired private TopicBurnChartTile burnChartTile;
     @Autowired private ThermometerTile thermometerTile ;
@@ -106,20 +107,21 @@ public class SessionScreen extends Screen
     private void setUpUI() {
         setUpTileBorders() ;
         
-        addTile( dayGanttTile,          0,   0, 15,  1 ) ;
-        addTile( getDateTimeTile(),     0,   2,  2,  4 ) ;
-        addTile( sessionTypeIconTile,   3,   2,  3,  4 ) ;
-        addTile( syllabusIconTile,      4,   2,  4,  4 ) ;
-        addTile( getTodayEffortTile(), 11,   2, 15,  4 ) ;
-        addTile( syllabusTile,          5,   2, 10,  4 ) ;
-        addTile( thermometerTile,       0,   5,  0, 31 ) ;
-        addTile( topicBurnStatTile,     1,   5,  3, 17 ) ;
-        addTile( topicTile,             4,   5, 11,  6 ) ;
-        addTile( sessionCenterTile,     4,  12, 11, 17 ) ;
-        addTile( fragmentationTile,    12,   5, 15, 17 ) ;
-        addTile( sylL30EffortTile,      9,  18, 15, 24 ) ;
-        addTile( burnChartTile,         1,  18,  8, 31 ) ;
-        addTile( l30BurnTile,           9,  25, 15, 31 ) ;
+        addTile( dayGanttTile,            0,   0, 15,  1 ) ;
+        addTile( getDateTimeTile(),       0,   2,  2,  4 ) ;
+        addTile( sessionTypeIconTile,     3,   2,  3,  4 ) ;
+        addTile( syllabusIconTile,        4,   2,  4,  4 ) ;
+        addTile( getTodayEffortTile(),   11,   2, 15,  4 ) ;
+        addTile( syllabusTile,            5,   2, 10,  4 ) ;
+        addTile( thermometerTile,         0,   5,  0, 31 ) ;
+        addTile( topicBurnStatTile,       1,   5,  3, 17 ) ;
+        addTile( topicTile,               4,   5, 11,  6 ) ;
+        addTile( problemStateCounterTile, 4,   7, 11,  9 ) ;
+        addTile( sessionCenterTile,       4,  10, 11, 17 ) ;
+        addTile( fragmentationTile,      12,   5, 15, 17 ) ;
+        addTile( sylL30EffortTile,        9,  18, 15, 24 ) ;
+        addTile( burnChartTile,           1,  18,  8, 31 ) ;
+        addTile( l30BurnTile,             9,  25, 15, 31 ) ;
     }
     
     private Tile getDateTimeTile() {
@@ -178,6 +180,7 @@ public class SessionScreen extends Screen
         this.sylL30EffortTile.setSyllabusName( this.syllabusName ) ;
         this.burnChartTile.setTopicId( session.getTopicId() ) ;
         this.thermometerTile.setTopicId( session.getTopicId() ) ;
+        this.problemStateCounterTile.setTopicId( session.getTopicId() ) ;
         this.l30BurnTile.setTopicId( session.getTopicId() ) ;
         this.sessionCenterTile.activateFace( this.sessionType ) ;
         
