@@ -110,12 +110,12 @@ public class SessionScreen extends Screen
         addTile( syllabusIconTile,      4,   2,  4,  4 ) ;
         addTile( getTodayEffortTile(), 11,   2, 15,  4 ) ;
         addTile( syllabusTile,          5,   2, 10,  4 ) ;
-        addTile( topicTile,             3,   5, 12,  6 ) ;
-        addTile( topicBurnStatTile,     0,   5,  2, 17 ) ;
-        addTile( fragmentationTile,    13,   5, 15, 17 ) ;
+        addTile( thermometerTile,       0,   5,  0, 31 ) ;
+        addTile( topicBurnStatTile,     1,   5,  3, 17 ) ;
+        addTile( topicTile,             4,   5, 11,  6 ) ;
+        addTile( fragmentationTile,    12,   5, 15, 17 ) ;
         addTile( sylL30EffortTile,      9,  18, 15, 24 ) ;
-        addTile( burnChartTile,         0,  18,  7, 31 ) ;
-        addTile( thermometerTile,       8,  18,  8, 31 ) ;
+        addTile( burnChartTile,         1,  18,  8, 31 ) ;
         addTile( l30BurnTile,           9,  25, 15, 31 ) ;
     }
     
@@ -150,6 +150,7 @@ public class SessionScreen extends Screen
         this.syllabusIconTile.setBorder( new MatteBorder( 1, 0, 1, 0, UITheme.TILE_BORDER_COLOR ) ) ;
         this.syllabusTile.setBorder( new MatteBorder( 1, 0, 1, 0, UITheme.TILE_BORDER_COLOR ) ) ;
         this.topicBurnStatTile.setBorder( new MatteBorder( 0, 1, 0, 1, UITheme.TILE_BORDER_COLOR ) );
+        this.topicTile.setBorder( new MatteBorder( 0, 0, 1, 0, UITheme.TILE_BORDER_COLOR ) );
         this.burnChartTile.setBorder( new MatteBorder( 1, 1, 1, 1, UITheme.TILE_BORDER_COLOR ) );
         this.thermometerTile.setBorder( new MatteBorder( 1, 0, 0, 0, UITheme.TILE_BORDER_COLOR ) );
         this.l30BurnTile.setBorder( new MatteBorder( 0, 1, 1, 0, UITheme.TILE_BORDER_COLOR ) );
