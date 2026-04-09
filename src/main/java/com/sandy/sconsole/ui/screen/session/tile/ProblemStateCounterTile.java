@@ -25,29 +25,31 @@ import static javax.swing.SwingConstants.RIGHT;
 public class ProblemStateCounterTile extends Tile
         implements EventSubscriber {
 
-    private interface CounterValueProvider {
+    public interface CounterValueProvider {
         int getValue( ProblemStateCounter counter ) ;
     }
     
-    private static int getNumPigeons( ProblemStateCounter counter ) {
+    public static int getNumPigeons( ProblemStateCounter counter ) {
         return counter.getNumPigeons() + counter.getNumPigeonsSolved() ;
     }
     
-    private static int getNumIncorrect( ProblemStateCounter counter ) {
+    public static int getNumIncorrect( ProblemStateCounter counter ) {
         return counter.getNumIncorrect() + counter.getNumPigeonsExplained() ;
     }
     
     private static final float HEADER_ROW_HEIGHT = 0.20F ;
-    private static final float BODY_ROW_HEIGHT = ( 1.0F - HEADER_ROW_HEIGHT ) / 2.0F ;
+    public  static final float BODY_ROW_HEIGHT = ( 1.0F - HEADER_ROW_HEIGHT ) / 2.0F ;
     
-    private static final Font HEADER_FONT = new Font( Font.MONOSPACED, Font.PLAIN, 12 ) ;
-    private static final Font VALUE_FONT = new Font( Font.MONOSPACED, Font.PLAIN, 27 ) ;
+    public static final Font HEADER_FONT = new Font( Font.MONOSPACED, Font.PLAIN, 12 ) ;
+    public static final Font VALUE_FONT  = new Font( Font.MONOSPACED, Font.PLAIN, 27 ) ;
     
-    private static final Color GRID_COLOR = new Color( 21, 21, 21 ) ;
-    private static final Color HEADER_BG_COLOR = new Color( 0, 0, 0 ) ;
-    private static final Color VALUE_BG_COLOR = new Color( 0, 0, 0 ) ;
-    private static final Color LABEL_FG_COLOR = Color.WHITE ;
-    private static final Color HDR_FG_COLOR = Color.DARK_GRAY ;
+    public static final Color GRID_COLOR      = new Color( 21, 21, 21 ) ;
+    public static final Color HEADER_BG_COLOR = new Color( 0, 0, 0 ) ;
+    public static final Color VALUE_BG_COLOR  = new Color( 0, 0, 0 ) ;
+    public static final Color LABEL_FG_COLOR  = Color.WHITE ;
+    public static final Color HDR_FG_COLOR    = Color.DARK_GRAY ;
+    
+    public static final int COUNTER_CELL_RIGHT_INSET = 15 ;
     
     private static final String ALL_SCOPE_LABEL = "All" ;
     private static final String TODAY_SCOPE_LABEL = "Today" ;
@@ -57,7 +59,10 @@ public class ProblemStateCounterTile extends Tile
         "Redo", "Pigeon", "Purged", "Reassign"
     } ;
     
-    private static final Color[] COLUMN_VALUE_COLORS = {
+    public static final int NUM_COUNTER_COLUMNS = COLUMN_HEADERS.length ;
+    public static final float COUNTER_COL_WIDTH = 1.0F / NUM_COUNTER_COLUMNS ;
+    
+    public static final Color[] COLUMN_VALUE_COLORS = {
         new Color( 106, 106, 106 ),    // Total
         new Color( 0x7C, 0xE3, 0x8B ), // Correct
         new Color( 255, 61, 28 ),      // Wrong
@@ -68,7 +73,7 @@ public class ProblemStateCounterTile extends Tile
         new Color( 251, 18, 145 ),     // Reassign
     } ;
     
-    private static final CounterValueProvider[] COUNTER_VALUE_PROVIDERS = {
+    public static final CounterValueProvider[] COUNTER_VALUE_PROVIDERS = {
         ProblemStateCounter::getTotalCount,
         ProblemStateCounter::getNumCorrect,
         ProblemStateCounterTile::getNumIncorrect,
@@ -101,9 +106,8 @@ public class ProblemStateCounterTile extends Tile
         layout.insertRow( 1, BODY_ROW_HEIGHT ) ;
         layout.insertRow( 2, BODY_ROW_HEIGHT ) ;
         
-        float colWidth = 1.0F / COLUMN_HEADERS.length ;
         for( int i=0; i<COLUMN_HEADERS.length; i++ ) {
-            layout.insertColumn( i, colWidth ) ;
+            layout.insertColumn( i, COUNTER_COL_WIDTH ) ;
         }
         setLayout( layout ) ;
         
@@ -180,7 +184,7 @@ public class ProblemStateCounterTile extends Tile
         label.setBorder(
             BorderFactory.createCompoundBorder(
                 new MatteBorder( 1, 1, 1, 1, GRID_COLOR ),
-                BorderFactory.createEmptyBorder( 0, 0, 0, 15 )
+                BorderFactory.createEmptyBorder( 0, 0, 0, COUNTER_CELL_RIGHT_INSET )
             )
         ) ;
         label.setForeground( isHeader ? HDR_FG_COLOR : LABEL_FG_COLOR ) ;
