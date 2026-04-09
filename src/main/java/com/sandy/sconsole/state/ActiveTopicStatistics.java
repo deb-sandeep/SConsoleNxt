@@ -67,6 +67,9 @@ public class ActiveTopicStatistics {
     @Getter private Zone currentZone ;
     @Getter private int numProblemsLeft ;
     @Getter private int numExerciseDaysLeft;
+    @Getter private int currentBurnRate ;
+    
+    // The aggregated counts of problems in the topic by their state
     @Getter private int numAssignedProblems ;
     @Getter private int numCorrectProblems ;
     @Getter private int numIncorrectProblems ;
@@ -77,7 +80,6 @@ public class ActiveTopicStatistics {
     @Getter private int numPurgedProblems ;
     @Getter private int numReassignedProblems ;
     @Getter private int numRedoProblems ;
-    @Getter private int currentBurnRate ;
     
     // Today data
     @Getter private int numProblemsSolvedToday = 0 ;
