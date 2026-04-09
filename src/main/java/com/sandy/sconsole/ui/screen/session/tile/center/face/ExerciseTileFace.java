@@ -16,7 +16,6 @@ import com.sandy.sconsole.state.manager.ProblemStateCounter;
 import com.sandy.sconsole.state.manager.TodaySessionStatistics;
 import com.sandy.sconsole.ui.screen.session.tile.ProblemStateCounterTile;
 import info.clearthought.layout.TableLayout;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -31,7 +30,6 @@ import static com.sandy.sconsole.ui.screen.session.tile.ProblemStateCounterTile.
 import static javax.swing.SwingConstants.CENTER;
 import static javax.swing.SwingConstants.RIGHT;
 
-@Slf4j
 @Component
 @Scope( "prototype" )
 public class ExerciseTileFace extends Tile
@@ -59,7 +57,6 @@ public class ExerciseTileFace extends Tile
     @Autowired private ActiveTopicStatisticsManager atsManager ;
 
     private ActiveTopicStatistics ats = null ;
-    private Integer currentSessionId = null ;
     private Problem currentProblem = null ;
     private ProblemAttemptDTO currentProblemAttempt = null ;
     private int totalProblemAttempts = 0 ;
@@ -108,41 +105,25 @@ public class ExerciseTileFace extends Tile
         }
         panel.setLayout( layout ) ;
 
-        panel.add( createScopeLabel(), "0,0" ) ;
+        panel.add( createCounterCellLabel( "Session", HEADER_FONT ), "0,0" ) ;
 
         for( int i=0; i<COUNTER_VALUE_PROVIDERS.length; i++ ) {
-            JLabel label = createCounterValueLabel() ;
+            JLabel label = createCounterCellLabel( "", COUNTER_VALUE_FONT ) ;
             sessionCountLabels[i] = label ;
             panel.add( label, ( i+1 ) + ",0" ) ;
         }
         return panel ;
     }
 
-    private JLabel createScopeLabel() {
+    private JLabel createCounterCellLabel( String text, Font font ) {
 
-        JLabel label = new JLabel( "Session" ) ;
+        JLabel label = new JLabel( text ) ;
         label.setHorizontalAlignment( RIGHT ) ;
         label.setVerticalAlignment( CENTER ) ;
         label.setOpaque( true ) ;
         label.setForeground( HDR_FG_COLOR ) ;
         label.setBackground( BG_COLOR ) ;
-        label.setFont( HEADER_FONT ) ;
-        label.setBorder( BorderFactory.createCompoundBorder(
-                new MatteBorder( 0, 1, 1, 1, GRID_COLOR ),
-                BorderFactory.createEmptyBorder( 0, 0, 0, COUNTER_CELL_RIGHT_INSET )
-        ) ) ;
-        return label ;
-    }
-
-    private JLabel createCounterValueLabel() {
-
-        JLabel label = new JLabel( "" ) ;
-        label.setHorizontalAlignment( RIGHT ) ;
-        label.setVerticalAlignment( CENTER ) ;
-        label.setOpaque( true ) ;
-        label.setForeground( HDR_FG_COLOR ) ;
-        label.setBackground( BG_COLOR ) ;
-        label.setFont( COUNTER_VALUE_FONT ) ;
+        label.setFont( font ) ;
         label.setBorder( BorderFactory.createCompoundBorder(
                 new MatteBorder( 0, 1, 1, 1, GRID_COLOR ),
                 BorderFactory.createEmptyBorder( 0, 0, 0, COUNTER_CELL_RIGHT_INSET )
@@ -201,7 +182,6 @@ public class ExerciseTileFace extends Tile
     @Override
     public void beforeActivation() {
 
-        this.currentSessionId = todaySessionStats.getCurrentSession().getId() ;
         this.ats = atsManager.getTopicStatistics( todaySessionStats.getCurrentSession().getTopicId() ) ;
 
         eventBus.addAsyncSubscriber( this, ATS_REFRESHED ) ;
@@ -217,7 +197,6 @@ public class ExerciseTileFace extends Tile
     public void beforeDeactivation() {
         eventBus.removeSubscriber( this ) ;
         this.ats = null ;
-        this.currentSessionId = null ;
         clearProblemDetails() ;
     }
 
@@ -234,8 +213,6 @@ public class ExerciseTileFace extends Tile
 
     private void handleATSRefreshed( Event event ) {
 
-        if( ats == null || event.getValue() == null ) return ;
-        
         Integer refreshedTopicId = ( Integer )event.getValue() ;
         if( refreshedTopicId == ats.getTopicId() ) {
             refreshSessionCounts() ;
