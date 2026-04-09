@@ -34,6 +34,13 @@ public interface ProblemAttemptRepo extends JpaRepository<ProblemAttempt, Intege
     where pa.problem.id = :problemId
     """)
     Integer getTotalAttemptTime( @Param( "problemId" ) Integer problemId ) ;
+
+    @Query( nativeQuery = true, value = """
+    select count( id )
+    from problem_attempt
+    where problem_id = :problemId
+    """)
+    Integer getNumAttempts( @Param( "problemId" ) Integer problemId ) ;
     
     @Query( nativeQuery=true, value = """
         with last_attempts as (
