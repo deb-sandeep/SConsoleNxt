@@ -1,8 +1,8 @@
 package com.sandy.sconsole.ui.screen.session.tile.center;
 
 import com.sandy.sconsole.core.ui.screen.Tile;
+import com.sandy.sconsole.ui.screen.session.tile.center.face.BlankTileFace;
 import com.sandy.sconsole.ui.screen.session.tile.center.face.ExerciseTileFace;
-import com.sandy.sconsole.ui.screen.session.tile.center.face.TheoryTileFace;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -16,8 +16,8 @@ public class SessionCenterTile extends Tile {
     private static final String THEORY_FACE   = "THEORY_FACE" ;
     private static final String EXERCISE_FACE = "EXERCISE_FACE" ;
 
-    @Autowired private TheoryTileFace   theoryTileFace ;
     @Autowired private ExerciseTileFace exerciseTileFace;
+    @Autowired private BlankTileFace    theoryTileFace  ;
 
     private final CardLayout cardLayout = new CardLayout() ;
 
