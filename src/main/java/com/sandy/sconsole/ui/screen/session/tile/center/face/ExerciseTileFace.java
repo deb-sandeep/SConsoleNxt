@@ -15,6 +15,8 @@ import com.sandy.sconsole.state.manager.ActiveTopicStatisticsManager;
 import com.sandy.sconsole.state.manager.TodaySessionStatistics;
 import com.sandy.sconsole.ui.screen.session.tile.ProblemStateCounterRowPanel;
 import info.clearthought.layout.TableLayout;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -28,10 +30,36 @@ import static com.sandy.sconsole.ui.screen.session.tile.ProblemStateCounterTile.
 import static com.sandy.sconsole.ui.screen.session.tile.ProblemStateCounterTile.LABEL_FG_COLOR;
 import static javax.swing.SwingConstants.CENTER;
 
+@Slf4j
 @Component
 @Scope( "prototype" )
 public class ExerciseTileFace extends Tile
     implements EventSubscriber {
+    
+    private static class CurrentProblemContext {
+        
+        private final int initialTotalDuration ;
+        
+        @Getter private int currentDuration ;
+        @Getter private int totalDuration ;
+        
+        private boolean paused = false ;
+        
+        CurrentProblemContext( int totalDuration ) {
+            this.currentDuration = 0 ;
+            this.initialTotalDuration = totalDuration ;
+            this.totalDuration = totalDuration ;
+        }
+        
+        public void setCurrentDuration( int currentDuration ) {
+            this.currentDuration = currentDuration ;
+            this.totalDuration = this.initialTotalDuration + currentDuration ;
+        }
+        
+        public void incrementCurrentDuration() {
+            setCurrentDuration( currentDuration + 1 ) ;
+        }
+    }
 
     private static final int TIMER_REFRESH_INTERVAL_MS = 1000 ;
 
@@ -55,7 +83,6 @@ public class ExerciseTileFace extends Tile
     @Autowired private ActiveTopicStatisticsManager atsManager ;
 
     private ActiveTopicStatistics ats = null ;
-    private volatile CurrentProblemContext currentProblemContext = null ;
     
     private final ProblemStateCounterRowPanel sessionCountRowPanel =
             new ProblemStateCounterRowPanel( "Session", 0 ) ;
@@ -67,10 +94,14 @@ public class ExerciseTileFace extends Tile
     private final JLabel currentProblemTimerLabel = new JLabel() ;
     private final JLabel totalTimeSpentLabel = new JLabel() ;
     
+    private CurrentProblemContext currentProblemContext = null ;
+    
     public ExerciseTileFace() {
         setUpUI() ;
-        Thread timerThread = createTimerThread();
-        timerThread.start() ;
+        
+        Thread thread = new Thread( this::runTimerLoop, "TimeSpentUpdateDaemon" ) ;
+        thread.setDaemon( true ) ;
+        thread.start() ;
     }
     
     private void setUpUI() {
@@ -139,26 +170,19 @@ public class ExerciseTileFace extends Tile
         return label ;
     }
     
-    private Thread createTimerThread() {
-        Thread thread = new Thread( this::runTimerLoop, "TimeSpentUpdateDaemon" ) ;
-        thread.setDaemon( true ) ;
-        return thread ;
-    }
-    
     private void runTimerLoop() {
         
         while( !Thread.currentThread().isInterrupted() ) {
             try {
                 Thread.sleep( TIMER_REFRESH_INTERVAL_MS ) ;
+                if( currentProblemContext != null && !currentProblemContext.paused ) {
+                    currentProblemContext.incrementCurrentDuration() ;
+                    refreshProblemTimerLabels() ;
+                }
             }
             catch( InterruptedException e ) {
                 Thread.currentThread().interrupt() ;
                 return ;
-            }
-            
-            CurrentProblemContext context = currentProblemContext ;
-            if( context != null ) {
-                refreshProblemTimers( context ) ;
             }
         }
     }
@@ -172,6 +196,8 @@ public class ExerciseTileFace extends Tile
         eventBus.addAsyncSubscriber( this, PROBLEM_ATTEMPT_ENDED ) ;
         eventBus.addAsyncSubscriber( this, PROBLEM_ATTEMPT_STARTED ) ;
         eventBus.addAsyncSubscriber( this, SESSION_EXTENDED ) ;
+        eventBus.addAsyncSubscriber( this, PAUSE_STARTED ) ;
+        eventBus.addAsyncSubscriber( this, PAUSE_ENDED ) ;
 
         refreshSessionCounts() ;
         clearProblemDetails() ;
@@ -186,148 +212,94 @@ public class ExerciseTileFace extends Tile
 
     @Override
     public synchronized void handleEvent( Event event ) {
-
         switch( event.getEventId() ) {
             case ATS_REFRESHED ->
-                    handleATSRefreshed( event ) ;
+                    refreshSessionCounts() ;
+            
+            case PROBLEM_ATTEMPT_STARTED -> {
+                ProblemAttemptDTO attempt = ( ProblemAttemptDTO )event.getValue() ;
+                displayProblemDetails( attempt ) ;
+            }
             
             case PROBLEM_ATTEMPT_ENDED ->
                     clearProblemDetails() ;
             
-            case PROBLEM_ATTEMPT_STARTED ->
-                    handleProblemAttemptUpdated(
-                            ( ProblemAttemptDTO )event.getValue()
-                    ) ;
+            case SESSION_EXTENDED -> {
+                SessionExtensionVO extension = ( SessionExtensionVO )event.getValue() ;
+                if( extension.getProblemAttemptDTO() != null ) {
+                    ProblemAttemptDTO attempt = extension.getProblemAttemptDTO() ;
+                    currentProblemContext.setCurrentDuration( attempt.getEffectiveDuration() ) ;
+                }
+            }
             
-            case SESSION_EXTENDED ->
-                    handleProblemAttemptUpdated(
-                        (( SessionExtensionVO )event.getValue()).getProblemAttemptDTO()
-                    ) ;
-        }
-    }
-
-    private void handleATSRefreshed( Event event ) {
-
-        if( ats == null || event.getValue() == null ) {
-            return ;
-        }
-
-        Integer refreshedTopicId = ( Integer )event.getValue() ;
-        if( refreshedTopicId == ats.getTopicId() ) {
-            refreshSessionCounts() ;
-        }
-    }
-
-    private void handleProblemAttemptUpdated( ProblemAttemptDTO attempt ) {
-
-        if( attempt == null ) {
-            return ;
-        }
-
-        if( currentProblemContext != null && currentProblemContext.isForAttempt( attempt ) ) {
-            synchronized( this ) {
-                currentProblemContext = currentProblemContext.updateAttempt( attempt ) ;
-                refreshProblemTimers( currentProblemContext ) ;
+            case PAUSE_STARTED -> {
+                if( currentProblemContext != null ) {
+                    currentProblemContext.paused = true ;
+                }
+            }
+            
+            case PAUSE_ENDED -> {
+                if( currentProblemContext != null ) {
+                    currentProblemContext.paused = false ;
+                }
             }
         }
-        else {
-            Problem problem = problemRepo.findById( attempt.getProblemId() ).orElse( null ) ;
-            currentProblemContext = createCurrentProblemContext( problem, attempt ) ;
-            refreshProblemDetails() ;
-        }
     }
-
+    
     private void refreshSessionCounts() {
-
         SwingUtilities.invokeLater( () ->
                 sessionCountRowPanel.setCounter(
                         ats == null ? null : ats.getCurrentSessionProblemStates() ) ) ;
     }
-
-    private CurrentProblemContext createCurrentProblemContext( Problem problem,
-                                                               ProblemAttemptDTO attempt ) {
-
-        if( problem == null || attempt == null ) {
-            return null ;
-        }
-
-        Integer numAttempts = problemAttemptRepo.getNumAttempts( problem.getId() ) ;
-        Integer totalAttemptTime = problemAttemptRepo.getTotalAttemptTime( problem.getId() ) ;
-        int currentAttemptTime = CurrentProblemContext.getEffectiveDuration( attempt ) ;
-        int totalTimeBeforeCurrent =
-                Math.max( 0, ( totalAttemptTime == null ? 0 : totalAttemptTime ) - currentAttemptTime ) ;
-
-        return new CurrentProblemContext( problem,
-                                          attempt,
-                                          numAttempts == null ? 0 : numAttempts,
-                                          totalTimeBeforeCurrent,
-                                          System.currentTimeMillis() ) ;
-    }
-
-    private void refreshProblemDetails() {
-
-        CurrentProblemContext context = currentProblemContext ;
+    
+    private void displayProblemDetails( ProblemAttemptDTO attempt ) {
 
         SwingUtilities.invokeLater( () -> {
             
-            if( context != currentProblemContext ) {
-                return ;
-            }
-
-            if( context == null ) {
-                clearProblemDetailLabels() ;
-                return ;
-            }
-
-            String bookShortName = context.problem.getChapter().getBook().getBookShortName() ;
-            Chapter chapter = context.problem.getChapter() ;
-            String chapterName = chapter.getId().getChapterNum() + ". " +
-                                 chapter.getChapterName() ;
-            String problemKey = "[" + context.problem.getProblemKey() + "]" ;
-            String stateBadgeLabel = "[" + context.totalAttempts + "] " +
-                                     context.attempt.getPrevState() ;
+            int problemId = attempt.getProblemId() ;
+            Problem problem = problemRepo.findById( problemId ).get() ;
+            Chapter chapter = problem.getChapter() ;
+            Integer numAttempts = problemAttemptRepo.getNumAttempts( problem.getId() ) ;
+            
+            String chapterName = chapter.getId().getChapterNum() + ". " + chapter.getChapterName() ;
+            String prevState = attempt.getPrevState() ;
+            int totalTime = problemAttemptRepo.getTotalAttemptTime( problem.getId() ) ;
+            
+            String bookShortName = problem.getChapter().getBook().getBookShortName() ;
+            String problemKey = "[" + problem.getProblemKey() + "]" ;
+            String stateBadgeLabel = "[" + numAttempts + "] " + prevState ;
             
             bookNameLabel.setText( bookShortName ) ;
             chapterNameLabel.setText( chapterName ) ;
             problemKeyLabel.setText( problemKey ) ;
             currentStateBadgeLabel.setText( stateBadgeLabel ) ;
-            
-            currentStateBadgeLabel.setForeground(
-                    getStateForegroundColor( context.attempt.getPrevState() ) ) ;
+            currentStateBadgeLabel.setForeground( getStateFgColor( prevState ) ) ;
 
-            refreshProblemTimerLabels( context ) ;
+            currentProblemContext = new CurrentProblemContext( totalTime ) ;
+            refreshProblemTimerLabels() ;
         } ) ;
     }
 
-    private void refreshProblemTimers( CurrentProblemContext context ) {
-        SwingUtilities.invokeLater( () -> {
-            if( context == null || context != currentProblemContext ) {
-                return ;
-            }
-            refreshProblemTimerLabels( context ) ;
-        } ) ;
-    }
-
-    private void refreshProblemTimerLabels( CurrentProblemContext context ) {
-        currentProblemTimerLabel.setText(
-                getElapsedTimeLabelMMss( context.getCurrentAttemptTimeNow() ) ) ;
-
-        totalTimeSpentLabel.setText(
-                getElapsedTimeLabelMMss( context.getTotalAttemptTimeNow() ) ) ;
+    private void refreshProblemTimerLabels() {
+        if( currentProblemContext != null ) {
+            currentProblemTimerLabel.setText(
+                    getElapsedTimeLabelMMss( currentProblemContext.currentDuration ) ) ;
+    
+            totalTimeSpentLabel.setText(
+                    getElapsedTimeLabelMMss( currentProblemContext.totalDuration ) ) ;
+        }
     }
 
     private void clearProblemDetails() {
-        this.currentProblemContext = null ;
-        SwingUtilities.invokeLater( this::clearProblemDetailLabels ) ;
-    }
-
-    private void clearProblemDetailLabels() {
-        bookNameLabel.setText( "" ) ;
-        chapterNameLabel.setText( "" ) ;
-        problemKeyLabel.setText( "" ) ;
-        currentStateBadgeLabel.setText( "" ) ;
-        currentProblemTimerLabel.setText( "" ) ;
-        totalTimeSpentLabel.setText( "" ) ;
+        SwingUtilities.invokeLater( () -> {
+            currentProblemContext = null ;
+            bookNameLabel.setText( "" ) ;
+            chapterNameLabel.setText( "" ) ;
+            problemKeyLabel.setText( "" ) ;
+            currentStateBadgeLabel.setText( "" ) ;
+            currentProblemTimerLabel.setText( "" ) ;
+            totalTimeSpentLabel.setText( "" ) ;
+        }) ;
     }
 
     private String getElapsedTimeLabelMMss( int seconds ) {
@@ -336,7 +308,7 @@ public class ExerciseTileFace extends Tile
         return String.format( "%02d:%02d", minutes, secs ) ;
     }
 
-    private Color getStateForegroundColor( String state ) {
+    private Color getStateFgColor( String state ) {
         if( state == null ) {
             return LABEL_FG_COLOR ;
         }
@@ -351,40 +323,5 @@ public class ExerciseTileFace extends Tile
             case "Reassign" -> COLUMN_VALUE_COLORS[7] ;
             default -> LABEL_FG_COLOR ;
         } ;
-    }
-    
-    private record CurrentProblemContext(
-            Problem problem,
-            ProblemAttemptDTO attempt,
-            int totalAttempts,
-            int totalAttemptTimeBeforeCurrent,
-            long syncTimeMillis ) {
-        
-        private boolean isForAttempt( ProblemAttemptDTO attempt ) {
-            return this.attempt != null &&
-                   this.attempt.getId() != null &&
-                   attempt != null && attempt.getId() != null &&
-                   this.attempt.getId().equals( attempt.getId() );
-        }
-        
-        private CurrentProblemContext updateAttempt( ProblemAttemptDTO attempt ) {
-            return new CurrentProblemContext( problem, attempt, totalAttempts,
-                                              totalAttemptTimeBeforeCurrent,
-                                              System.currentTimeMillis() );
-        }
-        
-        private int getCurrentAttemptTimeNow() {
-            long elapsedTimeMillis = Math.max( 0, System.currentTimeMillis() - syncTimeMillis ) ;
-            return getEffectiveDuration( attempt ) + ( int )( elapsedTimeMillis / 1000 ) ;
-        }
-        
-        private int getTotalAttemptTimeNow() {
-            return totalAttemptTimeBeforeCurrent + getCurrentAttemptTimeNow() ;
-        }
-        
-        private static int getEffectiveDuration( ProblemAttemptDTO attempt ) {
-            return attempt.getEffectiveDuration() == null ?
-                    0 : attempt.getEffectiveDuration();
-        }
     }
 }

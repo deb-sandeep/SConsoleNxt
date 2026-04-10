@@ -9,11 +9,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-class AsyncEventDispatchProxy implements EventSubscriber, Runnable {
+class AsyncEventDispatchProxy implements EventSubscriber {
+    
+    private static final boolean PRINT_IGNORE_LOG = false ;
     
     @Getter private final EventSubscriber subscriber ;
-    
-    @Getter private Event event = null ;
     
     private final Cache<Event, Long> recentEvents = CacheBuilder.newBuilder()
             .expireAfterWrite( 500, TimeUnit.MILLISECONDS ) // 500ms window
@@ -31,19 +31,16 @@ class AsyncEventDispatchProxy implements EventSubscriber, Runnable {
     public void handleEvent( final Event event ) {
         
         if( recentEvents.getIfPresent( event ) == null ) {
-            this.event = event ;
-            this.executor.execute( this ) ;
+            this.executor.execute( () -> subscriber.handleEvent( event ) ) ;
             recentEvents.put( event, System.currentTimeMillis() ) ;
         }
         else {
-            log.debug( "Ignoring event : {} to subscriber {}@{} as it was received recently",
-                       EventUtils.getEventName( event.getEventId() ),
-                       subscriber.getClass().getSimpleName(),
-                       subscriber.hashCode() ) ;
+            if( PRINT_IGNORE_LOG ) {
+                log.debug( "Ignoring event : {} to subscriber {}@{} as it was received recently",
+                           EventUtils.getEventName( event.getEventId() ),
+                           subscriber.getClass().getSimpleName(),
+                           subscriber.hashCode() ) ;
+            }
         }
-    }
-    
-    public void run() {
-        this.subscriber.handleEvent( event ) ;
     }
 }

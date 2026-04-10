@@ -1,7 +1,6 @@
 package com.sandy.sconsole.ui.screen.session.tile.center;
 
 import com.sandy.sconsole.core.ui.screen.Tile;
-import com.sandy.sconsole.ui.screen.session.tile.center.face.CoachingTileFace;
 import com.sandy.sconsole.ui.screen.session.tile.center.face.ExerciseTileFace;
 import com.sandy.sconsole.ui.screen.session.tile.center.face.TheoryTileFace;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +13,9 @@ import java.awt.*;
 @Scope( "prototype" )
 public class SessionCenterTile extends Tile {
 
-    private static final String COACHING_FACE = "COACHING_FACE" ;
     private static final String THEORY_FACE   = "THEORY_FACE" ;
     private static final String EXERCISE_FACE = "EXERCISE_FACE" ;
 
-    @Autowired private CoachingTileFace coachingTileFace ;
     @Autowired private TheoryTileFace   theoryTileFace ;
     @Autowired private ExerciseTileFace exerciseTileFace;
 
@@ -38,11 +35,9 @@ public class SessionCenterTile extends Tile {
         removeAll() ;
         setLayout( cardLayout ) ;
 
-        add( coachingTileFace, COACHING_FACE ) ;
         add( theoryTileFace, THEORY_FACE ) ;
         add( exerciseTileFace, EXERCISE_FACE ) ;
 
-        coachingTileFace.initialize() ;
         theoryTileFace.initialize() ;
         exerciseTileFace.initialize() ;
 
@@ -91,24 +86,18 @@ public class SessionCenterTile extends Tile {
     }
 
     private String getFaceName( String sessionType ) {
-        if( sessionType == null ) {
-            return THEORY_FACE ;
+        
+        if( "Coaching".equals( sessionType ) ||
+            "Exercise".equals( sessionType ) ) {
+            return EXERCISE_FACE ;
         }
-
-        return switch( sessionType ) {
-            case "Coaching" -> COACHING_FACE ;
-            case "Theory" -> THEORY_FACE ;
-            case "Exercise" -> EXERCISE_FACE;
-            default -> THEORY_FACE ;
-        } ;
+        return THEORY_FACE ;
     }
 
     private Tile getFace( String faceName ) {
-        return switch( faceName ) {
-            case COACHING_FACE -> coachingTileFace ;
-            case THEORY_FACE -> theoryTileFace ;
-            case EXERCISE_FACE -> exerciseTileFace;
-            default -> theoryTileFace ;
-        } ;
+        if( EXERCISE_FACE.equals( faceName ) ) {
+            return exerciseTileFace ;
+        }
+        return theoryTileFace ;
     }
 }
