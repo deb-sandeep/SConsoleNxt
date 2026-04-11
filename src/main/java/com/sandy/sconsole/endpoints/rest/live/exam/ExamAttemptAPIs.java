@@ -131,8 +131,8 @@ public class ExamAttemptAPIs {
             @RequestBody QuestionAttemptUpdateReq req ) {
         
         try {
-            ExamQuestionAttempt eqa = eqaRepo.findById( req.questionAttemptId() ).get() ;
-            eqa.setTimeSpent( req.timeSpent() ) ;
+            ExamQuestionAttempt eqa = eqaRepo.findByIdForUpdate( req.questionAttemptId() ).get() ;
+            eqa.setTimeSpent( Math.max( eqa.getTimeSpent(), req.timeSpent() ) ) ;
             eqaRepo.save( eqa ) ;
             return AR.success() ;
         }
@@ -150,12 +150,12 @@ public class ExamAttemptAPIs {
             @RequestBody QuestionAttemptUpdateReq req ) {
         
         try {
-            ExamQuestionAttempt eqa = eqaRepo.findById( req.questionAttemptId() ).get() ;
+            ExamQuestionAttempt eqa = eqaRepo.findByIdForUpdate( req.questionAttemptId() ).get() ;
 
             eqa.setAnswerSubmitStatus( req.submitStatus() ) ;
             eqa.setAnswerProvided( req.answerProvided() ) ;
             eqa.setAnswerSubmitLap( req.answerSubmitLap() ) ;
-            eqa.setTimeSpent( req.timeSpent() ) ;
+            eqa.setTimeSpent( Math.max( eqa.getTimeSpent(), req.timeSpent() ) ) ;
             
             eqaRepo.save( eqa ) ;
             return AR.success() ;
