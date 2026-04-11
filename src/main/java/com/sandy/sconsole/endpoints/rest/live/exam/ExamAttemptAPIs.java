@@ -47,16 +47,22 @@ public class ExamAttemptAPIs {
     
     @GetMapping( "/Attempts" )
     public ResponseEntity<AR<List<ExamAttemptVO>>> getExamAttempts() {
-        
+
+        log.debug( ">> GetAttempts" ) ;
+
         try {
             List<ExamAttemptVO> res = new ArrayList<>() ;
             for( ExamAttempt attempt : attemptRepo.findAll() ) {
                 res.add( new ExamAttemptVO( attempt, null, false ) ) ;
             }
             res.sort( Comparator.comparing( ExamAttemptVO::getAttemptDate ).reversed() ) ;
+
+            log.debug( "<< GetAttempts | returning {} attempt(s)", res.size() ) ;
+
             return AR.success( res ) ;
         }
         catch( IllegalArgumentException e ) {
+            log.error( "<< GetAttempts | bad request - {}", e.getMessage() ) ;
             return AR.badRequest( e.getMessage() ) ;
         }
         catch( Exception e ) {
@@ -66,12 +72,19 @@ public class ExamAttemptAPIs {
     
     @GetMapping( "/Attempt/{examAttemptId}" )
     public ResponseEntity<AR<ExamAttemptVO>> getExamAttempt( @PathVariable int examAttemptId ) {
+
+        log.debug( ">> GetAttempt | examAttemptId={}", examAttemptId ) ;
+
         try {
             ExamEvaluationHelper helper = SConsole.getBean( ExamEvaluationHelper.class ) ;
             ExamAttemptVO attempt = helper.getExamAttempt( examAttemptId ) ;
+
+            log.debug( "<< GetAttempt | examAttemptId={} returned successfully", examAttemptId ) ;
+
             return AR.success( attempt ) ;
         }
         catch( IllegalArgumentException e ) {
+            log.error( "<< GetAttempt | examAttemptId={} bad request - {}", examAttemptId, e.getMessage() ) ;
             return AR.badRequest( e.getMessage() ) ;
         }
         catch( Exception e ) {
@@ -83,13 +96,19 @@ public class ExamAttemptAPIs {
     @Transactional
     public ResponseEntity<AR<CreateExamAttemptRes>> createExamAttempt(
             @PathVariable int examId ) {
-        
+
+        log.debug( ">> CreateAttempt | examId={}", examId ) ;
+
         try {
             ExamAttemptHelper helper = SConsole.getBean( ExamAttemptHelper.class ) ;
             CreateExamAttemptRes res = helper.createExamAttempt( examId ) ;
+
+            log.debug( "<< CreateAttempt | examId={} attempt created successfully", examId ) ;
+
             return AR.success( res ) ;
         }
         catch( IllegalArgumentException e ) {
+            log.error( "<< CreateAttempt | examId={} bad request - {}", examId, e.getMessage() ) ;
             return AR.badRequest( e.getMessage() ) ;
         }
         catch( Exception e ) {
@@ -100,10 +119,10 @@ public class ExamAttemptAPIs {
     @PostMapping( "/EventLog" )
     @Transactional
     public ResponseEntity<AR<String>> eventLog( @RequestBody ExamEventVO vo ) {
-        
+
         try {
             ExamAttempt examAttempt = attemptRepo.findById( vo.getExamAttemptId() ).get() ;
-            
+
             ExamEventLog event = new ExamEventLog() ;
             event.setExamAttempt( examAttempt ) ;
             event.setSequence( vo.getSequence() ) ;
@@ -112,12 +131,14 @@ public class ExamAttemptAPIs {
             event.setPayload( vo.getPayload() ) ;
             event.setCreationTime( vo.getCreationTime() ) ;
             event.setTimeMarker( vo.getTimeMarker() ) ;
-            
+
             eventLogRepo.save( event ) ;
-            
+
             return AR.success() ;
         }
         catch( IllegalArgumentException e ) {
+            log.error( "<< EventLog | examAttemptId={} seq={} bad request - {}",
+                       vo.getExamAttemptId(), vo.getSequence(), e.getMessage() ) ;
             return AR.badRequest( e.getMessage() ) ;
         }
         catch( Exception e ) {
@@ -129,14 +150,29 @@ public class ExamAttemptAPIs {
     @Transactional
     public ResponseEntity<AR<String>> updateTimeSpent(
             @RequestBody QuestionAttemptUpdateReq req ) {
-        
+
+        log.debug( ">> TimeUpdate | qAttemptId={} timeSpent={}",
+                   req.questionAttemptId(), req.timeSpent() ) ;
+
         try {
             ExamQuestionAttempt eqa = eqaRepo.findByIdForUpdate( req.questionAttemptId() ).get() ;
+
+            log.debug( "   TimeUpdate | locked row - current timeSpent={}", eqa.getTimeSpent() ) ;
+
             eqa.setTimeSpent( Math.max( eqa.getTimeSpent(), req.timeSpent() ) ) ;
+
+            log.debug( "   TimeUpdate | saving timeSpent={}", eqa.getTimeSpent() ) ;
+
             eqaRepo.save( eqa ) ;
+
+            log.debug( "<< TimeUpdate | qAttemptId={} saved successfully",
+                       req.questionAttemptId() ) ;
+
             return AR.success() ;
         }
         catch( IllegalArgumentException e ) {
+            log.error( "<< TimeUpdate | qAttemptId={} bad request - {}",
+                       req.questionAttemptId(), e.getMessage() ) ;
             return AR.badRequest( e.getMessage() ) ;
         }
         catch( Exception e ) {
@@ -148,19 +184,37 @@ public class ExamAttemptAPIs {
     @Transactional
     public ResponseEntity<AR<String>> updateAnswerStatus(
             @RequestBody QuestionAttemptUpdateReq req ) {
+
+        log.debug( ">> AnswerUpdate | qAttemptId={} submitStatus={} answer={} lap={} timeSpent={}",
+                req.questionAttemptId(), req.submitStatus(),
+                req.answerProvided(), req.answerSubmitLap(), req.timeSpent() ) ;
         
         try {
             ExamQuestionAttempt eqa = eqaRepo.findByIdForUpdate( req.questionAttemptId() ).get() ;
+        
+            log.debug( "   AnswerUpdate | locked row - current: submitStatus={} answer={} lap={} timeSpent={}",
+                    eqa.getAnswerSubmitStatus(), eqa.getAnswerProvided(),
+                    eqa.getAnswerSubmitLap(), eqa.getTimeSpent() ) ;
 
             eqa.setAnswerSubmitStatus( req.submitStatus() ) ;
             eqa.setAnswerProvided( req.answerProvided() ) ;
             eqa.setAnswerSubmitLap( req.answerSubmitLap() ) ;
             eqa.setTimeSpent( Math.max( eqa.getTimeSpent(), req.timeSpent() ) ) ;
-            
+        
+            log.debug( "   AnswerUpdate | saving: submitStatus={} answer={} lap={} timeSpent={}",
+                    eqa.getAnswerSubmitStatus(), eqa.getAnswerProvided(),
+                    eqa.getAnswerSubmitLap(), eqa.getTimeSpent() ) ;
+
             eqaRepo.save( eqa ) ;
+        
+            log.debug( "<< AnswerUpdate | qAttemptId={} saved successfully",
+                       req.questionAttemptId() ) ;
+        
             return AR.success() ;
         }
         catch( IllegalArgumentException e ) {
+            log.error( "<< AnswerUpdate | qAttemptId={} bad request - {}",
+                       req.questionAttemptId(), e.getMessage() ) ;
             return AR.badRequest( e.getMessage() ) ;
         }
         catch( Exception e ) {
@@ -172,7 +226,10 @@ public class ExamAttemptAPIs {
     @Transactional
     public ResponseEntity<AR<String>> saveLapSnapshot(
             @RequestBody LapSnapshotReq req ) {
-        
+
+        log.debug( ">> LapSnapshot | examAttemptId={} lap={} snapshotCount={}",
+                req.examAttemptId(), req.currentLap(), req.snapshots().size() ) ;
+
         try {
             jdbcTemplate.batchUpdate(
                 """
@@ -190,9 +247,15 @@ public class ExamAttemptAPIs {
                     ps.setString( 5, snapshot.attemptState() ) ;
                 }
             ) ;
+
+            log.debug( "<< LapSnapshot | examAttemptId={} lap={} {} snapshot(s) saved",
+                    req.examAttemptId(), req.currentLap(), req.snapshots().size() ) ;
+
             return AR.success() ;
         }
         catch( IllegalArgumentException e ) {
+            log.error( "<< LapSnapshot | examAttemptId={} lap={} bad request - {}",
+                    req.examAttemptId(), req.currentLap(), e.getMessage() ) ;
             return AR.badRequest( e.getMessage() ) ;
         }
         catch( Exception e ) {
@@ -203,14 +266,20 @@ public class ExamAttemptAPIs {
     @PostMapping( "/{examAttemptId}/Submit" )
     @Transactional
     public ResponseEntity<AR<ExamAttemptVO>> submitExamAttempt( @PathVariable int examAttemptId ) {
-        
+
+        log.debug( ">> SubmitAttempt | examAttemptId={}", examAttemptId ) ;
+
         try {
             ExamEvaluationHelper helper = SConsole.getBean( ExamEvaluationHelper.class ) ;
-            
             ExamAttemptVO res = helper.evaluateExamAttempt( examAttemptId ) ;
+
+            log.debug( "<< SubmitAttempt | examAttemptId={} evaluated successfully", examAttemptId ) ;
+
             return AR.success( res ) ;
         }
         catch( IllegalArgumentException e ) {
+            log.error( "<< SubmitAttempt | examAttemptId={} bad request - {}",
+                       examAttemptId, e.getMessage() ) ;
             return AR.badRequest( e.getMessage() ) ;
         }
         catch( Exception e ) {
@@ -222,13 +291,20 @@ public class ExamAttemptAPIs {
     public ResponseEntity<AR<ExamAttemptVO>> updateRootCause(
             @PathVariable Integer qAttemptId,
             @PathVariable String rootCause ) {
-        
+
+        log.debug( ">> RootCauseUpdate | qAttemptId={} rootCause={}", qAttemptId, rootCause ) ;
+
         try {
             ExamEvaluationHelper helper = SConsole.getBean( ExamEvaluationHelper.class ) ;
             ExamAttemptVO res = helper.updateQuestionAttemptRootCause( qAttemptId, rootCause ) ;
+
+            log.debug( "<< RootCauseUpdate | qAttemptId={} updated successfully", qAttemptId ) ;
+
             return AR.success( res ) ;
         }
         catch( IllegalArgumentException e ) {
+            log.error( "<< RootCauseUpdate | qAttemptId={} bad request - {}",
+                       qAttemptId, e.getMessage() ) ;
             return AR.badRequest( e.getMessage() ) ;
         }
         catch( Exception e ) {
@@ -240,12 +316,20 @@ public class ExamAttemptAPIs {
     public ResponseEntity<AR<ExamAttemptVO>> overrideScore(
             @PathVariable Integer qAttemptId,
             @PathVariable Integer score ) {
+
+        log.debug( ">> ScoreOverride | qAttemptId={} score={}", qAttemptId, score ) ;
+
         try {
             ExamEvaluationHelper helper = SConsole.getBean( ExamEvaluationHelper.class ) ;
             ExamAttemptVO res = helper.overrideScore( qAttemptId, score ) ;
+
+            log.debug( "<< ScoreOverride | qAttemptId={} score overridden successfully", qAttemptId ) ;
+
             return AR.success( res ) ;
         }
         catch( IllegalArgumentException e ) {
+            log.error( "<< ScoreOverride | qAttemptId={} bad request - {}",
+                       qAttemptId, e.getMessage() ) ;
             return AR.badRequest( e.getMessage() ) ;
         }
         catch( Exception e ) {
