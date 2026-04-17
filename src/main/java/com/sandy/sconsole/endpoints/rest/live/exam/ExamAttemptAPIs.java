@@ -48,17 +48,12 @@ public class ExamAttemptAPIs {
     @GetMapping( "/Attempts" )
     public ResponseEntity<AR<List<ExamAttemptVO>>> getExamAttempts() {
 
-        log.debug( ">> GetAttempts" ) ;
-
         try {
             List<ExamAttemptVO> res = new ArrayList<>() ;
             for( ExamAttempt attempt : attemptRepo.findAll() ) {
                 res.add( new ExamAttemptVO( attempt, null, false ) ) ;
             }
             res.sort( Comparator.comparing( ExamAttemptVO::getAttemptDate ).reversed() ) ;
-
-            log.debug( "<< GetAttempts | returning {} attempt(s)", res.size() ) ;
-
             return AR.success( res ) ;
         }
         catch( IllegalArgumentException e ) {
