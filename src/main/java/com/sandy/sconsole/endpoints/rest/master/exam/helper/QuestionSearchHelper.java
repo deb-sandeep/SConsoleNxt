@@ -56,9 +56,17 @@ public class QuestionSearchHelper {
     }
     
     private Specification<Question> buildSearchSpecs( QuestionSearchReq req ) {
-        return Specification.where( hasAnyTopicIds( req.topicIds() ) ) ;
+        return Specification.where( hasAnyTopicIds( req.topicIds() ) )
+                            .and( hasAnyQTypes( req.qTypes() ) ) ;
     }
     
+    private Specification<Question> hasAnyQTypes( List<String> qTypes ) {
+        return (root, query, cb) -> {
+            if( qTypes == null || qTypes.isEmpty() ) return cb.conjunction() ;
+            return root.get( "problemType" ).get( "problemType" ).in( qTypes ) ;
+        } ;
+    }
+
     private Specification<Question> hasAnyTopicIds( List<Integer> topicIds ) {
         return (root, query, cb) ->  {
             if( topicIds == null || topicIds.isEmpty() ) return cb.conjunction() ;

@@ -8,6 +8,8 @@ import java.util.List;
 public record QuestionSearchReq(
     List<Integer> topicIds,
     
+    List<String> qTypes,
+    
     @Min(0)
     Integer page,
     

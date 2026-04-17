@@ -2,6 +2,7 @@ package com.sandy.sconsole.endpoints.rest.master.exam;
 
 import com.sandy.sconsole.SConsole;
 import com.sandy.sconsole.core.api.AR;
+import com.sandy.sconsole.dao.exam.Exam;
 import com.sandy.sconsole.dao.exam.ExamQuestionAttemptRepo;
 import com.sandy.sconsole.dao.exam.RootCause;
 import com.sandy.sconsole.dao.exam.repo.ExamRepo;
@@ -10,6 +11,7 @@ import com.sandy.sconsole.endpoints.rest.master.exam.helper.ExamHelper;
 import com.sandy.sconsole.endpoints.rest.master.exam.helper.ExamUpdateHelper;
 import com.sandy.sconsole.endpoints.rest.master.exam.vo.ExamVO;
 import com.sandy.sconsole.endpoints.rest.master.exam.vo.RootCauseVO;
+import com.sandy.sconsole.endpoints.rest.master.exam.vo.reqres.ExamNoteUpdateReq;
 import com.sandy.sconsole.endpoints.rest.master.exam.vo.reqres.SaveExamRes;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -136,4 +138,22 @@ public class ExamAPIs {
             return systemError( e ) ;
         }
     }
+    
+    @PostMapping( "/UpdateNote" )
+    public ResponseEntity<AR<String>> createExam( @RequestBody ExamNoteUpdateReq req ) {
+        
+        try {
+            Exam exam = this.examRepo.findById( req.examId() ).get() ;
+            exam.setNote( req.note() ) ;
+            this.examRepo.save( exam ) ;
+            return AR.success() ;
+        }
+        catch( IllegalArgumentException e ) {
+            return AR.badRequest( e.getMessage() ) ;
+        }
+        catch( Exception e ) {
+            return systemError( e ) ;
+        }
+    }
+    
 }
