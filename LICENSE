@@ -1,21 +1,41 @@
-MIT License
+Copyright (c) [2025]. All rights reserved.
 
-Copyright (c) 2023 Sandeep Deb
+PROPRIETARY SOFTWARE LICENSE
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+This software and its source code are the exclusive property of Sandeep Deb
+("Licensor") and are protected by copyright law and international treaties.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+GRANT OF LIMITED RIGHTS
+Subject to the terms below, Licensor grants you a non-exclusive, non-transferable,
+revocable right to:
+  1. View and read the source code for personal evaluation or reference purposes.
+  2. Use the software for personal use, provided no fee is charged
+     for such internal use and the software is not made available to third parties.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+RESTRICTIONS
+You may NOT, without prior written permission from Licensor:
+  1. Redistribute, sublicense, sell, rent, lease, or otherwise transfer the software
+     or any portion of it to any third party.
+  2. Use the software to provide services to third parties (including SaaS, hosted,
+     or managed service offerings).
+  3. Modify, adapt, translate, or create derivative works based on the software.
+  4. Remove or alter any proprietary notices, labels, or marks on the software.
+  5. Reverse engineer, decompile, or disassemble the software except to the extent
+     expressly permitted by applicable law.
+
+NO WARRANTY
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+PARTICULAR PURPOSE, AND NON-INFRINGEMENT. IN NO EVENT SHALL LICENSOR BE LIABLE FOR
+ANY CLAIM, DAMAGES, OR OTHER LIABILITY ARISING FROM THE USE OF THE SOFTWARE.
+
+TERMINATION
+This license is effective until terminated. It terminates automatically if you breach
+any of its terms. Upon termination, you must destroy all copies of the software in
+your possession.
+
+GOVERNING LAW
+This license shall be governed by the laws of Maharashtra, India, without regard to
+its conflict of law provisions.
+
+For licensing inquiries: deb.sandeep@gmail.com
