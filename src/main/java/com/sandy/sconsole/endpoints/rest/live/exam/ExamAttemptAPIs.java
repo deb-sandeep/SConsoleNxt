@@ -68,13 +68,9 @@ public class ExamAttemptAPIs {
     @GetMapping( "/Attempt/{examAttemptId}" )
     public ResponseEntity<AR<ExamAttemptVO>> getExamAttempt( @PathVariable int examAttemptId ) {
 
-        log.debug( ">> GetAttempt | examAttemptId={}", examAttemptId ) ;
-
         try {
             ExamEvaluationHelper helper = SConsole.getBean( ExamEvaluationHelper.class ) ;
             ExamAttemptVO attempt = helper.getExamAttempt( examAttemptId ) ;
-
-            log.debug( "<< GetAttempt | examAttemptId={} returned successfully", examAttemptId ) ;
 
             return AR.success( attempt ) ;
         }
