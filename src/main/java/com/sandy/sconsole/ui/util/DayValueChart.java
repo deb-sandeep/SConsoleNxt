@@ -209,8 +209,12 @@ public class DayValueChart {
             historicValues = dayValueProvider.getDayValues() ;
             
             if( historicValues != null ) {
+                double max = 0 ;
                 for( DayValue dv : historicValues ) {
                     valueSeries.addOrUpdate( new Day( dv.date() ), dv.value() ) ;
+                    if( dv.value() > max ) {
+                        max = dv.value() ;
+                    }
                 }
                 
                 mavSeries = MovingAverage.createMovingAverage( valueSeries,
@@ -218,6 +222,15 @@ public class DayValueChart {
                                                                7, 0 ) ;
                 mavDataset.removeAllSeries() ;
                 mavDataset.addSeries( mavSeries ) ;
+                
+                // For TotalL60Effort there is no range supplier, hence we
+                // force the range axis not to auto-compute. Auto computation
+                // takes the minimum to the least of the day values, painting
+                // a misleading skyline view.
+                if( rangeMaxValueSupplier == null ) {
+                    NumberAxis rangeAxis = ( NumberAxis ) plot.getRangeAxis() ;
+                    rangeAxis.setRange( 0, Math.ceil( max ) );
+                }
             }
         }
     }
