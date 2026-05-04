@@ -4,6 +4,8 @@ import com.sandy.sconsole.dao.exam.*;
 import com.sandy.sconsole.dao.exam.repo.ExamAttemptRepo;
 import com.sandy.sconsole.dao.exam.repo.ExamRepo;
 import com.sandy.sconsole.dao.exam.repo.ExamSectionAttemptRepo;
+import com.sandy.sconsole.endpoints.rest.live.exam.vo.QAttemptLapAnalysisUpdateReq;
+import com.sandy.sconsole.endpoints.rest.live.exam.vo.QAttemptLapAnalysisUpdateRes;
 import com.sandy.sconsole.endpoints.rest.master.exam.vo.reqres.CreateExamAttemptRes;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,5 +100,9 @@ public class ExamAttemptHelper {
         questionAttempt.setLoss( 0 ) ;
         questionAttempt.setAvoidableLoss( 0 ) ;
         return examQuestionAttemptRepo.saveAndFlush( questionAttempt ) ;
+    }
+    
+    public QAttemptLapAnalysisUpdateRes saveQAttemptLapAnalysis( QAttemptLapAnalysisUpdateReq req ) {
+        return null ;
     }
 }

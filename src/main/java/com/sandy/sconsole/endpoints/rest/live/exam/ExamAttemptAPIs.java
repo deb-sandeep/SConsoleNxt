@@ -10,10 +10,7 @@ import com.sandy.sconsole.dao.exam.repo.ExamAttemptRepo;
 import com.sandy.sconsole.dao.exam.repo.ExamEventLogRepo;
 import com.sandy.sconsole.endpoints.rest.live.exam.helper.ExamAttemptHelper;
 import com.sandy.sconsole.endpoints.rest.live.exam.helper.ExamEvaluationHelper;
-import com.sandy.sconsole.endpoints.rest.live.exam.vo.ExamAttemptVO;
-import com.sandy.sconsole.endpoints.rest.live.exam.vo.ExamEventVO;
-import com.sandy.sconsole.endpoints.rest.live.exam.vo.LapSnapshotReq;
-import com.sandy.sconsole.endpoints.rest.live.exam.vo.QuestionAttemptUpdateReq;
+import com.sandy.sconsole.endpoints.rest.live.exam.vo.*;
 import com.sandy.sconsole.endpoints.rest.master.exam.vo.reqres.CreateExamAttemptRes;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -321,6 +318,27 @@ public class ExamAttemptAPIs {
         catch( IllegalArgumentException e ) {
             log.error( "<< ScoreOverride | qAttemptId={} bad request - {}",
                        qAttemptId, e.getMessage() ) ;
+            return AR.badRequest( e.getMessage() ) ;
+        }
+        catch( Exception e ) {
+            return systemError( e ) ;
+        }
+    }
+    
+    @PostMapping( "/QAttemptLapAnalysis" )
+    public ResponseEntity<AR<QAttemptLapAnalysisUpdateRes>> updateQAttemptLapAnalysis(
+            @RequestBody QAttemptLapAnalysisUpdateReq req ) {
+        
+        log.debug( ">> QAttemptLapAnalysis | qAttemptId={} lap={}",
+                   req.qAttemptId(), req.lapName() ) ;
+        
+        try {
+            ExamAttemptHelper helper = SConsole.getBean( ExamAttemptHelper.class ) ;
+            QAttemptLapAnalysisUpdateRes res = helper.saveQAttemptLapAnalysis( req ) ;
+            
+            return AR.success( res ) ;
+        }
+        catch( IllegalArgumentException e ) {
             return AR.badRequest( e.getMessage() ) ;
         }
         catch( Exception e ) {
