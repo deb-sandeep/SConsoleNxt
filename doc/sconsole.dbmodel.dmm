@@ -2228,6 +2228,27 @@
 					"estimatedSize": "",
 					"data": "",
 					"binary": false
+				},
+				{
+					"after": "",
+					"autoinc": false,
+					"charset": "",
+					"collation": "",
+					"comment": "",
+					"datatype": "INT",
+					"defaultvalue": "0",
+					"enum": "",
+					"fk": false,
+					"id": "940bdaab-861d-4ff0-ba35-3f593d232fd8",
+					"name": "exec_score",
+					"nn": true,
+					"param": "",
+					"pk": false,
+					"unsigned": false,
+					"zerofill": false,
+					"estimatedSize": "",
+					"data": "",
+					"binary": false
 				}
 			],
 			"indexes": [],
@@ -8429,7 +8450,7 @@
 			"includeWarnings": "yes",
 			"includeCreationSql": "no"
 		},
-		"lastSaved": 1777891090976,
+		"lastSaved": 1777891500846,
 		"connectionId": "7af83ebc-4655-4802-a6d0-2c6890f3e1ce",
 		"modelHTMLReportDir": "/Users/sandeep/temp"
 	},
@@ -9807,7 +9828,7 @@
 					"referencedItemId": "f00095e5-0371-48f3-9ab7-77597793c06b",
 					"x": 1049,
 					"y": 913,
-					"gHeight": 243,
+					"gHeight": 261,
 					"gWidth": 266,
 					"color": "#ffffff",
 					"background": "#03a9f4",
@@ -9896,8 +9917,8 @@
 				}
 			},
 			"scroll": {
-				"x": 255,
-				"y": 245.5
+				"x": 4,
+				"y": 58.5
 			},
 			"type": "erd",
 			"showHorizontal": true,
@@ -10164,7 +10185,7 @@
 					"includeWarnings": "yes",
 					"includeCreationSql": "no"
 				},
-				"lastSaved": 1777891090976,
+				"lastSaved": 1777891500846,
 				"connectionId": "7af83ebc-4655-4802-a6d0-2c6890f3e1ce",
 				"modelHTMLReportDir": "/Users/sandeep/temp",
 				"filePath": "/Users/sandeep/projects/sconsole/SConsoleNxt/doc/sconsole.dbmodel.dmm"
@@ -11693,7 +11714,7 @@
 					"desc": "",
 					"embeddable": false,
 					"id": "a916152a-2a82-4369-bcfc-8c2b66bbadc9",
-					"initautoinc": "",
+					"initautoinc": "1",
 					"name": "exam_qattempt_analysis",
 					"relations": [
 						"3e7a7831-5d0d-46b3-bc43-9e28fae30320",
@@ -11704,7 +11725,7 @@
 					"cols": [
 						{
 							"after": "",
-							"autoinc": false,
+							"autoinc": true,
 							"charset": "",
 							"collation": "",
 							"comment": "",
@@ -11817,7 +11838,7 @@
 					"desc": "",
 					"embeddable": false,
 					"id": "317a8078-4966-442a-892f-49bd91d4bd4c",
-					"initautoinc": "",
+					"initautoinc": "1",
 					"name": "exam_qattempt_analysis_obs",
 					"relations": [
 						"9c477b91-9db9-4b05-a130-f73ef2d36c9d",
@@ -11828,7 +11849,7 @@
 					"cols": [
 						{
 							"after": "",
-							"autoinc": false,
+							"autoinc": true,
 							"charset": "",
 							"collation": "",
 							"comment": "",
@@ -13573,8 +13594,8 @@
 					"name": "problem_master",
 					"relations": [
 						"d53157a0-bc12-438f-9d4e-78ec17b25811",
-						"517bde49-7772-4a6a-a20f-cdd14875cc76",
 						"a1e923b9-f3e4-4e85-b746-91a2d848c9d2",
+						"517bde49-7772-4a6a-a20f-cdd14875cc76",
 						"51ce49de-71ba-4353-9b9a-fa48807dcb72"
 					],
 					"rowformat": "Dynamic",
@@ -15924,8 +15945,8 @@
 					"initautoinc": "81348",
 					"name": "topic_chapter_problem_map",
 					"relations": [
-						"9215c6d7-cf32-4274-88d4-04f178fb2655",
-						"51ce49de-71ba-4353-9b9a-fa48807dcb72"
+						"51ce49de-71ba-4353-9b9a-fa48807dcb72",
+						"9215c6d7-cf32-4274-88d4-04f178fb2655"
 					],
 					"rowformat": "Dynamic",
 					"tabletype": "InnoDB",
@@ -17863,35 +17884,6 @@
 					"customCode": "",
 					"relationColor": "transparent"
 				},
-				"517bde49-7772-4a6a-a20f-cdd14875cc76": {
-					"c_p": "one",
-					"c_cp": "",
-					"c_cch": "",
-					"c_ch": "many",
-					"c_mch": "true",
-					"c_mp": "true",
-					"desc": "",
-					"type": "identifying",
-					"linegraphics": "default",
-					"child": "03cce6fc-31fa-4e39-a437-0e6e33eafd0e",
-					"id": "517bde49-7772-4a6a-a20f-cdd14875cc76",
-					"name": "fk_problem_PT",
-					"parent": "aa118985-ca82-4c98-bbdf-c6654aa4f75a",
-					"parent_key": "e9d6f91b-804c-43ea-b38d-efacbb904773",
-					"cols": [
-						{
-							"childcol": "4c644588-a69b-421a-869e-0aa2e476e7de",
-							"id": "6b04f193-c9f3-4bed-a536-1e6ab8b91281",
-							"parentcol": "a2b81a36-721e-4bad-a247-ed961d359406"
-						}
-					],
-					"ri_pd": "No action",
-					"ri_pu": "Cascade",
-					"generate": true,
-					"generateCustomCode": true,
-					"customCode": "",
-					"relationColor": "#ff9800"
-				},
 				"a1e923b9-f3e4-4e85-b746-91a2d848c9d2": {
 					"c_p": "one",
 					"c_cp": "",
@@ -17917,6 +17909,35 @@
 							"childcol": "31a7755e-baa8-4f87-b849-b3848bc1f0ef",
 							"id": "ea220614-1b99-4689-881b-e063fff373ff",
 							"parentcol": "2e7f2f92-0c2b-41a3-9467-a9e16cd28cad"
+						}
+					],
+					"ri_pd": "No action",
+					"ri_pu": "Cascade",
+					"generate": true,
+					"generateCustomCode": true,
+					"customCode": "",
+					"relationColor": "#ff9800"
+				},
+				"517bde49-7772-4a6a-a20f-cdd14875cc76": {
+					"c_p": "one",
+					"c_cp": "",
+					"c_cch": "",
+					"c_ch": "many",
+					"c_mch": "true",
+					"c_mp": "true",
+					"desc": "",
+					"type": "identifying",
+					"linegraphics": "default",
+					"child": "03cce6fc-31fa-4e39-a437-0e6e33eafd0e",
+					"id": "517bde49-7772-4a6a-a20f-cdd14875cc76",
+					"name": "fk_problem_PT",
+					"parent": "aa118985-ca82-4c98-bbdf-c6654aa4f75a",
+					"parent_key": "e9d6f91b-804c-43ea-b38d-efacbb904773",
+					"cols": [
+						{
+							"childcol": "4c644588-a69b-421a-869e-0aa2e476e7de",
+							"id": "6b04f193-c9f3-4bed-a536-1e6ab8b91281",
+							"parentcol": "a2b81a36-721e-4bad-a247-ed961d359406"
 						}
 					],
 					"ri_pd": "No action",
@@ -18308,35 +18329,6 @@
 					"customCode": "",
 					"relationColor": "#ff9800"
 				},
-				"9215c6d7-cf32-4274-88d4-04f178fb2655": {
-					"c_p": "one",
-					"c_cp": "",
-					"c_cch": "",
-					"c_ch": "many",
-					"c_mch": "true",
-					"c_mp": "true",
-					"desc": "",
-					"type": "identifying",
-					"linegraphics": "default",
-					"child": "58d2c04d-6f53-4432-b9ae-3a30949d646f",
-					"id": "9215c6d7-cf32-4274-88d4-04f178fb2655",
-					"name": "fk_TCPM_TCM",
-					"parent": "d7bd2a76-c755-4927-9857-08e74b1d0a96",
-					"parent_key": "d80863ed-8a71-4980-b3cc-e5d64aa5f394",
-					"cols": [
-						{
-							"childcol": "db8fd724-aa82-4369-aa86-8f3331f8a50f",
-							"id": "9ff3ec27-1d18-41ba-94fb-fd6a0d4bd1dd",
-							"parentcol": "5a5abaf0-09da-4deb-b1ec-cbc73d199078"
-						}
-					],
-					"ri_pd": "Cascade",
-					"ri_pu": "Cascade",
-					"generate": true,
-					"generateCustomCode": true,
-					"customCode": "",
-					"relationColor": "#4caf50"
-				},
 				"51ce49de-71ba-4353-9b9a-fa48807dcb72": {
 					"c_p": "one",
 					"c_cp": "",
@@ -18365,6 +18357,35 @@
 					"generateCustomCode": true,
 					"customCode": "",
 					"relationColor": "#ff9800"
+				},
+				"9215c6d7-cf32-4274-88d4-04f178fb2655": {
+					"c_p": "one",
+					"c_cp": "",
+					"c_cch": "",
+					"c_ch": "many",
+					"c_mch": "true",
+					"c_mp": "true",
+					"desc": "",
+					"type": "identifying",
+					"linegraphics": "default",
+					"child": "58d2c04d-6f53-4432-b9ae-3a30949d646f",
+					"id": "9215c6d7-cf32-4274-88d4-04f178fb2655",
+					"name": "fk_TCPM_TCM",
+					"parent": "d7bd2a76-c755-4927-9857-08e74b1d0a96",
+					"parent_key": "d80863ed-8a71-4980-b3cc-e5d64aa5f394",
+					"cols": [
+						{
+							"childcol": "db8fd724-aa82-4369-aa86-8f3331f8a50f",
+							"id": "9ff3ec27-1d18-41ba-94fb-fd6a0d4bd1dd",
+							"parentcol": "5a5abaf0-09da-4deb-b1ec-cbc73d199078"
+						}
+					],
+					"ri_pd": "Cascade",
+					"ri_pu": "Cascade",
+					"generate": true,
+					"generateCustomCode": true,
+					"customCode": "",
+					"relationColor": "#4caf50"
 				},
 				"e8fcea1d-98c1-43de-a544-819d0b10aa33": {
 					"c_p": "one",
@@ -18692,7 +18713,7 @@
 					"includeWarnings": "yes",
 					"includeCreationSql": "no"
 				},
-				"lastSaved": 1777891090976,
+				"lastSaved": 1777891500846,
 				"connectionId": "7af83ebc-4655-4802-a6d0-2c6890f3e1ce",
 				"modelHTMLReportDir": "/Users/sandeep/temp",
 				"filePath": "/Users/sandeep/projects/sconsole/SConsoleNxt/doc/sconsole.dbmodel.dmm"
@@ -20920,6 +20941,27 @@
 							"name": "root_cause",
 							"nn": false,
 							"param": "32",
+							"pk": false,
+							"unsigned": false,
+							"zerofill": false,
+							"estimatedSize": "",
+							"data": "",
+							"binary": false
+						},
+						{
+							"after": "",
+							"autoinc": false,
+							"charset": "",
+							"collation": "",
+							"comment": "",
+							"datatype": "INT",
+							"defaultvalue": "0",
+							"enum": "",
+							"fk": false,
+							"id": "940bdaab-861d-4ff0-ba35-3f593d232fd8",
+							"name": "exec_score",
+							"nn": true,
+							"param": "",
 							"pk": false,
 							"unsigned": false,
 							"zerofill": false,

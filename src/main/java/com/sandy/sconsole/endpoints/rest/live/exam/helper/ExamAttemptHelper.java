@@ -131,10 +131,6 @@ public class ExamAttemptHelper {
     public QAttemptLapAnalysisUpdateRes saveQAttemptLapAnalysis(
             int qAttemptId, QAttemptLapAnalysisUpdateReq req ) {
 
-        log.debug( "saveQAttemptLapAnalysis >> qAttemptId={}, lapName={}, score={}, numObservations={}",
-                qAttemptId, req.lapName(), req.score(),
-                req.observations() == null ? 0 : req.observations().length ) ;
-
         if( req.lapName() == null || req.lapName().isBlank() )
             throw new IllegalArgumentException( "lapName must not be blank" ) ;
 
