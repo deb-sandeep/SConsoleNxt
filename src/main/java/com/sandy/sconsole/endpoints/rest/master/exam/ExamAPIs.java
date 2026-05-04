@@ -156,4 +156,18 @@ public class ExamAPIs {
         }
     }
     
+    @GetMapping( "/QAttemptLapAnalysisObservations" )
+    public ResponseEntity<AR<List<String>>> getMasterListOfLapAnalysisObservations() {
+        
+        try {
+            List<String> obsNames = this.examRepo.findAllLapAnalysisObservationNames() ;
+            return AR.success( obsNames ) ;
+        }
+        catch( IllegalArgumentException e ) {
+            return AR.badRequest( e.getMessage() ) ;
+        }
+        catch( Exception e ) {
+            return systemError( e ) ;
+        }
+    }
 }
