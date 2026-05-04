@@ -325,16 +325,17 @@ public class ExamAttemptAPIs {
         }
     }
     
-    @PostMapping( "/QAttemptLapAnalysis" )
+    @PostMapping( "/QAttemptLapAnalysis/{qAttemptId}" )
     public ResponseEntity<AR<QAttemptLapAnalysisUpdateRes>> updateQAttemptLapAnalysis(
+            @PathVariable Integer qAttemptId,
             @RequestBody QAttemptLapAnalysisUpdateReq req ) {
         
         log.debug( ">> QAttemptLapAnalysis | qAttemptId={} lap={}",
-                   req.qAttemptId(), req.lapName() ) ;
+                   qAttemptId, req.lapName() ) ;
         
         try {
             ExamAttemptHelper helper = SConsole.getBean( ExamAttemptHelper.class ) ;
-            QAttemptLapAnalysisUpdateRes res = helper.saveQAttemptLapAnalysis( req ) ;
+            QAttemptLapAnalysisUpdateRes res = helper.saveQAttemptLapAnalysis( qAttemptId, req ) ;
             
             return AR.success( res ) ;
         }

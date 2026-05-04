@@ -1,9 +1,7 @@
 package com.sandy.sconsole.endpoints.rest.live.exam.helper;
 
 import com.sandy.sconsole.dao.exam.*;
-import com.sandy.sconsole.dao.exam.repo.ExamAttemptRepo;
-import com.sandy.sconsole.dao.exam.repo.ExamRepo;
-import com.sandy.sconsole.dao.exam.repo.ExamSectionAttemptRepo;
+import com.sandy.sconsole.dao.exam.repo.*;
 import com.sandy.sconsole.endpoints.rest.live.exam.vo.QAttemptLapAnalysisUpdateReq;
 import com.sandy.sconsole.endpoints.rest.live.exam.vo.QAttemptLapAnalysisUpdateRes;
 import com.sandy.sconsole.endpoints.rest.master.exam.vo.reqres.CreateExamAttemptRes;
@@ -15,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -33,6 +32,12 @@ public class ExamAttemptHelper {
     
     @Autowired
     private ExamQuestionAttemptRepo examQuestionAttemptRepo ;
+
+    @Autowired
+    private QAttemptLapAnalysisRepo qAttemptLapAnalysisRepo ;
+
+    @Autowired
+    private QAttemptLapObsRepo qAttemptLapObsRepo ;
     
     @Transactional
     public CreateExamAttemptRes createExamAttempt( int examId ) {
@@ -102,7 +107,84 @@ public class ExamAttemptHelper {
         return examQuestionAttemptRepo.saveAndFlush( questionAttempt ) ;
     }
     
-    public QAttemptLapAnalysisUpdateRes saveQAttemptLapAnalysis( QAttemptLapAnalysisUpdateReq req ) {
-        return null ;
+    /**
+     * Creates or replaces the lap-level analysis entry for a question attempt.
+     *
+     * <p>A question attempt can be worked on across multiple named laps (e.g. L1, L2).
+     * Each lap may have exactly one {@link QAttemptLapAnalysis} record capturing a score,
+     * a note, and zero or more tagged observations. This method enforces that invariant
+     * by deleting any pre-existing analysis for the same attempt + lap before inserting
+     * the new one supplied in the request.
+     *
+     * <p>After persisting the new analysis the method recomputes the parent attempt's
+     * {@code execScore} as the integer average of scores across all its lap analyses.
+     * This gives the coach a single composite execution quality indicator on the attempt.
+     *
+     * @param req  the update payload — must have a non-blank {@code lapName} and a valid
+     *             {@code qAttemptId} that references an existing {@link ExamQuestionAttempt}
+     * @return     a response containing the new analysis id and the recomputed exec score
+     *
+     * @throws IllegalArgumentException if {@code req} is null, {@code lapName} is blank,
+     *                                  or no attempt exists for {@code qAttemptId}
+     */
+    @Transactional
+    public QAttemptLapAnalysisUpdateRes saveQAttemptLapAnalysis(
+            int qAttemptId, QAttemptLapAnalysisUpdateReq req ) {
+
+        log.debug( "saveQAttemptLapAnalysis >> qAttemptId={}, lapName={}, score={}, numObservations={}",
+                qAttemptId, req.lapName(), req.score(),
+                req.observations() == null ? 0 : req.observations().length ) ;
+
+        if( req.lapName() == null || req.lapName().isBlank() )
+            throw new IllegalArgumentException( "lapName must not be blank" ) ;
+
+        // Pessimistic write lock on the attempt prevents concurrent exec-score updates
+        // from racing against each other when multiple laps are saved simultaneously.
+        ExamQuestionAttempt attempt = examQuestionAttemptRepo
+                .findByIdForUpdate( qAttemptId )
+                .orElseThrow( () -> new IllegalArgumentException(
+                        "ExamQuestionAttempt not found for id: " + qAttemptId ) ) ;
+
+        // Remove existing analysis for this lap (if any).
+        // The DB-level ON DELETE CASCADE on exam_qattempt_lap_obs.analysis_id
+        // automatically removes all child observation rows.
+        qAttemptLapAnalysisRepo
+                .findByAttemptIdAndLapName( qAttemptId, req.lapName() )
+                .ifPresent( existing -> qAttemptLapAnalysisRepo.delete( existing ) ) ;
+
+        // Flush the delete so it is visible to the re-fetch below.
+        qAttemptLapAnalysisRepo.flush() ;
+
+        QAttemptLapAnalysis analysis = new QAttemptLapAnalysis() ;
+        analysis.setAttempt( attempt ) ;
+        analysis.setLapName( req.lapName() ) ;
+        analysis.setScore( req.score() ) ;
+        analysis.setNote( req.note() ) ;
+        analysis = qAttemptLapAnalysisRepo.saveAndFlush( analysis ) ;
+
+        if( req.observations() != null ) {
+            for( String text : req.observations() ) {
+                QAttemptLapObs obs = new QAttemptLapObs() ;
+                obs.setAnalysis( analysis ) ;
+                obs.setObservation( text ) ;
+                qAttemptLapObsRepo.save( obs ) ;
+            }
+        }
+
+        // Recompute exec score as the integer average of scores across all laps.
+        // Re-fetching from the DB (rather than using the in-memory collection) ensures
+        // the deleted lap is excluded and the newly inserted lap is included.
+        List<QAttemptLapAnalysis> allLaps = qAttemptLapAnalysisRepo.findByAttemptId( qAttemptId ) ;
+        int execScore = (int) Math.round(
+                allLaps.stream()
+                       .mapToInt( l -> l.getScore() == null ? 0 : l.getScore() )
+                       .average()
+                       .orElse( 0.0 ) ) ;
+
+        attempt.setExecScore( execScore ) ;
+        examQuestionAttemptRepo.save( attempt ) ;
+
+        return new QAttemptLapAnalysisUpdateRes(
+                attempt.getId(), req.lapName(), execScore ) ;
     }
 }
