@@ -330,9 +330,6 @@ public class ExamAttemptAPIs {
             @PathVariable Integer qAttemptId,
             @RequestBody QAttemptLapAnalysisUpdateReq req ) {
         
-        log.debug( ">> QAttemptLapAnalysis | qAttemptId={} lap={}",
-                   qAttemptId, req.lapName() ) ;
-        
         try {
             ExamAttemptHelper helper = SConsole.getBean( ExamAttemptHelper.class ) ;
             QAttemptLapAnalysisUpdateRes res = helper.saveQAttemptLapAnalysis( qAttemptId, req ) ;
