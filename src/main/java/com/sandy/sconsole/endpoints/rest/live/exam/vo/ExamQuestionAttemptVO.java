@@ -3,6 +3,8 @@ package com.sandy.sconsole.endpoints.rest.live.exam.vo;
 import com.sandy.sconsole.SConsole;
 import com.sandy.sconsole.dao.exam.ExamAttemptLapSnapshot;
 import com.sandy.sconsole.dao.exam.ExamQuestionAttempt;
+import com.sandy.sconsole.dao.exam.QAttemptLapAnalysis;
+import com.sandy.sconsole.dao.exam.QAttemptLapObs;
 import com.sandy.sconsole.dao.exam.repo.ExamAttemptLapSnapshotRepo;
 import com.sandy.sconsole.endpoints.rest.master.exam.vo.ExamQuestionVO;
 import lombok.Data;
@@ -26,7 +28,10 @@ public class ExamQuestionAttemptVO {
     private Integer loss ;
     private Integer avoidableLoss ;
     private String rootCause ;
+    private Integer execScore ;
+    
     private Map<String, Integer> lapDurations = new HashMap<>() ;
+    private Map<String, ExamQuestionAttemptLapAnalysis> lapAnalysis = new HashMap<>() ;
     
     public ExamQuestionAttemptVO(){}
     
@@ -43,8 +48,10 @@ public class ExamQuestionAttemptVO {
         this.setLoss( entity.getLoss() ) ;
         this.setAvoidableLoss( entity.getAvoidableLoss() ) ;
         this.setRootCause( entity.getRootCause() == null ? null : entity.getRootCause().getCause() ) ;
+        this.setExecScore( entity.getExecScore() == null ? 9 : entity.getExecScore() ) ;
         
         populateLapDurations( entity ) ;
+        populateLapAnalysis( entity ) ;
     }
     
     private void populateLapDurations( ExamQuestionAttempt attempt ) {
@@ -58,6 +65,21 @@ public class ExamQuestionAttemptVO {
             for( ExamAttemptLapSnapshot snapshot : snapshots ) {
                 lapDurations.put( snapshot.getLapName(), snapshot.getTimeSpent() ) ;
             }
+        }
+    }
+    
+    private void populateLapAnalysis( ExamQuestionAttempt attempt ) {
+        
+        for( QAttemptLapAnalysis analysis : attempt.getLapAnalysis() ) {
+            ExamQuestionAttemptLapAnalysis la = new ExamQuestionAttemptLapAnalysis() ;
+            la.setLapName( analysis.getLapName() ) ;
+            la.setScore( analysis.getScore() == null ? 0 : analysis.getScore() ) ;
+            la.setNote( analysis.getNote() ) ;
+            for( QAttemptLapObs obs : analysis.getObservations() ) {
+                la.getObservations().add( obs.getObservation() ) ;
+            }
+            
+            lapAnalysis.put( analysis.getLapName(), la ) ;
         }
     }
 }
