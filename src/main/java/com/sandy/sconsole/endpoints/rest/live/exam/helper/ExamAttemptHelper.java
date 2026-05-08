@@ -104,6 +104,7 @@ public class ExamAttemptHelper {
         questionAttempt.setScore( 0 ) ;
         questionAttempt.setLoss( 0 ) ;
         questionAttempt.setAvoidableLoss( 0 ) ;
+        questionAttempt.setExecScore( 0 ) ;
         return examQuestionAttemptRepo.saveAndFlush( questionAttempt ) ;
     }
     
