@@ -11,10 +11,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Component
@@ -165,23 +162,84 @@ public class ExamAttemptHelper {
                 obs.setAnalysis( analysis ) ;
                 obs.setObservation( text ) ;
                 qAttemptLapObsRepo.save( obs ) ;
+                // Keep the in-memory collection consistent so the L1 cache holds
+                // accurate state when getExecScore re-fetches with JOIN FETCH.
+                analysis.getObservations().add( obs ) ;
             }
+            qAttemptLapObsRepo.flush() ;
         }
 
         // Recompute exec score as the integer average of scores across all laps.
         // Re-fetching from the DB (rather than using the in-memory collection) ensures
         // the deleted lap is excluded and the newly inserted lap is included.
-        List<QAttemptLapAnalysis> allLaps = qAttemptLapAnalysisRepo.findByAttemptId( qAttemptId ) ;
-        int execScore = (int) Math.round(
-                allLaps.stream()
-                       .mapToInt( l -> l.getScore() == null ? 0 : l.getScore() )
-                       .average()
-                       .orElse( 0.0 ) ) ;
-
+        int execScore = getExecScore( attempt ) ;
         attempt.setExecScore( execScore ) ;
         examQuestionAttemptRepo.save( attempt ) ;
 
         return new QAttemptLapAnalysisUpdateRes(
                 attempt.getId(), req.lapName(), execScore ) ;
+    }
+    
+    /**
+     * Computes the execution quality score for a question attempt as a weighted
+     * integer average (1–10) of its lap-level scores.
+     *
+     * <p><b>Weighting rules:</b>
+     * <ul>
+     *   <li><b>Commit lap</b> (lapName == {@code answerSubmitLap}) — weight 2.
+     *       The commit lap is <em>never</em> excluded: if it is also tagged
+     *       {@code ACCIDENTAL_TOUCH} the human observation is assumed to be mistaken
+     *       and the hard data takes precedence.</li>
+     *   <li><b>Accidental-touch lap</b> (non-commit lap whose observations contain
+     *       {@code ACCIDENTAL_TOUCH}) — weight 0 (excluded entirely).</li>
+     *   <li><b>All other laps</b> — weight 1.</li>
+     * </ul>
+     *
+     * <p>Returns 0 when no laps survive the filter (e.g. every non-commit lap is
+     * accidental, and no answer was ever committed).
+     *
+     * @param questionAttempt the attempt whose exec score is being recomputed;
+     *                        {@code answerSubmitLap} may be null for unanswered questions
+     *
+     * @return weighted-average score rounded to the nearest integer, or 0 if no
+     *         scoreable laps exist
+     */
+    private int getExecScore( ExamQuestionAttempt questionAttempt ) {
+
+        // Re-fetch from DB with observations to ensure in-flight changes are reflected.
+        List<QAttemptLapAnalysis> allLaps =
+                qAttemptLapAnalysisRepo.findByAttemptIdWithObservations( questionAttempt.getId() ) ;
+
+        String commitLapName = questionAttempt.getAnswerSubmitLap() ;
+
+        int weightedSum = 0 ;
+        int weightSum   = 0 ;
+
+        for( QAttemptLapAnalysis lap : allLaps ) {
+            boolean isCommitLap = commitLapName != null &&
+                                  commitLapName.equals( lap.getLapName() ) ;
+            
+            // Commit lap is never excluded — hard data overrides any ACCIDENTAL_TOUCH tag.
+            if( !isCommitLap ) {
+                boolean isAccidental = false ;
+                Set<QAttemptLapObs> observations = lap.getObservations() ;
+                for( QAttemptLapObs obs : observations ) {
+                    if( "ACCIDENTAL_TOUCH".equals( obs.getObservation() ) ) {
+                        isAccidental = true ;
+                        break ;
+                    }
+                }
+                if( isAccidental ) continue ;
+            }
+
+            int weight = isCommitLap ? 2 : 1 ;
+            int score  = lap.getScore() == null ? 0 : lap.getScore() ;
+            
+            weightedSum += weight * score ;
+            weightSum   += weight ;
+        }
+
+        if( weightSum == 0 ) return 0 ;
+        return (int) Math.round( (double) weightedSum / weightSum ) ;
     }
 }
