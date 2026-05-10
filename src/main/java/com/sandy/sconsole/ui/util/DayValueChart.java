@@ -229,7 +229,9 @@ public class DayValueChart {
                 // a misleading skyline view.
                 if( rangeMaxValueSupplier == null ) {
                     NumberAxis rangeAxis = ( NumberAxis ) plot.getRangeAxis() ;
-                    rangeAxis.setRange( 0, Math.ceil( max ) );
+                    double upper = Math.ceil( max ) ;
+                    upper = upper <= 0 ? 9 : upper ;
+                    rangeAxis.setRange( 0, upper );
                 }
             }
         }
