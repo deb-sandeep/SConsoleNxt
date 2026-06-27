@@ -123,7 +123,7 @@ public class SConsoleFrame extends JFrame
     public void minuteTicked( Calendar calendar ) {
         int minute = calendar.get( Calendar.MINUTE ) ;
         int hour = calendar.get( Calendar.HOUR_OF_DAY ) ;
-        if( hour > 5 || hour < 1 ) {
+        if( hour >=5 || hour < 1 ) {
             if( minute % 5 == 0 ) {
                 try {
                     captureScreenshot() ;
