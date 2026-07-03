@@ -213,12 +213,12 @@ public class ActiveTopicStatistics {
 
             // If we are before the exercise start date, the current burn rate is considered zero
             // as there is nothing to track against.
-            requiredBurnRate = (int)Math.ceil( (float)numProblemsLeft / numExerciseDaysLeft ) ;
+            requiredBurnRate = (int)Math.ceil( (float)numProblemsLeft / numExerciseDaysLeft ) + 1 ;
         }
         else { // We are at or beyond the exercise start date
             if( numProblemsLeft > 0 ) {
                 if( currentZone == Zone.EXERCISE ) {
-                    requiredBurnRate = (int)Math.ceil((float)numProblemsLeft / numExerciseDaysLeft ) ;
+                    requiredBurnRate = (int)Math.ceil((float)numProblemsLeft / numExerciseDaysLeft ) + 1 ;
                 }
                 else {
                     requiredBurnRate = numProblemsLeft;
