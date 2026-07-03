@@ -18,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.awt.Color;
+import java.awt.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -506,13 +506,13 @@ public class ActiveTopicStatistics {
     public String getScoreLabel() {
         if( burnStressScore < -0.70 ) return "GOATED" ;       // Way ahead — elite pace, >43% surplus capacity
         if( burnStressScore < -0.30 ) return "SLAYIN" ;       // Comfortably ahead — killing it
-        if( burnStressScore <  0.00 ) return "AHEAD" ;        // Slightly ahead — good energy, no stress
+        if( burnStressScore <= 0.00 ) return "AHEAD" ;        // Slightly ahead — good energy, no stress
         if( burnStressScore <  0.20 ) return "SLIGHT LAG" ;   // Genuinely on track — within 10% of planned burn
         if( burnStressScore <  0.38 ) return "MODERATE LAG" ; // 10–20% extra burn needed; easily recoverable
         if( burnStressScore <  0.66 ) return "CRITICAL LAG" ; // 20–40% extra burn needed; needs attention
         if( burnStressScore <  0.84 ) return "COOKED" ;       // 40–60% extra burn needed; replan territory
         if( burnStressScore <  0.96 ) return "REPLAN !!" ;    // 60–100% extra burn needed; urgent intervention
-        return "CATASTROPHE" ;                                 // >2× planned burn rate; consider scope reduction
+        return "CATASTROPHE" ;                                // >2× planned burn rate; consider scope reduction
     }
 
     /**
@@ -525,7 +525,7 @@ public class ActiveTopicStatistics {
      * Positive scores rotate hue from yellow (score=0, hue=0.165) to red (score=+1, hue=0).
      */
     public Color getScoreColor() {
-        if( burnStressScore < 0 ) {
+        if( burnStressScore <= 0 ) {
             float brightness = 0.55f + 0.35f * (float)( -burnStressScore ) ;
             return Color.getHSBColor( 0.33f, 1.0f, brightness ) ;
         }
