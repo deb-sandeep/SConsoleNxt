@@ -14,6 +14,7 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.annotations.XYTextAnnotation;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.Marker;
@@ -24,6 +25,7 @@ import org.jfree.data.time.Day;
 import org.jfree.data.time.RegularTimePeriod;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
+import org.jfree.ui.TextAnchor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -202,6 +204,7 @@ public class TopicBurnChartTile extends Tile
             plotHistoricBurnRegression() ;
             plotMilestoneMarker() ;
             plotBaseMilestoneBurn() ;
+            plotScoreAnnotation() ;
             
             historicBurn.fireSeriesChanged() ;
             baseBurnProjection.fireSeriesChanged() ;
@@ -210,14 +213,37 @@ public class TopicBurnChartTile extends Tile
         chart.setNotify( true ) ;
     }
     
+    /**
+     * Adds the burnStressScore label (e.g. "SLIGHT LAG", "COOKED") as a text annotation
+     * anchored to the top-right corner of the plot area.
+     *
+     * X = endDate timestamp and Y = numTotalProblems place the anchor just inside the
+     * top-right of the data space (the Y axis max is set to 1.05 × numTotalProblems,
+     * so this coordinate sits just below the top edge). TextAnchor.TOP_RIGHT means the
+     * top-right corner of the text string is pinned to that point, so the text grows
+     * leftward and downward — keeping it fully within the plot bounds.
+     */
+    private void plotScoreAnnotation() {
+        XYTextAnnotation annotation = new XYTextAnnotation(
+                ats.getScoreLabel(),
+                ats.getExerciseEndDate().getTime(),
+                ats.getNumTotalProblems()
+        ) ;
+        annotation.setFont( UITheme.BASE_FONT.deriveFont( Font.BOLD, 20f ) ) ;
+        annotation.setPaint( ats.getScoreColor() ) ;
+        annotation.setTextAnchor( TextAnchor.TOP_RIGHT ) ;
+        plot.addAnnotation( annotation ) ;
+    }
+
     private void clearChartData() {
-        
+
         baseBurnProjection.clear() ;
         historicBurn.clear() ;
         historicBurnRegression.clear() ;
-        
+
         plot.clearRangeMarkers() ;
         plot.clearDomainMarkers() ;
+        plot.clearAnnotations() ;
     }
     
     private void plotMilestoneMarker() {
