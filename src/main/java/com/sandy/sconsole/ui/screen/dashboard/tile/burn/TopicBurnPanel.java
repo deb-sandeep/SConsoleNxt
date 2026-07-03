@@ -66,6 +66,7 @@ public class TopicBurnPanel extends JPanel {
     private ActiveTopicStatistics topicStats ;
     
     private JLabel topicNameLabel ;
+    private JLabel leadLagLabel ;
     private JLabel currentBurnLabel;
     private JLabel requiredBurnLabel ;
     private PigeonPanel pigeonPanel ;
@@ -81,6 +82,10 @@ public class TopicBurnPanel extends JPanel {
         topicNameLabel = createEmptyLabel( theme ) ;
         topicNameLabel.setHorizontalAlignment( SwingConstants.LEFT ) ;
         topicNameLabel.setFont( UITheme.BASE_FONT.deriveFont( Font.PLAIN, 25f ) ) ;
+
+        leadLagLabel = createEmptyLabel( theme ) ;
+        leadLagLabel.setFont( UITheme.BASE_FONT.deriveFont( Font.PLAIN, 20f ) ) ;
+        leadLagLabel.setVerticalAlignment( SwingConstants.CENTER ) ;
         
         currentBurnLabel = createEmptyLabel( theme, TITLE_NUM_FONT ) ;
         currentBurnLabel.setHorizontalAlignment( SwingConstants.RIGHT ) ;
@@ -130,9 +135,14 @@ public class TopicBurnPanel extends JPanel {
         markerPanel.add( requiredBurnLabel, 2 ) ;
         markerPanel.add( overshootLabel, 3 ) ;
         
+        JPanel nameAndIndicatorPanel = new JPanel( new FlowLayout( FlowLayout.LEFT, 8, 0 ) ) ;
+        nameAndIndicatorPanel.setBackground( UITheme.BG_COLOR ) ;
+        nameAndIndicatorPanel.add( topicNameLabel ) ;
+        nameAndIndicatorPanel.add( leadLagLabel ) ;
+
         JPanel panel = new JPanel( new BorderLayout() ) ;
         panel.setBackground( UITheme.BG_COLOR ) ;
-        panel.add( topicNameLabel, BorderLayout.CENTER ) ;
+        panel.add( nameAndIndicatorPanel, BorderLayout.CENTER ) ;
         panel.add( markerPanel, BorderLayout.EAST ) ;
         
         return panel ;
@@ -151,6 +161,9 @@ public class TopicBurnPanel extends JPanel {
             
             topicNameLabel.setForeground( SwingUtils.darkerColor( syllabusColor, 0.6F ) ) ;
             topicNameLabel.setText( topicStats.getTopic().getTopicName() ) ;
+
+            leadLagLabel.setText( "  [" + topicStats.getScoreLabel() + "]" ) ;
+            leadLagLabel.setForeground( topicStats.getScoreColor() ) ;
             
             currentBurnLabel.setText( "[" + burnMeter.getCurrentBurnRate() + "]" ) ;
             requiredBurnLabel.setText( "[" + burnMeter.getRequiredBurnRate() + "]" ) ;
@@ -177,6 +190,8 @@ public class TopicBurnPanel extends JPanel {
             currentBurnLabel.setText( "" ) ;
             requiredBurnLabel.setText( "" ) ;
             overshootLabel.setText( "" ) ;
+            leadLagLabel.setText( "" ) ;
         }
     }
+
 }

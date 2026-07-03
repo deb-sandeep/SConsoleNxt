@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.awt.Color;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -71,6 +72,7 @@ public class ActiveTopicStatistics {
     @Getter private int numExerciseDaysLeft;
     @Getter private int currentBurnRate ;
     @Getter private int leadLagProblems ;
+    @Getter private double burnStressScore ;
     
     // Today data
     @Getter private int numProblemsSolvedToday = 0 ;
@@ -100,6 +102,7 @@ public class ActiveTopicStatistics {
         this.requiredBurnRate = 0 ;
         this.numOvershootDays = 0 ;
         this.leadLagProblems = 0 ;
+        this.burnStressScore = 0.0 ;
         this.numProblemsSolvedToday = 0 ;
 
         this.topicId              = assignment.getTopicId() ;
@@ -166,6 +169,7 @@ public class ActiveTopicStatistics {
         computeRequiredBurnRate() ;
         computeCurrentBurnAndOvershoot() ;
         this.leadLagProblems = numProblemsLeft - getNumProblemsIdeallyRemainingAt( new Date() ) ;
+        computeBurnStressScore() ;
         
         // Populate the problem state counters
         List<TopicProblemRepo.ProblemStateCount> problemStateCounts = tpRepo.getProblemStateCounts( topicId ) ;
@@ -284,6 +288,108 @@ public class ActiveTopicStatistics {
         this.numOvershootDays = durationDays( exerciseEndDate, projectedCompletionDate ) ;
         this.currentBurnRate = (int)Math.round( -coefficients[1]*86400*1000 ) ;
     }
+
+    /**
+     * Computes burnStressScore — a normalized, bounded severity indicator in (−1, +1).
+     *
+     * Formula: tanh(2 × baseScore × accelerationMultiplier)
+     *
+     * baseScore = leadLagProblems / (numExerciseDaysLeft × originalBurnRate)
+     *   — the lag expressed as a fraction of the remaining exercise capacity at the
+     *     original planned rate. Equals the fractional increase in daily burn needed
+     *     to recover: requiredBurnRate = originalBurnRate × (1 + baseScore).
+     *
+     * accelerationMultiplier [0.6, 1.5]
+     *   — eases the score when recent burn is accelerating, heightens it when decelerating.
+     *     Computed from two independent OLS windows over the last 14 days of history
+     *     (separate from the 8-day velocity window used for currentBurnRate).
+     *
+     * tanh(2×) scaling: k=2 is calibrated to real-world experience where the required
+     *   burn rarely exceeds 160% of planned (rawScore ≈ 0.6) before replanning, and 2×
+     *   planned burn (rawScore = 1.0) maps to tanh(2.0) = 0.964 — "catastrophic".
+     *   This places the full actionable range [0, 0.6] across ~83% of the display scale.
+     *
+     * Negative output = ahead of plan. Positive = behind.
+     * Returns 0.0 if outside the exercise phase or burn history is unavailable.
+     */
+    private void computeBurnStressScore() {
+        burnStressScore = 0.0 ;
+        if( numExerciseDaysLeft <= 0 || originalBurnRate <= 0 ) return ;
+
+        double baseScore = (double)leadLagProblems / ( (long)numExerciseDaysLeft * originalBurnRate ) ;
+
+        List<ProblemAttemptRepo.DayBurn> dayBurns = paRepo.getHistoricBurns( topicId ) ;
+        double multiplier = computeAccelerationMultiplier( dayBurns ) ;
+        double rawScore   = baseScore * multiplier ;
+
+        burnStressScore = Math.tanh( 2.0 * rawScore ) ;
+    }
+
+    /**
+     * Returns an acceleration multiplier in [0.6, 1.5] based on whether the student's
+     * burn rate has been speeding up or slowing down over the last 14 days.
+     *
+     * Uses two independent OLS windows over the 14-day history (completely separate from
+     * the 8-day window used by computeCurrentBurnAndOvershoot for currentBurnRate):
+     *   recent window : last 6 data points  → recentSlope (problems/day)
+     *   prior  window : preceding data points → priorSlope  (problems/day)
+     *
+     * rawAcceleration = recentSlope − priorSlope
+     *   Positive → burning faster lately (good) → multiplier < 1 → score eases
+     *   Negative → burning slower lately (bad)  → multiplier > 1 → score heightens
+     *
+     * accelerationFactor = rawAcceleration / originalBurnRate normalises for topic size.
+     * Clamped to [0.6, 1.5] so that even a sustained sprint or slump cannot swing the
+     * final burnStressScore by more than ±40-50% of the base value.
+     *
+     * Returns 1.0 (neutral) when fewer than 6 days of history are available.
+     */
+    private double computeAccelerationMultiplier( List<ProblemAttemptRepo.DayBurn> dayBurns ) {
+        final int ACCEL_WINDOW  = 14 ;
+        final int RECENT_WINDOW =  6 ;
+
+        if( dayBurns.size() < RECENT_WINDOW ) return 1.0 ;
+
+        int available = Math.min( dayBurns.size(), ACCEL_WINDOW ) ;
+        List<ProblemAttemptRepo.DayBurn> window =
+                dayBurns.subList( dayBurns.size() - available, dayBurns.size() ) ;
+
+        // Split: most recent RECENT_WINDOW entries vs the remainder as the prior window
+        int recentCount = Math.min( RECENT_WINDOW, available / 2 ) ;
+        int priorCount  = available - recentCount ;
+
+        double recentSlope = olsBurnSlope( window.subList( available - recentCount, available ) ) ;
+        double priorSlope  = olsBurnSlope( window.subList( 0, priorCount ) ) ;
+
+        double rawAcceleration    = recentSlope - priorSlope ;
+        double accelerationFactor = rawAcceleration / originalBurnRate ;
+
+        // Multiplier < 1 eases stress (student is accelerating);
+        // multiplier > 1 heightens stress (student is decelerating).
+        return Math.max( 0.6, Math.min( 1.5, 1.0 - accelerationFactor ) ) ;
+    }
+
+    /**
+     * Computes the OLS slope (problems solved per day) from a list of daily burn entries.
+     * Fits a line to the cumulative problems-solved series using timestamps as X values.
+     * Returns the slope in problems/day (positive = burning problems).
+     * Returns 0.0 if fewer than 2 data points are provided.
+     */
+    private double olsBurnSlope( List<ProblemAttemptRepo.DayBurn> burns ) {
+        if( burns.size() < 2 ) return 0.0 ;
+
+        double[][] data = new double[burns.size()][2] ;
+        double cumulative = 0 ;
+        for( int i = 0; i < burns.size(); i++ ) {
+            cumulative += burns.get( i ).getNumQuestionsSolved() ;
+            data[i][0] = burns.get( i ).getDate().getTime() ;
+            data[i][1] = cumulative ;
+        }
+
+        double[] coefficients = Regression.getOLSRegression( data ) ;
+        // coefficients[1] is slope in problems/ms; convert to problems/day
+        return coefficients[1] * 86_400_000 ;
+    }
     
     /**
      * Returns the ideal number of problems that should remain at a given day offset
@@ -392,6 +498,43 @@ public class ActiveTopicStatistics {
         return Zone.POST_END ;
     }
     
+    /**
+     * Returns a short category label for the current burnStressScore.
+     * Thresholds align with tanh(2×rawScore) values from the calibration table where
+     * rawScore is the fractional excess burn rate required to recover.
+     */
+    public String getScoreLabel() {
+        if( burnStressScore < -0.70 ) return "GOATED" ;       // Way ahead — elite pace, >43% surplus capacity
+        if( burnStressScore < -0.30 ) return "SLAYIN" ;       // Comfortably ahead — killing it
+        if( burnStressScore <  0.00 ) return "AHEAD" ;        // Slightly ahead — good energy, no stress
+        if( burnStressScore <  0.20 ) return "SLIGHT LAG" ;   // Genuinely on track — within 10% of planned burn
+        if( burnStressScore <  0.38 ) return "MODERATE LAG" ; // 10–20% extra burn needed; easily recoverable
+        if( burnStressScore <  0.66 ) return "CRITICAL LAG" ; // 20–40% extra burn needed; needs attention
+        if( burnStressScore <  0.84 ) return "COOKED" ;       // 40–60% extra burn needed; replan territory
+        if( burnStressScore <  0.96 ) return "REPLAN !!" ;    // 60–100% extra burn needed; urgent intervention
+        return "CATASTROPHE" ;                                 // >2× planned burn rate; consider scope reduction
+    }
+
+    /**
+     * Returns a colour for the current burnStressScore, interpolated from green (score=−1)
+     * through yellow (score=0) to red (score=+1).
+     *
+     * Negative scores use pure green at varying brightness — brightest when furthest ahead,
+     * to create a positive-reinforcement gradient (GOATED glows more than VIBIN).
+     *
+     * Positive scores rotate hue from yellow (score=0, hue=0.165) to red (score=+1, hue=0).
+     */
+    public Color getScoreColor() {
+        if( burnStressScore < 0 ) {
+            float brightness = 0.55f + 0.35f * (float)( -burnStressScore ) ;
+            return Color.getHSBColor( 0.33f, 1.0f, brightness ) ;
+        }
+        else {
+            float hue = 0.165f * (float)( 1.0 - burnStressScore ) ;
+            return Color.getHSBColor( Math.max( 0f, hue ), 1.0f, 0.9f ) ;
+        }
+    }
+
     public List<ProblemAttemptRepo.DayBurn> getHistoricBurns() {
         return paRepo.getHistoricBurns( topicId ) ;
     }
