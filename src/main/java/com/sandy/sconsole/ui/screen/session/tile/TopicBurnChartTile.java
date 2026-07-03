@@ -256,30 +256,12 @@ public class TopicBurnChartTile extends Tile
     }
     
     private void plotBaseMilestoneBurn() {
-        
-        final int exerciseStartDayNum = ats.getCoachingNumDays() + ats.getSelfStudyNumDays() ;
-        final int exerciseEndDayNum = exerciseStartDayNum + ats.getNumExerciseDays() ;
+
         final int topicEndDayNum = ats.getNumTotalDays() ;
-        
-        double numRemainingProblems = ats.getNumTotalProblems() ;
-        double idealExerciseBurn = ats.getOriginalBurnRate() ;
-        if( historicBurn.getItemCount() > 0 ) {
-            numRemainingProblems = historicBurn.getDataItem( 0 ).getValue().intValue() ;
-            idealExerciseBurn = (float)numRemainingProblems / ats.getNumExerciseDays() ;
-        }
-        
         for( int dayCount = 0; dayCount < topicEndDayNum; dayCount++ ) {
             Day day = new Day( DateUtils.addDays( ats.getStartDate(), dayCount ) ) ;
-            
-            double plannedDayBurn = 0 ;
-            if( dayCount >= exerciseStartDayNum && dayCount < exerciseEndDayNum ) {
-                plannedDayBurn = idealExerciseBurn ;
-            }
-
-            numRemainingProblems -= plannedDayBurn ;
-            numRemainingProblems = Math.max( numRemainingProblems, 0 ) ;
-            
-            baseBurnProjection.add( day, numRemainingProblems, false ) ;
+            int idealRemaining = ats.getIdealRemainingAtDayOffset( dayCount ) ;
+            baseBurnProjection.add( day, idealRemaining, false ) ;
         }
     }
     

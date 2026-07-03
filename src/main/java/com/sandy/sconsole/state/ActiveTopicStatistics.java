@@ -70,6 +70,7 @@ public class ActiveTopicStatistics {
     @Getter private int numProblemsLeft ;
     @Getter private int numExerciseDaysLeft;
     @Getter private int currentBurnRate ;
+    @Getter private int leadLagProblems ;
     
     // Today data
     @Getter private int numProblemsSolvedToday = 0 ;
@@ -98,6 +99,7 @@ public class ActiveTopicStatistics {
         this.currentBurnRate = 0 ;
         this.requiredBurnRate = 0 ;
         this.numOvershootDays = 0 ;
+        this.leadLagProblems = 0 ;
         this.numProblemsSolvedToday = 0 ;
 
         this.topicId              = assignment.getTopicId() ;
@@ -153,7 +155,7 @@ public class ActiveTopicStatistics {
         originalBurnRate  = Math.round( (float)numTotalProblems / numExerciseDays ) ;
         
         // Derived in relation to the current date
-        currentZone         = computeCurrentZone() ;
+        currentZone         = computeZoneAt( new Date() ) ;
         numProblemsLeft     = topicRepo.getRemainingProblemCount( topicId ) ;
         numExerciseDaysLeft = durationDays( new Date(), exerciseEndDate ) ;
         
@@ -163,6 +165,7 @@ public class ActiveTopicStatistics {
         
         computeRequiredBurnRate() ;
         computeCurrentBurnAndOvershoot() ;
+        this.leadLagProblems = numProblemsLeft - getNumProblemsIdeallyRemainingAt( new Date() ) ;
         
         // Populate the problem state counters
         List<TopicProblemRepo.ProblemStateCount> problemStateCounts = tpRepo.getProblemStateCounts( topicId ) ;
@@ -282,22 +285,108 @@ public class ActiveTopicStatistics {
         this.currentBurnRate = (int)Math.round( -coefficients[1]*86400*1000 ) ;
     }
     
-    private Zone computeCurrentZone() {
-        
-        Date today = new Date() ;
-        if( today.before( startDate ) ) {
+    /**
+     * Returns the ideal number of problems that should remain at a given day offset
+     * from the topic start date (0 = first day of topic).
+     *
+     * Zone logic uses pure integer arithmetic (not Date comparisons) for two reasons:
+     *   1. The chart calls this for each plotted day using JFreeChart Day.getStart(),
+     *      which returns exact midnight. isBetween() uses a strict date.after(start)
+     *      check, so a midnight date equal to a zone boundary is not matched — causing
+     *      the first day of each zone to be misclassified as POST_END (= 0), producing
+     *      discontinuous drops in the chart.
+     *   2. Integer day offsets are always unambiguous; Date comparisons near DST
+     *      transitions can produce off-by-one errors.
+     *
+     * daysIntoExercise is 1-indexed (first exercise day = 1), matching the old chart
+     * convention where the ideal burn begins on the first exercise day, not the second.
+     *
+     * The burn rate is kept as a double (numTotalProblems / numExerciseDays) to avoid
+     * the integer-rounding error that would otherwise cause the line to hit zero before
+     * the exercise end date (e.g. round(757/152) = 5, but 152*5 = 760 > 757).
+     */
+    public int getIdealRemainingAtDayOffset( int dayOffset ) {
+        int exerciseStartDayNum = coachingNumDays + selfStudyNumDays ;
+        int exerciseEndDayNum   = exerciseStartDayNum + numExerciseDays ;
+
+        // No burn expected before exercise phase begins
+        if( dayOffset < exerciseStartDayNum ) {
+            return numTotalProblems ;
+        }
+        // Exercise window is closed; all problems should have been solved
+        else if( dayOffset >= exerciseEndDayNum ) {
+            return 0 ;
+        }
+        else {
+            // +1 because exercise days are 1-indexed: on offset=exerciseStartDayNum
+            // one full day's worth of burn is already expected.
+            int daysIntoExercise = dayOffset - exerciseStartDayNum + 1 ;
+
+            // Use a fractional rate — NOT the pre-rounded originalBurnRate integer —
+            // so that accumulated rounding error does not shorten the ideal burn line.
+            double idealBurnRate = (double)numTotalProblems / numExerciseDays ;
+            return (int)Math.max( 0, Math.round( numTotalProblems - daysIntoExercise * idealBurnRate ) ) ;
+        }
+    }
+
+    /**
+     * Returns the ideal number of problems that should remain at an arbitrary Date,
+     * using zone detection via Date comparisons.
+     *
+     * Safe to call with new Date() (current wall-clock time) because isBetween() uses
+     * a strict date.after(start) check — and the current time (e.g. 10:00 AM) is always
+     * strictly after the zone boundary midnight dates stored in the DB.  Do NOT call
+     * this with Day.getStart() or any other midnight timestamp; use
+     * getIdealRemainingAtDayOffset() instead (see its Javadoc for the reason).
+     *
+     * Used to compute leadLagProblems: how far ahead or behind the ideal plan the
+     * student currently is.  Positive result = lagging; negative = ahead.
+     *
+     * The burn rate is kept as a double for the same float-precision reason described
+     * in getIdealRemainingAtDayOffset.
+     */
+    public int getNumProblemsIdeallyRemainingAt( Date date ) {
+        Zone zone = computeZoneAt( date ) ;
+        return switch( zone ) {
+            // Student is not expected to solve problems outside the exercise phase
+            case PRE_START, COACHING, SELF_STUDY -> numTotalProblems ;
+            case EXERCISE -> {
+                // durationDays is inclusive on both ends (same-day = 1), so
+                // daysIntoExercise is 1 on the first exercise day — matching the
+                // 1-indexed convention in getIdealRemainingAtDayOffset.
+                int daysIntoExercise = durationDays( exerciseStartDate, date ) ;
+                double idealBurnRate = (double)numTotalProblems / numExerciseDays ;
+                yield (int)Math.max( 0, Math.round( numTotalProblems - daysIntoExercise * idealBurnRate ) ) ;
+            }
+            // Exercise window is closed; everything should have been solved
+            case CONSOLIDATiON, POST_END -> 0 ;
+        } ;
+    }
+
+    /**
+     * Classifies the given date into a topic Zone (PRE_START → COACHING → SELF_STUDY →
+     * EXERCISE → CONSOLIDATiON → POST_END) based on the date boundaries computed in
+     * refreshState().
+     *
+     * isBetween() is strictly exclusive on the start boundary (date.after(start)), so
+     * this method is reliable only when 'date' has a time component that is genuinely
+     * after midnight — i.e. a real wall-clock timestamp such as new Date().  Passing a
+     * midnight Date (e.g. Day.getStart()) risks misclassifying boundary days.
+     */
+    private Zone computeZoneAt( Date date ) {
+        if( date.before( startDate ) ) {
             return Zone.PRE_START ;
         }
-        else if( isBetween( coachingStartDate, coachingEndDate, today ) ) {
+        else if( isBetween( coachingStartDate, coachingEndDate, date ) ) {
             return Zone.COACHING ;
         }
-        else if( isBetween( selfStudyStartDate, selfStudyEndDate, today ) ) {
+        else if( isBetween( selfStudyStartDate, selfStudyEndDate, date ) ) {
             return Zone.SELF_STUDY ;
         }
-        else if( isBetween( exerciseStartDate, exerciseEndDate, today ) ) {
+        else if( isBetween( exerciseStartDate, exerciseEndDate, date ) ) {
             return Zone.EXERCISE ;
         }
-        else if( isBetween( consolidationStartDate, consolidationEndDate, today ) ) {
+        else if( isBetween( consolidationStartDate, consolidationEndDate, date ) ) {
             return Zone.CONSOLIDATiON ;
         }
         return Zone.POST_END ;
