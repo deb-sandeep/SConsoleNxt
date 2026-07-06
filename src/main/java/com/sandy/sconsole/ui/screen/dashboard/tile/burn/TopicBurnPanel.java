@@ -58,15 +58,67 @@ public class TopicBurnPanel extends JPanel {
         }
     }
     
+    private class MiniZoneBar extends JPanel {
+        private static final int DOT_SIZE = 5 ;
+        private double fraction = 0.5 ;
+
+        MiniZoneBar() {
+            setOpaque( false ) ;
+            setPreferredSize( new Dimension( 0, 6 ) ) ;
+        }
+
+        void setFraction( double f ) {
+            this.fraction = Math.max( 0.0, Math.min( 1.0, f ) ) ;
+            repaint() ;
+        }
+
+        @Override
+        protected void paintComponent( Graphics g ) {
+            super.paintComponent( g ) ;
+            int w = getWidth(), h = getHeight() ;
+            if( w <= 0 || h <= 0 ) return ;
+            Graphics2D g2 = (Graphics2D) g.create() ;
+            g2.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON ) ;
+            int ly = h / 2 ;
+            g2.setColor( Color.DARK_GRAY ) ;
+            g2.drawLine( 0, ly, w - 1, ly ) ;
+            int cx = Math.max( 0, Math.min( w - DOT_SIZE,
+                        (int) Math.round( fraction * w ) - DOT_SIZE / 2 ) ) ;
+            g2.setColor( zoneFractionColor( fraction ) ) ;
+            g2.fillRect( cx, ly - DOT_SIZE / 2, DOT_SIZE*2, DOT_SIZE ); ;
+            g2.dispose() ;
+        }
+    }
+
+    private class ZoneLabelPanel extends JPanel {
+        private final MiniZoneBar miniZoneBar = new MiniZoneBar() ;
+
+        ZoneLabelPanel() {
+            setLayout( new BorderLayout() ) ;
+            setBackground( UITheme.BG_COLOR ) ;
+            add( miniZoneBar, BorderLayout.NORTH ) ;
+            add( leadLagLabel, BorderLayout.CENTER ) ;
+        }
+
+        void setScore( double score ) {
+            int    zi   = ActiveTopicStatistics.zoneIndexFor( score ) ;
+            double lo   = ActiveTopicStatistics.ZONE_BOUNDS[ zi ] ;
+            double hi   = ActiveTopicStatistics.ZONE_BOUNDS[ zi + 1 ] ;
+            double span = hi - lo ;
+            miniZoneBar.setFraction( span > 0 ? (score - lo) / span : 0.5 ) ;
+        }
+    }
+
     @Autowired private ConfiguredUIAttributes uiAttributes ;
     @Autowired private UITheme theme ;
     @Autowired private BurnMeterCanvas burnMeter ;
     @Autowired private PctCompletionCanvas pctCompletionBar ;
 
     private ActiveTopicStatistics topicStats ;
-    
+
     private JLabel topicNameLabel ;
     private JLabel leadLagLabel ;
+    private ZoneLabelPanel zoneLabelPanel ;
     private JLabel currentBurnLabel;
     private JLabel requiredBurnLabel ;
     private PigeonPanel pigeonPanel ;
@@ -86,7 +138,8 @@ public class TopicBurnPanel extends JPanel {
         leadLagLabel = createEmptyLabel( theme ) ;
         leadLagLabel.setFont( UITheme.BASE_FONT.deriveFont( Font.PLAIN, 20f ) ) ;
         leadLagLabel.setVerticalAlignment( SwingConstants.CENTER ) ;
-        
+        zoneLabelPanel = new ZoneLabelPanel() ;
+
         currentBurnLabel = createEmptyLabel( theme, TITLE_NUM_FONT ) ;
         currentBurnLabel.setHorizontalAlignment( SwingConstants.RIGHT ) ;
         currentBurnLabel.setVerticalAlignment( SwingConstants.CENTER );
@@ -126,7 +179,7 @@ public class TopicBurnPanel extends JPanel {
     
     private JPanel getTopicNamePanel() {
         
-        JPanel markerPanel = new JPanel( new FlowLayout( FlowLayout.RIGHT, 5, 0 ) ) ;
+        JPanel markerPanel = new JPanel( new FlowLayout( FlowLayout.RIGHT, 10, 0 ) ) ;
         
         markerPanel.setPreferredSize( new Dimension( 250, 10 ) ) ;
         markerPanel.setBackground( UITheme.BG_COLOR ) ;
@@ -138,7 +191,7 @@ public class TopicBurnPanel extends JPanel {
         JPanel nameAndIndicatorPanel = new JPanel( new FlowLayout( FlowLayout.LEFT, 8, 0 ) ) ;
         nameAndIndicatorPanel.setBackground( UITheme.BG_COLOR ) ;
         nameAndIndicatorPanel.add( topicNameLabel ) ;
-        nameAndIndicatorPanel.add( leadLagLabel ) ;
+        nameAndIndicatorPanel.add( zoneLabelPanel ) ;
 
         JPanel panel = new JPanel( new BorderLayout() ) ;
         panel.setBackground( UITheme.BG_COLOR ) ;
@@ -162,8 +215,9 @@ public class TopicBurnPanel extends JPanel {
             topicNameLabel.setForeground( SwingUtils.darkerColor( syllabusColor, 0.6F ) ) ;
             topicNameLabel.setText( topicStats.getTopic().getTopicName() ) ;
 
-            leadLagLabel.setText( "  [" + topicStats.getScoreLabel() + "]" ) ;
+            leadLagLabel.setText( "[" + topicStats.getScoreLabel() + "]" ) ;
             leadLagLabel.setForeground( topicStats.getScoreColor() ) ;
+            zoneLabelPanel.setScore( topicStats.getBurnStressScore() ) ;
             
             currentBurnLabel.setText( "[" + burnMeter.getCurrentBurnRate() + "]" ) ;
             requiredBurnLabel.setText( "[" + burnMeter.getRequiredBurnRate() + "]" ) ;
@@ -191,7 +245,25 @@ public class TopicBurnPanel extends JPanel {
             requiredBurnLabel.setText( "" ) ;
             overshootLabel.setText( "" ) ;
             leadLagLabel.setText( "" ) ;
+            zoneLabelPanel.setScore( 0.0 ) ;
         }
+    }
+
+    private static Color zoneFractionColor( double fraction ) {
+        Color green = Color.getHSBColor( 0.33f, 1.0f, 0.75f ) ;
+        Color gray  = Color.GRAY ;
+        Color red   = Color.getHSBColor( 0.00f, 1.0f, 0.75f ) ;
+        return fraction <= 0.5
+            ? interpolateColor( green, gray, (float)( fraction * 2.0 ) )
+            : interpolateColor( gray,  red,  (float)( (fraction - 0.5) * 2.0 ) ) ;
+    }
+
+    private static Color interpolateColor( Color a, Color b, float t ) {
+        return new Color(
+            Math.round( a.getRed()   + t * (b.getRed()   - a.getRed()) ),
+            Math.round( a.getGreen() + t * (b.getGreen() - a.getGreen()) ),
+            Math.round( a.getBlue()  + t * (b.getBlue()  - a.getBlue()) )
+        ) ;
     }
 
 }
