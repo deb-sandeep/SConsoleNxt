@@ -499,20 +499,38 @@ public class ActiveTopicStatistics {
     }
     
     /**
-     * Returns a short category label for the current burnStressScore.
-     * Thresholds align with tanh(2×rawScore) values from the calibration table where
-     * rawScore is the fractional excess burn rate required to recover.
+     * Zone boundary table — one entry per boundary, so length = number of zones + 1.
+     * ZONE_LABELS[i] is the label for scores in [ZONE_BOUNDS[i], ZONE_BOUNDS[i+1]).
+     * The AHEAD zone uses an inclusive upper bound (<=0.00); zoneIndexFor() handles this.
      */
+    public static final double[] ZONE_BOUNDS = {
+        -1.0, -0.40, -0.30, -0.20, 0.00, 0.20, 0.38, 0.66, 0.84, 0.96, 1.0
+    } ;
+    public static final String[] ZONE_LABELS = {
+        "WAY AHEAD!!", "ROCKIN!!", "SLAYIN!", "AHEAD",
+        "SLIGHT LAG", "MODERATE LAG", "CRITICAL LAG", "COOKED", "REPLAN !!", "CATASTROPHE"
+    } ;
+
+    /**
+     * Returns the ZONE_LABELS index for a given score.
+     * Threshold conditions exactly mirror those in getScoreLabel() — keep in sync.
+     */
+    public static int zoneIndexFor( double score ) {
+        if( score < -0.40 ) return 0 ;  // WAY AHEAD!!
+        if( score < -0.30 ) return 1 ;  // ROCKIN!!
+        if( score < -0.20 ) return 2 ;  // SLAYIN!
+        if( score <= 0.00 ) return 3 ;  // AHEAD      (note: <= for score==0.0 edge case)
+        if( score <  0.20 ) return 4 ;  // SLIGHT LAG
+        if( score <  0.38 ) return 5 ;  // MODERATE LAG
+        if( score <  0.66 ) return 6 ;  // CRITICAL LAG
+        if( score <  0.84 ) return 7 ;  // COOKED
+        if( score <  0.96 ) return 8 ;  // REPLAN !!
+        return 9 ;                       // CATASTROPHE
+    }
+
+    /** Returns the zone label for the current burnStressScore. */
     public String getScoreLabel() {
-        if( burnStressScore < -0.70 ) return "GOATED" ;       // Way ahead — elite pace, >43% surplus capacity
-        if( burnStressScore < -0.30 ) return "SLAYIN" ;       // Comfortably ahead — killing it
-        if( burnStressScore <= 0.00 ) return "AHEAD" ;        // Slightly ahead — good energy, no stress
-        if( burnStressScore <  0.20 ) return "SLIGHT LAG" ;   // Genuinely on track — within 10% of planned burn
-        if( burnStressScore <  0.38 ) return "MODERATE LAG" ; // 10–20% extra burn needed; easily recoverable
-        if( burnStressScore <  0.66 ) return "CRITICAL LAG" ; // 20–40% extra burn needed; needs attention
-        if( burnStressScore <  0.84 ) return "COOKED" ;       // 40–60% extra burn needed; replan territory
-        if( burnStressScore <  0.96 ) return "REPLAN !!" ;    // 60–100% extra burn needed; urgent intervention
-        return "CATASTROPHE" ;                                // >2× planned burn rate; consider scope reduction
+        return ZONE_LABELS[ zoneIndexFor( burnStressScore ) ] ;
     }
 
     /**
@@ -525,12 +543,20 @@ public class ActiveTopicStatistics {
      * Positive scores rotate hue from yellow (score=0, hue=0.165) to red (score=+1, hue=0).
      */
     public Color getScoreColor() {
-        if( burnStressScore <= 0 ) {
-            float brightness = 0.55f + 0.35f * (float)( -burnStressScore ) ;
+        return scoreColor( burnStressScore ) ;
+    }
+
+    /**
+     * Static overload — returns the interpolated color for any arbitrary score value.
+     * Used by BurnHealthZoneBar to compute gradient colors at zone boundaries.
+     */
+    public static Color scoreColor( double score ) {
+        if( score <= 0 ) {
+            float brightness = 0.55f + 0.35f * (float)( -score ) ;
             return Color.getHSBColor( 0.33f, 1.0f, brightness ) ;
         }
         else {
-            float hue = 0.165f * (float)( 1.0 - burnStressScore ) ;
+            float hue = 0.165f * (float)( 1.0 - score ) ;
             return Color.getHSBColor( Math.max( 0f, hue ), 1.0f, 0.9f ) ;
         }
     }

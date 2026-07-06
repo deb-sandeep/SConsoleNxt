@@ -62,7 +62,9 @@ public class TopicBurnChartTile extends Tile
     private JFreeChart chart = null ;
     private XYPlot plot = null ;
     
-    private ChartPanel chartPanel = null ;
+    private ChartPanel       chartPanel    = null ;
+    private JPanel           chartWrapper  = null ;
+    private BurnHealthZoneBar healthZoneBar = null ;
     
     public TopicBurnChartTile() {
         this.setBorder( new EmptyBorder( 5, 5, 5, 5 ) );
@@ -164,13 +166,22 @@ public class TopicBurnChartTile extends Tile
     }
     
     private void attachChartPanel() {
-        
-        if( chartPanel != null ) {
-            remove( chartPanel ) ;
+
+        if( chartWrapper != null ) {
+            remove( chartWrapper ) ;
         }
+
         chartPanel = new ChartPanel( chart ) ;
         chartPanel.setDoubleBuffered( true ) ;
-        add( chartPanel ) ;
+
+        healthZoneBar = new BurnHealthZoneBar( ats ) ;
+
+        chartWrapper = new JPanel( new BorderLayout() ) ;
+        chartWrapper.setBackground( UITheme.BG_COLOR ) ;
+        chartWrapper.add( healthZoneBar, BorderLayout.NORTH ) ;
+        chartWrapper.add( chartPanel, BorderLayout.CENTER ) ;
+
+        add( chartWrapper ) ;
     }
     
     @Override
@@ -185,6 +196,7 @@ public class TopicBurnChartTile extends Tile
         SwingUtilities.invokeLater( () -> {
             try {
                 _redrawBurnChart() ;
+                if( healthZoneBar != null ) healthZoneBar.repaint() ;
             }
             catch( Exception e ) {
                 log.debug( "Exception processing topic change.", e ) ;
