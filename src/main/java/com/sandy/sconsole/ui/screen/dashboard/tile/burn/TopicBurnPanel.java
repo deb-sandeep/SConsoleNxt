@@ -58,7 +58,7 @@ public class TopicBurnPanel extends JPanel {
         }
     }
     
-    private class MiniZoneBar extends JPanel {
+    private static class MiniZoneBar extends JPanel {
         private static final int DOT_SIZE = 5 ;
         private double fraction = 0.5 ;
 
@@ -85,7 +85,7 @@ public class TopicBurnPanel extends JPanel {
             int cx = Math.max( 0, Math.min( w - DOT_SIZE,
                         (int) Math.round( fraction * w ) - DOT_SIZE / 2 ) ) ;
             g2.setColor( zoneFractionColor( fraction ) ) ;
-            g2.fillRect( cx, ly - DOT_SIZE / 2, DOT_SIZE*2, DOT_SIZE ); ;
+            g2.fillRect( cx, ly - DOT_SIZE / 2, DOT_SIZE*2, DOT_SIZE ) ;
             g2.dispose() ;
         }
     }
