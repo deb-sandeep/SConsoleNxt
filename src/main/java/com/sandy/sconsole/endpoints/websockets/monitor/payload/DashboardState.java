@@ -5,19 +5,22 @@ import com.sandy.sconsole.state.manager.ActiveTopicStatisticsManager;
 import com.sandy.sconsole.state.manager.TodaySessionStatistics;
 import lombok.Getter;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
 @Getter
 class TopicState {
-    
+
     private final String topicName ;
     private final int currentBurnRate ;
     private final int requiredBurnRate ;
     private final int numProblemsSolvedToday ;
     private final int numPigeons ;
     private final double burnStressScore ;
+    private final String burnStressZone ;
+    private final String burnStressZoneColor ;
 
     TopicState( ActiveTopicStatistics ts ) {
         this.topicName = ts.getTopic().getTopicName() ;
@@ -26,6 +29,12 @@ class TopicState {
         this.numProblemsSolvedToday = ts.getNumProblemsSolvedToday() ;
         this.numPigeons = ts.getNumPigeonedProblems() ;
         this.burnStressScore = ts.getBurnStressScore() ;
+        this.burnStressZone = ts.getBurnStressScoreLabel() ;
+        this.burnStressZoneColor = toHtmlColor( ts.getBurnStressScoreColor() ) ;
+    }
+
+    private static String toHtmlColor( Color c ) {
+        return String.format( "#%02x%02x%02x", c.getRed(), c.getGreen(), c.getBlue() ) ;
     }
 }
 

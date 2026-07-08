@@ -237,12 +237,12 @@ public class TopicBurnChartTile extends Tile
      */
     private void plotScoreAnnotation() {
         XYTextAnnotation annotation = new XYTextAnnotation(
-                ats.getScoreLabel(),
+                ats.getBurnStressScoreLabel(),
                 ats.getExerciseEndDate().getTime(),
                 ats.getNumTotalProblems()
         ) ;
         annotation.setFont( UITheme.BASE_FONT.deriveFont( Font.BOLD, 20f ) ) ;
-        annotation.setPaint( ats.getScoreColor() ) ;
+        annotation.setPaint( ats.getBurnStressScoreColor() ) ;
         annotation.setTextAnchor( TextAnchor.TOP_RIGHT ) ;
         plot.addAnnotation( annotation ) ;
     }

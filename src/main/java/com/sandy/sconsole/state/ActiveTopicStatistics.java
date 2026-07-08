@@ -529,7 +529,7 @@ public class ActiveTopicStatistics {
     }
 
     /** Returns the zone label for the current burnStressScore. */
-    public String getScoreLabel() {
+    public String getBurnStressScoreLabel() {
         return ZONE_LABELS[ zoneIndexFor( burnStressScore ) ] ;
     }
 
@@ -542,15 +542,15 @@ public class ActiveTopicStatistics {
      *
      * Positive scores rotate hue from yellow (score=0, hue=0.165) to red (score=+1, hue=0).
      */
-    public Color getScoreColor() {
-        return scoreColor( burnStressScore ) ;
+    public Color getBurnStressScoreColor() {
+        return burnStressScoreColor( burnStressScore ) ;
     }
 
     /**
      * Static overload — returns the interpolated color for any arbitrary score value.
      * Used by BurnHealthZoneBar to compute gradient colors at zone boundaries.
      */
-    public static Color scoreColor( double score ) {
+    public static Color burnStressScoreColor( double score ) {
         if( score <= 0 ) {
             float brightness = 0.55f + 0.35f * (float)( -score ) ;
             return Color.getHSBColor( 0.33f, 1.0f, brightness ) ;

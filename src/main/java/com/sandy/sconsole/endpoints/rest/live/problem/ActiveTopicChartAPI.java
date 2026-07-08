@@ -90,7 +90,7 @@ public class ActiveTopicChartAPI {
         sm.setCurrentBurnRate(   ats.getCurrentBurnRate() ) ;
         sm.setRequiredBurnRate(  ats.getRequiredBurnRate() ) ;
         sm.setBurnStressScore(   ats.getBurnStressScore() ) ;
-        sm.setScoreLabel(        ats.getScoreLabel() ) ;
+        sm.setScoreLabel(        ats.getBurnStressScoreLabel() ) ;
         sm.setNumOvershootDays(  ats.getNumOvershootDays() ) ;
         sm.setLeadLagProblems(   ats.getLeadLagProblems() ) ;
         sm.setNumExerciseDaysLeft( ats.getNumExerciseDaysLeft() ) ;

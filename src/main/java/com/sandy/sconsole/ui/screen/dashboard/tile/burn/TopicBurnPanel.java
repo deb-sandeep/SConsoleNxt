@@ -215,8 +215,8 @@ public class TopicBurnPanel extends JPanel {
             topicNameLabel.setForeground( SwingUtils.darkerColor( syllabusColor, 0.6F ) ) ;
             topicNameLabel.setText( topicStats.getTopic().getTopicName() ) ;
 
-            leadLagLabel.setText( "[" + topicStats.getScoreLabel() + "]" ) ;
-            leadLagLabel.setForeground( topicStats.getScoreColor() ) ;
+            leadLagLabel.setText( "[" + topicStats.getBurnStressScoreLabel() + "]" ) ;
+            leadLagLabel.setForeground( topicStats.getBurnStressScoreColor() ) ;
             zoneLabelPanel.setScore( topicStats.getBurnStressScore() ) ;
             
             currentBurnLabel.setText( "[" + burnMeter.getCurrentBurnRate() + "]" ) ;
