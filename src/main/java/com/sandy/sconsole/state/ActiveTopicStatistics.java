@@ -543,14 +543,14 @@ public class ActiveTopicStatistics {
      * Positive scores rotate hue from yellow (score=0, hue=0.165) to red (score=+1, hue=0).
      */
     public Color getBurnStressScoreColor() {
-        return burnStressScoreColor( burnStressScore ) ;
+        return scoreColor( burnStressScore ) ;
     }
 
     /**
      * Static overload — returns the interpolated color for any arbitrary score value.
      * Used by BurnHealthZoneBar to compute gradient colors at zone boundaries.
      */
-    public static Color burnStressScoreColor( double score ) {
+    public static Color scoreColor( double score ) {
         if( score <= 0 ) {
             float brightness = 0.55f + 0.35f * (float)( -score ) ;
             return Color.getHSBColor( 0.33f, 1.0f, brightness ) ;

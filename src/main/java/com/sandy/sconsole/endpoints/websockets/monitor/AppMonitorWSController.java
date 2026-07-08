@@ -9,6 +9,8 @@ import com.sandy.sconsole.core.bus.EventTargetMarker;
 import com.sandy.sconsole.dao.audit.repo.SessionEventRepo;
 import com.sandy.sconsole.endpoints.websockets.monitor.payload.DashboardState;
 import com.sandy.sconsole.endpoints.websockets.monitor.payload.SessionEventDTO;
+import com.sandy.sconsole.endpoints.websockets.monitor.payload.TopicDetailState;
+import com.sandy.sconsole.state.ActiveTopicStatistics;
 import com.sandy.sconsole.state.manager.ActiveTopicStatisticsManager;
 import com.sandy.sconsole.state.manager.TodaySessionStatistics;
 import jakarta.annotation.PostConstruct;
@@ -34,7 +36,7 @@ import static com.sandy.sconsole.EventCatalog.ATS_REFRESHED;
 @MessageMapping( "/app-monitor" )
 public class AppMonitorWSController implements EventSubscriber {
     
-    public enum ResponseType { DAY_SESSION_EVENTS, SESSION_EVENT, CURRENT_DASHBOARD_STATE }
+    public enum ResponseType { DAY_SESSION_EVENTS, SESSION_EVENT, CURRENT_DASHBOARD_STATE, TOPIC_DETAIL_STATE }
     
     @Autowired private EventBus eventBus ;
     @Autowired private SimpMessagingTemplate template ;
@@ -78,7 +80,15 @@ public class AppMonitorWSController implements EventSubscriber {
         sendMessage( ResponseType.DAY_SESSION_EVENTS, events ) ;
         sendMessage( ResponseType.CURRENT_DASHBOARD_STATE, new DashboardState( atsMgr, todayStats ) ) ;
     }
-    
+
+    @MessageMapping( "/topicDetails" )
+    public void getTopicDetails( Integer topicId ) {
+        ActiveTopicStatistics ats = atsMgr.getTopicStatistics( topicId ) ;
+        if( ats != null ) {
+            sendMessage( ResponseType.TOPIC_DETAIL_STATE, new TopicDetailState( ats ) ) ;
+        }
+    }
+
     public void sendMessage( ResponseType resType, Object msg ) {
         
         AppMonitorResponse res = new AppMonitorResponse() ;
@@ -92,5 +102,12 @@ public class AppMonitorWSController implements EventSubscriber {
     @EventTargetMarker( { ATS_MANAGER_REFRESHED, ATS_REFRESHED } )
     public void handleEvent( Event event ) {
         sendMessage( ResponseType.CURRENT_DASHBOARD_STATE, new DashboardState( atsMgr, todayStats ) ) ;
+
+        if( event.getEventId() == ATS_REFRESHED ) {
+            ActiveTopicStatistics ats = atsMgr.getTopicStatistics( (Integer)event.getValue() ) ;
+            if( ats != null ) {
+                sendMessage( ResponseType.TOPIC_DETAIL_STATE, new TopicDetailState( ats ) ) ;
+            }
+        }
     }
 }

@@ -1,15 +1,19 @@
 package com.sandy.sconsole.endpoints.rest.live.problem ;
 
 import com.sandy.sconsole.core.api.AR ;
+import com.sandy.sconsole.core.util.ColorUtil;
 import com.sandy.sconsole.dao.session.repo.ProblemAttemptRepo ;
 import com.sandy.sconsole.endpoints.rest.live.problem.vo.ActiveTopicChartVO ;
 import com.sandy.sconsole.endpoints.rest.live.problem.vo.ActiveTopicChartVO.BurnPoint ;
+import com.sandy.sconsole.endpoints.rest.live.problem.vo.ActiveTopicChartVO.DayCountPoint ;
 import com.sandy.sconsole.endpoints.rest.live.problem.vo.ActiveTopicChartVO.PlanMetrics ;
+import com.sandy.sconsole.endpoints.rest.live.problem.vo.ActiveTopicChartVO.ProblemStateBreakdown ;
 import com.sandy.sconsole.endpoints.rest.live.problem.vo.ActiveTopicChartVO.StatusMetrics ;
 import com.sandy.sconsole.endpoints.rest.live.problem.vo.ActiveTopicChartVO.TopicInfo ;
 import com.sandy.sconsole.state.ActiveTopicStatistics ;
 import com.sandy.sconsole.state.manager.ActiveTopicStatisticsManager ;
 import lombok.extern.slf4j.Slf4j ;
+import org.apache.commons.lang3.time.DateUtils ;
 import org.springframework.beans.factory.annotation.Autowired ;
 import org.springframework.http.ResponseEntity ;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,7 +24,9 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList ;
 import java.util.Calendar ;
 import java.util.Date ;
+import java.util.HashMap ;
 import java.util.List ;
+import java.util.Map ;
 
 import static com.sandy.sconsole.core.api.AR.*;
 
@@ -31,6 +37,9 @@ public class ActiveTopicChartAPI {
 
     @Autowired
     private ActiveTopicStatisticsManager activeTopicStatsMgr ;
+
+    @Autowired
+    private ProblemAttemptRepo problemAttemptRepo ;
 
     @GetMapping( "/{topicId}/burnChart" )
     public ResponseEntity<AR<ActiveTopicChartVO>> getBurnChart( @PathVariable int topicId ) {
@@ -57,6 +66,13 @@ public class ActiveTopicChartAPI {
         vo.setActualBurn( actual ) ;
         vo.setIdealBurn( buildIdealBurn( ats ) ) ;
         vo.setProjectedBurn( buildProjectedBurn( ats, actual ) ) ;
+
+        vo.setBurnStressZoneColor(  ColorUtil.toHtmlColor( ats.getBurnStressScoreColor() ) ) ;
+        vo.setNumPigeonedProblems(  ats.getNumPigeonedProblems() ) ;
+        vo.setNumProblemsSolvedToday( ats.getNumProblemsSolvedToday() ) ;
+        vo.setAllTimeProblemState(  new ProblemStateBreakdown( ats.getAllProblemsStateCounter() ) ) ;
+        vo.setTodayProblemState(    new ProblemStateBreakdown( ats.getTodayProblemsStateCounter() ) ) ;
+        vo.setL30Burn( buildL30Burn( ats ) ) ;
         return vo ;
     }
 
@@ -158,6 +174,28 @@ public class ActiveTopicChartAPI {
             series.add( new BurnPoint( truncateToDay( cal.getTime() ), remaining ) ) ;
             if( remaining == 0 ) break ;
             cal.add( Calendar.DAY_OF_YEAR, 1 ) ;
+        }
+        return series ;
+    }
+
+    // Last 30 days of problems-solved-per-day, zero-filled — mirrors
+    // TopicL30BurnProvider's windowing (state/TopicL30BurnProvider.java).
+    private List<DayCountPoint> buildL30Burn( ActiveTopicStatistics ats ) {
+        Date today     = truncateToDay( new Date() ) ;
+        Date startDate = DateUtils.addDays( today, -29 ) ;
+
+        Map<Date, Integer> countsByDate = new HashMap<>() ;
+        problemAttemptRepo.getHistoricBurns( startDate, ats.getTopicId() )
+                          .forEach( db -> countsByDate.put(
+                                  truncateToDay( db.getDate() ), db.getNumQuestionsSolved() ) ) ;
+
+        List<DayCountPoint> series = new ArrayList<>() ;
+        for( int i = 0; i < 30; i++ ) {
+            Date date = DateUtils.addDays( startDate, i ) ;
+            int numSolved = sameDay( date, today )
+                    ? ats.getNumProblemsSolvedToday()
+                    : countsByDate.getOrDefault( date, 0 ) ;
+            series.add( new DayCountPoint( date, numSolved ) ) ;
         }
         return series ;
     }

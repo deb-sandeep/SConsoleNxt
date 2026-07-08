@@ -1,11 +1,11 @@
 package com.sandy.sconsole.endpoints.websockets.monitor.payload;
 
+import com.sandy.sconsole.core.util.ColorUtil;
 import com.sandy.sconsole.state.ActiveTopicStatistics;
 import com.sandy.sconsole.state.manager.ActiveTopicStatisticsManager;
 import com.sandy.sconsole.state.manager.TodaySessionStatistics;
 import lombok.Getter;
 
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -13,6 +13,7 @@ import java.util.List;
 @Getter
 class TopicState {
 
+    private final int topicId ;
     private final String topicName ;
     private final int currentBurnRate ;
     private final int requiredBurnRate ;
@@ -23,6 +24,7 @@ class TopicState {
     private final String burnStressZoneColor ;
 
     TopicState( ActiveTopicStatistics ts ) {
+        this.topicId = ts.getTopic().getId() ;
         this.topicName = ts.getTopic().getTopicName() ;
         this.currentBurnRate = ts.getCurrentBurnRate() ;
         this.requiredBurnRate = ts.getRequiredBurnRate() ;
@@ -30,11 +32,7 @@ class TopicState {
         this.numPigeons = ts.getNumPigeonedProblems() ;
         this.burnStressScore = ts.getBurnStressScore() ;
         this.burnStressZone = ts.getBurnStressScoreLabel() ;
-        this.burnStressZoneColor = toHtmlColor( ts.getBurnStressScoreColor() ) ;
-    }
-
-    private static String toHtmlColor( Color c ) {
-        return String.format( "#%02x%02x%02x", c.getRed(), c.getGreen(), c.getBlue() ) ;
+        this.burnStressZoneColor = ColorUtil.toHtmlColor( ts.getBurnStressScoreColor() ) ;
     }
 }
 

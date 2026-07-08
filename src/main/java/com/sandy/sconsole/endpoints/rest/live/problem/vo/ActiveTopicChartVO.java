@@ -1,6 +1,7 @@
 package com.sandy.sconsole.endpoints.rest.live.problem.vo ;
 
 import com.fasterxml.jackson.annotation.JsonFormat ;
+import com.sandy.sconsole.state.manager.ProblemStateCounter;
 import lombok.Data ;
 
 import java.util.Date ;
@@ -61,10 +62,58 @@ public class ActiveTopicChartVO {
         }
     }
 
+    @Data
+    public static class DayCountPoint {
+        @JsonFormat( shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "IST" )
+        private Date date ;
+        private int  numSolved ;
+
+        public DayCountPoint( Date date, int numSolved ) {
+            this.date      = date ;
+            this.numSolved = numSolved ;
+        }
+    }
+
+    @Data
+    public static class ProblemStateBreakdown {
+        private int totalCount ;
+        private int numAssigned ;
+        private int numCorrect ;
+        private int numIncorrect ;
+        private int numLater ;
+        private int numPigeons ;
+        private int numPigeonsExplained ;
+        private int numPigeonsSolved ;
+        private int numPurged ;
+        private int numReassign ;
+        private int numRedo ;
+
+        public ProblemStateBreakdown( ProblemStateCounter c ) {
+            this.totalCount          = c.getTotalCount() ;
+            this.numAssigned         = c.getNumAssigned() ;
+            this.numCorrect          = c.getNumCorrect() ;
+            this.numIncorrect        = c.getNumIncorrect() ;
+            this.numLater            = c.getNumLater() ;
+            this.numPigeons          = c.getNumPigeons() ;
+            this.numPigeonsExplained = c.getNumPigeonsExplained() ;
+            this.numPigeonsSolved    = c.getNumPigeonsSolved() ;
+            this.numPurged           = c.getNumPurged() ;
+            this.numReassign         = c.getNumReassign() ;
+            this.numRedo             = c.getNumRedo() ;
+        }
+    }
+
     private TopicInfo       topic ;
     private PlanMetrics     plan ;
     private StatusMetrics   status ;
     private List<BurnPoint> actualBurn ;    // historic solved + today's position
     private List<BurnPoint> idealBurn ;     // 2-4 inflection points for Chart.js line
     private List<BurnPoint> projectedBurn ; // forward from last actual at currentBurnRate
+
+    private String burnStressZoneColor ;    // HTML hex color for status.burnStressScore
+    private int numPigeonedProblems ;
+    private int numProblemsSolvedToday ;
+    private ProblemStateBreakdown allTimeProblemState ;
+    private ProblemStateBreakdown todayProblemState ;
+    private List<DayCountPoint> l30Burn ;    // last 30 days, problems solved per day
 }
