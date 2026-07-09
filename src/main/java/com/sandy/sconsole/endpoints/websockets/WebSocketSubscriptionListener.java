@@ -22,9 +22,7 @@ public class WebSocketSubscriptionListener {
         String sessionId = accessor.getSessionId() ;
         String destination = accessor.getDestination() ;
         if( destination!= null && destination.equals( "/topic/app-monitor-responses" ) ) {
-            appMonitorWSController.getAllStudyEvents() ;
             log.debug( "Received subscription request for /topic/app-monitor-responses from session: {}", sessionId ) ;
-            //log.debug( "  Sending all study events to session: {}", sessionId ) ;
         }
     }
 }
