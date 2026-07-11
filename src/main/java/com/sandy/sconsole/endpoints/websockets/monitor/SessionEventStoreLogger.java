@@ -183,20 +183,24 @@ public class SessionEventStoreLogger implements EventSubscriber {
     }
     
     private void persistEvent( String eventId, Object payload ) {
+
+        Date eventTime = new Date() ;
         try {
             String jsonPayload = jsonMapper.writerWithDefaultPrettyPrinter().writeValueAsString( payload ) ;
-            
+
             SessionEvent event = new SessionEvent() ;
             event.setEventId( eventId ) ;
-            event.setTime( new Date() ) ;
+            event.setTime( eventTime ) ;
             event.setPayload( jsonPayload ) ;
             eventRepo.saveAndFlush( event ) ;
-            
-            appMonWebSocket.sendMessage( AppMonitorWSController.ResponseType.SESSION_EVENT,
-                                         new SessionEventDTO( eventId, event.getTime(), payload ) ) ;
         }
         catch( Exception e ) {
             log.error( "Error while persisting event payload", e ) ;
         }
+
+        // Broadcast regardless of whether persistence succeeded - live monitoring
+        // should not be silently suppressed by an audit-trail write failure.
+        appMonWebSocket.sendMessage( AppMonitorWSController.ResponseType.SESSION_EVENT,
+                                     new SessionEventDTO( eventId, eventTime, payload ) ) ;
     }
 }

@@ -12,6 +12,7 @@ public interface SessionEventRepo extends JpaRepository<SessionEvent, Integer> {
     select se
     from SessionEvent se
     where DATE(se.time) = CURDATE()
+    order by se.time, se.id
     """)
   List<SessionEvent> findEventsForToday() ;
 }
