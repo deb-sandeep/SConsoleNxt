@@ -18,10 +18,14 @@ public interface DailyBurnLogRepo extends JpaRepository<DailyBurnLog, DailyBurnL
         // returns Byte, a joined one (as used by getSyllabusFullBurnMet)
         // returns Boolean. Spring Data's projection proxy won't convert
         // between either of those and a fixed declared type, so this stays
-        // Object and isFullBurnMet() below normalizes whichever shows up.
+        // Object and burnMetAsBoolean() below normalizes whichever shows up.
+        // (Note: this can't be named isFullBurnMet() - Spring Data's
+        // projection proxy treats "is"/"get" as interchangeable prefixes for
+        // the same JavaBean property, so it would collide with
+        // getFullBurnMet() and break the proxy's accessor resolution.)
         Object getFullBurnMet() ;
 
-        default boolean isFullBurnMet() {
+        default boolean burnMetAsBoolean() {
             Object raw = getFullBurnMet() ;
             if( raw instanceof Boolean b ) return b ;
             if( raw instanceof Number n )  return n.intValue() != 0 ;

@@ -84,7 +84,7 @@ public class SyllabusL30EffortTile extends Tile
         DayValueChart.DayBurnMetSource burnMetSource = ( start, end ) -> {
             Map<Date, Boolean> result = new HashMap<>() ;
             dailyBurnLogRepo.getSyllabusFullBurnMet( syllabusName, start, end )
-                            .forEach( r -> result.put( r.getDate(), r.isFullBurnMet() ) ) ;
+                            .forEach( r -> result.put( r.getDate(), r.burnMetAsBoolean() ) ) ;
             return result ;
         } ;
 

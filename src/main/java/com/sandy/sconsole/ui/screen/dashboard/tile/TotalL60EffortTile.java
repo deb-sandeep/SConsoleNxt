@@ -46,7 +46,7 @@ public class TotalL60EffortTile extends Tile
         DayValueChart.DayBurnMetSource burnMetSource = ( start, end ) -> {
             Map<Date, Boolean> result = new HashMap<>() ;
             dailyBurnLogRepo.getTotalFullBurnMet( start, end )
-                            .forEach( r -> result.put( r.getDate(), r.isFullBurnMet() ) ) ;
+                            .forEach( r -> result.put( r.getDate(), r.burnMetAsBoolean() ) ) ;
             return result ;
         } ;
 
