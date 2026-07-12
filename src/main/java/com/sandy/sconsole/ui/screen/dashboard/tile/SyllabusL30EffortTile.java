@@ -6,6 +6,7 @@ import com.sandy.sconsole.core.bus.EventSubscriber;
 import com.sandy.sconsole.core.bus.EventTargetMarker;
 import com.sandy.sconsole.core.ui.screen.Tile;
 import com.sandy.sconsole.core.ui.uiutil.SwingUtils;
+import com.sandy.sconsole.dao.session.repo.DailyBurnLogRepo;
 import com.sandy.sconsole.state.SyllabusL30EffortProvider;
 import com.sandy.sconsole.state.manager.PastEffortProviderManager;
 import com.sandy.sconsole.ui.util.ConfiguredUIAttributes;
@@ -18,6 +19,9 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.awt.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.sandy.sconsole.EventCatalog.PAST_EFFORT_UPDATED;
 
@@ -35,7 +39,10 @@ public class SyllabusL30EffortTile extends Tile
     
     @Autowired
     private PastEffortProviderManager pastEffortsManager;
-    
+
+    @Autowired
+    private DailyBurnLogRepo dailyBurnLogRepo ;
+
     @Setter
     private String syllabusName ;
     
@@ -74,12 +81,20 @@ public class SyllabusL30EffortTile extends Tile
         
         pastEffortProvider = pastEffortsManager.getPastEffortProvider( syllabusName ) ;
         
+        DayValueChart.DayBurnMetSource burnMetSource = ( start, end ) -> {
+            Map<Date, Boolean> result = new HashMap<>() ;
+            dailyBurnLogRepo.getSyllabusFullBurnMet( syllabusName, start, end )
+                            .forEach( r -> result.put( r.getDate(), r.getFullBurnMet() != 0 ) ) ;
+            return result ;
+        } ;
+
         dayValueChart = new DayValueChart( "Hours",
                                     SwingUtils.darkerColor( syllabusColor, 0.5F ),
-                                    syllabusColor.brighter(), 
+                                    syllabusColor.brighter(),
                                     pastEffortProvider,
                                     pastEffortsManager::getMaxSyllabusTime,
-                                    true ) ;
+                                    true,
+                                    burnMetSource ) ;
         
         if( chartPanel != null ) {
             remove( chartPanel ) ;

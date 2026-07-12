@@ -7,6 +7,7 @@ import com.sandy.sconsole.core.bus.EventTargetMarker;
 import com.sandy.sconsole.core.ui.screen.Tile;
 import com.sandy.sconsole.core.ui.uiutil.UITheme;
 import com.sandy.sconsole.core.util.LastNDayValueProvider;
+import com.sandy.sconsole.dao.session.repo.DailyBurnLogRepo;
 import com.sandy.sconsole.state.manager.PastEffortProviderManager;
 import com.sandy.sconsole.ui.util.DayValueChart;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,9 @@ import org.springframework.stereotype.Component;
 
 import javax.swing.border.MatteBorder;
 import java.awt.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.sandy.sconsole.EventCatalog.PAST_EFFORT_UPDATED;
 
@@ -25,24 +29,34 @@ import static com.sandy.sconsole.EventCatalog.PAST_EFFORT_UPDATED;
 @Scope( "prototype" )
 public class TotalL60EffortTile extends Tile
     implements EventSubscriber {
-    
+
     @Autowired private EventBus eventBus ;
     @Autowired private PastEffortProviderManager pastStudyTimesManager ;
-    
+    @Autowired private DailyBurnLogRepo dailyBurnLogRepo ;
+
     private DayValueChart dayValueChart ;
-    
+
     @Override
     public void initialize() {
         subscribeToEvents() ;
         setBorder( new MatteBorder( 0, 1, 1, 1, UITheme.TILE_BORDER_COLOR ) ) ;
-        
+
         LastNDayValueProvider pastStudyTimes = pastStudyTimesManager.getPastEffortProvider() ;
+
+        DayValueChart.DayBurnMetSource burnMetSource = ( start, end ) -> {
+            Map<Date, Boolean> result = new HashMap<>() ;
+            dailyBurnLogRepo.getTotalFullBurnMet( start, end )
+                            .forEach( r -> result.put( r.getDate(), r.getFullBurnMet() != 0 ) ) ;
+            return result ;
+        } ;
+
         dayValueChart = new DayValueChart( "Hours",
                                             Color.DARK_GRAY,
                                             Color.LIGHT_GRAY,
                                             pastStudyTimes,
                                             null,
-                                            true ) ;
+                                            true,
+                                            burnMetSource ) ;
         
         ChartPanel chartPanel = new ChartPanel( dayValueChart.getJFreeChart() ) ;
         chartPanel.setMinimumDrawHeight( 204 ) ;
