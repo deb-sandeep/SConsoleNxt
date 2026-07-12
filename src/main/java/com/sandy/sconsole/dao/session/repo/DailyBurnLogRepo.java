@@ -13,10 +13,20 @@ public interface DailyBurnLogRepo extends JpaRepository<DailyBurnLog, DailyBurnL
 
     interface DateBurnMet {
         Date getDate() ;
-        // MySQL returns MIN() over a TINYINT(1) column as a Byte, not a
-        // Boolean - Spring Data's projection proxy won't auto-convert that,
-        // so this is intentionally Byte; callers compare against zero.
-        Byte getFullBurnMet() ;
+        // MySQL's JDBC driver reports the type of MIN() over a TINYINT(1)
+        // column inconsistently depending on query shape - a plain query
+        // returns Byte, a joined one (as used by getSyllabusFullBurnMet)
+        // returns Boolean. Spring Data's projection proxy won't convert
+        // between either of those and a fixed declared type, so this stays
+        // Object and isFullBurnMet() below normalizes whichever shows up.
+        Object getFullBurnMet() ;
+
+        default boolean isFullBurnMet() {
+            Object raw = getFullBurnMet() ;
+            if( raw instanceof Boolean b ) return b ;
+            if( raw instanceof Number n )  return n.intValue() != 0 ;
+            return false ;
+        }
     }
 
     @Query( nativeQuery = true, value = """
