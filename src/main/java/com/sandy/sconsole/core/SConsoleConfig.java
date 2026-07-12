@@ -17,6 +17,10 @@ public class SConsoleConfig {
     private String envType = "dev" ;
     private File workspacePath = null ;
     private boolean printEventPublishLogs = false ;
+
+    // Time of day (HH:mm, 24 hour clock) at which the end of day screenshot
+    // is captured into ${workspace-path}/eod-screenshots/
+    private String eodScreenshotTime = "23:55" ;
     
     private String chemSpiderApiKey = null ;
     private File chemCompoundsImgFolder = null ;

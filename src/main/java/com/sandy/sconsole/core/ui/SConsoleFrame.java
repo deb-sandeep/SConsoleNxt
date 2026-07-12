@@ -35,6 +35,7 @@ public class SConsoleFrame extends JFrame
     implements ClockTickListener {
     
     public static final SimpleDateFormat DF = new SimpleDateFormat( "yyyy-MM-dd HHmmss" ) ;
+    public static final SimpleDateFormat EOD_DF = new SimpleDateFormat( "yyyy-MM-dd" ) ;
     
     private final Container contentPane ;
     
@@ -133,18 +134,51 @@ public class SConsoleFrame extends JFrame
                 }
             }
         }
+
+        if( isEodScreenshotTime( hour, minute ) ) {
+            try {
+                captureEndOfDayScreenshot() ;
+            }
+            catch( Exception e ) {
+                log.error( "Unable to capture end of day screenshot", e ) ;
+            }
+        }
     }
-    
+
+    private boolean isEodScreenshotTime( int hour, int minute ) {
+        String[] hhMm = config.getEodScreenshotTime().split( ":" ) ;
+        int eodHour = Integer.parseInt( hhMm[0].trim() ) ;
+        int eodMinute = Integer.parseInt( hhMm[1].trim() ) ;
+        return hour == eodHour && minute == eodMinute ;
+    }
+
     public void captureScreenshot()
             throws InterruptedException, InvocationTargetException {
-        
+
         File dir = new File( config.getWorkspacePath(), "screenshots" ) ;
         if( !dir.exists() ) {
             dir.mkdirs() ;
         }
-        
+
         File file = new File( dir, DF.format( new Date() ) + ".png" ) ;
-        
+        doCapture( file ) ;
+    }
+
+    public void captureEndOfDayScreenshot()
+            throws InterruptedException, InvocationTargetException {
+
+        File dir = new File( config.getWorkspacePath(), "eod-screenshots" ) ;
+        if( !dir.exists() ) {
+            dir.mkdirs() ;
+        }
+
+        File file = new File( dir, EOD_DF.format( new Date() ) + ".png" ) ;
+        doCapture( file ) ;
+    }
+
+    private void doCapture( File file )
+            throws InterruptedException, InvocationTargetException {
+
         SwingUtilities.invokeAndWait( () -> {
             if( screenImage == null ) {
                 // This is a memory heavy instance and takes around 30-40 MB
@@ -154,9 +188,9 @@ public class SConsoleFrame extends JFrame
                                                 getHeight(),
                                                 BufferedImage.TYPE_INT_RGB ) ;
             }
-            
+
             paint( screenImage.getGraphics() ) ;
-            
+
             try {
                 ImageIO.write( screenImage, "png", file ) ;
             }
