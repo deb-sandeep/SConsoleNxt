@@ -20,6 +20,8 @@ import org.springframework.stereotype.Component;
 
 import java.awt.*;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -80,7 +82,12 @@ public class ActiveTopicStatistics {
     // Projection based on current data
     @Getter private int requiredBurnRate ;
     @Getter private int numOvershootDays ;
-    
+
+    // Cached once per refreshState() so computeCurrentBurnAndOvershoot(),
+    // computeBurnStressScore() and the getHistoricBurns() accessor (used by
+    // chart/API callers) don't each re-issue the same query.
+    @Getter private List<ProblemAttemptRepo.DayBurn> historicBurns = List.of() ;
+
     @Getter private final ProblemStateCounter allProblemsStateCounter = new ProblemStateCounter() ;
     @Getter private final ProblemStateCounter todayProblemsStateCounter = new ProblemStateCounter() ;
     @Getter private final ProblemStateCounter currentSessionProblemStates = new ProblemStateCounter() ;
@@ -165,7 +172,9 @@ public class ActiveTopicStatistics {
         // Today data
         Integer tempInt = tspcRepo.getNumSolvedProblems( topicId ) ;
         numProblemsSolvedToday = tempInt == null ? 0 : tempInt ;
-        
+
+        historicBurns = paRepo.getHistoricBurns( topicId ) ;
+
         computeRequiredBurnRate() ;
         computeCurrentBurnAndOvershoot() ;
         this.leadLagProblems = numProblemsLeft - getNumProblemsIdeallyRemainingAt( new Date() ) ;
@@ -243,9 +252,9 @@ public class ActiveTopicStatistics {
         // in computing the current burn and overshoot.
         if( currentZone == Zone.POST_END ) return ;
     
-        List<ProblemAttemptRepo.DayBurn> dayBurns = paRepo.getHistoricBurns( topicId ) ;
+        List<ProblemAttemptRepo.DayBurn> dayBurns = historicBurns ;
         if( dayBurns.isEmpty() ) return ;
-        
+
         // Why historic burn + 2 data points? We take the first point as the total
         // problems pegged to the day before the first burn and the last element
         // is the current date and the remaining problems
@@ -318,11 +327,36 @@ public class ActiveTopicStatistics {
 
         double baseScore = (double)leadLagProblems / ( (long)numExerciseDaysLeft * originalBurnRate ) ;
 
-        List<ProblemAttemptRepo.DayBurn> dayBurns = paRepo.getHistoricBurns( topicId ) ;
-        double multiplier = computeAccelerationMultiplier( dayBurns ) ;
+        double multiplier = computeAccelerationMultiplier( withTodayMarker( historicBurns ) ) ;
         double rawScore   = baseScore * multiplier ;
 
         burnStressScore = Math.tanh( 2.0 * rawScore ) ;
+    }
+
+    /**
+     * Appends a synthetic zero-burn entry for today if the most recent historic
+     * burn is from an earlier day, mirroring the current-time marker that
+     * computeCurrentBurnAndOvershoot() adds at its data[data.length-1] point
+     * (see the comment above that method's data array construction). Without
+     * this, a multi-day gap since the last burn is invisible to the OLS windows
+     * in computeAccelerationMultiplier() below - the regression would keep
+     * extrapolating from whatever trend was happening as of the last burn,
+     * blind to an ongoing stall.
+     */
+    private List<ProblemAttemptRepo.DayBurn> withTodayMarker( List<ProblemAttemptRepo.DayBurn> dayBurns ) {
+        if( dayBurns.isEmpty() ) return dayBurns ;
+
+        Date today = DateUtils.truncate( new Date(), Calendar.DATE ) ;
+        Date lastBurnDate = DateUtils.truncate(
+                dayBurns.get( dayBurns.size()-1 ).getDate(), Calendar.DATE ) ;
+        if( !lastBurnDate.before( today ) ) return dayBurns ;
+
+        List<ProblemAttemptRepo.DayBurn> withMarker = new ArrayList<>( dayBurns ) ;
+        withMarker.add( new ProblemAttemptRepo.DayBurn() {
+            @Override public Date getDate() { return today ; }
+            @Override public int getNumQuestionsSolved() { return 0 ; }
+        } ) ;
+        return withMarker ;
     }
 
     /**
@@ -561,10 +595,6 @@ public class ActiveTopicStatistics {
         }
     }
 
-    public List<ProblemAttemptRepo.DayBurn> getHistoricBurns() {
-        return paRepo.getHistoricBurns( topicId ) ;
-    }
-    
     public boolean isCurrentlyActive() {
         Date today = new Date() ;
         return today.after( startDate ) && today.before( nextDay( endDate ) ) ;
