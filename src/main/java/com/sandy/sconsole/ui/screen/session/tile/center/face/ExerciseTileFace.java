@@ -226,7 +226,7 @@ public class ExerciseTileFace extends Tile
             
             case SESSION_EXTENDED -> {
                 SessionExtensionVO extension = ( SessionExtensionVO )event.getValue() ;
-                if( extension.getProblemAttemptDTO() != null ) {
+                if( extension.getProblemAttemptDTO() != null && currentProblemContext != null ) {
                     ProblemAttemptDTO attempt = extension.getProblemAttemptDTO() ;
                     currentProblemContext.setCurrentDuration( attempt.getEffectiveDuration() ) ;
                 }
