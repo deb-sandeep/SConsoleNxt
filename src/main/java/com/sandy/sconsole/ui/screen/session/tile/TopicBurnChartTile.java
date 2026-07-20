@@ -9,6 +9,7 @@ import com.sandy.sconsole.core.ui.uiutil.UITheme;
 import com.sandy.sconsole.dao.session.repo.ProblemAttemptRepo;
 import com.sandy.sconsole.state.ActiveTopicStatistics;
 import com.sandy.sconsole.state.manager.ActiveTopicStatisticsManager;
+import com.sandy.sconsole.ui.util.ZoneCelebrationOverlay;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.DateUtils;
 import org.jfree.chart.ChartFactory;
@@ -50,10 +51,12 @@ public class TopicBurnChartTile extends Tile
 
     @Autowired private ActiveTopicStatisticsManager atsManager ;
     @Autowired private EventBus eventBus ;
+    @Autowired private ZoneCelebrationOverlay celebrationOverlay ;
 
     // Instance variables are arranged in the order of initialization
     private ActiveTopicStatistics ats = null ;
-    
+    private Integer lastZoneIndex = null ;
+
     private TimeSeries historicBurn = null ;
     private TimeSeries baseBurnProjection = null ;
     private TimeSeries historicBurnRegression = null ;
@@ -80,7 +83,11 @@ public class TopicBurnChartTile extends Tile
         if( ats == null ) {
             throw new RuntimeException( "No active topic statistics found" ) ;
         }
-        
+
+        // Seeded silently - no celebration on the tile's initial load, only
+        // on a genuine improving transition observed after this point.
+        lastZoneIndex = ActiveTopicStatistics.zoneIndexFor( ats.getBurnStressScore() ) ;
+
         // Create, Configure and Attach a fresh chart to the tile
         // If an old chart exits, safely deconstruct it before attaching the new one
         configureTimeSeries() ;
@@ -188,7 +195,22 @@ public class TopicBurnChartTile extends Tile
     public synchronized void handleEvent( Event event ) {
         if( event.getEventId() == ATS_REFRESHED ) {
             scheduleReplot() ;
+            if( (int)event.getValue() == ats.getTopicId() ) {
+                checkZoneImprovement() ;
+            }
         }
+    }
+
+    // Celebrates only an improving crossing that lands in AHEAD-or-better
+    // territory (index <= 6) - matches ZONE_LABELS/ZONE_BOUNDS ordering,
+    // where index 0 = UNSTOPPABLE!! and index 12 = CATASTROPHE, so a lower
+    // index is always the better zone.
+    private void checkZoneImprovement() {
+        int newZoneIndex = ActiveTopicStatistics.zoneIndexFor( ats.getBurnStressScore() ) ;
+        if( lastZoneIndex != null && newZoneIndex <= 6 && newZoneIndex < lastZoneIndex ) {
+            celebrationOverlay.celebrate( newZoneIndex ) ;
+        }
+        lastZoneIndex = newZoneIndex ;
     }
 
     @EventTargetMarker( ATS_REFRESHED )
