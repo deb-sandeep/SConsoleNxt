@@ -545,11 +545,11 @@ public class ActiveTopicStatistics {
      * The AHEAD zone uses an inclusive upper bound (<=0.00); zoneIndexFor() handles this.
      */
     public static final double[] ZONE_BOUNDS = {
-        -1.0, -0.40, -0.30, -0.20, 0.00, 0.20, 0.38, 0.66, 0.84, 0.96, 1.0
+        -1.00, -0.85, -0.70, -0.55, -0.40, -0.30, -0.20, 0.00, 0.20, 0.38, 0.66, 0.84, 0.96, 1.0
     } ;
     public static final String[] ZONE_LABELS = {
-        "WAY AHEAD!!", "ROCKIN!!", "SLAYIN!", "AHEAD",
-        "SLIGHT LAG", "MODERATE LAG", "CRITICAL LAG", "COOKED", "REPLAN !!", "CATASTROPHE"
+        "UNSTOPPABLE", "LEGENDARY", "ELITE", "WAY AHEAD", "ROCKIN", "SLAYIN", "AHEAD",
+        "SLIGHT LAG", "MODERATE LAG", "CRITICAL LAG", "COOKED", "REPLAN", "CATASTROPHE"
     } ;
 
     /**
@@ -557,16 +557,19 @@ public class ActiveTopicStatistics {
      * Threshold conditions exactly mirror those in getScoreLabel() — keep in sync.
      */
     public static int zoneIndexFor( double score ) {
-        if( score < -0.40 ) return 0 ;  // WAY AHEAD!!
-        if( score < -0.30 ) return 1 ;  // ROCKIN!!
-        if( score < -0.20 ) return 2 ;  // SLAYIN!
-        if( score <= 0.00 ) return 3 ;  // AHEAD      (note: <= for score==0.0 edge case)
-        if( score <  0.20 ) return 4 ;  // SLIGHT LAG
-        if( score <  0.38 ) return 5 ;  // MODERATE LAG
-        if( score <  0.66 ) return 6 ;  // CRITICAL LAG
-        if( score <  0.84 ) return 7 ;  // COOKED
-        if( score <  0.96 ) return 8 ;  // REPLAN !!
-        return 9 ;                       // CATASTROPHE
+        if( score < -0.85 ) return 0 ;  // UNSTOPPABLE!!
+        if( score < -0.70 ) return 1 ;  // LEGENDARY!!
+        if( score < -0.55 ) return 2 ;  // ELITE!!
+        if( score < -0.40 ) return 3 ;  // WAY AHEAD!!
+        if( score < -0.30 ) return 4 ;  // ROCKIN!!
+        if( score < -0.20 ) return 5 ;  // SLAYIN!
+        if( score <= 0.00 ) return 6 ;  // AHEAD      (note: <= for score==0.0 edge case)
+        if( score <  0.20 ) return 7 ;  // SLIGHT LAG
+        if( score <  0.38 ) return 8 ;  // MODERATE LAG
+        if( score <  0.66 ) return 9 ;  // CRITICAL LAG
+        if( score <  0.84 ) return 10 ; // COOKED
+        if( score <  0.96 ) return 11 ; // REPLAN !!
+        return 12 ;                      // CATASTROPHE
     }
 
     /** Returns the zone label for the current burnStressScore. */
