@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.sandy.sconsole.EventCatalog.BURN_MET_OVERRIDE;
 import static com.sandy.sconsole.EventCatalog.PAST_EFFORT_UPDATED;
 
 @Slf4j
@@ -68,11 +69,11 @@ public class TotalL60EffortTile extends Tile
     }
     
     private void subscribeToEvents() {
-        eventBus.addAsyncSubscriber( this, PAST_EFFORT_UPDATED ) ;
+        eventBus.addAsyncSubscriber( this, PAST_EFFORT_UPDATED, BURN_MET_OVERRIDE ) ;
     }
-    
+
     @Override
-    @EventTargetMarker( PAST_EFFORT_UPDATED )
+    @EventTargetMarker( { PAST_EFFORT_UPDATED, BURN_MET_OVERRIDE } )
     public synchronized void handleEvent( Event event ) {
         dayValueChart.refreshChart() ;
     }

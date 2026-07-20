@@ -34,7 +34,8 @@ public interface DailyBurnLogRepo extends JpaRepository<DailyBurnLog, DailyBurnL
     }
 
     @Query( nativeQuery = true, value = """
-        select dbl.date as date, min(dbl.required_burn_met) as fullBurnMet
+        select dbl.date as date,
+               min(case when dbl.required_burn_met = 1 or dbl.burn_met_override = 1 then 1 else 0 end) as fullBurnMet
         from daily_burn_log dbl
         join topic_master tm on tm.id = dbl.topic_id
         where tm.syllabus_name = :syllabusName
@@ -46,7 +47,8 @@ public interface DailyBurnLogRepo extends JpaRepository<DailyBurnLog, DailyBurnL
                                               @Param( "endDate" ) Date endDate ) ;
 
     @Query( nativeQuery = true, value = """
-        select date, min(required_burn_met) as fullBurnMet
+        select date,
+               min(case when required_burn_met = 1 or burn_met_override = 1 then 1 else 0 end) as fullBurnMet
         from daily_burn_log
         where date between :startDate and :endDate
         group by date

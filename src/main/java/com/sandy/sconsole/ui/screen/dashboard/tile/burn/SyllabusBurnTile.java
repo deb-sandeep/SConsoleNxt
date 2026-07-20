@@ -23,6 +23,7 @@ import java.util.Map;
 
 import static com.sandy.sconsole.EventCatalog.ATS_MANAGER_REFRESHED;
 import static com.sandy.sconsole.EventCatalog.ATS_REFRESHED;
+import static com.sandy.sconsole.EventCatalog.BURN_MET_OVERRIDE;
 
 /**
  * This tile depicts the active topics for a given syllabus along with the
@@ -67,6 +68,7 @@ public class SyllabusBurnTile extends Tile
     public void initialize() {
         eventBus.addAsyncSubscriber( this, ATS_MANAGER_REFRESHED ) ;
         eventBus.addAsyncSubscriber( this, ATS_REFRESHED ) ;
+        eventBus.addAsyncSubscriber( this, BURN_MET_OVERRIDE ) ;
 
         setBorder( new MatteBorder( 1, 1, 0, 1, UITheme.TILE_BORDER_COLOR ) ) ;
         setLayout( new GridLayout( 2, 1 ) ) ;
@@ -81,7 +83,7 @@ public class SyllabusBurnTile extends Tile
     public synchronized void handleEvent( Event event ) {
         switch( event.getEventId() ) {
             case ATS_MANAGER_REFRESHED -> refresh() ;
-            case ATS_REFRESHED -> refreshTopicBurn( (int)event.getValue() ) ;
+            case ATS_REFRESHED, BURN_MET_OVERRIDE -> refreshTopicBurn( (int)event.getValue() ) ;
         }
     }
     
@@ -108,7 +110,7 @@ public class SyllabusBurnTile extends Tile
         bottomBurnPanel.refreshUI() ;
     }
     
-    @EventTargetMarker( ATS_REFRESHED )
+    @EventTargetMarker( { ATS_REFRESHED, BURN_MET_OVERRIDE } )
     private void refreshTopicBurn( int topicId ) {
         TopicBurnPanel topicBurnPanel = burnPanelMap.get( topicId ) ;
         // Can the topic burn panel be null? Yes, note that this instance

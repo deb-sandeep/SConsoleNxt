@@ -4,13 +4,16 @@ import com.sandy.sconsole.SConsole;
 import com.sandy.sconsole.dao.master.TopicTrackAssignment;
 import com.sandy.sconsole.dao.master.repo.TopicProblemRepo;
 import com.sandy.sconsole.dao.master.repo.TopicRepo;
+import com.sandy.sconsole.dao.session.DailyBurnLogId;
 import com.sandy.sconsole.dao.session.dto.SessionDTO;
+import com.sandy.sconsole.dao.session.repo.DailyBurnLogRepo;
 import com.sandy.sconsole.dao.session.repo.ProblemAttemptRepo;
 import com.sandy.sconsole.dao.session.repo.TodaySolvedProblemCountRepo;
 import com.sandy.sconsole.endpoints.rest.master.core.vo.TopicVO;
 import com.sandy.sconsole.state.manager.ProblemStateCounter;
 import com.sandy.sconsole.state.manager.TodaySessionStatistics;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.DateUtils;
 import org.jfree.data.statistics.Regression;
@@ -42,6 +45,7 @@ public class ActiveTopicStatistics {
     @Autowired private TodaySolvedProblemCountRepo tspcRepo ;
     @Autowired private ProblemAttemptRepo paRepo ;
     @Autowired private TopicProblemRepo tpRepo;
+    @Autowired private DailyBurnLogRepo dailyBurnLogRepo ;
     
     @Getter private TopicVO topic ;
     
@@ -78,6 +82,7 @@ public class ActiveTopicStatistics {
     
     // Today data
     @Getter private int numProblemsSolvedToday = 0 ;
+    @Getter @Setter private boolean burnMetOverride = false ;
     
     // Projection based on current data
     @Getter private int requiredBurnRate ;
@@ -111,6 +116,7 @@ public class ActiveTopicStatistics {
         this.leadLagProblems = 0 ;
         this.burnStressScore = 0.0 ;
         this.numProblemsSolvedToday = 0 ;
+        this.burnMetOverride = false ;
 
         this.topicId              = assignment.getTopicId() ;
         this.startDate            = assignment.getStartDate() ;
@@ -179,6 +185,7 @@ public class ActiveTopicStatistics {
         computeCurrentBurnAndOvershoot() ;
         this.leadLagProblems = numProblemsLeft - getNumProblemsIdeallyRemainingAt( new Date() ) ;
         computeBurnStressScore() ;
+        refreshBurnMetOverride() ;
         
         // Populate the problem state counters
         List<TopicProblemRepo.ProblemStateCount> problemStateCounts = tpRepo.getProblemStateCounts( topicId ) ;
@@ -603,5 +610,20 @@ public class ActiveTopicStatistics {
     public int getNumPigeonedProblems() {
         return this.allProblemsStateCounter.getNumPigeons() +
                 this.allProblemsStateCounter.getNumPigeonsSolved() ;
+    }
+
+    /**
+     * Reloads today's coach-set burn_met_override flag from daily_burn_log.
+     * Only loaded here, as part of a full refreshState() - a toggle applied
+     * mid-day is instead pushed directly onto this object by
+     * DailyBurnLogWriter.toggleBurnMetOverride(), which already holds the
+     * new value and the ActiveTopicStatistics instance, so no DB re-read or
+     * extra event round-trip is needed for that path.
+     */
+    private void refreshBurnMetOverride() {
+        Date today = DateUtils.truncate( new Date(), Calendar.DATE ) ;
+        burnMetOverride = dailyBurnLogRepo.findById( new DailyBurnLogId( today, topicId ) )
+                .map( d -> Boolean.TRUE.equals( d.getBurnMetOverride() ) )
+                .orElse( false ) ;
     }
 }

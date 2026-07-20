@@ -42,6 +42,9 @@ public class DailyBurnLog {
     @Column( name = "required_burn_exceed_pct" )
     private BigDecimal requiredBurnExceedPct;
 
+    @Column( name = "burn_met_override", nullable = false )
+    private Boolean burnMetOverride;
+
     @Column( name = "streak_count", nullable = false )
     private Integer streakCount;
 }

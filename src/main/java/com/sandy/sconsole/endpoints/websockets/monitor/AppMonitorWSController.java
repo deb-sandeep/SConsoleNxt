@@ -30,6 +30,7 @@ import java.util.List;
 
 import static com.sandy.sconsole.EventCatalog.ATS_MANAGER_REFRESHED;
 import static com.sandy.sconsole.EventCatalog.ATS_REFRESHED;
+import static com.sandy.sconsole.EventCatalog.BURN_MET_OVERRIDE;
 
 @Slf4j
 @Controller
@@ -57,6 +58,7 @@ public class AppMonitorWSController implements EventSubscriber {
     public void init() {
         eventBus.addAsyncSubscriber( this, ATS_MANAGER_REFRESHED ) ;
         eventBus.addAsyncSubscriber( this, ATS_REFRESHED ) ;
+        eventBus.addAsyncSubscriber( this, BURN_MET_OVERRIDE ) ;
     }
     
     @RequestMapping(value = { "/apps/jee/monitor/session-events", "/apps/jee/monitor/dashboard" })
@@ -99,11 +101,11 @@ public class AppMonitorWSController implements EventSubscriber {
     }
     
     @Override
-    @EventTargetMarker( { ATS_MANAGER_REFRESHED, ATS_REFRESHED } )
+    @EventTargetMarker( { ATS_MANAGER_REFRESHED, ATS_REFRESHED, BURN_MET_OVERRIDE } )
     public void handleEvent( Event event ) {
         sendMessage( ResponseType.CURRENT_DASHBOARD_STATE, new DashboardState( atsMgr, todayStats ) ) ;
 
-        if( event.getEventId() == ATS_REFRESHED ) {
+        if( event.getEventId() == ATS_REFRESHED || event.getEventId() == BURN_MET_OVERRIDE ) {
             ActiveTopicStatistics ats = atsMgr.getTopicStatistics( (Integer)event.getValue() ) ;
             if( ats != null ) {
                 sendMessage( ResponseType.TOPIC_DETAIL_STATE, new TopicDetailState( ats ) ) ;

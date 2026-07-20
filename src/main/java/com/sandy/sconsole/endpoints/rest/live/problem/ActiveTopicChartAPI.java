@@ -70,6 +70,7 @@ public class ActiveTopicChartAPI {
         vo.setBurnStressZoneColor(  ColorUtil.toHtmlColor( ats.getBurnStressScoreColor() ) ) ;
         vo.setNumPigeonedProblems(  ats.getNumPigeonedProblems() ) ;
         vo.setNumProblemsSolvedToday( ats.getNumProblemsSolvedToday() ) ;
+        vo.setBurnMetOverride( ats.isBurnMetOverride() ) ;
         vo.setAllTimeProblemState(  new ProblemStateBreakdown( ats.getAllProblemsStateCounter() ) ) ;
         vo.setTodayProblemState(    new ProblemStateBreakdown( ats.getTodayProblemsStateCounter() ) ) ;
         vo.setL30Burn( buildL30Burn( ats ) ) ;

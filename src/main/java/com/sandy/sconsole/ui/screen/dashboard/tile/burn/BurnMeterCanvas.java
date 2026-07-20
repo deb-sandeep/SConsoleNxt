@@ -19,8 +19,8 @@ class BurnMeterCanvas extends JPanel {
     private static final Color GRID_COLOR             = Color.decode( "#343333" ) ;
     private static final Color OVERBURN_COLOR         = Color.decode( "#37CB37" ) ;
     private static final Color SLIGHT_UNDERBURN_COLOR = Color.decode( "#30AF30" ) ;
-    private static final Color UNDERBURN_COLOR        = Color.decode( "#2D832D" ) ;
-    private static final Color TARGET_BURN_COLOR      = Color.GREEN ;
+    private static final Color UNDERBURN_COLOR        = Color.decode( "#448346" ) ;
+    private static final Color TARGET_BURN_COLOR      = Color.decode( "#30AF30" ) ;
     public  static final Color CURRENT_BURN_COLOR     = Color.decode( "#BBBABA" ) ;
     private static final Color UNBURNT_COLOR          = Color.decode( "#B10722" ) ;
     
@@ -36,6 +36,7 @@ class BurnMeterCanvas extends JPanel {
     
     private int maxValue = 0 ;
     private int todayBurn = 0 ;
+    private boolean burnMetOverride = false ;
     
     private int width = 0 ;
     private int height = 0 ;
@@ -54,15 +55,17 @@ class BurnMeterCanvas extends JPanel {
         currentBurnRate = 0 ;
         requiredBurnRate = 0 ;
         todayBurn = 0 ;
-        
+        burnMetOverride = false ;
+
         if( topicStats != null ) {
             maxValue = NumberUtils.max( topicStats.getRequiredBurnRate(),
                                         topicStats.getNumProblemsSolvedToday() ) + 2 ;
-            
+
             currentBurnRate = topicStats.getCurrentBurnRate() ;
             requiredBurnRate = topicStats.getRequiredBurnRate() ;
             todayBurn = topicStats.getNumProblemsSolvedToday() ;
             overshootDays = topicStats.getNumOvershootDays() ;
+            burnMetOverride = topicStats.isBurnMetOverride() ;
         }
         super.repaint() ;
     }
@@ -79,9 +82,28 @@ class BurnMeterCanvas extends JPanel {
             height = getHeight() - BORDER.top - BORDER.bottom ;
             widthPerProblem = ((float)width)/maxValue ;
             
-            fillRequiredBurnRateBar( (Graphics2D)g ) ;
+            if( !burnMetOverride ) {
+                fillRequiredBurnRateBar( (Graphics2D)g ) ;
+            }
             paintCurrentValue( (Graphics2D)g ) ;
             paintGrid( (Graphics2D)g ) ;
+            if( burnMetOverride ) {
+                paintOverrideMarkers( (Graphics2D)g ) ;
+            }
+        }
+    }
+
+    // Denotes that the coach has manually marked this topic's burn as met
+    // for the day (see DailyBurnLogWriter.toggleBurnMetOverride) - drawn on
+    // top of everything else so it reads clearly regardless of the day's
+    // burn colors underneath.
+    private void paintOverrideMarkers( Graphics2D g ) {
+        int side = 5 ;
+        g.setColor( TARGET_BURN_COLOR ) ;
+        for( int i = 0; i < maxValue; i++ ) {
+            int cx = (int)( BORDER.left + widthPerProblem * ( i + 0.5 ) ) ;
+            int cy = BORDER.top + height / 2 ;
+            g.fillRect( cx - side/2, cy - side/2, side, side ) ;
         }
     }
     

@@ -47,6 +47,9 @@ public class EventCatalog {
 
     @PayloadType( Integer.class ) // topic id
     public static final int ATS_REFRESHED = 251 ;
+    
+    @PayloadType( Integer.class ) // topic id
+    public static final int BURN_MET_OVERRIDE = 252 ;
 
     // =============== Today Study Statistics Events ===========================
     // Range : 301 - 350

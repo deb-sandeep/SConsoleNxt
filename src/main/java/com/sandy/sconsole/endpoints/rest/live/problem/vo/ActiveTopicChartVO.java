@@ -113,6 +113,7 @@ public class ActiveTopicChartVO {
     private String burnStressZoneColor ;    // HTML hex color for status.burnStressScore
     private int numPigeonedProblems ;
     private int numProblemsSolvedToday ;
+    private boolean burnMetOverride ;       // coach-set override of today's required burn met
     private ProblemStateBreakdown allTimeProblemState ;
     private ProblemStateBreakdown todayProblemState ;
     private List<DayCountPoint> l30Burn ;    // last 30 days, problems solved per day

@@ -22,6 +22,7 @@ class TopicState {
     private final double burnStressScore ;
     private final String burnStressZone ;
     private final String burnStressZoneColor ;
+    private final boolean burnMetOverride ;
 
     TopicState( ActiveTopicStatistics ts ) {
         this.topicId = ts.getTopic().getId() ;
@@ -33,6 +34,7 @@ class TopicState {
         this.burnStressScore = ts.getBurnStressScore() ;
         this.burnStressZone = ts.getBurnStressScoreLabel() ;
         this.burnStressZoneColor = ColorUtil.toHtmlColor( ts.getBurnStressScoreColor() ) ;
+        this.burnMetOverride = ts.isBurnMetOverride() ;
     }
 }
 

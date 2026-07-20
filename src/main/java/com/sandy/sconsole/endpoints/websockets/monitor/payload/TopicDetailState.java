@@ -53,6 +53,7 @@ public class TopicDetailState {
     private final String burnStressZone ;
     private final String burnStressZoneColor ;
     private final int numProblemsSolvedToday ;
+    private final boolean burnMetOverride ;
     private final ProblemStateBreakdown allTimeProblemState ;
     private final ProblemStateBreakdown todayProblemState ;
 
@@ -66,6 +67,7 @@ public class TopicDetailState {
         this.burnStressZone = ts.getBurnStressScoreLabel() ;
         this.burnStressZoneColor = ColorUtil.toHtmlColor( ts.getBurnStressScoreColor() ) ;
         this.numProblemsSolvedToday = ts.getNumProblemsSolvedToday() ;
+        this.burnMetOverride = ts.isBurnMetOverride() ;
         this.allTimeProblemState = new ProblemStateBreakdown( ts.getAllProblemsStateCounter() ) ;
         this.todayProblemState = new ProblemStateBreakdown( ts.getTodayProblemsStateCounter() ) ;
     }

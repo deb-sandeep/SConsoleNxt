@@ -107,7 +107,9 @@ public class AttemptedProblemAPIs {
     public ResponseEntity<AR<String>> deleteProblemAttempt(
             @PathVariable( "problemAttemptId" ) final int problemAttemptId ) {
         try {
+            ProblemAttemptDTO dto = new ProblemAttemptDTO( paRepo.findById( problemAttemptId ).get() ) ;
             paRepo.deleteById( problemAttemptId ) ;
+            eventBus.publishEvent( PROBLEM_ATTEMPT_ENDED, dto ) ;
             return success() ;
         }
         catch( Exception e ) {

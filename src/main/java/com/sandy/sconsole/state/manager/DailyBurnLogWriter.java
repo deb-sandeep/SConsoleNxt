@@ -93,14 +93,28 @@ public class DailyBurnLogWriter implements EventSubscriber {
                     .divide( BigDecimal.valueOf( requiredBurnRate ), 2, RoundingMode.HALF_UP ) ;
         }
 
+        DailyBurnLogId id = new DailyBurnLogId( today, topicId ) ;
+        DailyBurnLog entry = repo.findById( id ).orElseGet( DailyBurnLog::new ) ;
+
+        // A coach-set override (see toggleBurnMetOverride()) makes the day
+        // count as met for streak purposes even if the mechanical
+        // requiredBurnMet threshold isn't reached. Read it off the entry
+        // fetched above - before any of this method's own field writes -
+        // so a subsequent live recompute (e.g. another problem solved later
+        // the same day) doesn't silently discard an earlier override. Then
+        // write the normalized value straight back: for an existing row
+        // this is a no-op, but for a brand new row (entry.getBurnMetOverride()
+        // is null, since DailyBurnLog::new leaves it unset) it seeds the
+        // not-null column with its default of false.
+        boolean burnMetOverride = Boolean.TRUE.equals( entry.getBurnMetOverride() ) ;
+        entry.setBurnMetOverride( burnMetOverride ) ;
+        boolean effectiveBurnMet = requiredBurnMet || burnMetOverride ;
+
         Date yesterday = DateUtils.addDays( today, -1 ) ;
         int prevStreak = repo.findById( new DailyBurnLogId( yesterday, topicId ) )
                               .map( DailyBurnLog::getStreakCount )
                               .orElse( 0 ) ;
-        int streakCount = requiredBurnMet ? prevStreak + 1 : 0 ;
-
-        DailyBurnLogId id = new DailyBurnLogId( today, topicId ) ;
-        DailyBurnLog entry = repo.findById( id ).orElseGet( DailyBurnLog::new ) ;
+        int streakCount = effectiveBurnMet ? prevStreak + 1 : 0 ;
 
         entry.setId( id ) ;
         entry.setOriginalBurnRate( originalBurnRate ) ;
@@ -114,5 +128,32 @@ public class DailyBurnLogWriter implements EventSubscriber {
         entry.setStreakCount( streakCount ) ;
 
         repo.save( entry ) ;
+    }
+
+    /**
+     * Flips burn_met_override on today's row for the given topic, pushes the
+     * new value directly onto the live ActiveTopicStatistics instance (this
+     * class already holds a reference to it via atsManager, so there's no
+     * need to round-trip through an event/DB-reread to bring ATS up to
+     * date), then re-derives streakCount via upsert() so the flip takes
+     * effect immediately rather than waiting for the next live burn event.
+     */
+    public synchronized void toggleBurnMetOverride( int topicId ) {
+
+        Date today = DateUtils.truncate( new Date(), Calendar.DATE ) ;
+        DailyBurnLogId id = new DailyBurnLogId( today, topicId ) ;
+        DailyBurnLog entry = repo.findById( id )
+                .orElseThrow( () -> new IllegalStateException(
+                        "No daily_burn_log row for topic " + topicId + " on " + today ) ) ;
+
+        boolean newOverride = !Boolean.TRUE.equals( entry.getBurnMetOverride() ) ;
+        entry.setBurnMetOverride( newOverride ) ;
+        repo.save( entry ) ;
+
+        ActiveTopicStatistics ats = atsManager.getTopicStatistics( topicId ) ;
+        if( ats != null ) {
+            ats.setBurnMetOverride( newOverride ) ;
+            upsert( ats ) ;
+        }
     }
 }
