@@ -8,12 +8,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
+
 @Slf4j
 @Component
 @Scope( "prototype" )
 public class NVTEvaluator extends SectionEvaluator {
-    
-    private static final Float TOLERANCE = 0.01F ;
+
+    private static final BigDecimal NVT_TOLERANCE = new BigDecimal( "0.01" ) ;
 
     /**
      * This method is called only if the question questionAttempt is either ANSWERED
@@ -39,17 +41,15 @@ public class NVTEvaluator extends SectionEvaluator {
         if( answer != null &&
             !answer.isEmpty() ) {
 
-            boolean isCorrect ;
-            if( "IVT".equals( problemType ) ) {
-                Integer refAnswer = Integer.parseInt( correctAnswer ) ;
-                Integer submittedAnswer = Integer.parseInt( answer ) ;
-                isCorrect = refAnswer.equals( submittedAnswer ) ;
-            }
-            else {
-                Float refAnswer = Float.parseFloat( correctAnswer ) ;
-                Float submittedAnswer = Float.parseFloat( answer ) ;
-                isCorrect = Math.abs( refAnswer - submittedAnswer ) <= TOLERANCE ;
-            }
+            // BigDecimal parses any valid decimal literal without throwing, so a
+            // decimal-formatted answer to an IVT question is simply evaluated as
+            // incorrect (zero tolerance) rather than crashing the evaluation.
+            BigDecimal refAnswer = new BigDecimal( correctAnswer ) ;
+            BigDecimal submittedAnswer = new BigDecimal( answer ) ;
+            BigDecimal tolerance = "IVT".equals( problemType ) ? BigDecimal.ZERO : NVT_TOLERANCE ;
+
+            boolean isCorrect = refAnswer.subtract( submittedAnswer ).abs()
+                                         .compareTo( tolerance ) <= 0 ;
 
             if( isCorrect ) {
                 questionAttempt.setEvaluationStatus( "CORRECT" ) ;

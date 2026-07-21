@@ -1,6 +1,8 @@
 package com.sandy.sconsole.endpoints.rest.master.exam.helper;
 
+import com.sandy.sconsole.dao.exam.Exam;
 import com.sandy.sconsole.dao.exam.Question;
+import com.sandy.sconsole.dao.exam.repo.ExamRepo;
 import com.sandy.sconsole.dao.exam.repo.QuestionRepo;
 import com.sandy.sconsole.endpoints.rest.master.exam.vo.QuestionVO;
 import com.sandy.sconsole.endpoints.rest.master.exam.vo.reqres.AvailableQuestionRes;
@@ -17,6 +19,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +31,9 @@ public class QuestionSearchHelper {
     
     @Autowired
     private QuestionRepo questionRepo ;
+
+    @Autowired
+    private ExamRepo examRepo ;
     
     public QuestionSearchRes search( QuestionSearchReq req ) {
         Pageable pageCriteria = buildPagingCriteria( req ) ;
@@ -74,21 +80,42 @@ public class QuestionSearchHelper {
         } ;
     }
     
-    public AvailableQuestionRes getAvailableQuestions( int topicId, String[] problemTypes ) {
-        
-        List<Question> questions = questionRepo.getAvailableQuestions( topicId, problemTypes ) ;
+    public AvailableQuestionRes getAvailableQuestions( int topicId, String[] problemTypes,
+                                                       Integer examId ) {
+
+        // A JEE Main exam exposes only a single "NVT" section that must accommodate both
+        // NVT (real valued) and IVT (integer valued) questions, unlike JEE Advanced which
+        // exposes them as two distinct sections. So for a MAIN exam, IVT questions are
+        // folded into the "NVT" bucket of the response.
+        boolean foldIvtIntoNvt = false ;
+        if( examId != null ) {
+            Exam exam = examRepo.findById( examId ).get() ;
+            foldIvtIntoNvt = "MAIN".equals( exam.getType() ) &&
+                              Arrays.asList( problemTypes ).contains( "NVT" ) ;
+        }
+
+        List<String> queryTypes = new ArrayList<>( Arrays.asList( problemTypes ) ) ;
+        if( foldIvtIntoNvt && !queryTypes.contains( "IVT" ) ) {
+            queryTypes.add( "IVT" ) ;
+        }
+
+        List<Question> questions = questionRepo.getAvailableQuestions(
+                topicId, queryTypes.toArray( new String[0] ) ) ;
         Map<String, List<QuestionVO>> questionMap = new HashMap<>() ;
-        
+
         for( String problemType : problemTypes ) {
             questionMap.put( problemType, new ArrayList<>() ) ;
         }
-        
+
         for( Question q : questions ) {
             String problemType = q.getProblemType().getProblemType() ;
+            if( foldIvtIntoNvt && "IVT".equals( problemType ) ) {
+                problemType = "NVT" ;
+            }
             List<QuestionVO> qList = questionMap.get( problemType ) ;
             qList.add( new QuestionVO( q ) ) ;
         }
-        
+
         return new AvailableQuestionRes( topicId, questionMap ) ;
     }
 }

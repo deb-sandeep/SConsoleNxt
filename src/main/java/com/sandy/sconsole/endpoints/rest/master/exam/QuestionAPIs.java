@@ -68,11 +68,12 @@ public class QuestionAPIs {
     @GetMapping( "/AvailableQuestions" )
     public ResponseEntity<AR<AvailableQuestionRes>> getAvailableQuestions(
             @RequestParam( "topicId" ) int topicId,
-            @RequestParam( "problemTypes" ) String[] problemTypes ) {
-        
+            @RequestParam( "problemTypes" ) String[] problemTypes,
+            @RequestParam( value = "examId", required = false ) Integer examId ) {
+
         try {
             QuestionSearchHelper helper = SConsole.getBean( QuestionSearchHelper.class ) ;
-            AvailableQuestionRes response = helper.getAvailableQuestions( topicId, problemTypes ) ;
+            AvailableQuestionRes response = helper.getAvailableQuestions( topicId, problemTypes, examId ) ;
             return AR.success( response ) ;
         }
         catch( Exception e ) {
