@@ -14,30 +14,44 @@ import org.springframework.stereotype.Component;
 public class NVTEvaluator extends SectionEvaluator {
     
     private static final Float TOLERANCE = 0.01F ;
-    
+
     /**
      * This method is called only if the question questionAttempt is either ANSWERED
      * or ANS_AND_MARKED_FOR_REVIEW, so a provided answer is guaranteed to
      * be present.
+     *
+     * An NVT section can contain both NVT (real valued) and IVT (integer valued)
+     * questions, so the comparison rule is picked per-question based on the
+     * question's own problem type rather than the section's.
      */
     @Override
     protected int evaluateQuestionAttempt( ExamSection section,
                                            ExamQuestion question,
                                            ExamQuestionAttempt questionAttempt ) {
-        
+
         int correctMarks = section.getCorrectMarks() ;
         int wrongPenalty = section.getWrongPenalty() ;
-        
+
         String answer = questionAttempt.getAnswerProvided() ;
         String correctAnswer = question.getQuestion().getAnswer() ;
-        
-        if( answer != null && 
+        String problemType = question.getQuestion().getProblemType().getProblemType() ;
+
+        if( answer != null &&
             !answer.isEmpty() ) {
-            
-            Float refAnswer = Float.parseFloat( correctAnswer ) ;
-            Float submittedAnswer = Float.parseFloat( answer ) ;
-            
-            if( Math.abs( refAnswer - submittedAnswer ) <= TOLERANCE ) {
+
+            boolean isCorrect ;
+            if( "IVT".equals( problemType ) ) {
+                Integer refAnswer = Integer.parseInt( correctAnswer ) ;
+                Integer submittedAnswer = Integer.parseInt( answer ) ;
+                isCorrect = refAnswer.equals( submittedAnswer ) ;
+            }
+            else {
+                Float refAnswer = Float.parseFloat( correctAnswer ) ;
+                Float submittedAnswer = Float.parseFloat( answer ) ;
+                isCorrect = Math.abs( refAnswer - submittedAnswer ) <= TOLERANCE ;
+            }
+
+            if( isCorrect ) {
                 questionAttempt.setEvaluationStatus( "CORRECT" ) ;
                 return correctMarks ;
             }
