@@ -3,6 +3,7 @@ package com.sandy.sconsole.endpoints.rest.live.exam.helper;
 import com.sandy.sconsole.SConsole;
 import com.sandy.sconsole.dao.exam.*;
 import com.sandy.sconsole.dao.exam.repo.*;
+import com.sandy.sconsole.endpoints.rest.live.exam.helper.evaluators.IVTEvaluator;
 import com.sandy.sconsole.endpoints.rest.live.exam.helper.evaluators.NVTEvaluator;
 import com.sandy.sconsole.endpoints.rest.live.exam.helper.evaluators.SCAEvaluator;
 import com.sandy.sconsole.endpoints.rest.live.exam.vo.ExamAttemptVO;
@@ -161,6 +162,9 @@ public class ExamEvaluationHelper {
         }
         else if( "NVT".equals( problemType ) ) {
             return SConsole.getBean( NVTEvaluator.class ) ;
+        }
+        else if( "IVT".equals( problemType ) ) {
+            return SConsole.getBean( IVTEvaluator.class ) ;
         }
         return null ;
     }

@@ -14,6 +14,7 @@ INSERT INTO sconsolenxt.problem_type_master (problem_type, description) VALUES (
 INSERT INTO sconsolenxt.problem_type_master (problem_type, description) VALUES ('LCT', 'Linked Comprehension Type');
 INSERT INTO sconsolenxt.problem_type_master (problem_type, description) VALUES ('MMT', 'Matrix Match Type');
 INSERT INTO sconsolenxt.problem_type_master (problem_type, description) VALUES ('NVT', 'Numerical Value Type');
+INSERT INTO sconsolenxt.problem_type_master (problem_type, description) VALUES ('IVT', 'Integer Value Type');
 INSERT INTO sconsolenxt.problem_type_master (problem_type, description) VALUES ('ART', 'Assertion Reasoning Type');
 INSERT INTO sconsolenxt.problem_type_master (problem_type, description) VALUES ('CMT', 'Column Match Type');
 
