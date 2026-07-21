@@ -45,9 +45,9 @@ public class TotalL60EffortTile extends Tile
         LastNDayValueProvider pastStudyTimes = pastStudyTimesManager.getPastEffortProvider() ;
 
         DayValueChart.DayBurnMetSource burnMetSource = ( start, end ) -> {
-            Map<Date, Boolean> result = new HashMap<>() ;
+            Map<Date, DayValueChart.BurnMetStatus> result = new HashMap<>() ;
             dailyBurnLogRepo.getTotalFullBurnMet( start, end )
-                            .forEach( r -> result.put( r.getDate(), r.burnMetAsBoolean() ) ) ;
+                            .forEach( r -> result.put( r.getDate(), r.toBurnMetStatus() ) ) ;
             return result ;
         } ;
 

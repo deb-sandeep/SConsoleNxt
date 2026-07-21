@@ -31,12 +31,17 @@ public class DayValueChart {
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd");
     private static final SimpleDateFormat DAY_KEY_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
-    /** Supplies, for the given [start,end] window, whether the day's burn was
-     *  fully met (AND'd across whatever topics are in scope) - absent dates
+    /** Whether a day's burn was fully met (AND'd across whatever topics are
+     *  in scope), and if so, whether every contributing topic met it
+     *  naturally or at least one only did so via an admin override. */
+    public enum BurnMetStatus { UNMET, MET_NATURAL, MET_VIA_OVERRIDE }
+
+    /** Supplies, for the given [start,end] window, the burn-met status of
+     *  each day (AND'd across whatever topics are in scope) - absent dates
      *  mean "not applicable" (e.g. nothing was active that day) and should
      *  not be annotated at all. */
     public interface DayBurnMetSource {
-        Map<Date, Boolean> getBurnMetByDate( Date startDate, Date endDate ) ;
+        Map<Date, BurnMetStatus> getBurnMetByDate( Date startDate, Date endDate ) ;
     }
 
     private JFreeChart chart = null ;
@@ -204,10 +209,11 @@ public class DayValueChart {
         plot.setRenderer( 0, renderer ) ;
     }
 
-    private static final Color BURN_MET_COLOR      = new Color( 0, 128, 0 ) ;
-    private static final Color BURN_UNMET_COLOR    = new Color( 85, 0, 0 ) ;
-    private static final Color BURN_LINE_COLOR     = new Color( 35, 35, 35 ) ;
-    private static final long  ONE_DAY_MILLIS       = 24L * 60 * 60 * 1000 ;
+    private static final Color BURN_MET_COLOR              = new Color( 0, 128, 0 ) ;
+    private static final Color BURN_MET_VIA_OVERRIDE_COLOR = new Color( 0, 150, 150 ) ;
+    private static final Color BURN_UNMET_COLOR            = new Color( 85, 0, 0 ) ;
+    private static final Color BURN_LINE_COLOR             = new Color( 35, 35, 35 ) ;
+    private static final long  ONE_DAY_MILLIS              = 24L * 60 * 60 * 1000 ;
 
     public JFreeChart getJFreeChart() {
         return this.chart ;
@@ -283,11 +289,13 @@ public class DayValueChart {
     }
 
     /**
-     * Draws a small square above each day's bar (green if that day's burn
-     * was fully met, red otherwise), joined to the bar top by a thin line
-     * just a shade lighter than the chart background. Days absent from the
-     * burn-met source (nothing was active/required that day) are left
-     * unannotated entirely, rather than drawn as a false "not met".
+     * Draws a small square above each day's bar - green if that day's burn
+     * was fully met naturally, cyan if it was only fully met because an
+     * admin override kicked in for at least one topic, red otherwise -
+     * joined to the bar top by a thin line just a shade lighter than the
+     * chart background. Days absent from the burn-met source (nothing was
+     * active/required that day) are left unannotated entirely, rather than
+     * drawn as a false "not met".
      */
     private void refreshBurnMetAnnotations( Date minDate, Date maxDate,
                                             Map<String, Double> barValueByDayKey ) {
@@ -306,15 +314,19 @@ public class DayValueChart {
         // so the square lines up edge-to-edge with the bar underneath it.
         double barWidthMillis = ONE_DAY_MILLIS * ( 1 - valueRenderer.getMargin() ) ;
 
-        Map<Date, Boolean> burnMetByDate = burnMetSource.getBurnMetByDate( minDate, maxDate ) ;
+        Map<Date, BurnMetStatus> burnMetByDate = burnMetSource.getBurnMetByDate( minDate, maxDate ) ;
 
-        for( Map.Entry<Date, Boolean> entry : burnMetByDate.entrySet() ) {
+        for( Map.Entry<Date, BurnMetStatus> entry : burnMetByDate.entrySet() ) {
             Double barValue = barValueByDayKey.get( DAY_KEY_FORMAT.format( entry.getKey() ) ) ;
             if( barValue == null ) continue ;
 
             Day day = new Day( entry.getKey() ) ;
             double x = day.getMiddleMillisecond() ;
-            Color color = Boolean.TRUE.equals( entry.getValue() ) ? BURN_MET_COLOR : BURN_UNMET_COLOR ;
+            Color color = switch( entry.getValue() ) {
+                case MET_NATURAL      -> BURN_MET_COLOR ;
+                case MET_VIA_OVERRIDE -> BURN_MET_VIA_OVERRIDE_COLOR ;
+                case UNMET            -> BURN_UNMET_COLOR ;
+            } ;
 
             plot.addAnnotation( new XYLineAnnotation( x, barValue, x, squareY,
                     new BasicStroke( 1.0F ), BURN_LINE_COLOR ) ) ;
