@@ -4,6 +4,8 @@ import com.sandy.sconsole.SConsole;
 import com.sandy.sconsole.core.api.AR;
 import com.sandy.sconsole.dao.exam.Question;
 import com.sandy.sconsole.dao.exam.repo.QuestionRepo;
+import com.sandy.sconsole.dao.master.Topic;
+import com.sandy.sconsole.dao.master.repo.TopicRepo;
 import com.sandy.sconsole.endpoints.rest.master.exam.helper.QuestionHelper;
 import com.sandy.sconsole.endpoints.rest.master.exam.helper.QuestionSearchHelper;
 import com.sandy.sconsole.endpoints.rest.master.exam.vo.QuestionVO;
@@ -23,7 +25,10 @@ public class QuestionAPIs {
     
     @Autowired
     private QuestionRepo questionRepo = null ;
-    
+
+    @Autowired
+    private TopicRepo topicRepo = null ;
+
     @PostMapping( "/" )
     @Transactional
     public ResponseEntity<AR<SaveQuestionRes>> saveQuestion(
@@ -92,6 +97,25 @@ public class QuestionAPIs {
             q.setRating( rating ) ;
             questionRepo.save( q ) ;
             
+            return AR.success() ;
+        }
+        catch( Exception e ) {
+            return systemError( e ) ;
+        }
+    }
+
+    @PostMapping( "/Topic/{questionId}/{newTopicId}" )
+    @Transactional
+    public ResponseEntity<AR<String>> changeTopic(
+            @PathVariable Integer questionId,
+            @PathVariable Integer newTopicId
+    ) {
+        try {
+            Question q = questionRepo.findById( questionId ).get() ;
+            Topic topic = topicRepo.findById( newTopicId ).get() ;
+            q.setTopic( topic ) ;
+            questionRepo.save( q ) ;
+
             return AR.success() ;
         }
         catch( Exception e ) {
