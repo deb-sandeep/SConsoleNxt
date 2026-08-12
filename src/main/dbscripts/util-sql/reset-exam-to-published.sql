@@ -4,7 +4,7 @@
 --
 -- Edit the exam id below, then run the whole script.
 
-SET @exam_id = 16;
+SET @exam_id = 18;
 
 START TRANSACTION;
 
