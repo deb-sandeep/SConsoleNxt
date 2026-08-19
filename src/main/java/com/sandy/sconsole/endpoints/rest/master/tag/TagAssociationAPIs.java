@@ -23,20 +23,20 @@ import static com.sandy.sconsole.core.api.AR.*;
 @RequestMapping( "/Master/TagAssociation" )
 public class TagAssociationAPIs {
 
-    @PostMapping( "/{itemType}/{itemId}/{tagId}" )
+    @PostMapping( "/{itemType}/{tagId}" )
     @Transactional
     public ResponseEntity<AR<String>> addTag(
             @PathVariable TaggableItemType itemType,
-            @PathVariable Integer itemId,
-            @PathVariable Integer tagId ) {
+            @PathVariable Integer tagId,
+            @RequestBody ItemIdsReq req ) {
         try {
             TagAssociationHelper helper = SConsole.getBean( TagAssociationHelper.class ) ;
-            helper.addTag( itemType, itemId, tagId ) ;
+            helper.addTag( itemType, req.itemIds(), tagId ) ;
             return success() ;
         }
         catch( DataIntegrityViolationException dive ) {
-            log.error( "Duplicate or invalid tag association.", dive ) ;
-            return functionalError( "Tag is already associated with this item.", dive ) ;
+            log.debug( "Ignoring duplicate tag association.", dive ) ;
+            return success() ;
         }
         catch( IllegalArgumentException e ) {
             return badRequest( e.getMessage() ) ;

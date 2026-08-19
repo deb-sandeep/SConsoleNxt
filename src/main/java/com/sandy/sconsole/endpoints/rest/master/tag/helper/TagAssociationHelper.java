@@ -49,27 +49,35 @@ public class TagAssociationHelper {
 
     private static final int MAX_RECENT_TAGS = 30 ;
 
-    public void addTag( TaggableItemType itemType, Integer itemId, Integer tagId ) {
+    public void addTag( TaggableItemType itemType, List<Integer> itemIds, Integer tagId ) {
 
         TagMaster tag = tagRepo.findById( tagId )
                 .orElseThrow( () -> new IllegalArgumentException( "No tag found with id: " + tagId ) ) ;
 
-        switch( itemType ) {
-            case PROBLEM -> {
-                Problem problem = problemRepo.findById( itemId )
-                        .orElseThrow( () -> new IllegalArgumentException( "No problem found with id: " + itemId ) ) ;
-                TagProblemMap map = new TagProblemMap() ;
-                map.setProblem( problem ) ;
-                map.setTag( tag ) ;
-                tagProblemMapRepo.save( map ) ;
-            }
-            case QUESTION -> {
-                Question question = questionRepo.findById( itemId )
-                        .orElseThrow( () -> new IllegalArgumentException( "No question found with id: " + itemId ) ) ;
-                TagQuestionMap map = new TagQuestionMap() ;
-                map.setQuestion( question ) ;
-                map.setTag( tag ) ;
-                tagQuestionMapRepo.save( map ) ;
+        for( Integer itemId : itemIds ) {
+            switch( itemType ) {
+                case PROBLEM -> {
+                    if( tagProblemMapRepo.existsByProblemIdAndTagId( itemId, tagId ) ) {
+                        continue ;
+                    }
+                    Problem problem = problemRepo.findById( itemId )
+                            .orElseThrow( () -> new IllegalArgumentException( "No problem found with id: " + itemId ) ) ;
+                    TagProblemMap map = new TagProblemMap() ;
+                    map.setProblem( problem ) ;
+                    map.setTag( tag ) ;
+                    tagProblemMapRepo.save( map ) ;
+                }
+                case QUESTION -> {
+                    if( tagQuestionMapRepo.existsByQuestionIdAndTagId( itemId, tagId ) ) {
+                        continue ;
+                    }
+                    Question question = questionRepo.findById( itemId )
+                            .orElseThrow( () -> new IllegalArgumentException( "No question found with id: " + itemId ) ) ;
+                    TagQuestionMap map = new TagQuestionMap() ;
+                    map.setQuestion( question ) ;
+                    map.setTag( tag ) ;
+                    tagQuestionMapRepo.save( map ) ;
+                }
             }
         }
 
@@ -130,7 +138,7 @@ public class TagAssociationHelper {
         }
         for( Integer tagId : targetIds ) {
             if( !currentTagIds.contains( tagId ) ) {
-                addTag( itemType, itemId, tagId ) ;
+                addTag( itemType, List.of( itemId ), tagId ) ;
             }
         }
 
