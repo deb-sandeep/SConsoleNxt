@@ -1,4 +1,4 @@
-package com.sandy.sconsole.endpoints.rest.master.core.helper;
+package com.sandy.sconsole.endpoints.rest.master.tag.helper;
 
 import com.sandy.sconsole.dao.exam.TagQuestionMap;
 import com.sandy.sconsole.dao.exam.repo.TagQuestionMapRepo;
@@ -8,9 +8,9 @@ import com.sandy.sconsole.dao.master.Topic;
 import com.sandy.sconsole.dao.master.repo.TagProblemMapRepo;
 import com.sandy.sconsole.dao.master.repo.TagRepo;
 import com.sandy.sconsole.dao.master.repo.TopicRepo;
-import com.sandy.sconsole.endpoints.rest.master.core.vo.TagVO;
-import com.sandy.sconsole.endpoints.rest.master.core.vo.reqres.TagCreateReq;
-import com.sandy.sconsole.endpoints.rest.master.core.vo.reqres.TagRenameReq;
+import com.sandy.sconsole.endpoints.rest.master.tag.vo.TagVO;
+import com.sandy.sconsole.endpoints.rest.master.tag.vo.reqres.TagCreateReq;
+import com.sandy.sconsole.endpoints.rest.master.tag.vo.reqres.TagRenameReq;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;

@@ -1,4 +1,4 @@
-package com.sandy.sconsole.endpoints.rest.master.core.vo;
+package com.sandy.sconsole.endpoints.rest.master.tag.vo;
 
 import com.sandy.sconsole.dao.master.TagMaster;
 import lombok.Data;
