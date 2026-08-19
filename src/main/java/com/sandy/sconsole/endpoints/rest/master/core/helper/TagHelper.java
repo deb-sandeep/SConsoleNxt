@@ -111,7 +111,7 @@ public class TagHelper {
         tagRepo.deleteById( sourceTagId ) ;
     }
 
-    private String normalize( String tagText ) {
-        return tagText.trim().toLowerCase() ;
+    public static String normalize( String tagText ) {
+        return tagText.trim().toLowerCase().replaceAll( "[\\s\\-.:]+", "" ) ;
     }
 }

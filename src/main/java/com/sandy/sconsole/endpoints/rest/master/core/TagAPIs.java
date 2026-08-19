@@ -76,7 +76,7 @@ public class TagAPIs {
     @GetMapping( "/Search" )
     public ResponseEntity<AR<List<TagVO>>> searchTags( @RequestParam( "text" ) String text ) {
         try {
-            return success( toVOs( tagRepo.searchByText( text.trim().toLowerCase() ) ) ) ;
+            return success( toVOs( tagRepo.searchByText( TagHelper.normalize( text ) ) ) ) ;
         }
         catch( Exception e ) {
             return systemError( e ) ;
