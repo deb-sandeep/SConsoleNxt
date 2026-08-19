@@ -74,7 +74,15 @@ public class TagAPIs {
     @GetMapping( "/Topic/{topicId}" )
     public ResponseEntity<AR<List<TagVO>>> getTagsForTopic( @PathVariable Integer topicId ) {
         try {
-            return success( toVOs( tagRepo.findByTopicId( topicId ) ) ) ;
+            Map<Integer, Integer> associationCounts = new HashMap<>() ;
+            for( TagRepo.TagAssociationCount c : tagRepo.findAssociationCountsByTopicId( topicId ) ) {
+                associationCounts.put( c.getTagId(), c.getAssociationCount() ) ;
+            }
+
+            List<TagVO> vos = toVOs( tagRepo.findByTopicId( topicId ) ) ;
+            vos.forEach( vo -> vo.setAssociationCount( associationCounts.getOrDefault( vo.getId(), 0 ) ) ) ;
+
+            return success( vos ) ;
         }
         catch( Exception e ) {
             return systemError( e ) ;

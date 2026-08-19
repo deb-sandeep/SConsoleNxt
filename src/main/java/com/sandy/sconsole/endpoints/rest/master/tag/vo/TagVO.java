@@ -15,6 +15,9 @@ public class TagVO {
     private String  topicName ;
     private Instant createdAt ;
 
+    // Populated only by the "get tags for topic" endpoint; -1 everywhere else.
+    private int associationCount = -1 ;
+
     public TagVO(){}
 
     public TagVO( TagMaster t ) {
