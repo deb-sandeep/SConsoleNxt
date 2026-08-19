@@ -23,4 +23,19 @@ public interface TagQuestionMapRepo extends CrudRepository<TagQuestionMap, Integ
     @Modifying
     @Query( "delete from TagQuestionMap m where m.question.id = :questionId" )
     void deleteAllByQuestionId( @Param( "questionId" ) Integer questionId ) ;
+
+    interface QuestionTagCount {
+        Integer getQuestionId() ;
+        Integer getCount() ;
+    }
+
+    @Query( nativeQuery = true, value = """
+        select
+            question_id as questionId,
+            count(*) as count
+        from tag_question_map
+        where question_id in :questionIds
+        group by question_id
+    """ )
+    List<QuestionTagCount> countTagsByQuestionIds( @Param( "questionIds" ) List<Integer> questionIds ) ;
 }

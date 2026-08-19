@@ -24,8 +24,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Slf4j
@@ -133,6 +135,21 @@ public class TagAssociationHelper {
         }
 
         return getTagsForItem( itemType, itemId ) ;
+    }
+
+    public Map<Integer, Integer> getTagCounts( TaggableItemType itemType, List<Integer> itemIds ) {
+
+        Map<Integer, Integer> counts = new HashMap<>() ;
+        itemIds.forEach( id -> counts.put( id, 0 ) ) ;
+
+        switch( itemType ) {
+            case PROBLEM -> tagProblemMapRepo.countTagsByProblemIds( itemIds )
+                    .forEach( c -> counts.put( c.getProblemId(), c.getCount() ) ) ;
+            case QUESTION -> tagQuestionMapRepo.countTagsByQuestionIds( itemIds )
+                    .forEach( c -> counts.put( c.getQuestionId(), c.getCount() ) ) ;
+        }
+
+        return counts ;
     }
 
     public TagAssociationRes getItemsForTag( Integer tagId ) {

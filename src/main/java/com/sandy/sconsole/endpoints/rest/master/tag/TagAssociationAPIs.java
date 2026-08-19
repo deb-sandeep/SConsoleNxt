@@ -4,6 +4,7 @@ import com.sandy.sconsole.SConsole;
 import com.sandy.sconsole.core.api.AR;
 import com.sandy.sconsole.endpoints.rest.master.tag.helper.TagAssociationHelper;
 import com.sandy.sconsole.endpoints.rest.master.tag.vo.TagVO;
+import com.sandy.sconsole.endpoints.rest.master.tag.vo.reqres.ItemIdsReq;
 import com.sandy.sconsole.endpoints.rest.master.tag.vo.reqres.SetTagsReq;
 import com.sandy.sconsole.endpoints.rest.master.tag.vo.reqres.TagAssociationRes;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 import static com.sandy.sconsole.core.api.AR.*;
 
@@ -100,6 +102,19 @@ public class TagAssociationAPIs {
         }
         catch( IllegalArgumentException e ) {
             return badRequest( e.getMessage() ) ;
+        }
+        catch( Exception e ) {
+            return systemError( e ) ;
+        }
+    }
+
+    @PostMapping( "/{itemType}/Counts" )
+    public ResponseEntity<AR<Map<Integer, Integer>>> getTagCounts(
+            @PathVariable TaggableItemType itemType,
+            @RequestBody ItemIdsReq req ) {
+        try {
+            TagAssociationHelper helper = SConsole.getBean( TagAssociationHelper.class ) ;
+            return success( helper.getTagCounts( itemType, req.itemIds() ) ) ;
         }
         catch( Exception e ) {
             return systemError( e ) ;
