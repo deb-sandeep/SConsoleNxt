@@ -23,4 +23,20 @@ public interface TagRepo extends CrudRepository<TagMaster, Integer> {
         order by t.tagText
     """ )
     List<TagMaster> searchByText( @Param( "fragment" ) String fragment ) ;
+
+    @Query( nativeQuery = true, value = """
+        select t.id
+        from tag_master t
+            left join (
+                select tag_id, count(*) as cnt from tag_problem_map group by tag_id
+            ) pc on pc.tag_id = t.id
+            left join (
+                select tag_id, count(*) as cnt from tag_question_map group by tag_id
+            ) qc on qc.tag_id = t.id
+        order by
+            ( coalesce( pc.cnt, 0 ) + coalesce( qc.cnt, 0 ) ) desc,
+            t.tag_text
+        limit :limit
+    """ )
+    List<Integer> findMostUsedTagIds( @Param( "limit" ) int limit ) ;
 }

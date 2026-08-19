@@ -81,3 +81,20 @@ ALTER TABLE sconsolenxt.tag_question_map
     FOREIGN KEY (tag_id) REFERENCES sconsolenxt.tag_master (id) ON DELETE Cascade
       ON UPDATE Cascade
 ;
+
+
+CREATE TABLE sconsolenxt.tag_recent_usage(
+  tag_id INT NOT NULL,
+  last_used_at DATETIME NOT NULL,
+  PRIMARY KEY(tag_id)
+) COMMENT 'Rolling cache of the most recently used tags (capped at 30 rows by application code), powering a quick-pick recently-used-tags list.'
+  ENGINE = InnoDB ROW_FORMAT = Dynamic DEFAULT CHARACTER SET = `utf8mb4`
+  COLLATE = `utf8mb4_unicode_ci`
+;
+
+
+ALTER TABLE sconsolenxt.tag_recent_usage
+  ADD CONSTRAINT fk_tag_recent_usage_tag_master
+    FOREIGN KEY (tag_id) REFERENCES sconsolenxt.tag_master (id) ON DELETE Cascade
+      ON UPDATE Cascade
+;

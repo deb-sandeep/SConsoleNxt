@@ -7,8 +7,10 @@ import com.sandy.sconsole.dao.exam.repo.TagQuestionMapRepo;
 import com.sandy.sconsole.dao.master.Problem;
 import com.sandy.sconsole.dao.master.TagMaster;
 import com.sandy.sconsole.dao.master.TagProblemMap;
+import com.sandy.sconsole.dao.master.TagRecentUsage;
 import com.sandy.sconsole.dao.master.repo.ProblemRepo;
 import com.sandy.sconsole.dao.master.repo.TagProblemMapRepo;
+import com.sandy.sconsole.dao.master.repo.TagRecentUsageRepo;
 import com.sandy.sconsole.dao.master.repo.TagRepo;
 import com.sandy.sconsole.endpoints.rest.master.core.vo.ProblemVO;
 import com.sandy.sconsole.endpoints.rest.master.tag.TaggableItemType;
@@ -21,6 +23,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -39,6 +42,10 @@ public class TagAssociationHelper {
     @Autowired private TagProblemMapRepo tagProblemMapRepo ;
 
     @Autowired private TagQuestionMapRepo tagQuestionMapRepo ;
+
+    @Autowired private TagRecentUsageRepo tagRecentUsageRepo ;
+
+    private static final int MAX_RECENT_TAGS = 30 ;
 
     public void addTag( TaggableItemType itemType, Integer itemId, Integer tagId ) {
 
@@ -62,6 +69,21 @@ public class TagAssociationHelper {
                 map.setTag( tag ) ;
                 tagQuestionMapRepo.save( map ) ;
             }
+        }
+
+        recordTagUsage( tagId ) ;
+    }
+
+    private void recordTagUsage( Integer tagId ) {
+
+        TagRecentUsage usage = tagRecentUsageRepo.findById( tagId ).orElseGet( TagRecentUsage::new ) ;
+        usage.setTagId( tagId ) ;
+        usage.setLastUsedAt( Instant.now() ) ;
+        tagRecentUsageRepo.save( usage ) ;
+
+        List<TagRecentUsage> all = tagRecentUsageRepo.findAllByOrderByLastUsedAtDesc() ;
+        if( all.size() > MAX_RECENT_TAGS ) {
+            tagRecentUsageRepo.deleteAll( all.subList( MAX_RECENT_TAGS, all.size() ) ) ;
         }
     }
 
