@@ -75,14 +75,14 @@ public class TagAssociationAPIs {
         }
     }
 
-    @DeleteMapping( "/{itemType}/{itemId}" )
+    @DeleteMapping( "/{itemType}" )
     @Transactional
     public ResponseEntity<AR<String>> removeAllTags(
             @PathVariable TaggableItemType itemType,
-            @PathVariable Integer itemId ) {
+            @RequestBody ItemIdsReq req ) {
         try {
             TagAssociationHelper helper = SConsole.getBean( TagAssociationHelper.class ) ;
-            helper.removeAllTags( itemType, itemId ) ;
+            helper.removeAllTags( itemType, req.itemIds() ) ;
             return success() ;
         }
         catch( Exception e ) {

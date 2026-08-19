@@ -115,10 +115,10 @@ public class TagAssociationHelper {
         } ;
     }
 
-    public void removeAllTags( TaggableItemType itemType, Integer itemId ) {
+    public void removeAllTags( TaggableItemType itemType, List<Integer> itemIds ) {
         switch( itemType ) {
-            case PROBLEM -> tagProblemMapRepo.deleteAllByProblemId( itemId ) ;
-            case QUESTION -> tagQuestionMapRepo.deleteAllByQuestionId( itemId ) ;
+            case PROBLEM -> itemIds.forEach( tagProblemMapRepo::deleteAllByProblemId ) ;
+            case QUESTION -> itemIds.forEach( tagQuestionMapRepo::deleteAllByQuestionId ) ;
         }
     }
 
