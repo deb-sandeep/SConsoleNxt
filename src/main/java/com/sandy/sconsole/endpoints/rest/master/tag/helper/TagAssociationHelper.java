@@ -24,6 +24,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -158,6 +160,29 @@ public class TagAssociationHelper {
         }
 
         return counts ;
+    }
+
+    public List<TagVO> getTagAssociationHistogram( TaggableItemType itemType, List<Integer> itemIds ) {
+
+        Map<Integer, Integer> counts = new HashMap<>() ;
+        switch( itemType ) {
+            case PROBLEM -> tagProblemMapRepo.countProblemsByTagForProblemIds( itemIds )
+                    .forEach( c -> counts.put( c.getTagId(), c.getCount() ) ) ;
+            case QUESTION -> tagQuestionMapRepo.countQuestionsByTagForQuestionIds( itemIds )
+                    .forEach( c -> counts.put( c.getTagId(), c.getCount() ) ) ;
+        }
+
+        List<TagVO> vos = new ArrayList<>() ;
+        for( TagMaster tag : tagRepo.findAllById( counts.keySet() ) ) {
+            TagVO vo = new TagVO( tag ) ;
+            vo.setAssociationCount( counts.get( tag.getId() ) ) ;
+            vos.add( vo ) ;
+        }
+
+        vos.sort( Comparator.comparingInt( TagVO::getAssociationCount ).reversed()
+                .thenComparing( TagVO::getTagText ) ) ;
+
+        return vos ;
     }
 
     public TagAssociationRes getItemsForTag( Integer tagId ) {

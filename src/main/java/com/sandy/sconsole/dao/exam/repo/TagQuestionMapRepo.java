@@ -38,4 +38,19 @@ public interface TagQuestionMapRepo extends CrudRepository<TagQuestionMap, Integ
         group by question_id
     """ )
     List<QuestionTagCount> countTagsByQuestionIds( @Param( "questionIds" ) List<Integer> questionIds ) ;
+
+    interface TagHistogramCount {
+        Integer getTagId() ;
+        Integer getCount() ;
+    }
+
+    @Query( nativeQuery = true, value = """
+        select
+            tag_id as tagId,
+            count(*) as count
+        from tag_question_map
+        where question_id in :questionIds
+        group by tag_id
+    """ )
+    List<TagHistogramCount> countQuestionsByTagForQuestionIds( @Param( "questionIds" ) List<Integer> questionIds ) ;
 }

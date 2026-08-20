@@ -37,6 +37,12 @@ public class TagAPIs {
     @Autowired private TopicRepo           topicRepo           = null ;
     @Autowired private TagRecentUsageRepo  tagRecentUsageRepo  = null ;
 
+    /**
+     * Creates a new tag. The tag text is normalized (trimmed, lowercased, and
+     * stripped of whitespace/'-'/'.'/':') to check for an existing tag with the
+     * same normalized text; a match is rejected with a bad request rather than
+     * silently creating a near-duplicate.
+     */
     @PostMapping( "" )
     public ResponseEntity<AR<TagVO>> createTag( @RequestBody TagCreateReq req ) {
         try {
@@ -51,6 +57,10 @@ public class TagAPIs {
         }
     }
 
+    /**
+     * Fetches a single tag by id. associationCount is left at -1 (not
+     * populated) on this endpoint's response.
+     */
     @GetMapping( "/{tagId}" )
     public ResponseEntity<AR<TagVO>> getTag( @PathVariable Integer tagId ) {
         try {
@@ -61,6 +71,11 @@ public class TagAPIs {
         }
     }
 
+    /**
+     * Returns every tag in the system, sorted alphabetically by tag text.
+     * associationCount is left at -1 (not populated) on this endpoint's
+     * response.
+     */
     @GetMapping( "/All" )
     public ResponseEntity<AR<List<TagVO>>> getAllTags() {
         try {
@@ -71,6 +86,13 @@ public class TagAPIs {
         }
     }
 
+    /**
+     * Returns every tag whose dominant/home topic is topicId. This is the only
+     * endpoint that populates associationCount on the returned TagVOs -
+     * the total number of problems plus questions each tag is attached to,
+     * across all topics/subjects, not just this one. All other endpoints in
+     * this controller leave associationCount at its default of -1.
+     */
     @GetMapping( "/Topic/{topicId}" )
     public ResponseEntity<AR<List<TagVO>>> getTagsForTopic( @PathVariable Integer topicId ) {
         try {
@@ -89,6 +111,12 @@ public class TagAPIs {
         }
     }
 
+    /**
+     * Case/separator-insensitive "contains anywhere" search over tag text
+     * (e.g. "law" matches "Grahams Law"). The search text is normalized the
+     * same way as tag text is on create/rename, so a query containing spaces,
+     * dashes, dots, or colons still matches correctly.
+     */
     @GetMapping( "/Search" )
     public ResponseEntity<AR<List<TagVO>>> searchTags( @RequestParam( "text" ) String text ) {
         try {
@@ -99,6 +127,12 @@ public class TagAPIs {
         }
     }
 
+    /**
+     * Returns up to RECENT_TAG_LIMIT tags, most-recently-attached-to-an-item
+     * first. Backed by the tag_recent_usage rolling cache, which is updated
+     * whenever a tag is attached to a problem/question (not on tag creation
+     * alone) - see TagAssociationHelper.addTag.
+     */
     @GetMapping( "/Recent" )
     public ResponseEntity<AR<List<TagVO>>> getRecentTags() {
         try {
@@ -113,6 +147,12 @@ public class TagAPIs {
         }
     }
 
+    /**
+     * Returns up to MOST_USED_TAG_LIMIT tags, ordered by total number of
+     * problem+question associations (descending, tag text as tie-break).
+     * Computed live from the association tables on every call - there is no
+     * stored/cached ranking to keep in sync.
+     */
     @GetMapping( "/MostUsed" )
     public ResponseEntity<AR<List<TagVO>>> getMostUsedTags() {
         try {
@@ -124,6 +164,11 @@ public class TagAPIs {
         }
     }
 
+    /**
+     * Renames a tag's display text. Subject to the same normalized-uniqueness
+     * check as create - renaming to text that normalizes the same as another
+     * existing tag (other than itself) is rejected with a bad request.
+     */
     @PostMapping( "/{tagId}/Rename" )
     public ResponseEntity<AR<TagVO>> renameTag(
             @PathVariable Integer tagId, @RequestBody TagRenameReq req ) {
@@ -139,6 +184,11 @@ public class TagAPIs {
         }
     }
 
+    /**
+     * Changes a tag's dominant/home topic. Purely organizational - it does not
+     * restrict, and has no effect on, which problems/questions the tag is (or
+     * can be) attached to.
+     */
     @PostMapping( "/{tagId}/Topic/{newTopicId}" )
     @Transactional
     public ResponseEntity<AR<String>> changeTopic(
@@ -155,6 +205,13 @@ public class TagAPIs {
         }
     }
 
+    /**
+     * Deletes a tag. This cascades at the database level (ON DELETE CASCADE)
+     * to silently remove every tag_problem_map/tag_question_map row that
+     * referenced it, as well as its tag_recent_usage cache entry - there is no
+     * confirmation or reassignment step here. If associations should be moved
+     * to another tag first, call mergeTags before deleting.
+     */
     @DeleteMapping( "/{tagId}" )
     @Transactional
     public ResponseEntity<AR<String>> deleteTag( @PathVariable Integer tagId ) {
@@ -167,6 +224,13 @@ public class TagAPIs {
         }
     }
 
+    /**
+     * Reassigns every problem/question association from sourceTagId to
+     * targetTagId (skipping - not duplicating - any item that already carries
+     * both tags), then deletes sourceTagId. Use this ahead of a delete when
+     * associations need to be preserved under a different tag rather than
+     * dropped.
+     */
     @PostMapping( "/{sourceTagId}/MergeInto/{targetTagId}" )
     public ResponseEntity<AR<String>> mergeTags(
             @PathVariable Integer sourceTagId, @PathVariable Integer targetTagId ) {
