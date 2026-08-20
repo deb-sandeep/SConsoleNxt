@@ -1,14 +1,20 @@
 package com.sandy.sconsole.endpoints.rest.live.tag.helper;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sandy.sconsole.dao.exam.Question;
 import com.sandy.sconsole.dao.exam.TagQuestionMap;
 import com.sandy.sconsole.dao.exam.repo.QuestionRepo;
+import com.sandy.sconsole.dao.master.SavedTagQuery;
 import com.sandy.sconsole.dao.master.TagProblemMap;
 import com.sandy.sconsole.dao.master.TopicProblem;
+import com.sandy.sconsole.dao.master.repo.SavedTagQueryRepo;
 import com.sandy.sconsole.dao.master.repo.TopicProblemRepo;
+import com.sandy.sconsole.endpoints.rest.live.tag.vo.SavedTagQueryVO;
 import com.sandy.sconsole.endpoints.rest.live.tag.vo.TagQueryConditionNode;
 import com.sandy.sconsole.endpoints.rest.live.tag.vo.TagQueryGroupNode;
 import com.sandy.sconsole.endpoints.rest.live.tag.vo.TagQueryNode;
+import com.sandy.sconsole.endpoints.rest.live.tag.vo.reqres.SaveQueryReq;
 import com.sandy.sconsole.endpoints.rest.live.tag.vo.reqres.TagBrowserFilters;
 import com.sandy.sconsole.endpoints.rest.live.tag.vo.reqres.TagQuerySearchReq;
 import com.sandy.sconsole.endpoints.rest.live.tag.vo.reqres.TagQuerySearchRes;
@@ -37,6 +43,10 @@ public class TagQueryHelper {
 
     @Autowired private QuestionRepo questionRepo ;
 
+    @Autowired private SavedTagQueryRepo savedTagQueryRepo ;
+
+    @Autowired private ObjectMapper objectMapper ;
+
     @FunctionalInterface
     private interface TagExistsPredicateFactory {
         Predicate tagExists( CriteriaBuilder cb, CriteriaQuery<?> query, Integer tagId ) ;
@@ -59,6 +69,68 @@ public class TagQueryHelper {
         return new TagQuerySearchRes(
                 problems,
                 questions.stream().map( QuestionVO::new ).toList() ) ;
+    }
+
+    // ---------------------------------------------------------------------
+    // Saved queries - a saved query is the whole search criteria (tagQuery +
+    // filters) serialized to JSON, so recalling it reproduces the exact
+    // search that was saved.
+    // ---------------------------------------------------------------------
+
+    public SavedTagQueryVO saveQuery( SaveQueryReq req ) {
+
+        if( req.name() == null || req.name().isBlank() ) {
+            throw new IllegalArgumentException( "name is required" ) ;
+        }
+        if( req.query() == null ) {
+            throw new IllegalArgumentException( "query is required" ) ;
+        }
+
+        // Upsert by name: overwrite an existing saved query with the same
+        // name rather than creating a duplicate.
+        SavedTagQuery entity = savedTagQueryRepo.findByName( req.name() ).orElseGet( SavedTagQuery::new ) ;
+        entity.setName( req.name() ) ;
+        entity.setQuery( writeQueryJson( req.query() ) ) ;
+        savedTagQueryRepo.save( entity ) ;
+
+        return SavedTagQueryVO.from( entity ) ;
+    }
+
+    public void deleteQuery( Integer id ) {
+        if( !savedTagQueryRepo.existsById( id ) ) {
+            throw new IllegalArgumentException( "No saved query found with id: " + id ) ;
+        }
+        savedTagQueryRepo.deleteById( id ) ;
+    }
+
+    public List<SavedTagQueryVO> getSavedQueries() {
+        return savedTagQueryRepo.findAllByOrderByNameAsc().stream()
+                .map( SavedTagQueryVO::from )
+                .toList() ;
+    }
+
+    public TagQuerySearchReq getQuery( Integer id ) {
+        SavedTagQuery entity = savedTagQueryRepo.findById( id )
+                .orElseThrow( () -> new IllegalArgumentException( "No saved query found with id: " + id ) ) ;
+        return readQueryJson( entity.getQuery() ) ;
+    }
+
+    private String writeQueryJson( TagQuerySearchReq query ) {
+        try {
+            return objectMapper.writeValueAsString( query ) ;
+        }
+        catch( JsonProcessingException e ) {
+            throw new IllegalStateException( "Failed to serialize query", e ) ;
+        }
+    }
+
+    private TagQuerySearchReq readQueryJson( String json ) {
+        try {
+            return objectMapper.readValue( json, TagQuerySearchReq.class ) ;
+        }
+        catch( JsonProcessingException e ) {
+            throw new IllegalStateException( "Failed to deserialize saved query", e ) ;
+        }
     }
 
     // ---------------------------------------------------------------------

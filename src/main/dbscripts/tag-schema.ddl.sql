@@ -98,3 +98,20 @@ ALTER TABLE sconsolenxt.tag_recent_usage
     FOREIGN KEY (tag_id) REFERENCES sconsolenxt.tag_master (id) ON DELETE Cascade
       ON UPDATE Cascade
 ;
+
+
+CREATE TABLE sconsolenxt.saved_tag_query(
+  id INT NOT NULL AUTO_INCREMENT,
+  name VARCHAR(128) NOT NULL,
+  query LONGTEXT NOT NULL,
+  created_at DATETIME NOT NULL,
+  PRIMARY KEY(id)
+) COMMENT 'User-saved tag-browser search criteria (boolean tag expression + filters), stored as serialized JSON for later recall. Saving under an existing name overwrites that row (name is the upsert key).'
+  ENGINE = InnoDB ROW_FORMAT = Dynamic AUTO_INCREMENT = 1 DEFAULT CHARACTER SET = `utf8mb4`
+  COLLATE = `utf8mb4_unicode_ci`
+;
+
+
+ALTER TABLE sconsolenxt.saved_tag_query
+  ADD CONSTRAINT uq_saved_tag_query_name UNIQUE(name)
+;
