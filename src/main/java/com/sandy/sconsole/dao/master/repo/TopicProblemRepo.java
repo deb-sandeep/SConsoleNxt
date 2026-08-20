@@ -2,11 +2,14 @@ package com.sandy.sconsole.dao.master.repo;
 
 import com.sandy.sconsole.dao.master.TopicProblem;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
-public interface TopicProblemRepo extends JpaRepository<TopicProblem, Integer> {
+public interface TopicProblemRepo
+        extends JpaRepository<TopicProblem, Integer>,
+                JpaSpecificationExecutor<TopicProblem> {
     
     interface ProblemStateCount {
         String getState() ;
