@@ -14,6 +14,8 @@ public interface TagProblemMapRepo extends CrudRepository<TagProblemMap, Integer
 
     List<TagProblemMap> findByProblemId( Integer problemId ) ;
 
+    List<TagProblemMap> findByProblemIdIn( List<Integer> problemIds ) ;
+
     boolean existsByProblemIdAndTagId( Integer problemId, Integer tagId ) ;
 
     @Modifying

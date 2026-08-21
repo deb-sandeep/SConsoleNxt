@@ -92,6 +92,25 @@ public class TagAssociationAPIs {
     }
 
     /**
+     * Batch version of getTagsForItem: for each id in req.itemIds(), returns
+     * every tag attached to that item, keyed by item id. Every requested id
+     * is present in the response (empty list if untagged), so callers never
+     * need to special-case a missing key.
+     */
+    @PostMapping( "/{itemType}/Tags" )
+    public ResponseEntity<AR<Map<Integer, List<TagVO>>>> getTagsForItems(
+            @PathVariable TaggableItemType itemType,
+            @RequestBody ItemIdsReq req ) {
+        try {
+            TagAssociationHelper helper = SConsole.getBean( TagAssociationHelper.class ) ;
+            return success( helper.getTagsForItems( itemType, req.itemIds() ) ) ;
+        }
+        catch( Exception e ) {
+            return systemError( e ) ;
+        }
+    }
+
+    /**
      * Detaches every tag from every item in req.itemIds (itemType applying to
      * all of them). Items with no tags are simply left untouched.
      */

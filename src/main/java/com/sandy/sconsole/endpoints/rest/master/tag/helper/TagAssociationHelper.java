@@ -117,6 +117,27 @@ public class TagAssociationHelper {
         } ;
     }
 
+    /**
+     * Batch version of getTagsForItem: for each id in itemIds, returns every
+     * tag attached to that item, keyed by item id. Every requested id is
+     * present in the response (empty list if untagged), so callers never
+     * need to special-case a missing key.
+     */
+    public Map<Integer, List<TagVO>> getTagsForItems( TaggableItemType itemType, List<Integer> itemIds ) {
+
+        Map<Integer, List<TagVO>> tagsByItemId = new HashMap<>() ;
+        itemIds.forEach( id -> tagsByItemId.put( id, new ArrayList<>() ) ) ;
+
+        switch( itemType ) {
+            case PROBLEM -> tagProblemMapRepo.findByProblemIdIn( itemIds ).forEach( m ->
+                    tagsByItemId.get( m.getProblem().getId() ).add( new TagVO( m.getTag() ) ) ) ;
+            case QUESTION -> tagQuestionMapRepo.findByQuestionIdIn( itemIds ).forEach( m ->
+                    tagsByItemId.get( m.getQuestion().getId() ).add( new TagVO( m.getTag() ) ) ) ;
+        }
+
+        return tagsByItemId ;
+    }
+
     public void removeAllTags( TaggableItemType itemType, List<Integer> itemIds ) {
         switch( itemType ) {
             case PROBLEM -> itemIds.forEach( tagProblemMapRepo::deleteAllByProblemId ) ;
