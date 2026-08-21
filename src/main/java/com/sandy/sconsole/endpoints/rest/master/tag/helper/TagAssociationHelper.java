@@ -24,13 +24,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Slf4j
 @Component
@@ -129,19 +123,28 @@ public class TagAssociationHelper {
         itemIds.forEach( id -> tagsByItemId.put( id, new ArrayList<>() ) ) ;
 
         switch( itemType ) {
-            case PROBLEM -> tagProblemMapRepo.findByProblemIdIn( itemIds ).forEach( m ->
-                    tagsByItemId.get( m.getProblem().getId() ).add( new TagVO( m.getTag() ) ) ) ;
-            case QUESTION -> tagQuestionMapRepo.findByQuestionIdIn( itemIds ).forEach( m ->
-                    tagsByItemId.get( m.getQuestion().getId() ).add( new TagVO( m.getTag() ) ) ) ;
+            case PROBLEM ->
+                    tagProblemMapRepo.findByProblemIdIn( itemIds )
+                                     .forEach( m ->
+                                             tagsByItemId.get( m.getProblem().getId() )
+                                                         .add( new TagVO( m.getTag() ) ) ) ;
+            
+            case QUESTION ->
+                    tagQuestionMapRepo.findByQuestionIdIn( itemIds )
+                                      .forEach( m ->
+                                              tagsByItemId.get( m.getQuestion().getId() )
+                                                          .add( new TagVO( m.getTag() ) ) ) ;
         }
-
         return tagsByItemId ;
     }
 
     public void removeAllTags( TaggableItemType itemType, List<Integer> itemIds ) {
         switch( itemType ) {
-            case PROBLEM -> itemIds.forEach( tagProblemMapRepo::deleteAllByProblemId ) ;
-            case QUESTION -> itemIds.forEach( tagQuestionMapRepo::deleteAllByQuestionId ) ;
+            case PROBLEM ->
+                    itemIds.forEach( tagProblemMapRepo::deleteAllByProblemId ) ;
+            
+            case QUESTION ->
+                    itemIds.forEach( tagQuestionMapRepo::deleteAllByQuestionId ) ;
         }
     }
 
@@ -174,10 +177,15 @@ public class TagAssociationHelper {
         itemIds.forEach( id -> counts.put( id, 0 ) ) ;
 
         switch( itemType ) {
-            case PROBLEM -> tagProblemMapRepo.countTagsByProblemIds( itemIds )
-                    .forEach( c -> counts.put( c.getProblemId(), c.getCount() ) ) ;
-            case QUESTION -> tagQuestionMapRepo.countTagsByQuestionIds( itemIds )
-                    .forEach( c -> counts.put( c.getQuestionId(), c.getCount() ) ) ;
+            case PROBLEM ->
+                    tagProblemMapRepo.countTagsByProblemIds( itemIds )
+                                     .forEach( c ->
+                                             counts.put( c.getProblemId(), c.getCount() ) ) ;
+            
+            case QUESTION ->
+                    tagQuestionMapRepo.countTagsByQuestionIds( itemIds )
+                                      .forEach( c ->
+                                              counts.put( c.getQuestionId(), c.getCount() ) ) ;
         }
 
         return counts ;
@@ -187,10 +195,15 @@ public class TagAssociationHelper {
 
         Map<Integer, Integer> counts = new HashMap<>() ;
         switch( itemType ) {
-            case PROBLEM -> tagProblemMapRepo.countProblemsByTagForProblemIds( itemIds )
-                    .forEach( c -> counts.put( c.getTagId(), c.getCount() ) ) ;
-            case QUESTION -> tagQuestionMapRepo.countQuestionsByTagForQuestionIds( itemIds )
-                    .forEach( c -> counts.put( c.getTagId(), c.getCount() ) ) ;
+            case PROBLEM ->
+                    tagProblemMapRepo.countProblemsByTagForProblemIds( itemIds )
+                                     .forEach( c ->
+                                             counts.put( c.getTagId(), c.getCount() ) ) ;
+            
+            case QUESTION ->
+                    tagQuestionMapRepo.countQuestionsByTagForQuestionIds( itemIds )
+                                      .forEach( c ->
+                                              counts.put( c.getTagId(), c.getCount() ) ) ;
         }
 
         List<TagVO> vos = new ArrayList<>() ;
@@ -200,21 +213,29 @@ public class TagAssociationHelper {
             vos.add( vo ) ;
         }
 
-        vos.sort( Comparator.comparingInt( TagVO::getAssociationCount ).reversed()
-                .thenComparing( TagVO::getTagText ) ) ;
+        vos.sort( Comparator.comparingInt( TagVO::getAssociationCount )
+                            .reversed()
+                            .thenComparing( TagVO::getTagText )
+        ) ;
 
         return vos ;
     }
 
     public TagAssociationRes getItemsForTag( Integer tagId ) {
 
-        List<ProblemVO> problems = tagProblemMapRepo.findByTagId( tagId ).stream()
-                .map( m -> new ProblemVO( m.getProblem() ) )
-                .toList() ;
+        List<ProblemVO> problems =
+                tagProblemMapRepo.findByTagId( tagId )
+                                 .stream()
+                                 .map( m ->
+                                         new ProblemVO( m.getProblem() ) )
+                                 .toList() ;
 
-        List<QuestionSummaryVO> questions = tagQuestionMapRepo.findByTagId( tagId ).stream()
-                .map( m -> new QuestionSummaryVO( m.getQuestion() ) )
-                .toList() ;
+        List<QuestionSummaryVO> questions =
+                tagQuestionMapRepo.findByTagId( tagId )
+                                  .stream()
+                                  .map( m ->
+                                          new QuestionSummaryVO( m.getQuestion() ) )
+                                  .toList() ;
 
         return new TagAssociationRes( problems, questions ) ;
     }
