@@ -11,6 +11,7 @@ import com.sandy.sconsole.dao.master.repo.TopicRepo;
 import com.sandy.sconsole.endpoints.rest.master.tag.vo.TagVO;
 import com.sandy.sconsole.endpoints.rest.master.tag.vo.reqres.TagCreateReq;
 import com.sandy.sconsole.endpoints.rest.master.tag.vo.reqres.TagRenameReq;
+import com.sandy.sconsole.core.util.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -48,6 +49,7 @@ public class TagHelper {
         Tag tag = new Tag() ;
         tag.setTagText( req.tagText().trim() ) ;
         tag.setNormalizedTagText( normalizedText ) ;
+        tag.setColor( StringUtil.isNotEmptyOrNull( req.color() ) ? req.color().trim() : null ) ;
         tag.setTopic( topic ) ;
         tag.setCreatedAt( Instant.now() ) ;
 
@@ -69,6 +71,9 @@ public class TagHelper {
 
         tag.setTagText( req.newTagText().trim() ) ;
         tag.setNormalizedTagText( normalizedText ) ;
+        if( StringUtil.isNotEmptyOrNull( req.color() ) ) {
+            tag.setColor( req.color().trim() ) ;
+        }
 
         return new TagVO( tagRepo.save( tag ) ) ;
     }

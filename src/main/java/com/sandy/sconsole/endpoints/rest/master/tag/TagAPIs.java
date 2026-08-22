@@ -41,7 +41,8 @@ public class TagAPIs {
      * Creates a new tag. The tag text is normalized (trimmed, lowercased, and
      * stripped of whitespace/'-'/'.'/':') to check for an existing tag with the
      * same normalized text; a match is rejected with a bad request rather than
-     * silently creating a near-duplicate.
+     * silently creating a near-duplicate. The color is optional - if omitted
+     * (null/blank), the new tag is created with no color.
      */
     @PostMapping( "" )
     public ResponseEntity<AR<TagVO>> createTag( @RequestBody TagCreateReq req ) {
@@ -167,7 +168,9 @@ public class TagAPIs {
     /**
      * Renames a tag's display text. Subject to the same normalized-uniqueness
      * check as create - renaming to text that normalizes the same as another
-     * existing tag (other than itself) is rejected with a bad request.
+     * existing tag (other than itself) is rejected with a bad request. The
+     * color is optional - if omitted (null/blank), the tag's existing color
+     * is left untouched; if supplied, it replaces the existing color.
      */
     @PostMapping( "/{tagId}/Rename" )
     public ResponseEntity<AR<TagVO>> renameTag(

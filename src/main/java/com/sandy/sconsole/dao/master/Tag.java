@@ -22,6 +22,9 @@ public class Tag {
     @Column( name = "normalized_tag_text", nullable = false, length = 128 )
     private String normalizedTagText;
 
+    @Column( name = "color", length = 8 )
+    private String color;
+
     @ManyToOne( fetch = FetchType.LAZY, optional = false )
     @JoinColumn( name = "topic_id", nullable = false )
     private Topic topic;
