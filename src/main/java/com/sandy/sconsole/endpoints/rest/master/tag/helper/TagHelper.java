@@ -2,7 +2,7 @@ package com.sandy.sconsole.endpoints.rest.master.tag.helper;
 
 import com.sandy.sconsole.dao.exam.TagQuestionMap;
 import com.sandy.sconsole.dao.exam.repo.TagQuestionMapRepo;
-import com.sandy.sconsole.dao.master.TagMaster;
+import com.sandy.sconsole.dao.master.Tag;
 import com.sandy.sconsole.dao.master.TagProblemMap;
 import com.sandy.sconsole.dao.master.Topic;
 import com.sandy.sconsole.dao.master.repo.TagProblemMapRepo;
@@ -45,7 +45,7 @@ public class TagHelper {
                 .orElseThrow( () -> new IllegalArgumentException(
                         "No topic found with id: " + req.topicId() ) ) ;
 
-        TagMaster tag = new TagMaster() ;
+        Tag tag = new Tag() ;
         tag.setTagText( req.tagText().trim() ) ;
         tag.setNormalizedTagText( normalizedText ) ;
         tag.setTopic( topic ) ;
@@ -56,12 +56,12 @@ public class TagHelper {
 
     public TagVO renameTag( Integer tagId, TagRenameReq req ) {
 
-        TagMaster tag = tagRepo.findById( tagId )
+        Tag tag = tagRepo.findById( tagId )
                 .orElseThrow( () -> new IllegalArgumentException(
                         "No tag found with id: " + tagId ) ) ;
 
-        String normalizedText = normalize( req.newTagText() ) ;
-        Optional<TagMaster> existing = tagRepo.findByNormalizedTagText( normalizedText ) ;
+        String        normalizedText = normalize( req.newTagText() ) ;
+        Optional<Tag> existing       = tagRepo.findByNormalizedTagText( normalizedText ) ;
         if( existing.isPresent() && !existing.get().getId().equals( tagId ) ) {
             throw new IllegalArgumentException(
                     "A tag with this text already exists: " + req.newTagText() ) ;
@@ -80,7 +80,7 @@ public class TagHelper {
             throw new IllegalArgumentException( "Cannot merge a tag into itself." ) ;
         }
 
-        TagMaster targetTag = tagRepo.findById( targetTagId )
+        Tag targetTag = tagRepo.findById( targetTagId )
                 .orElseThrow( () -> new IllegalArgumentException(
                         "No tag found with id: " + targetTagId ) ) ;
 

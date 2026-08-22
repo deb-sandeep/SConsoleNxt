@@ -20,5 +20,5 @@ public class TagProblemMap {
 
     @ManyToOne( fetch = FetchType.LAZY, optional = false )
     @JoinColumn( name = "tag_id", nullable = false )
-    private TagMaster tag;
+    private Tag tag;
 }

@@ -5,7 +5,7 @@ import com.sandy.sconsole.dao.exam.TagQuestionMap;
 import com.sandy.sconsole.dao.exam.repo.QuestionRepo;
 import com.sandy.sconsole.dao.exam.repo.TagQuestionMapRepo;
 import com.sandy.sconsole.dao.master.Problem;
-import com.sandy.sconsole.dao.master.TagMaster;
+import com.sandy.sconsole.dao.master.Tag;
 import com.sandy.sconsole.dao.master.TagProblemMap;
 import com.sandy.sconsole.dao.master.TagRecentUsage;
 import com.sandy.sconsole.dao.master.repo.ProblemRepo;
@@ -47,7 +47,7 @@ public class TagAssociationHelper {
 
     public void addTag( TaggableItemType itemType, List<Integer> itemIds, Integer tagId ) {
 
-        TagMaster tag = tagRepo.findById( tagId )
+        Tag tag = tagRepo.findById( tagId )
                 .orElseThrow( () -> new IllegalArgumentException( "No tag found with id: " + tagId ) ) ;
 
         for( Integer itemId : itemIds ) {
@@ -207,7 +207,7 @@ public class TagAssociationHelper {
         }
 
         List<TagVO> vos = new ArrayList<>() ;
-        for( TagMaster tag : tagRepo.findAllById( counts.keySet() ) ) {
+        for( Tag tag : tagRepo.findAllById( counts.keySet() ) ) {
             TagVO vo = new TagVO( tag ) ;
             vo.setAssociationCount( counts.get( tag.getId() ) ) ;
             vos.add( vo ) ;

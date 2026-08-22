@@ -10,7 +10,7 @@ import java.time.Instant;
 @Setter
 @Entity
 @Table( name = "tag_master" )
-public class TagMaster {
+public class Tag {
     @Id
     @GeneratedValue( strategy = GenerationType.IDENTITY )
     @Column( name = "id", nullable = false )

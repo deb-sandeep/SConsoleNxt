@@ -2,7 +2,7 @@ package com.sandy.sconsole.endpoints.rest.master.tag;
 
 import com.sandy.sconsole.SConsole;
 import com.sandy.sconsole.core.api.AR;
-import com.sandy.sconsole.dao.master.TagMaster;
+import com.sandy.sconsole.dao.master.Tag;
 import com.sandy.sconsole.dao.master.TagRecentUsage;
 import com.sandy.sconsole.dao.master.Topic;
 import com.sandy.sconsole.dao.master.repo.TagRecentUsageRepo;
@@ -194,7 +194,7 @@ public class TagAPIs {
     public ResponseEntity<AR<String>> changeTopic(
             @PathVariable Integer tagId, @PathVariable Integer newTopicId ) {
         try {
-            TagMaster tag = tagRepo.findById( tagId ).get() ;
+            Tag   tag   = tagRepo.findById( tagId ).get() ;
             Topic topic = topicRepo.findById( newTopicId ).get() ;
             tag.setTopic( topic ) ;
             tagRepo.save( tag ) ;
@@ -247,19 +247,19 @@ public class TagAPIs {
         }
     }
 
-    private List<TagVO> toVOs( Iterable<TagMaster> tags ) {
+    private List<TagVO> toVOs( Iterable<Tag> tags ) {
         List<TagVO> vos = new ArrayList<>() ;
         tags.forEach( t -> vos.add( new TagVO( t ) ) ) ;
         return vos ;
     }
 
     private List<TagVO> toOrderedVOs( List<Integer> orderedIds ) {
-        Map<Integer, TagMaster> tagsById = new HashMap<>() ;
+        Map<Integer, Tag> tagsById = new HashMap<>() ;
         tagRepo.findAllById( orderedIds ).forEach( t -> tagsById.put( t.getId(), t ) ) ;
 
         List<TagVO> vos = new ArrayList<>() ;
         for( Integer id : orderedIds ) {
-            TagMaster tag = tagsById.get( id ) ;
+            Tag tag = tagsById.get( id ) ;
             if( tag != null ) {
                 vos.add( new TagVO( tag ) ) ;
             }

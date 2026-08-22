@@ -1,6 +1,6 @@
 package com.sandy.sconsole.endpoints.rest.master.tag.vo;
 
-import com.sandy.sconsole.dao.master.TagMaster;
+import com.sandy.sconsole.dao.master.Tag;
 import lombok.Data;
 
 import java.time.Instant;
@@ -20,7 +20,7 @@ public class TagVO {
 
     public TagVO(){}
 
-    public TagVO( TagMaster t ) {
+    public TagVO( Tag t ) {
         this.id = t.getId() ;
         this.tagText = t.getTagText() ;
         this.normalizedTagText = t.getNormalizedTagText() ;

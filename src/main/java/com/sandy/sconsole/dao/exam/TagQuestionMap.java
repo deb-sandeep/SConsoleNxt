@@ -1,6 +1,6 @@
 package com.sandy.sconsole.dao.exam;
 
-import com.sandy.sconsole.dao.master.TagMaster;
+import com.sandy.sconsole.dao.master.Tag;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,5 +21,5 @@ public class TagQuestionMap {
 
     @ManyToOne( fetch = FetchType.LAZY, optional = false )
     @JoinColumn( name = "tag_id", nullable = false )
-    private TagMaster tag;
+    private Tag tag;
 }
